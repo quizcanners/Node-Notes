@@ -42,7 +42,7 @@ namespace LinkedNotes
 
         protected void Init (NodeBook nroot){
             root = nroot;
-            nroot.allBookNodes[index] = this;
+            root.allBookNodes[index] = this;
 
             foreach (var sn in subNotes)
             sn.Init(nroot);
