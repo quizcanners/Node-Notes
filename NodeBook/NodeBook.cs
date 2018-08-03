@@ -18,12 +18,7 @@ namespace LinkedNotes
 
         public void Init () => Init(this);
         
-        public override ISTD Decode(string data){
-
-            data.DecodeInto(this);
-
-            return this;
-        }
+        public override ISTD Decode(string data) => data.DecodeTagsFor(this);
 
 
 
