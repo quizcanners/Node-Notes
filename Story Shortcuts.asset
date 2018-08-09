@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d40f5094fecce70499a817ce4c7f0c65, type: 3}
+  m_Name: Story Shortcuts
+  m_EditorClassIdentifier: 
+  _nestedReferences: []
+  explorer:
+    states: []
+    inspectedState: -1
+    fileFolderHolder: STDEncodes
+    SaveToFileOptions: 0
+  showDebug: 0
+  inspectedStuff: -1
+  inspectedReference: -1
+  std_Data: vals|170|ints|25|inds|0||vals|0||last|1|0||bools|25|inds|0||vals|0||last|1|0||tags|25|inds|0||vals|0||last|1|0||enumTags|25|inds|0||vals|0||last|1|0||Test
+    Unrecognized values|1|1||trigs|25|inds|0||vals|0||last|1|0||books|1115|0|57|sub|0||b|28|sub|0||sub|0||n|3|rty|i|1|0||f|1|0|tst|3|qwe||0|464|sub|201|e|7|sub|0|||e|158|sub|149|e|7|sub|0|||e|106|sub|98|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|44|sub|36|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||||e|7|sub|0|||||e|7|sub|0|||e|7|sub|0|||||e|7|sub|0|||e|7|sub|0||||b|231|sub|201|e|7|sub|0|||e|158|sub|149|e|7|sub|0|||e|106|sub|98|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|44|sub|36|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||||e|7|sub|0|||||e|7|sub|0|||e|7|sub|0|||||e|7|sub|0|||e|7|sub|0||||sub|0||n|3|dfg|i|1|0||f|1|0|tst|3|cvb||0|574|sub|259|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|192|sub|183|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|104|sub|96|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0||||||||b|286|sub|259|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|192|sub|183|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|104|sub|96|e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0|||e|7|sub|0||||||||sub|0||n|0||i|1|0||f|1|0|tst|0||||marks|0||

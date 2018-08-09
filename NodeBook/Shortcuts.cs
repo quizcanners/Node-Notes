@@ -20,26 +20,28 @@ namespace LinkedNotes
             set { std_Data = value; }
         }
 
+        int inspectedBook = -1;
+
         public override bool PEGI()
         {
             bool changed = false;
 
-          
-           changed |= base.PEGI().nl();
+            "Shortcuts".nl();
 
+            changed |= base.PEGI().nl();
 
             if (!showDebug)
             {
-               
+                "Books ".edit_List(books, ref inspectedBook, true);
 
             }
 
             return changed;
         }
 
-        [NonSerialized] public List<NodeBook> books = new List<NodeBook>();
+        [NonSerialized] public List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
 
-        [NonSerialized] public List<BookMark> bookMarks = new List<BookMark>();
+        [NonSerialized] public List<BookMark> bookMarks = new List<BookMark>(); // Saved points
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals", Values.global, this)
@@ -59,5 +61,6 @@ namespace LinkedNotes
             }
             return true;
         }
+
     }
 }
