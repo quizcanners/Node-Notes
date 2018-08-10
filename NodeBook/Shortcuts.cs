@@ -28,12 +28,14 @@ namespace LinkedNotes
 
             "Shortcuts".nl();
 
-            changed |= base.PEGI().nl();
+            if (inspectedBook == -1)
+                changed |= base.PEGI().nl();
+            else
+                showDebug = false;
 
             if (!showDebug)
             {
                 "Books ".edit_List(books, ref inspectedBook, true);
-
             }
 
             return changed;
@@ -42,7 +44,7 @@ namespace LinkedNotes
         [NonSerialized] public List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
 
         [NonSerialized] public List<BookMark> bookMarks = new List<BookMark>(); // Saved points
-
+        
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals", Values.global, this)
             .Add("trigs", TriggerGroup.all)

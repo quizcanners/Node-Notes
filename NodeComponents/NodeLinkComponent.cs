@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 
 namespace LinkedNotes
 {
-    public class NodeLinkComponent : NodeComponent
+    public class NodeLinkComponent : Base_Node
     {
         public ConditionBranch conditions = new ConditionBranch();
 
@@ -24,6 +24,7 @@ namespace LinkedNotes
         }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
+            .Add("b", base.Encode())
             .Add("cnd", conditions)
             .Add("rslts", results);
 
@@ -31,6 +32,7 @@ namespace LinkedNotes
         {
             switch (tag)
             {
+                case "b": data.DecodeInto(base.Decode); break;
                 case "cnd": data.DecodeInto(out conditions); break;
                 case "rslts": data.DecodeInto(out results); break;
                 default: return false;

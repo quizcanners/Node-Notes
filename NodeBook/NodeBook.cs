@@ -7,74 +7,64 @@ using System;
 
 namespace LinkedNotes
 {
+    
+    public class NodeBook : AbstractKeepUnrecognized_STD, IPEGI_ListInspect, IPEGI {
 
-    //Have different classes to hold different forms of a book (Encoded, Decoded, Link, FileAdress)
-
-    [DerrivedList(typeof(NodeBook), typeof(BookMark))]
-    public class NodeBook : Node, IPEGI_ListInspect {
-
+        public string name;
         public int firstFree = 0;
-        public CountlessSTD<Node> allBookNodes = new CountlessSTD<Node>();
+        public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
+        public List<Node> subNodes = new List<Node>();
 
 #if PEGI
 
-        public override bool PEGI()
-        {
+        int inspectedNode = -1;
+
+        public override bool PEGI()  {
             bool changed = false;
 
-            changed |= base.PEGI();
+            "Nodes".edit_List(subNodes, ref inspectedNode, true);
 
+            //if (icon.Add.Click())
+              //  subNodes.Add((new Node()).CreatedFor(this));
+                   
             return changed;
         }
-
-        string testString;
-
-        public bool PEGI_inList(IList list, int ind, ref int edited)
-        {
+        
+        public bool PEGI_inList(IList list, int ind, ref int edited) {
            var changed = pegi.edit(ref name);
 
             if (icon.Edit.Click())
                 edited = ind;
             return changed;
         }
-
 #endif
 
-        public NodeBook()
-        {
-            root = this;
-        }
-
-        public void Init() => Init(this);
-
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add("b", base.Encode())
             .Add("f", firstFree)
-            .Add_String("tst", testString);
+            .Add("s", subNodes)
+            .Add_String("n", name)
+            .Add("in", inspectedNode);
 
-        public override bool Decode(string tag, string data)
-        {
+        public override bool Decode(string tag, string data) {
             switch (tag)
             {
-                case "b": data.DecodeInto(base.Decode); break; 
                 case "f": firstFree = data.ToInt(); break;
-                case "tst": testString = data; break;
+                case "s": data.DecodeInto(out subNodes); break;
+                case "n": name = data; break;
+                case "in": inspectedNode = data.ToInt(); break;
                 default: return false;
             }
-
             return true;
         }
     
-
-        public override ISTD Decode(string data)
-        {
+        public override ISTD Decode(string data) {
             var ret = data.DecodeTagsFor(this);
 
-            Init(this);
+            foreach (var s in subNodes)
+                s.Init(this, null);
 
             return ret;
         }
 
-    
     }
 }

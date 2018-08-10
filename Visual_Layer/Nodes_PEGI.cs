@@ -4,6 +4,7 @@ using UnityEngine;
 using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 using STD_Logic;
+using System;
 
 namespace LinkedNotes
 {
@@ -11,10 +12,16 @@ namespace LinkedNotes
     [ExecuteInEditMode] 
     public class Nodes_PEGI : LogicMGMT
     {
+        public static Nodes_PEGI NodeMGMT_inst;
+
+        [NonSerialized] public Base_Node Cut_Paste;
+
         public Shortcuts shortcuts;
         
         public override bool PEGI() {
-            bool changed = base.PEGI();
+            bool changed = false;
+
+            changed |= base.PEGI();
 
             if (!showDebug) {
 
@@ -41,10 +48,10 @@ namespace LinkedNotes
         {
             base.OnEnable();
 
+            NodeMGMT_inst = this;
+
             shortcuts.Load_STDdata();
         }
-
-
 
     }
 }

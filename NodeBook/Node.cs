@@ -7,79 +7,94 @@ using PlayerAndEditorGUI;
 
 namespace LinkedNotes
 {
-    public class Node : AbstractKeepUnrecognized_STD , IGotIndex, INeedAttention, IGotName, IPEGI
-    {
-        protected NodeBook root;
-        public string name;
-        int index;
+    public class Node : Base_Node,  INeedAttention,  IPEGI
+    { 
 
-        public int IndexForPEGI {get {return index;} set {index = value;}}
-
-        public string NameForPEGI { get { return name; }
-             set { name = value; } }
-
-        public List<Node> subNotes = new List<Node>();
-
-        public List<NodeComponent> components = new List<NodeComponent>();
+        public List<Base_Node> subNotes = new List<Base_Node>();
 
         int inspectedSubnode = -1;
-        int inspectedComponent = -1;
 
-        public virtual string NeedAttention()
+        public override string NeedAttention()
         {
-            if (root == null)
-                return "{0} : {1} No root detected".F(index, name);
-
             foreach (var s in subNotes)
                 if (s == null)
-                    return "{0} : {1} Got null sub node".F(index, name);
+                    return "{0} : {1} Got null sub node".F(IndexForPEGI, name);
             else
                 {
                     var na = s.NeedAttention();
                     if (na != null)
                         return na;
                 }
+
+            if (root == null)
+                return "No root detected";
+
             return null;
         }
 
         public override bool PEGI() {
 
-            bool changed = base.PEGI();
+            bool changed = false;
 
-            var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
+            if (inspectedSubnode == -1)
+                changed |= base.PEGI();
+            else
+                showDebug = false;
 
-            if (newNode != null)
-                newNode.Init(root);
+            if (!showDebug)
+            {
 
-            if (inspectedSubnode == -1) { 
-                "Components".edit_List(components, ref inspectedComponent, true, ref changed);
+                if (inspectedSubnode == -1 && MGMT.Cut_Paste != null)
+                {
+
+                    if (icon.Delete.Click())
+                        MGMT.Cut_Paste = null;
+                    else
+                    {
+
+                        MGMT.Cut_Paste.ToPEGIstring().write();
+                        if (icon.Paste.Click())
+                        {
+                            MGMT.Cut_Paste.MoveTo(this);
+                            MGMT.Cut_Paste = null;
+                            changed = true;
+                        }
+
+                    }
+
+                    pegi.nl();
+
+                }
+
+                var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
+                if (newNode != null)
+                    newNode.CreatedFor(this);
+
             }
             return changed;
         }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("sub", subNotes)
-            .Add_String("n", name)
-            .Add("i", index);
-
+            .Add("b", base.Encode())
+            .Add("isn", inspectedSubnode);
+    
         public override bool Decode(string tag, string data)
         {
             switch (tag)  {
                 case "sub": data.DecodeInto(out subNotes); break;
-                case "n": name = data; break;
-                case "i": index = data.ToInt(); break;
+                case "b": data.DecodeInto(base.Decode); break;
+                case "isn": inspectedSubnode = data.ToInt(); break;
                 default: return false;
             }
             return true;
         }
 
-        protected void Init (NodeBook nroot){
-            root = nroot;
-            root.allBookNodes[index] = this;
-
+        public override void Init (NodeBook nroot, Node parent){
+            base.Init(nroot, parent);
+          
             foreach (var sn in subNotes)
-            sn.Init(nroot);
+                sn.Init(nroot, this);
         }
-        
     }
 }
