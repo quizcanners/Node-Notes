@@ -39,7 +39,6 @@ namespace LinkedNotes
                     if (na != null)
                         return na;
                 }
-
             return null;
         }
 
@@ -65,8 +64,7 @@ namespace LinkedNotes
 
         public override bool Decode(string tag, string data)
         {
-            switch (tag)
-            {
+            switch (tag)  {
                 case "sub": data.DecodeInto(out subNotes); break;
                 case "n": name = data; break;
                 case "i": index = data.ToInt(); break;
@@ -82,7 +80,6 @@ namespace LinkedNotes
             foreach (var sn in subNotes)
             sn.Init(nroot);
         }
-
-     
+        
     }
 }
