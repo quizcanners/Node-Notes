@@ -3,14 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayerAndEditorGUI;
+using STD_Logic;
 
 namespace LinkedNotes
 {
 
-    [DerrivedList(typeof(Node), typeof(BookMark), typeof(NodeLinkComponent))]
+    [DerrivedList(typeof(Node), typeof(NodeLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex {
         public Node parentNode;
         public NodeBook root;
+
+        public Vector3 localPosition = Vector3.zero;
+
+
+        public ConditionBranch condition = new ConditionBranch();
+        public List<Result> results = new List<Result>();
 
         protected static Nodes_PEGI MGMT => Nodes_PEGI.NodeMGMT_inst;
 
@@ -26,9 +33,15 @@ namespace LinkedNotes
 
         public int IndexForPEGI { get { return index; } set { index = value; } }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override StdEncoder Encode() => new StdEncoder()
         .Add_String("n", name)
-        .Add("i", index);
+        .Add("i", index)
+        .Add_ifTrue("ic", editConditions)
+        .Add_ifTrue("ir", editResults)
+        .Add_ifNotNegative("icr", inspectedResult)
+        .Add("cnds", condition)
+        .Add("res", results)
+        .Add("pos", localPosition);
 
         public override bool Decode(string tag, string data)
         {
@@ -36,11 +49,19 @@ namespace LinkedNotes
             {
                 case "n": name = data; break;
                 case "i": index = data.ToInt(); break;
-                default: return false;
+                case "ic": editConditions = data.ToBool(); break;
+                case "ir": editResults = data.ToBool(); break;
+                case "icr": inspectedResult = data.ToInt(); break;
+                case "cnds": data.DecodeInto(out condition); break;
+                case "res": data.DecodeInto(out results); break;
+                case "pos": localPosition = data.ToVector3(); break;
             }
             return true;
         }
-
+      
+        int inspectedResult = -1;
+        bool editConditions = false;
+        bool editResults = false;
         public override bool PEGI()
         {
             var changed = base.PEGI();
@@ -50,6 +71,15 @@ namespace LinkedNotes
                 "{0}: ".F(index).edit(20, ref name);
                 if (icon.Copy.Click("Cut/Paste"))
                     Nodes_PEGI.NodeMGMT_inst.Cut_Paste = this;
+
+
+               
+                    if ("Conditions".foldout(ref editConditions).nl())
+                        condition.PEGI();
+
+                    if ("Results".foldout(ref editResults).nl())
+                        results.Inspect(Values.global).nl();
+                
 
                 pegi.nl();
             }

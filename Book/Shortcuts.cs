@@ -43,13 +43,12 @@ namespace LinkedNotes
 
         [NonSerialized] public List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
 
-        [NonSerialized] public List<BookMark> bookMarks = new List<BookMark>(); // Saved points
-        
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals", Values.global, this)
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
-            .Add("marks", bookMarks, this);
+            //.Add("marks", bookMarks, this)
+            ;
 
         public override bool Decode(string tag, string data)
         {
@@ -58,7 +57,7 @@ namespace LinkedNotes
                 case "vals": data.DecodeInto(out Values.global, this); break;
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "books": data.DecodeInto(out books, this); break;
-                case "marks": data.DecodeInto(out bookMarks, this); break;
+            //    case "marks": data.DecodeInto(out bookMarks, this); break;
                 default: return false;
             }
             return true;

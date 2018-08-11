@@ -4,6 +4,7 @@ using UnityEngine;
 using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 using System;
+using STD_Logic;
 
 namespace LinkedNotes
 {
@@ -15,18 +16,20 @@ namespace LinkedNotes
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<Node> subNodes = new List<Node>();
 
+
+
 #if PEGI
-
         int inspectedNode = -1;
-
         public override bool PEGI()  {
             bool changed = false;
 
-            "Nodes".edit_List(subNodes, ref inspectedNode, true);
+            var newNode = "Nodes".edit_List(subNodes, ref inspectedNode, true, ref changed);
 
-            //if (icon.Add.Click())
-              //  subNodes.Add((new Node()).CreatedFor(this));
-                   
+            if (newNode != null)
+                newNode.CreatedFor(this);
+
+         
+    
             return changed;
         }
         
@@ -44,6 +47,7 @@ namespace LinkedNotes
             .Add("s", subNodes)
             .Add_String("n", name)
             .Add("in", inspectedNode);
+          
 
         public override bool Decode(string tag, string data) {
             switch (tag)
@@ -52,6 +56,7 @@ namespace LinkedNotes
                 case "s": data.DecodeInto(out subNodes); break;
                 case "n": name = data; break;
                 case "in": inspectedNode = data.ToInt(); break;
+              
                 default: return false;
             }
             return true;

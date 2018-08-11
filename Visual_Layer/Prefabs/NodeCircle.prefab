@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: 4051271528371030}
   - component: {fileID: 33129005750655264}
   - component: {fileID: 23058078968381926}
+  - component: {fileID: 114439652449945980}
   - component: {fileID: 64482983478901998}
   m_Layer: 0
   m_Name: NodeCircle
@@ -273,6 +274,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_maskType: 0
+--- !u!114 &114439652449945980
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1224183945588322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 959f463d8ff4bd4458c26bcdda66f104, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!222 &222164197452858132
 CanvasRenderer:
   m_ObjectHideFlags: 1

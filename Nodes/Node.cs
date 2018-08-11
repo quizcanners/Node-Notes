@@ -68,7 +68,10 @@ namespace LinkedNotes
 
                 var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
                 if (newNode != null)
+                {
+                    Debug.Log("Adding new one");
                     newNode.CreatedFor(this);
+                }
 
             }
             return changed;
