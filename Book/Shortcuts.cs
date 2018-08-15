@@ -12,6 +12,9 @@ namespace LinkedNotes
     public class Shortcuts : STD_ReferancesHolder, IKeepMySTD
     {
 
+        [NonSerialized] public List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
+
+
         [HideInInspector]
         [SerializeField]
         string std_Data = "";
@@ -41,7 +44,6 @@ namespace LinkedNotes
             return changed;
         }
 
-        [NonSerialized] public List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals", Values.global, this)

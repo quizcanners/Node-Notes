@@ -60,8 +60,8 @@ namespace LinkedNotes
         }
       
         int inspectedResult = -1;
-        bool editConditions = false;
-        bool editResults = false;
+        protected bool editConditions = false;
+        protected bool editResults = false;
         public override bool PEGI()
         {
             var changed = base.PEGI();
@@ -69,16 +69,21 @@ namespace LinkedNotes
             if (!showDebug)
             {
                 "{0}: ".F(index).edit(20, ref name);
-                if (icon.Copy.Click("Cut/Paste"))
+                if (icon.Copy.Click("Cut/Paste").nl())
                     Nodes_PEGI.NodeMGMT_inst.Cut_Paste = this;
 
+                if ("Conditions".foldout(ref editConditions).nl())
+                {
+                    editResults = false;
+                    condition.PEGI();
 
-               
-                    if ("Conditions".foldout(ref editConditions).nl())
-                        condition.PEGI();
+                }
 
-                    if ("Results".foldout(ref editResults).nl())
-                        results.Inspect(Values.global).nl();
+                if ("Results".foldout(ref editResults).nl())
+                {
+                    editConditions = false;
+                    results.Inspect(Values.global).nl();
+                }
                 
 
                 pegi.nl();

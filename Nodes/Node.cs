@@ -41,7 +41,7 @@ namespace LinkedNotes
             else
                 showDebug = false;
 
-            if (!showDebug)
+            if (!showDebug)// && !editConditions && !editResults)
             {
 
                 if (inspectedSubnode == -1 && MGMT.Cut_Paste != null)
@@ -51,7 +51,6 @@ namespace LinkedNotes
                         MGMT.Cut_Paste = null;
                     else
                     {
-
                         MGMT.Cut_Paste.ToPEGIstring().write();
                         if (icon.Paste.Click())
                         {
@@ -66,11 +65,26 @@ namespace LinkedNotes
 
                 }
 
-                var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
-                if (newNode != null)
+                if (inspectedSubnode != -1)
                 {
-                    Debug.Log("Adding new one");
-                    newNode.CreatedFor(this);
+                    var n = subNotes.TryGet(inspectedSubnode);
+                    if (n == null || icon.Exit.Click())
+                        inspectedSubnode = -1;
+                    else
+                        n.Try_Nested_Inspect();
+                }
+
+                if (inspectedSubnode == -1)
+                {
+
+                    var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
+
+
+                    if (newNode != null)
+                    {
+                        Debug.Log("Adding new one");
+                        newNode.CreatedFor(this);
+                    }
                 }
 
             }
