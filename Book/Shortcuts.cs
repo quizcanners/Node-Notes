@@ -12,8 +12,34 @@ namespace LinkedNotes
     public class Shortcuts : STD_ReferancesHolder, IKeepMySTD
     {
 
-        [NonSerialized] public List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
+        [NonSerialized] public static List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
 
+        public static int playingInBook;
+        public static int playingInNode;
+
+        public static Node TryGetCurrentNode()
+        {
+            var book = books.TryGet(playingInBook);
+            if (book != null)
+            {
+                var node = book.allBaseNodes[playingInNode];
+                if (node == null)
+                    Debug.Log("Node is null");
+                else
+                {
+                    var nn = node as Node;
+                    if (nn == null)
+                        Debug.Log("Node can't hold subnodes");
+                    else
+                        return nn;
+                }
+                return null;
+            }
+            else
+                Debug.Log("Book is null");
+
+            return null;
+        }
 
         [HideInInspector]
         [SerializeField]
@@ -31,26 +57,35 @@ namespace LinkedNotes
 
             "Shortcuts".nl();
 
+            "Active B:{0} N:{1} = {2}".F(playingInBook, playingInNode, TryGetCurrentNode().ToPEGIstring()).nl();
+
             if (inspectedBook == -1)
                 changed |= base.PEGI().nl();
             else
                 showDebug = false;
 
             if (!showDebug)
-            {
                 "Books ".edit_List(books, ref inspectedBook, true);
-            }
-
+            
             return changed;
         }
-
-
+        
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals", Values.global, this)
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
-            //.Add("marks", bookMarks, this)
-            ;
+            .Add("pb", playingInBook)
+            .Add("pn", playingInNode);
+
+        public override ISTD Decode(string data)
+        {
+            var ret = base.Decode(data);
+
+            for (int i = 0; i < books.Count; i++)
+                books[i].IndexForPEGI = i;
+
+            return ret;
+        }
 
         public override bool Decode(string tag, string data)
         {
@@ -59,11 +94,11 @@ namespace LinkedNotes
                 case "vals": data.DecodeInto(out Values.global, this); break;
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "books": data.DecodeInto(out books, this); break;
-            //    case "marks": data.DecodeInto(out bookMarks, this); break;
+                case "pb": playingInBook = data.ToInt(); break;
+                case "pn": playingInNode = data.ToInt(); break;
                 default: return false;
             }
             return true;
         }
-
     }
 }

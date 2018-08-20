@@ -13,5 +13,11 @@ namespace LinkedNotes
     {
         public override void OnInspectorGUI() => ((Nodes_PEGI)target).Inspect(serializedObject);
     }
+
+    [CustomEditor(typeof(NodeCircleController))]
+    public class NodeCircleControllerEditor : Editor
+    {
+        public override void OnInspectorGUI() => ((NodeCircleController)target).Inspect(serializedObject);
+    }
 }
 #endif

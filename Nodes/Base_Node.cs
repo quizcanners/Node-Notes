@@ -13,25 +13,27 @@ namespace LinkedNotes
         public Node parentNode;
         public NodeBook root;
 
-        public Vector3 localPosition = Vector3.zero;
-
-
+        public ISTD visualRepresentation;
+        public string configForVisualRepresentation;
+        
         public ConditionBranch condition = new ConditionBranch();
         public List<Result> results = new List<Result>();
 
         protected static Nodes_PEGI MGMT => Nodes_PEGI.NodeMGMT_inst;
 
         int index;
+        public int IndexForPEGI { get { return index; } set { index = value; } }
 
         public string name;
-
-        public string NameForPEGI
-        {
+        public string NameForPEGI {
             get { return name; }
             set { name = value; }
         }
 
-        public int IndexForPEGI { get { return index; } set { index = value; } }
+        public virtual void OnMouseOver() {
+            if (Input.GetMouseButtonDown(0) && parentNode != null)
+                parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
+        }
 
         public override StdEncoder Encode() => new StdEncoder()
         .Add_String("n", name)
@@ -41,7 +43,7 @@ namespace LinkedNotes
         .Add_ifNotNegative("icr", inspectedResult)
         .Add("cnds", condition)
         .Add("res", results)
-        .Add("pos", localPosition);
+        .Add_String("vis", visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
         public override bool Decode(string tag, string data)
         {
@@ -54,7 +56,7 @@ namespace LinkedNotes
                 case "icr": inspectedResult = data.ToInt(); break;
                 case "cnds": data.DecodeInto(out condition); break;
                 case "res": data.DecodeInto(out results); break;
-                case "pos": localPosition = data.ToVector3(); break;
+                case "vis": configForVisualRepresentation = data; break;
             }
             return true;
         }
@@ -72,20 +74,16 @@ namespace LinkedNotes
                 if (icon.Copy.Click("Cut/Paste").nl())
                     Nodes_PEGI.NodeMGMT_inst.Cut_Paste = this;
 
-                if ("Conditions".foldout(ref editConditions).nl())
-                {
+                if ("Conditions".foldout(ref editConditions).nl()) {
                     editResults = false;
                     condition.PEGI();
-
                 }
 
-                if ("Results".foldout(ref editResults).nl())
-                {
+                if ("Results".foldout(ref editResults).nl()) {
                     editConditions = false;
                     results.Inspect(Values.global).nl();
                 }
                 
-
                 pegi.nl();
             }
 
@@ -118,8 +116,10 @@ namespace LinkedNotes
             root = r;
 
             IndexForPEGI = root.firstFree;
-            root.allBaseNodes[index] = this;
+          
             root.firstFree += 1;
+
+            Init(r, null);
 
             return this;
         }
@@ -127,7 +127,9 @@ namespace LinkedNotes
         public virtual void Init(NodeBook r, Node parent)
         {
             root = r;
-            parentNode = parent;
+            if (parent != null)
+                parentNode = parent;
+            root.allBaseNodes[index] = this;
         }
     }
 }

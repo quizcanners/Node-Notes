@@ -9,17 +9,33 @@ using STD_Logic;
 namespace LinkedNotes
 {
     
-    public class NodeBook : AbstractKeepUnrecognized_STD, IPEGI_ListInspect, IPEGI {
+    public class NodeBook : AbstractKeepUnrecognized_STD, IPEGI_ListInspect, IPEGI, IGotIndex {
 
         public string name;
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<Node> subNodes = new List<Node>();
 
+        int indexInList = 0;
 
+        public int IndexForPEGI
+        {
+            get
+            {
+                return indexInList;
+            }
+
+            set
+            {
+                indexInList = value;
+            }
+        }
 
 #if PEGI
         int inspectedNode = -1;
+
+      
+
         public override bool PEGI()  {
             bool changed = false;
 

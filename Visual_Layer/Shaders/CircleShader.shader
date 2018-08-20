@@ -1,34 +1,36 @@
 ﻿Shader "NodeBook/CircleShader" {
 	Properties{
+		_Color("Color", Color) = (1,1,1,1)
 	}
-	Category{
-		Tags{
-		"Queue" = "AlphaTest"
-		"IgnoreProjector" = "True"
-		"RenderType" = "Transparent"
-	}
+		Category{
+			Tags{
+			"Queue" = "AlphaTest"
+			"IgnoreProjector" = "True"
+			"RenderType" = "Transparent"
+		}
 
-		Cull Off
-		ZWrite Off
-		Blend SrcAlpha One //MinusSrcAlpha
+			Cull Off
+			ZWrite Off
+			Blend SrcAlpha One //MinusSrcAlpha
 
-		SubShader{
+			SubShader{
 
-		Pass{
+			Pass{
 
-		CGPROGRAM
+			CGPROGRAM
 
 
-#include "UnityCG.cginc"
+	#include "UnityCG.cginc"
 
-#pragma vertex vert
-#pragma fragment frag
-#pragma multi_compile_fog
-#pragma multi_compile_fwdbase
-#pragma multi_compile_instancing
-#pragma target 3.0
+	#pragma vertex vert
+	#pragma fragment frag
+	#pragma multi_compile_fog
+	#pragma multi_compile_fwdbase
+	#pragma multi_compile_instancing
+	#pragma target 3.0
 
-		float4 l0pos;
+		float4 _Color;
+	float4 l0pos;
 	float4 l0col;
 	float4 l1pos;
 	float4 l1col;
@@ -45,7 +47,7 @@
 		float2 texcoord : TEXCOORD2;
 		float3 viewDir: TEXCOORD4;
 		float4 screenPos : TEXCOORD5;
-		float4 color: COLOR;
+		//float4 color: COLOR;
 	};
 
 
@@ -58,7 +60,7 @@
 		o.viewDir.xyz = WorldSpaceViewDir(v.vertex);
 		o.texcoord = v.texcoord.xy;
 		o.screenPos = ComputeScreenPos(o.pos);
-		o.color = v.color;
+		//o.color = v.color;
 
 		return o;
 	}
@@ -87,13 +89,12 @@
 
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 
-
 	//	float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2);
-		float alpha = saturate(saturate((1 - (off.x + off.y) * 4)) * (i.color.a * 8));
+		float alpha = saturate(saturate((1 - (off.x + off.y) * 4)));
 
 		//float4 col = i.color;
 
-		float4 col = 1; //.rgb = 1;
+		float4 col = _Color; //.rgb = 1;
 
 		col.a *= alpha;
 

@@ -12,7 +12,7 @@ namespace LinkedNotes
 
         public List<Base_Node> subNotes = new List<Base_Node>();
 
-        int inspectedSubnode = -1;
+        public int inspectedSubnode = -1;
 
         public override string NeedAttention()
         {
@@ -32,6 +32,17 @@ namespace LinkedNotes
             return null;
         }
 
+        public override void OnMouseOver()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (this != Nodes_PEGI.CurrentNode)
+                    Nodes_PEGI.CurrentNode = this;
+                else if (parentNode != null)
+                    Nodes_PEGI.CurrentNode = parentNode;
+            }
+        }
+
         public override bool PEGI() {
 
             bool changed = false;
@@ -44,29 +55,34 @@ namespace LinkedNotes
             if (!showDebug)// && !editConditions && !editResults)
             {
 
-                if (inspectedSubnode == -1 && MGMT.Cut_Paste != null)
+                if (inspectedSubnode == -1)
                 {
 
-                    if (icon.Delete.Click())
-                        MGMT.Cut_Paste = null;
-                    else
-                    {
-                        MGMT.Cut_Paste.ToPEGIstring().write();
-                        if (icon.Paste.Click())
-                        {
-                            MGMT.Cut_Paste.MoveTo(this);
+                    if (this != Nodes_PEGI.CurrentNode && icon.Play.Click())
+                        Nodes_PEGI.CurrentNode = this;
+
+                    if (MGMT.Cut_Paste != null) {
+                        if (icon.Delete.Click())
                             MGMT.Cut_Paste = null;
-                            changed = true;
+                        else
+                        {
+                            MGMT.Cut_Paste.ToPEGIstring().write();
+                            if (icon.Paste.Click())
+                            {
+                                MGMT.Cut_Paste.MoveTo(this);
+                                MGMT.Cut_Paste = null;
+                                changed = true;
+                            }
                         }
 
+                        pegi.nl();
                     }
-
-                    pegi.nl();
-
                 }
 
                 if (inspectedSubnode != -1)
                 {
+                  
+
                     var n = subNotes.TryGet(inspectedSubnode);
                     if (n == null || icon.Exit.Click())
                         inspectedSubnode = -1;
@@ -78,8 +94,7 @@ namespace LinkedNotes
                 {
 
                     var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
-
-
+                    
                     if (newNode != null)
                     {
                         Debug.Log("Adding new one");
