@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 8510e282223bc484790038d1bcfdb45b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - backPaintTexture: {fileID: 8400000, guid: 7638c10f14f0c4543843d310bf65d096, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

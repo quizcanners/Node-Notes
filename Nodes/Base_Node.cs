@@ -33,6 +33,10 @@ namespace LinkedNotes
         public virtual void OnMouseOver() {
             if (Input.GetMouseButtonDown(0) && parentNode != null)
                 parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
+            
+            if (Input.GetMouseButtonDown(1) && parentNode != null )
+                parentNode.SetInspectedUpTheHierarchy(null);
+
         }
 
         public override StdEncoder Encode() => new StdEncoder()

@@ -5,6 +5,7 @@ using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 using STD_Logic;
 using System;
+using UnityEngine.UI;
 
 namespace LinkedNotes {
 
@@ -20,6 +21,10 @@ namespace LinkedNotes {
         static Node _currentNode;
 
         public NodeCircleController circlePrefab;
+
+        public Image Play_Edit_Button_Image;
+        public Sprite playImage;
+        public Sprite editImage;
 
         static List<NodeCircleController> nodesPool = new List<NodeCircleController>();
         static int firstFree = 0;
@@ -66,8 +71,9 @@ namespace LinkedNotes {
                 }
 
             }
-        } 
+        }
 
+      //  bool showDependencies = false;
         public override bool PEGI() {
             bool changed = false;
 

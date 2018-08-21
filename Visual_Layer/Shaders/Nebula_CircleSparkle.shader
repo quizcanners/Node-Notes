@@ -1,35 +1,33 @@
-﻿Shader "NodeNotes/UI/CircleShader" {
+﻿Shader "NodeNotes/Effects/CircleSparkle" {
 	Properties{
-		_Color("Color", Color) = (1,1,1,1)
 	}
 		Category{
-			Tags{
-			"Queue" = "AlphaTest"
-			"IgnoreProjector" = "True"
-			"RenderType" = "Transparent"
-		}
+		Tags{
+		"Queue" = "AlphaTest"
+		"IgnoreProjector" = "True"
+		"RenderType" = "Transparent"
+	}
 
-			Cull Off
-			ZWrite Off
-			Blend SrcAlpha OneMinusSrcAlpha
+		Cull Off
+		ZWrite Off
+		Blend SrcAlpha One //MinusSrcAlpha
 
-			SubShader{
+		SubShader{
 
-			Pass{
+		Pass{
 
-			CGPROGRAM
+		CGPROGRAM
 
 
-	#include "UnityCG.cginc"
+#include "UnityCG.cginc"
 
-	#pragma vertex vert
-	#pragma fragment frag
-	#pragma multi_compile_fog
-	#pragma multi_compile_fwdbase
-	#pragma multi_compile_instancing
-	#pragma target 3.0
+#pragma vertex vert
+#pragma fragment frag
+#pragma multi_compile_fog
+#pragma multi_compile_fwdbase
+#pragma multi_compile_instancing
+#pragma target 3.0
 
-		float4 _Color;
 	float4 l0pos;
 	float4 l0col;
 	float4 l1pos;
@@ -47,7 +45,7 @@
 		float2 texcoord : TEXCOORD2;
 		float3 viewDir: TEXCOORD4;
 		float4 screenPos : TEXCOORD5;
-		//float4 color: COLOR;
+		float4 color: COLOR;
 	};
 
 
@@ -60,7 +58,7 @@
 		o.viewDir.xyz = WorldSpaceViewDir(v.vertex);
 		o.texcoord = v.texcoord.xy;
 		o.screenPos = ComputeScreenPos(o.pos);
-		//o.color = v.color;
+		o.color = v.color;
 
 		return o;
 	}
@@ -75,7 +73,7 @@
 
 		float dott = abs(dot(viewDir, vec));
 
-		float power = pow(dott, 8 * (1 + alpha));
+		float power = pow(dott, 8*(1+ alpha));
 
 		directLight += lcol.rgb*power;
 
@@ -89,39 +87,32 @@
 
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 
-	//	float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2);
-		float alpha = saturate(saturate((1 - (off.x + off.y) * 4))*8 );
 
-		//float4 col = i.color;
+		float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2); 
+		float alpha = saturate(pow(saturate((1 - (off.x + off.y) * 4)),8) * (1+i.color.a*8)) * 0.1;
 
-		float4 col = _Color; //.rgb = 1;
+		float4 col = i.color;
 
 		col.a *= alpha;
 
-		//float3 scatter = 0;
-		//float3 directLight = 0;
+		float3 scatter = 0;
+		float3 directLight = 0;
 
 		// Point Lights
 
-		/*PointLightTransparent(directLight, i.worldPos.xyz - l0pos.xyz,
+		PointLightTransparent( directLight, i.worldPos.xyz - l0pos.xyz,
 			i.viewDir.xyz, l0col, alpha);
 
-		PointLightTransparent(directLight, i.worldPos.xyz - l1pos.xyz,
+		PointLightTransparent( directLight, i.worldPos.xyz - l1pos.xyz,
 			i.viewDir.xyz,  l1col, alpha);
 
-		PointLightTransparent(directLight, i.worldPos.xyz - l2pos.xyz,
+		PointLightTransparent( directLight, i.worldPos.xyz - l2pos.xyz,
 			i.viewDir.xyz,  l2col, alpha);
 
-		PointLightTransparent(directLight, i.worldPos.xyz - l3pos.xyz,
-			i.viewDir.xyz, l3col.w, alpha);*/
+		PointLightTransparent( directLight, i.worldPos.xyz - l3pos.xyz,
+			i.viewDir.xyz, l3col.w, alpha);
 
-
-		//col.rgb *= (directLight);//*pow(col.a, 4);
-
-	
-
-		//float3 mix = col.gbr + col.brg;
-		//col.rgb += mix * mix*0.02;
+		col.rgb *= (directLight);
 
 		return col;
 

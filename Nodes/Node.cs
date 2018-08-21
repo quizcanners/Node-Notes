@@ -41,6 +41,21 @@ namespace LinkedNotes
                 else if (parentNode != null)
                     Nodes_PEGI.CurrentNode = parentNode;
             }
+
+            if (Input.GetMouseButtonDown(1))
+                SetInspectedUpTheHierarchy(null);
+        }
+
+        public void SetInspectedUpTheHierarchy(Base_Node node) {
+
+            int ind = -1;
+            if (node!= null && subNotes.Contains(node))
+                ind = subNotes.IndexOf(node);
+
+            inspectedSubnode = ind;
+
+            if (parentNode != null)
+                parentNode.SetInspectedUpTheHierarchy(this);
         }
 
         public override bool PEGI() {

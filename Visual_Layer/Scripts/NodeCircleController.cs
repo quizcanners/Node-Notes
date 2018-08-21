@@ -81,8 +81,12 @@ namespace LinkedNotes {
                 if (source != null)
                     changed |= "Name ".edit(ref source.name).nl();
 
+                if ("Size".edit(50, ref targetSize, 0.2f, 5f).nl())
+                    assumedPosition = false;
+
                 if ("Color".edit(ref targetColor).nl())
                 {
+                    assumedPosition = false;
                     changed = true;
                     currentColor = targetColor;
                     UpdateShaders();
@@ -109,13 +113,10 @@ namespace LinkedNotes {
             }
         }
 
-        void Update()
-        {
+        void Update() {
 
             bool needShaderUpdate = false;
-
-          
-
+            
             float portion = 1;
 
             if (!assumedPosition)  {
@@ -133,6 +134,7 @@ namespace LinkedNotes {
 
                 transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, portion);
                 scale = Mathf.Lerp(scale, targetSize, portion);
+                transform.localScale = Vector3.one * scale;
                 currentColor = Color.Lerp(currentColor, targetColor, portion);
                 fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
 
