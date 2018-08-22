@@ -35,7 +35,7 @@
 	sampler2D _Nebula_BG;
 	float4 _Nebula_Pos;
 
-	float4 _ClickStrength;
+	//float4 _ClickStrength;
 
 	float4 l0pos;
 	float4 l0col;
@@ -77,6 +77,8 @@
 		float3 vec, float3 viewDir, float4 lcol, float amb) 
 	{
 
+	//	vec *= 16;
+
 		float len = length(vec);
 		vec /= len;
 
@@ -90,7 +92,7 @@
 
 		float3 distApprox = lcol.rgb / lensq;
 
-		scatter += (distApprox * (1 + frontLight)) * lcol.a;
+		scatter += (distApprox * (1 + frontLight)) *lcol.a;
 		directLight += lcol.rgb*power;
 
 	}
@@ -98,14 +100,14 @@
 
 	float4 frag(v2f i) : COLOR{
 
-		float2 sPos = ((i.worldPos.xz - _Nebula_Pos.xz)+16)/32 ;// *_Nebula_Pos.w + _Nebula_Pos.w*0.5;
+		float2 sPos = ((i.worldPos.xz - _Nebula_Pos.xz)+16)/32 ;
 
 		float4 mask = tex2D(_Nebula_BG, sPos);
 
-		float toClick = mask.r * _ClickStrength.x;
-
+		float toClick = mask.r;
 
 		float2 off = i.texcoord - 0.5;
+		float2 orOff = off;
 		float2 rotUV = off;
 		off *= off;
 
@@ -125,9 +127,26 @@
 		rotUV += 0.5f;
 
 		float4 col = tex2D(_MainTex, rotUV);
-		float4 smokyCol = tex2D(_SmokyTex, rotUV);
 
-	
+		angle = -_Time.x;
+		si = sin(angle);
+		co = cos(angle);
+
+		tx = orOff.x;
+		ty = orOff.y;
+		float2 rotUV2;
+		rotUV2.x = (co * tx) - (si * ty);
+		rotUV2.y = (si * tx) + (co * ty);
+
+		rotUV2 += 0.5;
+
+		float4 col2 = tex2D(_MainTex, rotUV2);
+
+		float alp = saturate((col.g - col2.g) * 8);
+
+		col = col * alp + col2 * (1 - alp);
+
+		float4 smokyCol = tex2D(_SmokyTex, rotUV);
 
 		col = (col * (1 - toClick) + smokyCol * toClick)*i.color;
 
@@ -152,10 +171,12 @@
 
 		col.rgb *= (directLight*ambientBlock * 4096 
 			+scatter
-			)*pow(col.a, 1+ toClick*2);
+			)*pow(col.a, 2+ toClick*3);
 
 		float3 mix = col.gbr + col.brg;
 		col.rgb += mix * mix*0.02;
+
+		col.a *= 4;
 
 		return col;
 

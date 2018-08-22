@@ -76,7 +76,7 @@ Transform:
   m_GameObject: {fileID: 1224183945588322}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.16, y: 2.16, z: 2.16}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 224990814928598316}
   - {fileID: 224524550215031610}
@@ -242,7 +242,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 121
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -269,7 +269,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 18.75
+  m_fontSize: 10.9
   m_fontSizeBase: 10.9
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -310,20 +310,20 @@ MonoBehaviour:
   m_margin: {x: 8.430065, y: 0.82326126, z: 8.437235, w: 1.0641305}
   m_textInfo:
     textComponent: {fileID: 0}
-    characterCount: 3
+    characterCount: 0
     spriteCount: 0
     spaceCount: 0
-    wordCount: 1
+    wordCount: 0
     linkCount: 0
-    lineCount: 1
-    pageCount: 1
+    lineCount: 0
+    pageCount: 0
     materialCount: 1
   m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 0
-  m_inputSource: 0
+  m_inputSource: 3
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 23523188328412502}
   m_subTextObjects:
@@ -472,7 +472,7 @@ MonoBehaviour:
   textA: {fileID: 114070332744537188}
   textB: {fileID: 114329539632823338}
   circleRendy: {fileID: 23058078968381926}
-  currentColor: {r: 1, g: 1, b: 1, a: 1}
+  currentColor: {r: 0, g: 0, b: 0, a: 1}
   newText: 
 --- !u!222 &222164197452858132
 CanvasRenderer:

@@ -232,3 +232,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0110416c80540404f99a6e86b47aa93a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetColor: {r: 0.5754717, g: 0, b: 0, a: 0}
+  materials:
+  - {fileID: 2100000, guid: deedb37984b14bc4daec2fd5d210382e, type: 2}
+  - {fileID: 2100000, guid: 5198ae98bb00db24496bc656e0921ef0, type: 2}
+  trail: {fileID: 96991131805856552}

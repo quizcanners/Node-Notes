@@ -1,6 +1,8 @@
-﻿Shader "NodeNotes/UI/CircleShader" {
+﻿Shader "NodeNotes/UI/Nebula_Button" {
 	Properties{
 		_Color("Color", Color) = (1,1,1,1)
+		_Courners("Rounding Courners", Range(0,0.9)) = 0.5
+		_Stretch("Edge Courners", Vector) = (0,0,0,0)
 	}
 		Category{
 			Tags{
@@ -38,7 +40,9 @@
 	float4 l2col;
 	float4 l3pos;
 	float4 l3col;
-	float4 _ClickLight;
+	float _Courners;
+	//float4 _ClickLight;
+	float4 _Stretch;
 
 	struct v2f {
 		float4 pos : SV_POSITION;
@@ -84,44 +88,36 @@
 
 	float4 frag(v2f i) : COLOR{
 
-		float2 off = i.texcoord - 0.5;
-		off *= off;
+		//float2 off = i.texcoord - 0.5;
+		//off *= off;
 
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 
-	//	float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2);
-		float alpha = saturate(saturate((1 - (off.x + off.y) * 4))*8 );
+		//float alpha = saturate(saturate((1 - (off.x + off.y) * 4))*8 );
 
-		//float4 col = i.color;
+		float4 col = _Color; 
+		
+		float2 uv = i.texcoord.xy - 0.5;
+		uv = abs(uv) * 2;
+		//_Stretch
+		uv -= _Stretch;
+		float2 upStretch = 1 - _Stretch;
+		uv = max(0, uv) / upStretch;
 
-		float4 col = _Color; //.rgb = 1;
-
-		col.a *= alpha;
-
-		//float3 scatter = 0;
-		//float3 directLight = 0;
-
-		// Point Lights
-
-		/*PointLightTransparent(directLight, i.worldPos.xyz - l0pos.xyz,
-			i.viewDir.xyz, l0col, alpha);
-
-		PointLightTransparent(directLight, i.worldPos.xyz - l1pos.xyz,
-			i.viewDir.xyz,  l1col, alpha);
-
-		PointLightTransparent(directLight, i.worldPos.xyz - l2pos.xyz,
-			i.viewDir.xyz,  l2col, alpha);
-
-		PointLightTransparent(directLight, i.worldPos.xyz - l3pos.xyz,
-			i.viewDir.xyz, l3col.w, alpha);*/
+		//_Courners
+		uv = uv - _Courners;
+		float flattened = saturate(uv.x*uv.y * 2048);
+		float upscale = 1 - _Courners;
+		uv = max(0, uv) / upscale;
 
 
-		//col.rgb *= (directLight);//*pow(col.a, 4);
+		uv *= uv;
+		float rad = (uv.x + uv.y);
+		float trim = saturate((1 - rad) * 20 *(1 - _Courners));
+		col.a *= trim;
 
-	
 
-		//float3 mix = col.gbr + col.brg;
-		//col.rgb += mix * mix*0.02;
+		//col.a *= alpha;
 
 		return col;
 

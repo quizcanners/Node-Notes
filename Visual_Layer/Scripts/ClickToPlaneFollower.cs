@@ -6,7 +6,11 @@ using SharedTools_Stuff;
 [ExecuteInEditMode]
 public class ClickToPlaneFollower : MonoBehaviour {
 
-   // List<Material> painters = new List<Material>();
+    public Color targetColor;
+
+    public List<Material> materials = new List<Material>();
+
+    public TrailRenderer trail;
 
     Plane plane = new Plane(Vector3.up, Vector3.zero);
 
@@ -22,7 +26,7 @@ public class ClickToPlaneFollower : MonoBehaviour {
         if (Input.GetMouseButton(0))
         {
 
-            strength = Mathf.Lerp(strength, 1, Time.deltaTime * 10);
+            strength = Mathf.Lerp(strength, 1, Time.deltaTime * 20);
 
             Vector3 hp;
             if (plane.MouseToPlane(out hp))
@@ -32,9 +36,19 @@ public class ClickToPlaneFollower : MonoBehaviour {
 
         }
         else
-            strength = Mathf.Lerp(strength, 0, Time.deltaTime);
+        {
+            strength = Mathf.Lerp(strength, 0, Time.deltaTime * 5);
+            if (trail)
+                trail.Clear();
+        }
 
         Shader.SetGlobalVector("_ClickStrength", new Vector4(strength, 0,0,0));
 
-	}
+        targetColor.a = strength;
+
+        foreach (var m in materials)
+            if (m) m.SetColor("_Color", targetColor);
+
+
+    }
 }
