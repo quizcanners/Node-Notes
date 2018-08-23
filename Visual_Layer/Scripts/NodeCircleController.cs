@@ -35,6 +35,8 @@ namespace LinkedNotes {
 
         public string newText = null;
 
+        public float courners = 0.5f;
+
         public void SetNewText(string txt)
         {
             if (fadePortion < 0.1f)
@@ -42,6 +44,7 @@ namespace LinkedNotes {
                 newText = null;
                 activeTextAlpha = 1;
                 ActiveText.text = txt;
+                gameObject.name = txt;
                 PassiveText.text = "";
                 UpdateShaders();
             }
@@ -54,24 +57,19 @@ namespace LinkedNotes {
         [NonSerialized] public float fadePortion = 0;
         [NonSerialized] public bool assumedPosition;
 
-        float targetSize;
+        Vector3 targetSize;
         Vector3 targetPosition;
         Color targetColor;
-    
+        Vector4 square = Vector4.zero;
+        
+
+        bool showDependencies = false;
         public override bool PEGI() {
             bool changed = false;
 
-            if (textA == null)
-                "Text A".edit(ref textA);
-            else
-            if (textB == null)
-                "Text B".edit(ref textB);
-            else 
-            if (!circleRendy)
-                "Mesh Rendy".edit(ref circleRendy);
-            else
-            {
 
+            if (circleRendy)
+            {
                 if (newText != null)
                     "Changeing text to {0}".F(newText).nl();
 
@@ -81,21 +79,50 @@ namespace LinkedNotes {
                 if (source != null)
                     changed |= "Name ".edit(ref source.name).nl();
 
-                if ("Size".edit(50, ref targetSize, 0.2f, 5f).nl())
+                float x = targetSize.x;
+                if ("Width".edit(50, ref x, 1f, 5f).nl())
+                {
                     assumedPosition = false;
+                    targetSize.x = x;
+                }
 
-                if ("Color".edit(ref targetColor).nl())
+                float y = targetSize.y;
+                if ("Height".edit(50, ref y, 1f, 5f).nl())
+                {
+                    assumedPosition = false;
+                    targetSize.y = y;
+                }
+
+                if ("Color".edit(ref targetColor))
                 {
                     assumedPosition = false;
                     changed = true;
                     currentColor = targetColor;
                     UpdateShaders();
                 }
+
+                if (isFading && icon.Play.Click().nl())
+                    isFading = false;
+                if (!isFading && icon.Pause.Click().nl())
+                    isFading = true;
             }
-            return changed;
+                
+            "Dependencies".foldout(ref showDependencies).nl();
+
+            if (!textA || showDependencies)
+                "Text A".edit(ref textA);
+         
+          if (!textB || showDependencies)
+                "Text B".edit(ref textB);
+            
+          if (!circleRendy || showDependencies)
+                "Mesh Rendy".edit(ref circleRendy);
+            
+                return changed;
         }
         
         void UpdateShaders() {
+
             if (textB && textA)
             {
                 ActiveText.color = new Color(0, 0, 0, activeTextAlpha * fadePortion);
@@ -106,10 +133,21 @@ namespace LinkedNotes {
 
             if (circleRendy)
             {
-                 if (Application.isPlaying)
-                    circleRendy.material.SetColor("_Color", currentColor); 
-                 else
-                    circleRendy.sharedMaterial.SetColor("_Color", currentColor);
+                if (circleRendy)
+                {
+                    if (Application.isPlaying)
+                    {
+                        circleRendy.material.SetColor("_Color", currentColor);
+                        circleRendy.material.SetVector("_Stretch", square);
+                        circleRendy.material.SetFloat("_Courners", courners);
+                    }
+                    else
+                    {
+                        circleRendy.sharedMaterial.SetColor("_Color", currentColor);
+                        circleRendy.sharedMaterial.SetVector("_Stretch", square);
+                        circleRendy.sharedMaterial.SetFloat("_Courners", courners);
+                    }
+                }
             }
         }
 
@@ -120,27 +158,47 @@ namespace LinkedNotes {
             float portion = 1;
 
             if (!assumedPosition)  {
+                
+                10f.SpeedToMinPortion((transform.localPosition - targetPosition).magnitude, ref portion);
 
-                portion = Mathf.Min(5f.SpeedToPortion((transform.localPosition - targetPosition).magnitude), portion);
+                9f.SpeedToMinPortion(targetColor.DistanceRGB(currentColor), ref portion);
 
-                portion = Mathf.Min(3f.SpeedToPortion(targetColor.DistanceRGB(currentColor)), portion);
+                var BGtf = circleRendy.transform;
 
-                var scale = transform.localScale.x;
-                portion = Mathf.Min(2f.SpeedToPortion(scale -  targetSize), portion);
+                var scale = BGtf.localScale;
+                8f.SpeedToMinPortion((scale - targetSize).magnitude , ref portion);
 
-                portion = Mathf.Min(1f.SpeedToPortion(fadePortion - (isFading ? 0f : 1f)), portion);
+                2f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref portion);
 
-                portion = Mathf.Min(4f.SpeedToPortion(1-activeTextAlpha), portion);
+                4f.SpeedToMinPortion(1-activeTextAlpha, ref portion);
+
+                float targetCourners = source == Nodes_PEGI.CurrentNode ? 0 : 0.9f;
+            
+                4f.SpeedToMinPortion(Mathf.Abs(targetCourners - courners), ref portion);
 
                 transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, portion);
-                scale = Mathf.Lerp(scale, targetSize, portion);
-                transform.localScale = Vector3.one * scale;
+                scale = Vector3.Lerp(scale, targetSize, portion);
+                BGtf.localScale = scale;
                 currentColor = Color.Lerp(currentColor, targetColor, portion);
                 fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
+                courners = Mathf.Lerp(courners, targetCourners, portion);
 
                 needShaderUpdate = true;
                 if (portion == 1)
                     assumedPosition = true;
+                
+                if (scale.x > 0)
+                    square.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
+                else square.x = 0;
+                if (scale.y > 0)
+                    square.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
+                else square.y = 0;
+                
+                var textSize = new Vector2(17 + scale.x * 3, 5f + Mathf.Max(0, (scale.y - 1f) * 3f));
+
+                textA.rectTransform.sizeDelta = textSize;
+                textB.rectTransform.sizeDelta = textSize;
+
             }
             else {
                 fadePortion = MyMath.Lerp(fadePortion, isFading ? 0 : 1, 2, out portion);
@@ -159,6 +217,7 @@ namespace LinkedNotes {
                 {
                     activeTextIsA = !activeTextIsA;
                     ActiveText.text = newText;
+                    gameObject.name = newText;
                     activeTextAlpha = 0;
                     newText = null;
                 }
@@ -169,7 +228,7 @@ namespace LinkedNotes {
             if (needShaderUpdate)
                 UpdateShaders();
 
-            if (fadePortion == 0 && isFading)
+            if (fadePortion == 0 && isFading && Application.isPlaying)
                 gameObject.SetActive(false);
         }
 
@@ -189,7 +248,8 @@ namespace LinkedNotes {
         {
             switch (tag)
             {
-                case "s": targetSize = data.ToFloat(); break;
+                case "s": targetSize = data.ToFloat() * Vector3.one; break;
+                case "sc": targetSize = data.ToVector3(); break;
                 case "pos": targetPosition = data.ToVector3(); break;
                 case "col": targetColor = data.ToColor(); break;
                 default: return false;
@@ -201,7 +261,7 @@ namespace LinkedNotes {
         public override StdEncoder Encode()
         {
             var cody = this.EncodeUnrecognized()
-            .Add("s", assumedPosition ? transform.localScale.x : targetSize)
+            .Add("sc", assumedPosition ? circleRendy.transform.localScale : targetSize)
             .Add("pos", assumedPosition ? transform.localPosition : targetPosition)
             .Add("col", targetColor);
 

@@ -176,7 +176,7 @@
 		float3 mix = col.gbr + col.brg;
 		col.rgb += mix * mix*0.02;
 
-		col.a *= 4;
+		col.a *= 2;
 
 		return col;
 

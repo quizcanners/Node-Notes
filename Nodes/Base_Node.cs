@@ -5,8 +5,7 @@ using UnityEngine;
 using PlayerAndEditorGUI;
 using STD_Logic;
 
-namespace LinkedNotes
-{
+namespace LinkedNotes {
 
     [DerrivedList(typeof(Node), typeof(NodeLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex {

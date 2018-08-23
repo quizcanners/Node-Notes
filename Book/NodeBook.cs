@@ -14,7 +14,7 @@ namespace LinkedNotes
         public string name;
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
-        public List<Node> subNodes = new List<Node>();
+        public Node subNode; 
 
         int indexInList = 0;
 
@@ -39,13 +39,8 @@ namespace LinkedNotes
         public override bool PEGI()  {
             bool changed = false;
 
-            var newNode = "Nodes".edit_List(subNodes, ref inspectedNode, true, ref changed);
+            changed |= subNode.Nested_Inspect();
 
-            if (newNode != null)
-                newNode.CreatedFor(this);
-
-         
-    
             return changed;
         }
         
@@ -60,7 +55,7 @@ namespace LinkedNotes
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("f", firstFree)
-            .Add("s", subNodes)
+            .Add("sn", subNode)
             .Add_String("n", name)
             .Add("in", inspectedNode);
           
@@ -69,7 +64,13 @@ namespace LinkedNotes
             switch (tag)
             {
                 case "f": firstFree = data.ToInt(); break;
-                case "s": data.DecodeInto(out subNodes); break;
+                case "s":
+                    List<Node> nodes; //= new List<Node>();
+                    data.DecodeInto(out nodes);
+                    if (nodes.Count > 0)
+                        subNode = nodes[0];
+                    break;
+                case "sn": data.DecodeInto(out subNode); break;
                 case "n": name = data; break;
                 case "in": inspectedNode = data.ToInt(); break;
               
@@ -79,11 +80,14 @@ namespace LinkedNotes
         }
     
         public override ISTD Decode(string data) {
-            var ret = data.DecodeTagsFor(this);
+            
+           var ret = data.DecodeTagsFor(this);
 
-            foreach (var s in subNodes)
-                s.Init(this, null);
+            if (subNode == null)
+                subNode = new Node();
 
+            subNode.Init(this, null);
+            
             return ret;
         }
 
