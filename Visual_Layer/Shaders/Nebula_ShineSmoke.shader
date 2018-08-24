@@ -144,7 +144,7 @@
 
 		float alp = saturate((col.g - col2.g) * 8);
 
-		col = col * alp + col2 * (1 - alp);
+		col = col *  alp + col2 * (1 - alp);
 
 		float4 smokyCol = tex2D(_SmokyTex, rotUV);
 

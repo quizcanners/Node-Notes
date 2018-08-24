@@ -6,7 +6,6 @@ using STD_Logic;
 
 namespace LinkedNotes
 {
-
     public class BookMark : AbstractKeepUnrecognized_STD, IKeepMySTD  {
 
         string bookIndex;
@@ -20,8 +19,7 @@ namespace LinkedNotes
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals",Values.global);
-
-
+        
         public override bool Decode(string tag, string data) {
             switch (tag)
             {

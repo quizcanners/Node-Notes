@@ -12,24 +12,28 @@ namespace LinkedNotes {
         public Node parentNode;
         public NodeBook root;
 
+        public static bool editingNodes = false;
+
         public ISTD visualRepresentation;
+        public ISTD previousVisualRepresentation;
         public string configForVisualRepresentation;
         
         public ConditionBranch condition = new ConditionBranch();
         public List<Result> results = new List<Result>();
 
-        protected static Nodes_PEGI MGMT => Nodes_PEGI.NodeMGMT_inst;
+        protected static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
 
         int index;
         public int IndexForPEGI { get { return index; } set { index = value; } }
 
-        public string name;
+        public string name = "New Node";
         public string NameForPEGI {
             get { return name; }
             set { name = value; }
         }
-
+        
         public virtual void OnMouseOver() {
+
             if (Input.GetMouseButtonDown(0) && parentNode != null)
                 parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
             
@@ -65,26 +69,39 @@ namespace LinkedNotes {
         }
       
         int inspectedResult = -1;
-        protected bool editConditions = false;
-        protected bool editResults = false;
+        public bool inspectingTriggerStuff => editConditions || editResults;
+        bool editConditions = false;
+        bool editResults = false;
         public override bool PEGI()
         {
-            var changed = base.PEGI();
+            var changed = false;
+            bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-            if (!showDebug)
+            if (!onPlayScreen)
+                changed |= base.PEGI();
+
+            if (!showDebug || onPlayScreen)
             {
-                "{0}: ".F(index).edit(20, ref name);
-                if (icon.Copy.Click("Cut/Paste").nl())
-                    Nodes_PEGI.NodeMGMT_inst.Cut_Paste = this;
+                if (!inspectingTriggerStuff)
+                {
+                    changed |= pegi.edit(ref name);
+                    if ((this != Mgmt.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
+                    {
+                        Nodes_PEGI.NodeMGMT_inst.Cut_Paste = this;
+                        changed = true;
+                    }
+                }
+
+                pegi.nl();
 
                 if ("Conditions".foldout(ref editConditions).nl()) {
                     editResults = false;
-                    condition.PEGI();
+                    changed |= condition.PEGI();
                 }
 
                 if ("Results".foldout(ref editResults).nl()) {
                     editConditions = false;
-                    results.Inspect(Values.global).nl();
+                    changed |= results.Inspect(Values.global).nl();
                 }
                 
                 pegi.nl();
@@ -111,7 +128,6 @@ namespace LinkedNotes {
 
         public virtual Base_Node CreatedFor(Node target) {
             parentNode = target;
-
             return CreatedFor(target.root);
         }
 

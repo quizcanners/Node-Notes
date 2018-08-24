@@ -62,63 +62,69 @@ namespace LinkedNotes
 
             bool changed = false;
 
-            if (inspectedSubnode == -1)
+            bool onPlayScreen = pegi.paintingPlayAreaGUI;
+            
+            if (onPlayScreen || inspectedSubnode == -1)
                 changed |= base.PEGI();
             else
                 showDebug = false;
+            
+            if ((!showDebug && inspectedSubnode == -1) || onPlayScreen) {
 
-            if (!showDebug)// && !editConditions && !editResults)
-            {
-
-                if (inspectedSubnode == -1)
-                {
-
-                    if (this != Nodes_PEGI.CurrentNode && icon.Play.Click())
-                        Nodes_PEGI.CurrentNode = this;
-
-                    if (MGMT.Cut_Paste != null) {
-                        if (icon.Delete.Click())
-                            MGMT.Cut_Paste = null;
-                        else
+                if (!onPlayScreen && this != Nodes_PEGI.CurrentNode && icon.Play.Click())
+                    Nodes_PEGI.CurrentNode = this;
+                
+                if (Mgmt.Cut_Paste != null)  {
+                    if (icon.Delete.Click())
+                        Mgmt.Cut_Paste = null;
+                    else  {
+                        Mgmt.Cut_Paste.ToPEGIstring().write();
+                        if (icon.Paste.Click())
                         {
-                            MGMT.Cut_Paste.ToPEGIstring().write();
-                            if (icon.Paste.Click())
-                            {
-                                MGMT.Cut_Paste.MoveTo(this);
-                                MGMT.Cut_Paste = null;
-                                changed = true;
-                            }
+                            Mgmt.Cut_Paste.MoveTo(this);
+                            Mgmt.Cut_Paste = null;
+                            changed = true;
                         }
-
-                        pegi.nl();
                     }
+
+                    pegi.nl();
                 }
+            }
 
-                if (inspectedSubnode != -1)
-                {
-                  
 
-                    var n = subNotes.TryGet(inspectedSubnode);
-                    if (n == null || icon.Exit.Click())
-                        inspectedSubnode = -1;
-                    else
-                        n.Try_Nested_Inspect();
-                }
+            if (!showDebug) {
+                
+                if (!onPlayScreen)  {
 
-                if (inspectedSubnode == -1)
-                {
-
-                    var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
-                    
-                    if (newNode != null)
+                    if (inspectedSubnode != -1)
                     {
-                        Debug.Log("Adding new one");
-                        newNode.CreatedFor(this);
+                        var n = subNotes.TryGet(inspectedSubnode);
+                        if (n == null || icon.Exit.Click())
+                            inspectedSubnode = -1;
+                        else
+                            n.Try_Nested_Inspect();
+                    }
+
+                    if (inspectedSubnode == -1)
+                    {
+                        var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
+
+                        if (newNode != null)
+                        {
+                            Debug.Log("Adding new one");
+                            newNode.CreatedFor(this);
+                        }
                     }
                 }
-
             }
             return changed;
+        }
+
+        public Node AddNode(){
+            var newNode = new Node();
+            newNode.CreatedFor(this);
+            subNotes.Add(newNode);
+            return newNode;
         }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()

@@ -9,12 +9,15 @@ using System;
 namespace LinkedNotes {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI
+    public class NodeCircleController : ComponentSTD, IPEGI, IGotName
     {
+        static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
+        
+        public Renderer circleRendy;
 
-        const float movementSpeed = 0.5f;
-        const float scalingSpeed = 0.5f;
+        public Base_Node source;
 
+        #region TEXT
         public TextMeshPro textA;
 
         public TextMeshPro textB;
@@ -25,103 +28,54 @@ namespace LinkedNotes {
 
         TextMeshPro PassiveText => activeTextIsA ? textB : textA;
 
-        float activeTextAlpha = 0;
-
-        public Renderer circleRendy;
-
-        public Color currentColor;
-
-        public Base_Node source;
-
         public string newText = null;
 
-        public float courners = 0.5f;
+        float activeTextAlpha = 0;
 
-        public void SetNewText(string txt)
+        #endregion
+
+        public override string NameForPEGI
         {
-            if (fadePortion < 0.1f)
+            get
             {
-                newText = null;
-                activeTextAlpha = 1;
-                ActiveText.text = txt;
-                gameObject.name = txt;
-                PassiveText.text = "";
-                UpdateShaders();
+               return source.name;
             }
-            else
-                newText = txt;
-            
-        }
 
-        [NonSerialized] public bool isFading;
-        [NonSerialized] public float fadePortion = 0;
-        [NonSerialized] public bool assumedPosition;
-
-        Vector3 targetSize;
-        Vector3 targetPosition;
-        Color targetColor;
-        Vector4 square = Vector4.zero;
-        
-
-        bool showDependencies = false;
-        public override bool PEGI() {
-            bool changed = false;
-
-
-            if (circleRendy)
+            set
             {
-                if (newText != null)
-                    "Changeing text to {0}".F(newText).nl();
+                source.name = value ;
 
-                if (isFading)
-                    "Fading...{0}".F(fadePortion).nl();
-
-                if (source != null)
-                    changed |= "Name ".edit(ref source.name).nl();
-
-                float x = targetSize.x;
-                if ("Width".edit(50, ref x, 1f, 5f).nl())
+                if (fadePortion < 0.1f)
                 {
-                    assumedPosition = false;
-                    targetSize.x = x;
-                }
-
-                float y = targetSize.y;
-                if ("Height".edit(50, ref y, 1f, 5f).nl())
-                {
-                    assumedPosition = false;
-                    targetSize.y = y;
-                }
-
-                if ("Color".edit(ref targetColor))
-                {
-                    assumedPosition = false;
-                    changed = true;
-                    currentColor = targetColor;
+                    newText = null;
+                    activeTextAlpha = 1;
+                    ActiveText.text = value;
+                    gameObject.name = value;
+                    PassiveText.text = "";
                     UpdateShaders();
                 }
-
-                if (isFading && icon.Play.Click().nl())
-                    isFading = false;
-                if (!isFading && icon.Pause.Click().nl())
-                    isFading = true;
+                else
+                    newText = value;
             }
-                
-            "Dependencies".foldout(ref showDependencies).nl();
-
-            if (!textA || showDependencies)
-                "Text A".edit(ref textA);
-         
-          if (!textB || showDependencies)
-                "Text B".edit(ref textB);
-            
-          if (!circleRendy || showDependencies)
-                "Mesh Rendy".edit(ref circleRendy);
-            
-                return changed;
         }
         
-        void UpdateShaders() {
+        [NonSerialized] public bool isFading;
+        [NonSerialized] public bool assumedPosition;
+
+        NodeVisualConfig exploredVisuals = new NodeVisualConfig();
+        NodeVisualConfig subVisuals = new NodeVisualConfig();
+
+        NodeVisualConfig activeConfig => this.source == Nodes_PEGI.CurrentNode ? exploredVisuals : subVisuals;
+        
+        Color sh_currentColor;
+        Vector4 sh_square = Vector4.zero;
+        float sh_blur = 0;
+        float sh_courners = 0.5f;
+        float sh_selected = 0;
+        float fadePortion = 0;
+
+        void UpdateShaders()
+        {
 
             if (textB && textA)
             {
@@ -129,7 +83,7 @@ namespace LinkedNotes {
                 PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * fadePortion);
             }
 
-            currentColor.a = fadePortion;
+            sh_currentColor.a = fadePortion;
 
             if (circleRendy)
             {
@@ -137,62 +91,171 @@ namespace LinkedNotes {
                 {
                     if (Application.isPlaying)
                     {
-                        circleRendy.material.SetColor("_Color", currentColor);
-                        circleRendy.material.SetVector("_Stretch", square);
-                        circleRendy.material.SetFloat("_Courners", courners);
+                        circleRendy.material.SetColor("_Color", sh_currentColor);
+                        circleRendy.material.SetVector("_Stretch", sh_square);
+                        circleRendy.material.SetFloat("_Courners", sh_courners);
+                        circleRendy.material.SetFloat("_Blur", sh_blur);
+                        circleRendy.material.SetFloat("_Selected", sh_selected);
                     }
                     else
                     {
-                        circleRendy.sharedMaterial.SetColor("_Color", currentColor);
-                        circleRendy.sharedMaterial.SetVector("_Stretch", square);
-                        circleRendy.sharedMaterial.SetFloat("_Courners", courners);
+                        circleRendy.sharedMaterial.SetColor("_Color", sh_currentColor);
+                        circleRendy.sharedMaterial.SetVector("_Stretch", sh_square);
+                        circleRendy.sharedMaterial.SetFloat("_Courners", sh_courners);
+                        circleRendy.sharedMaterial.SetFloat("_Blur", sh_blur);
+                        circleRendy.sharedMaterial.SetFloat("_Selected", sh_selected);
                     }
                 }
             }
         }
+        
+      
+        bool showDependencies = false;
+        public override bool PEGI() {
+            bool changed = false;
 
+            bool onPlayScreen = pegi.paintingPlayAreaGUI;
+
+            if (source != null)
+            {
+             if (source.Try_Nested_Inspect()) {
+                    if (name != source.name)
+                        NameForPEGI = source.name;
+
+                    changed = true;
+                }
+            }
+            if (!onPlayScreen)
+            "Lerp parameter {0}".F(dominantParameter).nl();
+
+            if (circleRendy)
+            {
+                if (!onPlayScreen)
+                {
+                    if (newText != null)
+                        "Changeing text to {0}".F(newText).nl();
+
+                    if (isFading)
+                        "Fading...{0}".F(fadePortion).nl();
+                }
+
+
+                if (source == null || (!source.inspectingTriggerStuff))
+               if (activeConfig.Nested_Inspect()) {
+                    assumedPosition = false;
+                    sh_currentColor = activeConfig.targetColor;
+                    UpdateShaders();
+               }
+
+                if (!onPlayScreen)
+                {
+                    if (isFading && icon.Play.Click().nl())
+                        isFading = false;
+                    if (!isFading && icon.Pause.Click().nl())
+                        isFading = true;
+                }
+            }
+
+            if (!onPlayScreen)
+            {
+                "Dependencies".foldout(ref showDependencies).nl();
+
+                if (!textA || showDependencies)
+                    "Text A".edit(ref textA);
+
+                if (!textB || showDependencies)
+                    "Text B".edit(ref textB);
+
+                if (!circleRendy || showDependencies)
+                    "Mesh Rendy".edit(ref circleRendy);
+            }
+
+            return changed;
+        }
+
+        string dominantParameter;
         void Update() {
 
             bool needShaderUpdate = false;
             
             float portion = 1;
 
-            if (!assumedPosition)  {
-                
-                10f.SpeedToMinPortion((transform.localPosition - targetPosition).magnitude, ref portion);
+            var ac = activeConfig;
 
-                9f.SpeedToMinPortion(targetColor.DistanceRGB(currentColor), ref portion);
+            if (Base_Node.editingNodes && dragging && !isFading)
+            {
+                if (!Input.GetMouseButton(0))
+                    dragging = false;
+                else
+                {
+                    Vector3 pos;
+                    if (upPlane.MouseToPlane(out pos)) {
+                        transform.position = pos + dragOffset;
+                        ac.targetLocalPosition = transform.localPosition;
+                    }
+                }
+
+                assumedPosition = false;
+            }
+
+            if (!assumedPosition)  {
+
+                float dist = (transform.localPosition - ac.targetLocalPosition).magnitude;
+
+                sh_blur = Mathf.Lerp(sh_blur, Mathf.Clamp01(dist*5), Time.deltaTime * 10);
+
+                if (50f.SpeedToMinPortion(dist, ref portion))
+                    dominantParameter = "postiton";
+
+                if (12f.SpeedToMinPortion(ac.targetColor.DistanceRGB(sh_currentColor), ref portion))
+                    dominantParameter = "color";
 
                 var BGtf = circleRendy.transform;
 
                 var scale = BGtf.localScale;
-                8f.SpeedToMinPortion((scale - targetSize).magnitude , ref portion);
+                if (10f.SpeedToMinPortion((scale - ac.targetSize).magnitude , ref portion))
+                    dominantParameter = "size";
 
-                2f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref portion);
+                if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref portion))
+                    dominantParameter = "fade";
 
-                4f.SpeedToMinPortion(1-activeTextAlpha, ref portion);
+                if (8f.SpeedToMinPortion(1-activeTextAlpha, ref portion))
+                    dominantParameter = "text Alpha";
 
-                float targetCourners = source == Nodes_PEGI.CurrentNode ? 0 : 0.9f;
+                float targetCourners =  dragging ? 0 : (source == Nodes_PEGI.CurrentNode) ? 0.4f : 0.9f;
             
-                4f.SpeedToMinPortion(Mathf.Abs(targetCourners - courners), ref portion);
+                if (4f.SpeedToMinPortion(Mathf.Abs(targetCourners - sh_courners), ref portion))
+                    dominantParameter = "courners";
 
-                transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, portion);
-                scale = Vector3.Lerp(scale, targetSize, portion);
+                float targetSelected = (this == Mgmt.selectedNode ? 1f : 0f);
+                if (4f.SpeedToMinPortion(Mathf.Abs(sh_selected - targetSelected), ref portion))
+                    dominantParameter = "Selection Outline";
+
+                float teleportPortion = ( fadePortion < 0.1f && !isFading) ? 1 : portion;
+
+                transform.localPosition = Vector3.Lerp(transform.localPosition, ac.targetLocalPosition, teleportPortion);
+                scale = Vector3.Lerp(scale, ac.targetSize, teleportPortion);
                 BGtf.localScale = scale;
-                currentColor = Color.Lerp(currentColor, targetColor, portion);
+                sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, teleportPortion);
                 fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
-                courners = Mathf.Lerp(courners, targetCourners, portion);
+                sh_courners = Mathf.Lerp(sh_courners, targetCourners, teleportPortion);
+                sh_selected = Mathf.Lerp(sh_selected, targetSelected, portion);
 
                 needShaderUpdate = true;
                 if (portion == 1)
+                {
+                    activeConfig.targetSize = circleRendy.transform.localScale;
+                    activeConfig.targetLocalPosition = transform.localPosition;
+
                     assumedPosition = true;
+                }
                 
                 if (scale.x > 0)
-                    square.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
-                else square.x = 0;
+                    sh_square.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
+                else sh_square.x = 0;
                 if (scale.y > 0)
-                    square.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
-                else square.y = 0;
+                    sh_square.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
+                else sh_square.y = 0;
                 
                 var textSize = new Vector2(17 + scale.x * 3, 5f + Mathf.Max(0, (scale.y - 1f) * 3f));
 
@@ -201,10 +264,18 @@ namespace LinkedNotes {
 
             }
             else {
+
+                var before = sh_blur;
+                sh_blur =  Mathf.Lerp(sh_blur, 0, Time.deltaTime * 10);
+                if (before != sh_blur)
+                    needShaderUpdate = true;
+
                 fadePortion = MyMath.Lerp(fadePortion, isFading ? 0 : 1, 2, out portion);
                 if (isFading || fadePortion < 1)
                     needShaderUpdate = true;
             }
+
+
 
             if (newText != null || activeTextAlpha < 1)
             {
@@ -213,8 +284,7 @@ namespace LinkedNotes {
                 else
                     activeTextAlpha = MyMath.Lerp(activeTextAlpha, 1, 4);
 
-                if (activeTextAlpha == 1 && newText != null)
-                {
+                if (activeTextAlpha == 1 && newText != null)  {
                     activeTextIsA = !activeTextIsA;
                     ActiveText.text = newText;
                     gameObject.name = newText;
@@ -231,27 +301,50 @@ namespace LinkedNotes {
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 gameObject.SetActive(false);
         }
+        
+        bool dragging = false;
+        Vector3 dragOffset = Vector3.zero;
+        static Plane upPlane = new Plane(Vector3.up, Vector3.zero);
+        public void TryDragAndDrop()
+        {
+            if (!dragging && Input.GetMouseButtonDown(0)) {
 
-        public void OnMouseOver() {
+                Nodes_PEGI.NodeMGMT_inst.SetSelected(this);
 
-            if (source != null)
-                source.OnMouseOver();
+                Vector3 pos;
+                if (upPlane.MouseToPlane(out pos))  {
+                    dragging = true;
+                    dragOffset = transform.position - pos;
+                }
+            }
         }
 
-        public override ISTD Decode(string data)
-        {
+        public void OnMouseOver() {
+            if (!isFading) {
+                if (Base_Node.editingNodes)
+                    TryDragAndDrop();
+                else
+                      if (source != null)
+                    source.OnMouseOver();
+            }
+        }
+
+        public override ISTD Decode(string data)   {
+            dragging = false;
             assumedPosition = false;
             return base.Decode(data);
         }
 
-        public override bool Decode(string tag, string data)
-        {
-            switch (tag)
-            {
-                case "s": targetSize = data.ToFloat() * Vector3.one; break;
-                case "sc": targetSize = data.ToVector3(); break;
-                case "pos": targetPosition = data.ToVector3(); break;
-                case "col": targetColor = data.ToColor(); break;
+        public override bool Decode(string tag, string data)   {
+            switch (tag)   {
+             /*   case "s": exploredVisuals.targetSize = data.ToFloat() * Vector3.one; break;
+                case "sc": exploredVisuals.targetSize = data.ToVector3(); break;
+                case "pos": exploredVisuals.targetLocalPosition = data.ToVector3(); break;
+                case "col": exploredVisuals.targetColor = data.ToColor(); break;*/
+
+                case "expVis": data.DecodeInto(out exploredVisuals); break;
+                case "subVis": data.DecodeInto(out subVisuals); break;
+
                 default: return false;
             }
 
@@ -260,11 +353,11 @@ namespace LinkedNotes {
 
         public override StdEncoder Encode()
         {
-            var cody = this.EncodeUnrecognized()
-            .Add("sc", assumedPosition ? circleRendy.transform.localScale : targetSize)
-            .Add("pos", assumedPosition ? transform.localPosition : targetPosition)
-            .Add("col", targetColor);
 
+            var cody = this.EncodeUnrecognized()
+                .Add("expVis", exploredVisuals)
+                .Add("subVis", subVisuals);
+           
             return cody;
         }
 
@@ -274,8 +367,9 @@ namespace LinkedNotes {
             if (source.visualRepresentation != null)
                 Debug.LogError("Visual representation is not null",this);
             source.visualRepresentation = this;
+            source.previousVisualRepresentation = this;
             Decode(source.configForVisualRepresentation);
-            SetNewText(source.name);
+            NameForPEGI = source.name;
             isFading = false;
             gameObject.SetActive(true);
         }
@@ -310,4 +404,56 @@ namespace LinkedNotes {
         }
 
     }
+
+    public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI {
+        public Vector3 targetSize = Vector3.one;
+        public Vector3 targetLocalPosition = Vector3.zero;
+        public Color targetColor = Color.gray;
+        
+        public override bool Decode(string tag, string data)
+        {
+            switch (tag)  {
+                case "sc": targetSize = data.ToVector3(); break;
+                case "pos": targetLocalPosition = data.ToVector3(); break;
+                case "col": targetColor = data.ToColor(); break;
+                default: return false;
+            }
+
+            return true;
+        }
+
+        public override StdEncoder Encode()  {
+            targetSize.z = Mathf.Max(targetSize.z, 1);
+
+            var cody = this.EncodeUnrecognized()
+            .Add("sc", targetSize)
+            .Add("pos", targetLocalPosition)
+            .Add("col", targetColor);
+
+            return cody;
+        }
+        
+        public override bool PEGI() {
+
+            bool changed = false;
+
+            float x = targetSize.x;
+            if ("Width".edit(50, ref x, 1f, 5f).nl())  {
+                changed = true;
+                targetSize.x = x;
+            }
+
+            float y = targetSize.y;
+            if ("Height".edit(50, ref y, 1f, 5f).nl()) {
+                changed = true;
+                targetSize.y = y;
+            }
+
+            if ("Color".edit(ref targetColor))
+                changed = true;
+            
+            return changed;
+        }
+    }
+
 }

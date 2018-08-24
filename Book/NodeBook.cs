@@ -33,9 +33,7 @@ namespace LinkedNotes
 
 #if PEGI
         int inspectedNode = -1;
-
-      
-
+        
         public override bool PEGI()  {
             bool changed = false;
 
@@ -61,19 +59,11 @@ namespace LinkedNotes
           
 
         public override bool Decode(string tag, string data) {
-            switch (tag)
-            {
+            switch (tag) {
                 case "f": firstFree = data.ToInt(); break;
-                case "s":
-                    List<Node> nodes; //= new List<Node>();
-                    data.DecodeInto(out nodes);
-                    if (nodes.Count > 0)
-                        subNode = nodes[0];
-                    break;
                 case "sn": data.DecodeInto(out subNode); break;
                 case "n": name = data; break;
                 case "in": inspectedNode = data.ToInt(); break;
-              
                 default: return false;
             }
             return true;
