@@ -4,6 +4,7 @@ using UnityEngine;
 using SharedTools_Stuff;
 using System;
 using PlayerAndEditorGUI;
+using STD_Logic;
 
 namespace LinkedNotes
 {
@@ -34,12 +35,13 @@ namespace LinkedNotes
 
         public override void OnMouseOver()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
+            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {
                 if (this != Nodes_PEGI.CurrentNode)
                     Nodes_PEGI.CurrentNode = this;
                 else if (parentNode != null)
                     Nodes_PEGI.CurrentNode = parentNode;
+
+                results.Apply(Values.global);
             }
 
             if (Input.GetMouseButtonDown(1))
@@ -92,12 +94,9 @@ namespace LinkedNotes
             }
 
 
-            if (!showDebug) {
-                
-                if (!onPlayScreen)  {
+            if (!showDebug && !onPlayScreen && !inspectingTriggerStuff) {
 
-                    if (inspectedSubnode != -1)
-                    {
+                    if (inspectedSubnode != -1)  {
                         var n = subNotes.TryGet(inspectedSubnode);
                         if (n == null || icon.Exit.Click())
                             inspectedSubnode = -1;
@@ -105,8 +104,10 @@ namespace LinkedNotes
                             n.Try_Nested_Inspect();
                     }
 
-                    if (inspectedSubnode == -1)
-                    {
+                    if (inspectedSubnode == -1) {
+
+                        pegi.nl();
+
                         var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
 
                         if (newNode != null)
@@ -115,18 +116,19 @@ namespace LinkedNotes
                             newNode.CreatedFor(this);
                         }
                     }
-                }
+                
             }
             return changed;
         }
 
-        public Node AddNode(){
-            var newNode = new Node();
-            newNode.CreatedFor(this);
-            subNotes.Add(newNode);
-            return newNode;
+        public T Add<T>() where T: Base_Node, new()
+         {
+             var newNode = new T();
+             newNode.CreatedFor(this);
+             subNotes.Add(newNode);
+             return newNode;
         }
-
+        
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("sub", subNotes)
             .Add("b", base.Encode())

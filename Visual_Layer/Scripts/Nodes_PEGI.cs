@@ -29,9 +29,7 @@ namespace LinkedNotes {
 
         public NodeCircleController circlePrefab;
 
-        public Image Play_Edit_Button_Image;
-        public Sprite playImage;
-        public Sprite editImage;
+        public Button deleteButton;
 
         static List<NodeCircleController> nodesPool = new List<NodeCircleController>();
         static int firstFree = 0;
@@ -45,24 +43,26 @@ namespace LinkedNotes {
                 if (tmp != null && tmp.isFading)
                     nnp = tmp;
             }
-            
-            if (nnp == null)
-            while (firstFree < nodesPool.Count) {
-                var np = nodesPool[firstFree];
-                if (np.isFading)
+
+            if (nnp == null) {
+                while (firstFree < nodesPool.Count)
                 {
-                    nnp = np;
-                    break;
+                    var np = nodesPool[firstFree];
+                    if (np.isFading)
+                    {
+                        nnp = np;
+                        break;
+                    }
+                    else firstFree++;
                 }
-                else firstFree++;
             }
 
-                if (nnp == null)
-                {
-                    nnp = Instantiate(NodeMGMT_inst.circlePrefab);
-                    nnp.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
-                    nodesPool.Add(nnp);
-                }
+            if (nnp == null)
+            {
+                nnp = Instantiate(NodeMGMT_inst.circlePrefab);
+                nnp.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
+                nodesPool.Add(nnp);
+            }
 
             nnp.LinkTo(n);
                 
@@ -77,14 +77,12 @@ namespace LinkedNotes {
                 if (value != null && _currentNode != null) {
                     var s = value as Node;
 
-                    if (s != null)
-                    {
+                    if (s != null)  {
                         if (s.subNotes.Contains(_currentNode))
                             wasAParent = _currentNode;
                     }
                 }
-
-
+                
                 foreach (var n in nodesPool)
                     if (n != null && !n.isFading) {
                         if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
@@ -92,26 +90,43 @@ namespace LinkedNotes {
                         else
                             n.assumedPosition = false;
                     }
+
                 firstFree = 0;
 
                 _currentNode = value;
 
                 if (_currentNode != null) {
 
-                    if (_currentNode.visualRepresentation == null)
-                        VisualizeNode(_currentNode);//.LinkTo();
-
                     Shortcuts.playingInBook = value.root.IndexForPEGI;
                     Shortcuts.playingInNode = value.IndexForPEGI;
 
-                    foreach (var n in _currentNode.subNotes)
-                        if (n.visualRepresentation == null)
-                            VisualizeNode(n);
+                    UpdateVisibility();
                 }
-
             }
         }
         
+
+        public static void UpdateVisibility(Base_Node node) {
+
+            if (node != null) {
+                if (node.visualRepresentation == null) {
+                    if (Base_Node.editingNodes || node.Conditions_isVisibile())
+                        VisualizeNode(node);
+                } else {
+                    if (!Base_Node.editingNodes && !node.Conditions_isVisibile())
+                        (node.visualRepresentation as NodeCircleController).Unlink();
+                }
+            }
+        }
+
+        public static void UpdateVisibility() {
+            if (_currentNode != null) {
+                UpdateVisibility(_currentNode);
+                foreach (var sub in _currentNode.subNotes)
+                    UpdateVisibility(sub);
+            }
+        }
+
         public override bool PEGI() {
             bool changed = false;
 
@@ -142,6 +157,7 @@ namespace LinkedNotes {
                     pegi.nl();
                     "Edit Button".edit(ref editButton).nl();
                     "Add Button".edit(ref addButton).nl();
+                    "Delete Button".edit(ref deleteButton).nl();
                 }
                 
                 pegi.nl();
@@ -156,8 +172,13 @@ namespace LinkedNotes {
                 Base_Node.editingNodes = !Base_Node.editingNodes;
                 if (editButton)
                     editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
+
+            CreateNodeButton.showCreateButtons = false;
+
             if (addButton)
                 addButton.gameObject.SetActive(Base_Node.editingNodes);
+            if (deleteButton)
+                deleteButton.gameObject.SetActive(false);
         }
         
         public void SetSelected(NodeCircleController node ) {
@@ -166,6 +187,8 @@ namespace LinkedNotes {
             selectedNode = node;
             if (node)
                 node.assumedPosition = false;
+            if (deleteButton)
+                deleteButton.gameObject.SetActive(selectedNode);
         }
 
         private void OnDisable() {
@@ -200,13 +223,37 @@ namespace LinkedNotes {
 
             nodesPool.Clear();
         }
-
+        
+        int logicVersion = -1; 
         public override void DerrivedUpdate() {
-
+            if (logicVersion != currentLogicVersion) {
+                UpdateVisibility();
+                logicVersion = currentLogicVersion;
+            }
         }
 
-        public void AddNode() => VisualizeNode(CurrentNode.AddNode());
+        public void ToggleShowAddButtons() => CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
+
+        public void AddNode() => VisualizeNode(CurrentNode.Add<Node>());
+
+        public void AddLink() => VisualizeNode(CurrentNode.Add<NodeLinkComponent>());
+
+        public void AddButton() => VisualizeNode(CurrentNode.Add<NodeButtonComponent>());
        
+        public void DeleteSelected() {
+
+            if (selectedNode != null) {
+                var node = selectedNode.source;
+
+                if (node.parentNode != null) {
+                    selectedNode.Unlink();
+                    selectedNode = null;
+                    node.parentNode.subNotes.Remove(node);
+                    node.root.allBaseNodes[node.IndexForPEGI] = null;
+                }
+            }
+        }
+
         public void OnGUI() {
             if (selectedNode)
             window.Render(selectedNode.PEGI, selectedNode.ToPEGIstring());

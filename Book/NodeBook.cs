@@ -57,7 +57,6 @@ namespace LinkedNotes
             .Add_String("n", name)
             .Add("in", inspectedNode);
           
-
         public override bool Decode(string tag, string data) {
             switch (tag) {
                 case "f": firstFree = data.ToInt(); break;

@@ -109,7 +109,6 @@ namespace LinkedNotes {
             }
         }
         
-      
         bool showDependencies = false;
         public override bool PEGI() {
             bool changed = false;
@@ -123,6 +122,8 @@ namespace LinkedNotes {
                         NameForPEGI = source.name;
 
                     changed = true;
+
+                    Nodes_PEGI.UpdateVisibility();
                 }
             }
             if (!onPlayScreen)
@@ -146,18 +147,14 @@ namespace LinkedNotes {
                     sh_currentColor = activeConfig.targetColor;
                     UpdateShaders();
                }
-
-                if (!onPlayScreen)
-                {
-                    if (isFading && icon.Play.Click().nl())
-                        isFading = false;
-                    if (!isFading && icon.Pause.Click().nl())
-                        isFading = true;
-                }
             }
 
-            if (!onPlayScreen)
-            {
+            
+
+            if (!onPlayScreen) {
+
+                pegi.nl();
+
                 "Dependencies".foldout(ref showDependencies).nl();
 
                 if (!textA || showDependencies)
@@ -172,7 +169,7 @@ namespace LinkedNotes {
 
             return changed;
         }
-
+        
         string dominantParameter;
         void Update() {
 
@@ -182,12 +179,11 @@ namespace LinkedNotes {
 
             var ac = activeConfig;
 
-            if (Base_Node.editingNodes && dragging && !isFading)
+            if (Base_Node.editingNodes && (this == dragging) && !isFading)
             {
                 if (!Input.GetMouseButton(0))
-                    dragging = false;
-                else
-                {
+                    dragging = null;
+                else  {
                     Vector3 pos;
                     if (upPlane.MouseToPlane(out pos)) {
                         transform.position = pos + dragOffset;
@@ -222,7 +218,7 @@ namespace LinkedNotes {
                 if (8f.SpeedToMinPortion(1-activeTextAlpha, ref portion))
                     dominantParameter = "text Alpha";
 
-                float targetCourners =  dragging ? 0 : (source == Nodes_PEGI.CurrentNode) ? 0.4f : 0.9f;
+                float targetCourners =  (this == dragging) ? 0 : (source == Nodes_PEGI.CurrentNode) ? 0.4f : 0.9f;
             
                 if (4f.SpeedToMinPortion(Mathf.Abs(targetCourners - sh_courners), ref portion))
                     dominantParameter = "courners";
@@ -301,19 +297,19 @@ namespace LinkedNotes {
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 gameObject.SetActive(false);
         }
-        
-        bool dragging = false;
+
+        static NodeCircleController dragging = null;
         Vector3 dragOffset = Vector3.zero;
         static Plane upPlane = new Plane(Vector3.up, Vector3.zero);
         public void TryDragAndDrop()
         {
-            if (!dragging && Input.GetMouseButtonDown(0)) {
+            if (dragging == null && Input.GetMouseButtonDown(0)) {
 
                 Nodes_PEGI.NodeMGMT_inst.SetSelected(this);
 
                 Vector3 pos;
                 if (upPlane.MouseToPlane(out pos))  {
-                    dragging = true;
+                    dragging = this;
                     dragOffset = transform.position - pos;
                 }
             }
@@ -330,7 +326,8 @@ namespace LinkedNotes {
         }
 
         public override ISTD Decode(string data)   {
-            dragging = false;
+            if (this == dragging)
+                dragging = null;
             assumedPosition = false;
             return base.Decode(data);
         }
@@ -376,8 +373,7 @@ namespace LinkedNotes {
 
         public void Unlink()
         {
-            if (source != null)
-            {
+            if (source != null) {
                 source.configForVisualRepresentation = Encode().ToString();
                 source.visualRepresentation = null;
                 source = null;

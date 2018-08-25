@@ -1,14 +1,14 @@
-﻿using SharedTools_Stuff;
-using System.Collections;
+﻿using PlayerAndEditorGUI;
+using SharedTools_Stuff;
+using STD_Logic;
 using System.Collections.Generic;
 using UnityEngine;
-using PlayerAndEditorGUI;
-using STD_Logic;
 
-namespace LinkedNotes {
+namespace LinkedNotes
+{
 
-    [DerrivedList(typeof(Node), typeof(NodeLinkComponent))]
-    public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex {
+    [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent))]
+    public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI {
         public Node parentNode;
         public NodeBook root;
 
@@ -17,10 +17,36 @@ namespace LinkedNotes {
         public ISTD visualRepresentation;
         public ISTD previousVisualRepresentation;
         public string configForVisualRepresentation;
-        
-        public ConditionBranch condition = new ConditionBranch();
-        public List<Result> results = new List<Result>();
 
+        int logicVersion = -1;
+        bool visConditionsResult = true;
+        bool enabledConditionResult = true;
+        
+        ConditionBranch visCondition = new ConditionBranch();
+        ConditionBranch eblCondition = new ConditionBranch();
+
+        void UpdateLogic() {
+            if (logicVersion != LogicMGMT.currentLogicVersion) {
+                logicVersion = LogicMGMT.currentLogicVersion;
+
+                visConditionsResult = visCondition.TestFor(Values.global);
+
+                enabledConditionResult = eblCondition.TestFor(Values.global);
+            }
+        }
+
+        public bool Conditions_isVisibile() {
+            UpdateLogic();
+            return visConditionsResult;
+        }
+
+        public bool Conditions_isEnabled() {
+            UpdateLogic();
+            return visConditionsResult && enabledConditionResult;
+        }
+
+        public List<Result> results = new List<Result>();
+        
         protected static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
 
         int index;
@@ -42,35 +68,36 @@ namespace LinkedNotes {
 
         }
 
-        public override StdEncoder Encode() => new StdEncoder()
+        public override StdEncoder Encode() => this.EncodeUnrecognized()
         .Add_String("n", name)
         .Add("i", index)
-        .Add_ifTrue("ic", editConditions)
+        .Add_ifTrue("ic", editEbl_Conditions)
         .Add_ifTrue("ir", editResults)
         .Add_ifNotNegative("icr", inspectedResult)
-        .Add("cnds", condition)
+        .Add("cnds", eblCondition)
+        .Add("vcnds", visCondition)
         .Add("res", results)
         .Add_String("vis", visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
-        public override bool Decode(string tag, string data)
-        {
-            switch (tag)
-            {
+        public override bool Decode(string tag, string data) {
+            switch (tag) {
                 case "n": name = data; break;
                 case "i": index = data.ToInt(); break;
-                case "ic": editConditions = data.ToBool(); break;
+                case "ic": editEbl_Conditions = data.ToBool(); break;
                 case "ir": editResults = data.ToBool(); break;
                 case "icr": inspectedResult = data.ToInt(); break;
-                case "cnds": data.DecodeInto(out condition); break;
+                case "cnds": data.DecodeInto(out eblCondition); break;
+                case "vcnds": data.DecodeInto(out visCondition); break;
                 case "res": data.DecodeInto(out results); break;
                 case "vis": configForVisualRepresentation = data; break;
             }
             return true;
         }
-      
+
         int inspectedResult = -1;
-        public bool inspectingTriggerStuff => editConditions || editResults;
-        bool editConditions = false;
+        public bool inspectingTriggerStuff => editEbl_Conditions || editResults || editVis_Conditions;
+        bool editVis_Conditions = false;
+        bool editEbl_Conditions = false;
         bool editResults = false;
         public override bool PEGI()
         {
@@ -94,18 +121,30 @@ namespace LinkedNotes {
 
                 pegi.nl();
 
-                if ("Conditions".foldout(ref editConditions).nl()) {
+                if ("Visibility Conditions".foldout(ref editVis_Conditions).nl())
+                {
                     editResults = false;
-                    changed |= condition.PEGI();
+                    editEbl_Conditions = false;
+                    changed |= visCondition.PEGI();
+                }
+
+                if ("Enabled Conditions".foldout(ref editEbl_Conditions).nl()) {
+                    editResults = false;
+                    editVis_Conditions = false;
+                    changed |= eblCondition.PEGI();
                 }
 
                 if ("Results".foldout(ref editResults).nl()) {
-                    editConditions = false;
+                    editEbl_Conditions = false;
+                    editVis_Conditions = false;
                     changed |= results.Inspect(Values.global).nl();
                 }
                 
                 pegi.nl();
             }
+
+            if (changed)
+                logicVersion = -1;
 
             return changed;
         }
