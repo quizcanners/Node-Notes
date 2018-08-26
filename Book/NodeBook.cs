@@ -31,8 +31,9 @@ namespace LinkedNotes
             }
         }
 
-#if PEGI
         int inspectedNode = -1;
+#if !NO_PEGI
+       
         
         public override bool PEGI()  {
             bool changed = false;

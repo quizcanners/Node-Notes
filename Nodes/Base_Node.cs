@@ -95,10 +95,12 @@ namespace LinkedNotes
         }
 
         int inspectedResult = -1;
-        public bool inspectingTriggerStuff => editEbl_Conditions || editResults || editVis_Conditions;
+        public bool InspectingTriggerStuff => editEbl_Conditions || editResults || editVis_Conditions;
         bool editVis_Conditions = false;
         bool editEbl_Conditions = false;
         bool editResults = false;
+        #if !NO_PEGI
+
         public override bool PEGI()
         {
             var changed = false;
@@ -109,7 +111,7 @@ namespace LinkedNotes
 
             if (!showDebug || onPlayScreen)
             {
-                if (!inspectingTriggerStuff)
+                if (!InspectingTriggerStuff)
                 {
                     changed |= pegi.edit(ref name);
                     if ((this != Mgmt.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
@@ -148,7 +150,9 @@ namespace LinkedNotes
 
             return changed;
         }
-        
+#endif
+
+
         public virtual string NeedAttention()
         {
             if (root == null)

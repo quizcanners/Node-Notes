@@ -13,7 +13,10 @@ namespace LinkedNotes {
     [ExecuteInEditMode]
     public class Nodes_PEGI : LogicMGMT {
 
+        #if !NO_PEGI
+
         pegi.windowPositionData window = new pegi.windowPositionData();
+#endif
 
         public static Nodes_PEGI NodeMGMT_inst;
 
@@ -126,6 +129,7 @@ namespace LinkedNotes {
                     UpdateVisibility(sub);
             }
         }
+        #if !NO_PEGI
 
         public override bool PEGI() {
             bool changed = false;
@@ -165,7 +169,7 @@ namespace LinkedNotes {
 
             return changed;
         }
-        
+#endif
         public NodeCircleController selectedNode;
         public void RightTopButton() {
                 selectedNode = null;
@@ -253,10 +257,11 @@ namespace LinkedNotes {
                 }
             }
         }
-
+#if !NO_PEGI
         public void OnGUI() {
             if (selectedNode)
             window.Render(selectedNode.PEGI, selectedNode.ToPEGIstring());
         }
+#endif
     }
 }

@@ -33,6 +33,7 @@ namespace LinkedNotes {
         float activeTextAlpha = 0;
 
         #endregion
+#if !NO_PEGI
 
         public override string NameForPEGI
         {
@@ -58,14 +59,14 @@ namespace LinkedNotes {
                     newText = value;
             }
         }
-        
+#endif
         [NonSerialized] public bool isFading;
         [NonSerialized] public bool assumedPosition;
 
         NodeVisualConfig exploredVisuals = new NodeVisualConfig();
         NodeVisualConfig subVisuals = new NodeVisualConfig();
 
-        NodeVisualConfig activeConfig => this.source == Nodes_PEGI.CurrentNode ? exploredVisuals : subVisuals;
+        NodeVisualConfig ActiveConfig => this.source == Nodes_PEGI.CurrentNode ? exploredVisuals : subVisuals;
         
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
@@ -108,7 +109,8 @@ namespace LinkedNotes {
                 }
             }
         }
-        
+#if !NO_PEGI
+
         bool showDependencies = false;
         public override bool PEGI() {
             bool changed = false;
@@ -141,10 +143,10 @@ namespace LinkedNotes {
                 }
 
 
-                if (source == null || (!source.inspectingTriggerStuff))
-               if (activeConfig.Nested_Inspect()) {
+                if (source == null || (!source.InspectingTriggerStuff))
+               if (ActiveConfig.Nested_Inspect()) {
                     assumedPosition = false;
-                    sh_currentColor = activeConfig.targetColor;
+                    sh_currentColor = ActiveConfig.targetColor;
                     UpdateShaders();
                }
             }
@@ -169,15 +171,15 @@ namespace LinkedNotes {
 
             return changed;
         }
-        
-        string dominantParameter;
+#endif
+        public string dominantParameter;
         void Update() {
 
             bool needShaderUpdate = false;
             
             float portion = 1;
 
-            var ac = activeConfig;
+            var ac = ActiveConfig;
 
             if (Base_Node.editingNodes && (this == dragging) && !isFading)
             {
@@ -240,8 +242,8 @@ namespace LinkedNotes {
                 needShaderUpdate = true;
                 if (portion == 1)
                 {
-                    activeConfig.targetSize = circleRendy.transform.localScale;
-                    activeConfig.targetLocalPosition = transform.localPosition;
+                    ActiveConfig.targetSize = circleRendy.transform.localScale;
+                    ActiveConfig.targetLocalPosition = transform.localPosition;
 
                     assumedPosition = true;
                 }
@@ -428,7 +430,8 @@ namespace LinkedNotes {
 
             return cody;
         }
-        
+        #if !NO_PEGI
+
         public override bool PEGI() {
 
             bool changed = false;
@@ -450,6 +453,7 @@ namespace LinkedNotes {
             
             return changed;
         }
+#endif
     }
 
 }

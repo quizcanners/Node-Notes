@@ -142,7 +142,7 @@
 
 		float4 col2 = tex2D(_MainTex, rotUV2);
 
-		float alp = saturate((col.g - col2.g) * 8);
+		float alp = saturate((col.g - col2.g + (_Time.x % 1)-0.5) * 8);
 
 		col = col *  alp + col2 * (1 - alp);
 

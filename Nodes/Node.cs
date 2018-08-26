@@ -59,6 +59,7 @@ namespace LinkedNotes
             if (parentNode != null)
                 parentNode.SetInspectedUpTheHierarchy(this);
         }
+        #if !NO_PEGI
 
         public override bool PEGI() {
 
@@ -94,7 +95,7 @@ namespace LinkedNotes
             }
 
 
-            if (!showDebug && !onPlayScreen && !inspectingTriggerStuff) {
+            if (!showDebug && !onPlayScreen && !InspectingTriggerStuff) {
 
                     if (inspectedSubnode != -1)  {
                         var n = subNotes.TryGet(inspectedSubnode);
@@ -120,6 +121,8 @@ namespace LinkedNotes
             }
             return changed;
         }
+
+#endif
 
         public T Add<T>() where T: Base_Node, new()
          {

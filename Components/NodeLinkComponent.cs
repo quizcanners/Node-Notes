@@ -11,6 +11,7 @@ namespace LinkedNotes
     public class NodeLinkComponent : Base_Node
     {
         public int linkedNodeIndex = 0;
+        #if !NO_PEGI
 
         public override bool PEGI() {
             bool changed = base.PEGI();
@@ -19,6 +20,7 @@ namespace LinkedNotes
 
             return changed;
         }
+#endif
 
         public override void OnMouseOver() {
             if  (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {

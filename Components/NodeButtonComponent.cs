@@ -28,6 +28,7 @@ namespace LinkedNotes
             }
             return true;
         }
+        #if !NO_PEGI
 
         public override bool PEGI()
         {
@@ -37,5 +38,6 @@ namespace LinkedNotes
 
             return changed;
         }
+#endif
     }
 }

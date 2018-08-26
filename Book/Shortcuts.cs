@@ -49,7 +49,10 @@ namespace LinkedNotes
             set { std_Data = value; }
         }
 
-        int inspectedBook = -1;
+
+
+#if !NO_PEGI
+           int inspectedBook = -1;
 
         public override bool PEGI()
         {
@@ -70,6 +73,8 @@ namespace LinkedNotes
             return changed;
         }
         
+#endif
+
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("vals", Values.global, this)
             .Add("trigs", TriggerGroup.all)
