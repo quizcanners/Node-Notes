@@ -36,11 +36,31 @@ namespace LinkedNotes
 
         public Button deleteButton;
 
+        public List<IManageFading> backgroundControllers = new List<IManageFading>();
+        public void SetBackground (int index, string data)
+        {
+            index = Mathf.Clamp(index, 0, backgroundControllers.Count);
+            for (int i=0; i<backgroundControllers.Count; i++)
+            {
+                var bc = backgroundControllers[i];
+                if (bc != null) {
+                    if (i == index) {
+                        bc.TryFadeIn();
+                        data.TryDecodeInto(bc);
+                    }
+                    else
+                        bc.FadeAway();
+                }
+            }
+
+
+
+        }
+
         static List<NodeCircleController> nodesPool = new List<NodeCircleController>();
         static int firstFree = 0;
 
-        static void VisualizeNode(Base_Node n)
-        {
+        static void VisualizeNode(Base_Node n) {
 
             NodeCircleController nnp = null;
 
@@ -81,6 +101,9 @@ namespace LinkedNotes
             get { return _currentNode; }
             set
             {
+
+                NodeMGMT_inst.SetSelected(null);
+                
 
                 Node wasAParent = null;
 
@@ -126,7 +149,7 @@ namespace LinkedNotes
             {
                 if (node.visualRepresentation == null)
                 {
-                    if (Base_Node.editingNodes || (node.Conditions_isVisibile() && node.parentNode != null))
+                    if (Base_Node.editingNodes || (node.Conditions_isVisibile()))// && node.parentNode != null))
                         VisualizeNode(node);
                 }
                 else
@@ -206,8 +229,7 @@ namespace LinkedNotes
                 deleteButton.gameObject.SetActive(false);
         }
 
-        public void SetSelected(NodeCircleController node)
-        {
+        public void SetSelected(NodeCircleController node) {
             if (selectedNode)
                 selectedNode.assumedPosition = false;
             selectedNode = node;
@@ -217,8 +239,7 @@ namespace LinkedNotes
                 deleteButton.gameObject.SetActive(selectedNode);
         }
 
-        private void OnDisable()
-        {
+        private void OnDisable() {
             CurrentNode = null;
             ClearPool();
             shortcuts?.Save_STDdata();
@@ -269,26 +290,24 @@ namespace LinkedNotes
 
         public void AddButton() => VisualizeNode(CurrentNode.Add<NodeButtonComponent>());
 
-        public void DeleteSelected()
-        {
+        public void DeleteSelected() {
 
-            if (selectedNode != null)
-            {
+            if (selectedNode != null) {
+
                 var node = selectedNode.source;
 
-                if (node.parentNode != null)
-                {
+                if (node.parentNode != null) {
                     selectedNode.Unlink();
-                    selectedNode = null;
                     node.parentNode.subNotes.Remove(node);
                     node.root.allBaseNodes[node.IndexForPEGI] = null;
+                    SetSelected(null);
                 }
             }
         }
 
 #if !NO_PEGI
-        public void OnGUI()
-        {
+        public void OnGUI() {
+
             if (selectedNode)
                 window.Render(selectedNode);
 

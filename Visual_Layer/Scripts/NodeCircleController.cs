@@ -124,6 +124,10 @@ namespace LinkedNotes {
                     Nodes_PEGI.UpdateVisibility();
                 }
             }
+
+            if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
+                Nodes_PEGI.CurrentNode = null;
+
             if (!onPlayScreen)
             "Lerp parameter {0}".F(dominantParameter).nl();
 

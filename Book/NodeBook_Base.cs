@@ -11,7 +11,7 @@ namespace LinkedNotes
 
         public string name;
 
-        public string NameForPEGIdisplay() => name;
+        public virtual string NameForPEGIdisplay() => name;
 
         int indexInList = 0; // May be different per player
 

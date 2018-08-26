@@ -70,8 +70,7 @@ namespace LinkedNotes
 #if !NO_PEGI
         int inspectedBook = -1;
 
-        public override bool PEGI()
-        {
+        public override bool PEGI() {
             bool changed = false;
 
             "Shortcuts".nl();
@@ -82,7 +81,24 @@ namespace LinkedNotes
                 
                 changed |= base.PEGI().nl();
                 if (!showDebug)
-                    changed |= "Player Name:".edit(ref currentPlayerName);
+                    changed |= "Player Name:".edit(ref currentPlayerName).nl();
+
+                if ("Get all book names".Click()) {
+                    var lst = StuffLoader.ListFileNamesFromPersistantFolder(BookConversionExtensions.BooksFolder);
+
+                    foreach (var e in lst) {
+                        bool contains = false;
+                        foreach (var b in books)
+                            if (b.name.SameAs(e)) { contains = true; break; }
+
+                        if (!contains) {
+                            var off = new NodeBook_OffLoaded();
+                            off.name = e;
+                            off.IndexForPEGI = books.Count;
+                            books.Add(off);
+                        }
+                    }
+                }
             }
             else
                 showDebug = false;

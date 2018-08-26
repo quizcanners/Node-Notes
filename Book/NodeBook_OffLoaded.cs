@@ -5,7 +5,9 @@ using UnityEngine;
 using PlayerAndEditorGUI;
 
 namespace LinkedNotes {
-    public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect {
+    public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
+
+        public override string NameForPEGIdisplay() => "Offloaded {0}".F(name);
 
         public override bool Decode(string tag, string data) {
 
@@ -32,10 +34,13 @@ namespace LinkedNotes {
     }
     
     public static class BookConversionExtensions {
+
+        public const string BooksFolder = "Books";
+
         public static NodeBook_OffLoaded Offload (this List<NodeBook_Base> list, NodeBook book){
             if (book != null && list.Contains(book)) {
                 int ind = list.IndexOf(book);
-                book.SaveToPersistantPath("Books", "book_{0}".F(book.name));
+                book.SaveToPersistantPath(BooksFolder, book.name);
                 var off = new NodeBook_OffLoaded {
                     name = book.name
                 };
@@ -51,8 +56,9 @@ namespace LinkedNotes {
             if (offloaded != null && list.Contains(offloaded)) {
                 int ind = list.IndexOf(offloaded);
                 var book = new NodeBook();
-                book.LoadFromPersistantPath("Books", "book_{0}".F(offloaded.name));
+                book.LoadFromPersistantPath(BooksFolder, offloaded.name);
                 list[ind] = book;
+                //Debug.Log("{0} book loaded".F(book.name));
                 return book;
             }
             else Debug.LogError("List does not contain the book you are loading");

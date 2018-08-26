@@ -5,11 +5,13 @@ using SharedTools_Stuff;
 using System;
 
 [ExecuteInEditMode]
-public class EffectLightsMGMT : MonoBehaviour, IManageFading {
+public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName {
 
     public List<ParticleSystem> systems = new List<ParticleSystem>();
 
     public float fadeOutSpeedup = 4;
+
+    public bool isFadingOut = false;
 
     [NonSerialized]
     public float[] originalSimulationSpeed;
@@ -41,7 +43,12 @@ public class EffectLightsMGMT : MonoBehaviour, IManageFading {
                 em.enabled = false;
             }
         }
+
+        isFadingOut = true;
+
     }
+
+    public string NameForPEGIdisplay() => "Microcosmos";
 
     public bool TryFadeIn()  {
             for (int i = 0; i < systems.Count; i++)
@@ -61,10 +68,21 @@ public class EffectLightsMGMT : MonoBehaviour, IManageFading {
                     em.enabled = true;
                 }
             }
+
+        isFadingOut = false;
+
         return true;
     }
     
 	void Update () {
+
+        if (!isFadingOut && Camera.main != null) {
+
+            var col = Camera.main.backgroundColor;
+
+            Camera.main.backgroundColor = MyMath.Lerp_RGB(col, Color.black, 3);
+        }
+
         for (int c = 0; c < 4; c++)
         {
             var ep = EffectLightPoint.all[c];
