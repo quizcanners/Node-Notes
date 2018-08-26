@@ -57,8 +57,7 @@ namespace LinkedNotes
                     timer -= Time.deltaTime;
                 else  {
                     if (image.enabled) {
-
-                   
+                        
                         float portion;
                         rectTranform.anchoredPosition = MyMath.Lerp(rectTranform.anchoredPosition, Dest, Screen.width, out portion);
 
@@ -68,6 +67,7 @@ namespace LinkedNotes
                             else
                                 timer = delay;
                         }
+
                     }
                     else
                     if (showCreateButtons)

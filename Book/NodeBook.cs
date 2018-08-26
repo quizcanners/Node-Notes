@@ -9,32 +9,15 @@ using STD_Logic;
 namespace LinkedNotes
 {
     
-    public class NodeBook : AbstractKeepUnrecognized_STD, IPEGI_ListInspect, IPEGI, IGotIndex {
-
-        public string name;
+    public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI {
+        
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public Node subNode; 
-
-        int indexInList = 0;
-
-        public int IndexForPEGI
-        {
-            get
-            {
-                return indexInList;
-            }
-
-            set
-            {
-                indexInList = value;
-            }
-        }
-
-        int inspectedNode = -1;
-#if !NO_PEGI
-       
         
+        int inspectedNode = -1;
+
+#if !NO_PEGI
         public override bool PEGI()  {
             bool changed = false;
 
@@ -48,6 +31,10 @@ namespace LinkedNotes
 
             if (icon.Edit.Click())
                 edited = ind;
+
+            if (icon.Save.Click())
+                Shortcuts.books.Offload(this);
+
             return changed;
         }
 #endif

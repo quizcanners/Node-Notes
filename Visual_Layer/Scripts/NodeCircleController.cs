@@ -35,12 +35,8 @@ namespace LinkedNotes {
         #endregion
 #if !NO_PEGI
 
-        public override string NameForPEGI
-        {
-            get
-            {
-               return source.name;
-            }
+        public override string NameForPEGI {
+            get {  return source.name; }
 
             set
             {

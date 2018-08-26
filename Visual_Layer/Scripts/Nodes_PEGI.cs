@@ -8,12 +8,14 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 
-namespace LinkedNotes {
+namespace LinkedNotes
+{
 
     [ExecuteInEditMode]
-    public class Nodes_PEGI : LogicMGMT {
+    public class Nodes_PEGI : LogicMGMT
+    {
 
-        #if !NO_PEGI
+#if !NO_PEGI
 
         pegi.windowPositionData window = new pegi.windowPositionData();
 #endif
@@ -37,17 +39,20 @@ namespace LinkedNotes {
         static List<NodeCircleController> nodesPool = new List<NodeCircleController>();
         static int firstFree = 0;
 
-        static void VisualizeNode(Base_Node n) {
+        static void VisualizeNode(Base_Node n)
+        {
 
             NodeCircleController nnp = null;
 
-            if (n.previousVisualRepresentation != null) {
+            if (n.previousVisualRepresentation != null)
+            {
                 var tmp = n.previousVisualRepresentation as NodeCircleController;
                 if (tmp != null && tmp.isFading)
                     nnp = tmp;
             }
 
-            if (nnp == null) {
+            if (nnp == null)
+            {
                 while (firstFree < nodesPool.Count)
                 {
                     var np = nodesPool[firstFree];
@@ -68,26 +73,31 @@ namespace LinkedNotes {
             }
 
             nnp.LinkTo(n);
-                
+
         }
-        
-        public static Node CurrentNode {
+
+        public static Node CurrentNode
+        {
             get { return _currentNode; }
-            set {
+            set
+            {
 
                 Node wasAParent = null;
 
-                if (value != null && _currentNode != null) {
+                if (value != null && _currentNode != null)
+                {
                     var s = value as Node;
 
-                    if (s != null)  {
+                    if (s != null)
+                    {
                         if (s.subNotes.Contains(_currentNode))
                             wasAParent = _currentNode;
                     }
                 }
-                
+
                 foreach (var n in nodesPool)
-                    if (n != null && !n.isFading) {
+                    if (n != null && !n.isFading)
+                    {
                         if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
                             n.Unlink();
                         else
@@ -98,7 +108,8 @@ namespace LinkedNotes {
 
                 _currentNode = value;
 
-                if (_currentNode != null) {
+                if (_currentNode != null)
+                {
 
                     Shortcuts.playingInBook = value.root.IndexForPEGI;
                     Shortcuts.playingInNode = value.IndexForPEGI;
@@ -107,31 +118,38 @@ namespace LinkedNotes {
                 }
             }
         }
-        
 
-        public static void UpdateVisibility(Base_Node node) {
+        public static void UpdateVisibility(Base_Node node)
+        {
 
-            if (node != null) {
-                if (node.visualRepresentation == null) {
-                    if (Base_Node.editingNodes || node.Conditions_isVisibile())
+            if (node != null)
+            {
+                if (node.visualRepresentation == null)
+                {
+                    if (Base_Node.editingNodes || (node.Conditions_isVisibile() && node.parentNode != null))
                         VisualizeNode(node);
-                } else {
+                }
+                else
+                {
                     if (!Base_Node.editingNodes && !node.Conditions_isVisibile())
                         (node.visualRepresentation as NodeCircleController).Unlink();
                 }
             }
         }
 
-        public static void UpdateVisibility() {
-            if (_currentNode != null) {
+        public static void UpdateVisibility()
+        {
+            if (_currentNode != null)
+            {
                 UpdateVisibility(_currentNode);
                 foreach (var sub in _currentNode.subNotes)
                     UpdateVisibility(sub);
             }
         }
-        #if !NO_PEGI
+#if !NO_PEGI
 
-        public override bool PEGI() {
+        public override bool PEGI()
+        {
             bool changed = false;
 
             if (!circlePrefab)
@@ -142,7 +160,8 @@ namespace LinkedNotes {
 
             changed |= base.PEGI();
 
-            if (!showDebug) {
+            if (!showDebug)
+            {
 
                 if ("Values ".fold_enter_exit(ref inspectedLogicBranchStuff, 1))
                     Values.global.PEGI();
@@ -156,14 +175,15 @@ namespace LinkedNotes {
                     shortcuts.Nested_Inspect();
                 else
                     pegi.nl();
-                
-                if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3)) {
+
+                if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3))
+                {
                     pegi.nl();
                     "Edit Button".edit(ref editButton).nl();
                     "Add Button".edit(ref addButton).nl();
                     "Delete Button".edit(ref deleteButton).nl();
                 }
-                
+
                 pegi.nl();
             }
 
@@ -171,11 +191,12 @@ namespace LinkedNotes {
         }
 #endif
         public NodeCircleController selectedNode;
-        public void RightTopButton() {
-                selectedNode = null;
-                Base_Node.editingNodes = !Base_Node.editingNodes;
-                if (editButton)
-                    editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
+        public void RightTopButton()
+        {
+            selectedNode = null;
+            Base_Node.editingNodes = !Base_Node.editingNodes;
+            if (editButton)
+                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
 
             CreateNodeButton.showCreateButtons = false;
 
@@ -184,8 +205,9 @@ namespace LinkedNotes {
             if (deleteButton)
                 deleteButton.gameObject.SetActive(false);
         }
-        
-        public void SetSelected(NodeCircleController node ) {
+
+        public void SetSelected(NodeCircleController node)
+        {
             if (selectedNode)
                 selectedNode.assumedPosition = false;
             selectedNode = node;
@@ -195,7 +217,8 @@ namespace LinkedNotes {
                 deleteButton.gameObject.SetActive(selectedNode);
         }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             CurrentNode = null;
             ClearPool();
             shortcuts?.Save_STDdata();
@@ -206,11 +229,11 @@ namespace LinkedNotes {
             base.OnEnable();
 
             NodeMGMT_inst = this;
-            
+
             ClearPool();
 
             shortcuts.Load_STDdata();
-            
+
             if (Application.isPlaying)
                 CurrentNode = Shortcuts.TryGetCurrentNode();
 
@@ -227,10 +250,12 @@ namespace LinkedNotes {
 
             nodesPool.Clear();
         }
-        
-        int logicVersion = -1; 
-        public override void DerrivedUpdate() {
-            if (logicVersion != currentLogicVersion) {
+
+        int logicVersion = -1;
+        public override void DerrivedUpdate()
+        {
+            if (logicVersion != currentLogicVersion)
+            {
                 UpdateVisibility();
                 logicVersion = currentLogicVersion;
             }
@@ -243,13 +268,16 @@ namespace LinkedNotes {
         public void AddLink() => VisualizeNode(CurrentNode.Add<NodeLinkComponent>());
 
         public void AddButton() => VisualizeNode(CurrentNode.Add<NodeButtonComponent>());
-       
-        public void DeleteSelected() {
 
-            if (selectedNode != null) {
+        public void DeleteSelected()
+        {
+
+            if (selectedNode != null)
+            {
                 var node = selectedNode.source;
 
-                if (node.parentNode != null) {
+                if (node.parentNode != null)
+                {
                     selectedNode.Unlink();
                     selectedNode = null;
                     node.parentNode.subNotes.Remove(node);
@@ -257,10 +285,15 @@ namespace LinkedNotes {
                 }
             }
         }
+
 #if !NO_PEGI
-        public void OnGUI() {
+        public void OnGUI()
+        {
             if (selectedNode)
-            window.Render(selectedNode.PEGI, selectedNode.ToPEGIstring());
+                window.Render(selectedNode);
+
+            if (_currentNode == null && shortcuts)
+                window.Render(shortcuts);
         }
 #endif
     }

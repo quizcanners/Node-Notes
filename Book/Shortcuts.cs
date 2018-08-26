@@ -9,19 +9,27 @@ using PlayerAndEditorGUI;
 namespace LinkedNotes
 {
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
-    public class Shortcuts : STD_ReferancesHolder, IKeepMySTD
-    {
+    public class Shortcuts : STD_ReferancesHolder, IKeepMySTD {
 
-        [NonSerialized] public static List<NodeBook> books = new List<NodeBook>(); // Shortcuts or a complete books
+        [NonSerialized]public static List<NodeBook_Base> books = new List<NodeBook_Base>(); 
+        public static NodeBook TryGetBook(int index) {
+            var book = books.TryGet(index);
 
+            if (book != null && book.GetType() == typeof(NodeBook_OffLoaded))
+                book = books.LoadBook(book as NodeBook_OffLoaded);
+            
+            return book as NodeBook;
+
+        }
+        
         public static int playingInBook;
         public static int playingInNode;
 
-        public static Node TryGetCurrentNode()
-        {
-            var book = books.TryGet(playingInBook);
-            if (book != null)
-            {
+        public static Node TryGetCurrentNode() {
+
+            var book = TryGetBook(playingInBook);
+            
+            if (book != null) {
                 var node = book.allBaseNodes[playingInNode];
                 if (node == null)
                     Debug.Log("Node is null");
@@ -44,15 +52,23 @@ namespace LinkedNotes
         [HideInInspector]
         [SerializeField]
         string std_Data = "";
+        string currentPlayerName = "Unknown";
         public string Config_STD {
-            get { return std_Data; }
-            set { std_Data = value; }
+            get {
+                string val = StuffLoader.LoadFromPersistantPath("Players", currentPlayerName);
+                if (val != null)  
+                    std_Data = val;
+                return std_Data;
+            }
+
+            set {
+                std_Data = value;
+                StuffSaver.SaveToPersistantPath("Players", currentPlayerName, std_Data);
+            }
         }
-
-
-
+        
 #if !NO_PEGI
-           int inspectedBook = -1;
+        int inspectedBook = -1;
 
         public override bool PEGI()
         {
@@ -62,8 +78,12 @@ namespace LinkedNotes
 
             "Active B:{0} N:{1} = {2}".F(playingInBook, playingInNode, TryGetCurrentNode().ToPEGIstring()).nl();
 
-            if (inspectedBook == -1)
+            if (inspectedBook == -1) {
+                
                 changed |= base.PEGI().nl();
+                if (!showDebug)
+                    changed |= "Player Name:".edit(ref currentPlayerName);
+            }
             else
                 showDebug = false;
 
@@ -72,7 +92,6 @@ namespace LinkedNotes
             
             return changed;
         }
-        
 #endif
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()

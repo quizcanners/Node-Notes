@@ -124,8 +124,7 @@ namespace LinkedNotes
 
 #endif
 
-        public T Add<T>() where T: Base_Node, new()
-         {
+        public T Add<T>() where T: Base_Node, new() {
              var newNode = new T();
              newNode.CreatedFor(this);
              subNotes.Add(newNode);

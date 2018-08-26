@@ -142,7 +142,7 @@
 
 		float4 col2 = tex2D(_MainTex, rotUV2);
 
-		float alp = saturate((col.g - col2.g + (_Time.x % 1)-0.5) * 8);
+		float alp = saturate((col.g - col2.g + (abs((((_Time.x+col.r)*2) % 2)-1) -0.5)*0.3   ) * 8);
 
 		col = col *  alp + col2 * (1 - alp);
 
@@ -152,7 +152,7 @@
 
 		col.a *= alpha;
 
-		float ambientBlock = pow((1.01 - col.a),32*col.r)*512*col.g;
+		float ambientBlock = pow((1.01 - col.a), 32 *col.a)*512 * col.g;
 
 		float3 scatter = 0;
 		float3 directLight = 0;
@@ -169,14 +169,14 @@
 		PointLightTransparent(scatter, directLight, i.worldPos.xyz - l3pos.xyz,
 			i.viewDir.xyz, l3col, ambientBlock);
 
-		col.rgb *= (directLight*ambientBlock * 4096 
+		col.rgb *= (directLight*ambientBlock * 1024 
 			+scatter
 			)*pow(col.a, 2+ toClick*3);
 
 		float3 mix = col.gbr + col.brg;
 		col.rgb += mix * mix*0.02;
 
-		col.a *= 2;
+		//col.a *= 2;
 
 		return col;
 
