@@ -59,7 +59,7 @@ namespace LinkedNotes
             if (parentNode != null)
                 parentNode.SetInspectedUpTheHierarchy(this);
         }
-        #if !NO_PEGI
+        #if PEGI
 
         public override bool PEGI() {
 

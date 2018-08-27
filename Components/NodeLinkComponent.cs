@@ -11,7 +11,7 @@ namespace LinkedNotes
     public class NodeLinkComponent : Base_Node
     {
         public int linkedNodeIndex = 0;
-        #if !NO_PEGI
+        #if PEGI
 
         public override bool PEGI() {
             bool changed = base.PEGI();

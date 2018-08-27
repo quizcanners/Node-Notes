@@ -99,7 +99,7 @@ namespace LinkedNotes
         bool editVis_Conditions = false;
         bool editEbl_Conditions = false;
         bool editResults = false;
-        #if !NO_PEGI
+        #if PEGI
 
         public override bool PEGI()
         {

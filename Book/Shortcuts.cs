@@ -67,7 +67,7 @@ namespace LinkedNotes
             }
         }
         
-#if !NO_PEGI
+#if PEGI
         int inspectedBook = -1;
 
         public override bool PEGI() {
@@ -83,7 +83,7 @@ namespace LinkedNotes
                 if (!showDebug)
                     changed |= "Player Name:".edit(ref currentPlayerName).nl();
 
-                if ("Get all book names".Click()) {
+                if ("Get all book names".Click().nl()) {
                     var lst = StuffLoader.ListFileNamesFromPersistantFolder(BookConversionExtensions.BooksFolder);
 
                     foreach (var e in lst) {

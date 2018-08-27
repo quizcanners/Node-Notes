@@ -7,10 +7,36 @@ using SharedTools_Stuff;
 namespace LinkedNotes
 {
 
-    public class WhiteBackground : MonoBehaviour, IManageFading, IGotDisplayName
+    public class WhiteBackground : ComponentSTD, IManageFading, IGotDisplayName
     {
 
         public bool isFading;
+
+        public Color color = Color.white;
+
+        public override bool PEGI()
+        {
+            bool changed = false;
+
+            "Background Color".edit(ref color).nl();
+
+
+            return changed;
+        }
+
+        public override bool Decode(string tag, string data)
+        {
+            switch (tag)
+            {
+                case "col": color = data.ToColor(); break;
+                default: return true;
+
+            }
+            return false;
+        }
+
+        public override StdEncoder Encode() => this.EncodeUnrecognized()
+            .Add("col", color);
 
         public void FadeAway() => isFading = true;
 

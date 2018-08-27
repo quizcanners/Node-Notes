@@ -17,6 +17,10 @@ namespace LinkedNotes {
 
         public Base_Node source;
 
+        public int background = 0;
+
+        public string backgroundConfig ="";
+
         #region TEXT
         public TextMeshPro textA;
 
@@ -33,7 +37,7 @@ namespace LinkedNotes {
         float activeTextAlpha = 0;
 
         #endregion
-#if !NO_PEGI
+#if PEGI
 
         public override string NameForPEGI {
             get {  return source.name; }
@@ -105,7 +109,7 @@ namespace LinkedNotes {
                 }
             }
         }
-#if !NO_PEGI
+#if PEGI
 
         bool showDependencies = false;
         public override bool PEGI() {
@@ -131,19 +135,40 @@ namespace LinkedNotes {
             if (!onPlayScreen)
             "Lerp parameter {0}".F(dominantParameter).nl();
 
-            if (circleRendy)
-            {
-                if (!onPlayScreen)
-                {
+            if (circleRendy) {
+
+                if (!onPlayScreen) {
+
                     if (newText != null)
                         "Changeing text to {0}".F(newText).nl();
 
                     if (isFading)
                         "Fading...{0}".F(fadePortion).nl();
+
                 }
 
+                if (source!= null && (source.GetType() == typeof(Node))) {
 
-                if (source == null || (!source.InspectingTriggerStuff))
+                    if ("Background ".select(ref background, Mgmt.backgroundControllers).nl())
+                    {
+                        changed = true;
+                        Mgmt.SetBackground(background, backgroundConfig);
+                    }
+
+                    var bg = Mgmt.backgroundControllers.TryGet(background);
+                    if (bg != null)
+                    {
+                        if (bg.Try_Nested_Inspect())
+                        {
+                            changed = true;
+                            var std = bg as ISTD;
+                            if (std != null)
+                                backgroundConfig = std.Encode().ToString();
+                        }
+                    }    
+                }
+
+               if (source == null || (!source.InspectingTriggerStuff))
                if (ActiveConfig.Nested_Inspect()) {
                     assumedPosition = false;
                     sh_currentColor = ActiveConfig.targetColor;
@@ -336,14 +361,10 @@ namespace LinkedNotes {
 
         public override bool Decode(string tag, string data)   {
             switch (tag)   {
-             /*   case "s": exploredVisuals.targetSize = data.ToFloat() * Vector3.one; break;
-                case "sc": exploredVisuals.targetSize = data.ToVector3(); break;
-                case "pos": exploredVisuals.targetLocalPosition = data.ToVector3(); break;
-                case "col": exploredVisuals.targetColor = data.ToColor(); break;*/
-
                 case "expVis": data.DecodeInto(out exploredVisuals); break;
                 case "subVis": data.DecodeInto(out subVisuals); break;
-
+                case "bg": background = data.ToInt(); break;
+                case "bg_cfg": backgroundConfig = data; break;
                 default: return false;
             }
 
@@ -355,7 +376,9 @@ namespace LinkedNotes {
 
             var cody = this.EncodeUnrecognized()
                 .Add("expVis", exploredVisuals)
-                .Add("subVis", subVisuals);
+                .Add("subVis", subVisuals)
+                .Add("bg", background)
+                .Add_String("bg_cfg", backgroundConfig);
            
             return cody;
         }
@@ -430,7 +453,7 @@ namespace LinkedNotes {
 
             return cody;
         }
-        #if !NO_PEGI
+        #if PEGI
 
         public override bool PEGI() {
 

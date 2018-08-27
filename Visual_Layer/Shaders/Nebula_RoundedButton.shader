@@ -126,9 +126,10 @@
 		uv = max(0, uv) / upscale;
 		uv *= uv;
 		float rad = (uv.x + uv.y);
-		float trim = saturate((1 - rad) * (10 * (2 - _Blur)) *(1 - _Courners));
-		col.a *= trim;
+		float trim = (1 - rad) * (10 * (2 - _Blur)) *(1 - _Courners);
+		col *= saturate(trim);
 
+		col.a += saturate(trim + 1)*0.2;
 
 		// Sparkle 2
 		float width = max(0, rad + angle - 0.85)*max(0, 1 + angle - rad);

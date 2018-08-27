@@ -20,7 +20,7 @@ namespace LinkedNotes
         
         int inspectedNode = -1;
         int inspectedEntry = -1;
-#if !NO_PEGI
+#if PEGI
         public static NodeBook inspected;
 
         public override bool PEGI()  {

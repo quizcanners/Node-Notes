@@ -28,7 +28,7 @@ namespace LinkedNotes
             }
             return true;
         }
-        #if !NO_PEGI
+        #if PEGI
 
         public override bool PEGI()
         {

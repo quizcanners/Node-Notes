@@ -15,7 +15,7 @@ namespace LinkedNotes
     public class Nodes_PEGI : LogicMGMT
     {
 
-#if !NO_PEGI
+#if PEGI
 
         pegi.windowPositionData window = new pegi.windowPositionData();
 #endif
@@ -36,13 +36,13 @@ namespace LinkedNotes
 
         public Button deleteButton;
 
-        public List<IManageFading> backgroundControllers = new List<IManageFading>();
+        public List<MonoBehaviour> backgroundControllers = new List<MonoBehaviour>();
         public void SetBackground (int index, string data)
         {
             index = Mathf.Clamp(index, 0, backgroundControllers.Count);
             for (int i=0; i<backgroundControllers.Count; i++)
             {
-                var bc = backgroundControllers[i];
+                var bc = backgroundControllers[i] as IManageFading;
                 if (bc != null) {
                     if (i == index) {
                         bc.TryFadeIn();
@@ -138,6 +138,10 @@ namespace LinkedNotes
                     Shortcuts.playingInNode = value.IndexForPEGI;
 
                     UpdateVisibility();
+
+                    var circle = _currentNode.visualRepresentation as NodeCircleController;
+
+                    NodeMGMT_inst.SetBackground(circle.background, circle.backgroundConfig);
                 }
             }
         }
@@ -169,8 +173,8 @@ namespace LinkedNotes
                     UpdateVisibility(sub);
             }
         }
-#if !NO_PEGI
 
+        #if PEGI
         public override bool PEGI()
         {
             bool changed = false;
@@ -205,6 +209,9 @@ namespace LinkedNotes
                     "Edit Button".edit(ref editButton).nl();
                     "Add Button".edit(ref addButton).nl();
                     "Delete Button".edit(ref deleteButton).nl();
+
+                    "Backgrounds".edit(() => backgroundControllers, this).nl();
+
                 }
 
                 pegi.nl();
@@ -212,7 +219,8 @@ namespace LinkedNotes
 
             return changed;
         }
-#endif
+        #endif
+
         public NodeCircleController selectedNode;
         public void RightTopButton()
         {
@@ -305,7 +313,7 @@ namespace LinkedNotes
             }
         }
 
-#if !NO_PEGI
+#if PEGI
         public void OnGUI() {
 
             if (selectedNode)

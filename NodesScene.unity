@@ -1309,7 +1309,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.599976, y: -7.7000732}
+  m_AnchoredPosition: {x: -13.599976, y: -7.7001953}
   m_SizeDelta: {x: -13.599976, y: -7.700001}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -1442,7 +1442,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b904a8a7e24ac749af2611c382ab066, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _nestedReferences: []
+  explorer:
+    states: []
+    inspectedState: -1
+    fileFolderHolder: STDEncodes
+    SaveToFileOptions: 0
+  showDebug: 0
+  inspectedStuff: -1
+  inspectedReference: -1
   isFading: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1274019442
 Transform:
   m_ObjectHideFlags: 0
@@ -1491,7 +1501,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.84000003, y: 0.25987735}
   m_AnchorMax: {x: 1, y: 0.374}
-  m_AnchoredPosition: {x: 4.1999207, y: 0.20004272}
+  m_AnchoredPosition: {x: 4.1999207, y: 0.20007324}
   m_SizeDelta: {x: 108.870026, y: 0.77856445}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1419288878
@@ -2059,7 +2069,7 @@ MonoBehaviour:
   showDebug: 0
   inspectedStuff: 0
   inspectedReference: -1
-  inspectedLogicBranchStuff: 2
+  inspectedLogicBranchStuff: 3
   inspectedTriggerGroup: -1
   tmpIndex: -1
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
@@ -2068,6 +2078,9 @@ MonoBehaviour:
   circlePrefab: {fileID: 114439652449945980, guid: f2ffb0611be89e447a5d6d79448036f7,
     type: 2}
   deleteButton: {fileID: 1235906091}
+  backgroundControllers:
+  - {fileID: 1274019441}
+  - {fileID: 1948565141}
   selectedNode: {fileID: 0}
 --- !u!4 &1828850218
 Transform:
@@ -2279,6 +2292,12 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3cab6926ff117546ba0173afb11e449, type: 2}
   m_IsPrefabAsset: 0
+--- !u!114 &1948565141 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114393639642364476, guid: c3cab6926ff117546ba0173afb11e449,
+    type: 2}
+  m_PrefabInternal: {fileID: 1948565140}
+  m_Script: {fileID: 11500000, guid: be9f7432cce087d4f8e06001ebcd0f5a, type: 3}
 --- !u!1 &2081864094
 GameObject:
   m_ObjectHideFlags: 0
