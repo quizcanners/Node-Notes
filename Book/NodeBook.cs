@@ -11,8 +11,6 @@ namespace LinkedNotes
     
     public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI {
         
-
-
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
@@ -20,6 +18,7 @@ namespace LinkedNotes
         
         int inspectedNode = -1;
         int inspectedEntry = -1;
+
 #if PEGI
         public static NodeBook inspected;
 
@@ -53,7 +52,8 @@ namespace LinkedNotes
             .Add("f", firstFree)
             .Add("sn", subNode)
             .Add_String("n", name)
-            .Add("in", inspectedNode)
+            .Add_ifNotNegative("in", inspectedNode)
+            .Add_ifNotNegative("inE", inspectedEntry)
             .Add("ep", entryPoints);
           
         public override bool Decode(string tag, string data) {
@@ -62,6 +62,7 @@ namespace LinkedNotes
                 case "sn": data.DecodeInto(out subNode); break;
                 case "n": name = data; break;
                 case "in": inspectedNode = data.ToInt(); break;
+                case "inE": inspectedEntry = data.ToInt(); break;
                 case "ep": data.DecodeInto(out entryPoints); break;
                 default: return false;
             }

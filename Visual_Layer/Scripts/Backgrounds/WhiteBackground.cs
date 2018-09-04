@@ -14,6 +14,7 @@ namespace LinkedNotes
 
         public Color color = Color.white;
 
+#if PEGI
         public override bool PEGI()
         {
             bool changed = false;
@@ -23,6 +24,8 @@ namespace LinkedNotes
 
             return changed;
         }
+#endif
+
 
         public override bool Decode(string tag, string data)
         {

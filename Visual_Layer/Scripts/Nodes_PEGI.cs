@@ -250,7 +250,7 @@ namespace LinkedNotes
         private void OnDisable() {
             CurrentNode = null;
             ClearPool();
-            shortcuts?.Save_STDdata();
+            shortcuts?.SaveAll();
         }
 
         public override void OnEnable()
@@ -261,7 +261,7 @@ namespace LinkedNotes
 
             ClearPool();
 
-            shortcuts.Load_STDdata();
+            shortcuts.LoadAll();
 
             if (Application.isPlaying)
                 CurrentNode = Shortcuts.TryGetCurrentNode();

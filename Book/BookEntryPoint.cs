@@ -11,9 +11,9 @@ namespace LinkedNotes
 
     public class BookEntryPoint : AbstractKeepUnrecognized_STD, IPEGI {
 
-        int nodeIndex = -1;
+        public int nodeIndex = -1;
 
-        bool startPoint;
+        public bool startPoint;
 
         public override bool Decode(string tag, string data)
         {
@@ -30,7 +30,7 @@ namespace LinkedNotes
             .Add_Bool("s", startPoint)
             .Add("ind", nodeIndex);
 
-
+#if PEGI
         public override bool PEGI()
         {
             bool changed = false;
@@ -41,5 +41,6 @@ namespace LinkedNotes
 
             return changed;
         }
+#endif
     }
 }

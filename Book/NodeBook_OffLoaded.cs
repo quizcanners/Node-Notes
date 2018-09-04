@@ -22,8 +22,8 @@ namespace LinkedNotes {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name);
 
+#if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {
-
             this.ToPEGIstring().write();
 
             if (icon.Load.Click())
@@ -31,12 +31,13 @@ namespace LinkedNotes {
 
             return false;
         }
+#endif
     }
     
-    public static class BookConversionExtensions {
+    public static class BookOffloadConversionExtensions {
 
         public const string BooksFolder = "Books";
-
+        
         public static NodeBook_OffLoaded Offload (this List<NodeBook_Base> list, NodeBook book){
             if (book != null && list.Contains(book)) {
                 int ind = list.IndexOf(book);
@@ -58,13 +59,11 @@ namespace LinkedNotes {
                 var book = new NodeBook();
                 book.LoadFromPersistantPath(BooksFolder, offloaded.name);
                 list[ind] = book;
-                //Debug.Log("{0} book loaded".F(book.name));
                 return book;
             }
             else Debug.LogError("List does not contain the book you are loading");
             return null;
         }
-
     }
 
 }

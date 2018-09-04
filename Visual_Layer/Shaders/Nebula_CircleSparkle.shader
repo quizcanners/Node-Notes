@@ -44,7 +44,7 @@
 		float3 normal : TEXCOORD1;
 		float2 texcoord : TEXCOORD2;
 		float3 viewDir: TEXCOORD4;
-		float4 screenPos : TEXCOORD5;
+		//float4 screenPos : TEXCOORD5;
 		float4 color: COLOR;
 	};
 
@@ -57,7 +57,7 @@
 		o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 		o.viewDir.xyz = WorldSpaceViewDir(v.vertex);
 		o.texcoord = v.texcoord.xy;
-		o.screenPos = ComputeScreenPos(o.pos);
+		//o.screenPos = ComputeScreenPos(o.pos);
 		o.color = v.color;
 
 		return o;
@@ -88,7 +88,7 @@
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 
 
-		float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2); 
+		//float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2); 
 		float alpha = saturate(pow(saturate((1 - (off.x + off.y) * 4)),8) * (1+i.color.a*8)) * 0.05;
 
 		float4 col = i.color;

@@ -9,9 +9,12 @@ using PlayerAndEditorGUI;
 namespace LinkedNotes
 {
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
-    public class Shortcuts : STD_ReferancesHolder, IKeepMySTD {
+    public class Shortcuts : STD_ReferancesHolder {
 
-        [NonSerialized]public static List<NodeBook_Base> books = new List<NodeBook_Base>(); 
+        [NonSerialized]public static List<NodeBook_Base> books = new List<NodeBook_Base>();
+        [NonSerialized]public static List<string> users = new List<string>();
+        public static SavedProgress user = new SavedProgress();
+
         public static NodeBook TryGetBook(int index) {
             var book = books.TryGet(index);
 
@@ -49,27 +52,27 @@ namespace LinkedNotes
             return null;
         }
 
-        [HideInInspector]
-        [SerializeField]
-        string std_Data = "";
-        string currentPlayerName = "Unknown";
-        public string Config_STD {
-            get {
-                string val = StuffLoader.LoadFromPersistantPath("Players", currentPlayerName);
-                if (val != null)  
-                    std_Data = val;
-                return std_Data;
-            }
+        static string FolderForKeepingStuff = "Unknown";
+     
+        void LoadUser(string uname) => StuffLoader.LoadFromPersistantPath("Users", uname).DecodeInto(out user);
+        
+        void SaveUser()
+        {
+            if (!users.Contains(user.name))
+                users.Add(user.name);
+            user.SaveToPersistantPath("Users", user.name);
+        }
 
-            set {
-                std_Data = value;
-                StuffSaver.SaveToPersistantPath("Players", currentPlayerName, std_Data);
-            }
+        public void LoadAll() => StuffLoader.LoadFromPersistantPath("Players", FolderForKeepingStuff);
+        
+        public void SaveAll() {
+            SaveUser();
+            StuffSaver.SaveToPersistantPath("Players", FolderForKeepingStuff, Encode().ToString());
         }
         
 #if PEGI
         int inspectedBook = -1;
-
+        string tmpUserName;
         public override bool PEGI() {
             bool changed = false;
 
@@ -81,10 +84,27 @@ namespace LinkedNotes
                 
                 changed |= base.PEGI().nl();
                 if (!showDebug)
-                    changed |= "Player Name:".edit(ref currentPlayerName).nl();
+                {
+                    string usr = user.name;
+
+                    if ("Profile".select(ref usr, users).nl()) {
+                        SaveUser();
+                        LoadUser(usr);
+                    }
+
+                    "New User:".edit(60, ref tmpUserName);
+
+                    if (!users.Contains(tmpUserName) && icon.Add.Click("Add new user")) {
+                        user = new SavedProgress();
+                        user.name = tmpUserName;
+                    }
+
+                    pegi.nl();
+
+                }
 
                 if ("Get all book names".Click().nl()) {
-                    var lst = StuffLoader.ListFileNamesFromPersistantFolder(BookConversionExtensions.BooksFolder);
+                    var lst = StuffLoader.ListFileNamesFromPersistantFolder(BookOffloadConversionExtensions.BooksFolder);
 
                     foreach (var e in lst) {
                         bool contains = false;
@@ -115,7 +135,9 @@ namespace LinkedNotes
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
             .Add("pb", playingInBook)
-            .Add("pn", playingInNode);
+            .Add("pn", playingInNode)
+            .Add("us", users)
+            .Add_String("curUser", user.name);
 
         public override ISTD Decode(string data)
         {
@@ -136,6 +158,8 @@ namespace LinkedNotes
                 case "books": data.DecodeInto(out books, this); break;
                 case "pb": playingInBook = data.ToInt(); break;
                 case "pn": playingInNode = data.ToInt(); break;
+                case "us": data.DecodeInto(out users); break;
+                case "curUser": LoadUser(data); break;
                 default: return false;
             }
             return true;
