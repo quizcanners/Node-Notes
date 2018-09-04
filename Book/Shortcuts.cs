@@ -13,6 +13,7 @@ namespace LinkedNotes
 
         [NonSerialized]public static List<NodeBook_Base> books = new List<NodeBook_Base>();
         [NonSerialized]public static List<string> users = new List<string>();
+
         public static SavedProgress user = new SavedProgress();
 
         public static NodeBook TryGetBook(int index) {
@@ -24,7 +25,17 @@ namespace LinkedNotes
             return book as NodeBook;
 
         }
-        
+
+        public static NodeBook TryGetBook(string name) {
+            var book = books.GetByIGotName(name);
+
+            if (book != null && book.GetType() == typeof(NodeBook_OffLoaded))
+                book = books.LoadBook(book as NodeBook_OffLoaded);
+
+            return book as NodeBook;
+        }
+
+
         public static int playingInBook;
         public static int playingInNode;
 
@@ -58,9 +69,9 @@ namespace LinkedNotes
         
         void SaveUser()
         {
-            if (!users.Contains(user.name))
-                users.Add(user.name);
-            user.SaveToPersistantPath("Users", user.name);
+            if (!users.Contains(user.userName))
+                users.Add(user.userName);
+            user.SaveToPersistantPath("Users", user.userName);
         }
 
         public void LoadAll() => StuffLoader.LoadFromPersistantPath("Players", FolderForKeepingStuff);
@@ -85,7 +96,7 @@ namespace LinkedNotes
                 changed |= base.PEGI().nl();
                 if (!showDebug)
                 {
-                    string usr = user.name;
+                    string usr = user.userName;
 
                     if ("Profile".select(ref usr, users).nl()) {
                         SaveUser();
@@ -95,8 +106,10 @@ namespace LinkedNotes
                     "New User:".edit(60, ref tmpUserName);
 
                     if (!users.Contains(tmpUserName) && icon.Add.Click("Add new user")) {
-                        user = new SavedProgress();
-                        user.name = tmpUserName;
+                        user = new SavedProgress
+                        {
+                            userName = tmpUserName
+                        };
                     }
 
                     pegi.nl();
@@ -112,9 +125,12 @@ namespace LinkedNotes
                             if (b.name.SameAs(e)) { contains = true; break; }
 
                         if (!contains) {
-                            var off = new NodeBook_OffLoaded();
-                            off.name = e;
-                            off.IndexForPEGI = books.Count;
+                            var off = new NodeBook_OffLoaded
+                            {
+                                name = e,
+                                IndexForPEGI = books.Count
+                            };
+
                             books.Add(off);
                         }
                     }
@@ -137,7 +153,7 @@ namespace LinkedNotes
             .Add("pb", playingInBook)
             .Add("pn", playingInNode)
             .Add("us", users)
-            .Add_String("curUser", user.name);
+            .Add_String("curUser", user.userName);
 
         public override ISTD Decode(string data)
         {
