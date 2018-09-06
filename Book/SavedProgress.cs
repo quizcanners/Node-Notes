@@ -63,7 +63,8 @@ namespace LinkedNotes
                 cody.Add_String("curB", cur.root.name)
                 .Add("cur", cur.IndexForPEGI);
             }
-            
+
+            return cody;
         }
 
         string tmpBook;

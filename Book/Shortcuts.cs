@@ -49,8 +49,7 @@ namespace LinkedNotes
                     Debug.Log("Node is null");
                 else
                 {
-                    var nn = node as Node;
-                    if (nn == null)
+                    if (!(node is Node nn))
                         Debug.Log("Node can't hold subnodes");
                     else
                         return nn;
@@ -63,7 +62,7 @@ namespace LinkedNotes
             return null;
         }
 
-        static string FolderForKeepingStuff = "Unknown";
+        static readonly string FolderForKeepingStuff = "Unknown";
      
         void LoadUser(string uname) => StuffLoader.LoadFromPersistantPath("Users", uname).DecodeInto(out user);
         
