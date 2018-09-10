@@ -2071,7 +2071,7 @@ MonoBehaviour:
   inspectedReference: -1
   inspectedLogicBranchStuff: 2
   inspectedTriggerGroup: -1
-  tmpIndex: -1
+  tmpIndex: 2
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   editButton: {fileID: 1742041633}
   addButton: {fileID: 2133683275}
