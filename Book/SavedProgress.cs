@@ -16,7 +16,7 @@ namespace LinkedNotes
 
         void BookMarkOrReturn (NodeBook nextBook) {
             
-            var existing = bookMarks.GetByIGotName(nextBook.name);
+            var existing = bookMarks.GetByIGotName(nextBook.NameForPEGI);
             
             if (existing == null) {
 
@@ -24,7 +24,7 @@ namespace LinkedNotes
 
                 if (currentBook != null) {
                     var bm = new BookMark() {
-                        name = currentBook.name,
+                        bookName = currentBook.NameForPEGI,
                         nodeIndex = Nodes_PEGI.CurrentNode.IndexForPEGI,
                         values = Values.global.Encode().ToString()
                     };
@@ -60,24 +60,27 @@ namespace LinkedNotes
 
             var cur = Nodes_PEGI.CurrentNode;
             if (cur != null) {
-                cody.Add_String("curB", cur.root.name)
+                cody.Add_String("curB", cur.root.NameForPEGI)
                 .Add("cur", cur.IndexForPEGI);
             }
 
             return cody;
         }
 
-        string tmpBook;
-        int tmpNode;
-
         public override ISTD Decode(string data)
         {
             var ret = base.Decode(data);
 
+            var b = Shortcuts.TryGetBook(tmpBook);
 
+            if (b != null) 
+                Nodes_PEGI.CurrentNode = b.allBaseNodes[tmpNode] as Node;
 
             return ret;
         }
+
+        static string tmpBook;
+        static int tmpNode;
 
         public override bool Decode(string tag, string data) {
            switch (tag) {

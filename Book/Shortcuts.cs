@@ -16,16 +16,6 @@ namespace LinkedNotes
 
         public static SavedProgress user = new SavedProgress();
 
-        public static NodeBook TryGetBook(int index) {
-            var book = books.TryGet(index);
-
-            if (book != null && book.GetType() == typeof(NodeBook_OffLoaded))
-                book = books.LoadBook(book as NodeBook_OffLoaded);
-            
-            return book as NodeBook;
-
-        }
-
         public static NodeBook TryGetBook(string name) {
             var book = books.GetByIGotName(name);
 
@@ -34,50 +24,31 @@ namespace LinkedNotes
 
             return book as NodeBook;
         }
-
-
-        public static int playingInBook;
-        public static int playingInNode;
-
-        public static Node TryGetCurrentNode() {
-
-            var book = TryGetBook(playingInBook);
-            
-            if (book != null) {
-                var node = book.allBaseNodes[playingInNode];
-                if (node == null)
-                    Debug.Log("Node is null");
-                else
-                {
-                    if (!(node is Node nn))
-                        Debug.Log("Node can't hold subnodes");
-                    else
-                        return nn;
-                }
-                return null;
-            }
-            else
-                Debug.Log("Book is null");
-
-            return null;
-        }
-
-        static readonly string FolderForKeepingStuff = "Unknown";
-     
-        void LoadUser(string uname) => StuffLoader.LoadFromPersistantPath("Users", uname).DecodeInto(out user);
         
-        void SaveUser()
-        {
+        static readonly string _usersFolder = "Users";
+      
+        void LoadUser(string uname) => StuffLoader.LoadFromPersistantPath(_usersFolder, uname).DecodeInto(out user);
+        
+        void SaveUser() {
+
             if (!users.Contains(user.userName))
                 users.Add(user.userName);
-            user.SaveToPersistantPath("Users", user.userName);
+            user.SaveToPersistantPath(_usersFolder, user.userName);
         }
 
-        public void LoadAll() => StuffLoader.LoadFromPersistantPath("Players", FolderForKeepingStuff);
+        void DelteUserFile(string uname) {
+            StuffDeleter.DeleteFile_PersistantFolder(_usersFolder, uname);
+        }
+
+        static readonly string _generalStuffFolder = "General";
+
+        static readonly string _generalStuffFile = "config";
+
+        public void LoadAll() => this.LoadFromPersistantPath(_generalStuffFolder, _generalStuffFile);
         
         public void SaveAll() {
             SaveUser();
-            StuffSaver.SaveToPersistantPath("Players", FolderForKeepingStuff, Encode().ToString());
+            StuffSaver.SaveToPersistantPath(_generalStuffFolder, _generalStuffFile, Encode().ToString());
         }
         
 #if PEGI
@@ -88,13 +59,10 @@ namespace LinkedNotes
 
             "Shortcuts".nl();
 
-            "Active B:{0} N:{1} = {2}".F(playingInBook, playingInNode, TryGetCurrentNode().ToPEGIstring()).nl();
-
             if (inspectedBook == -1) {
                 
                 changed |= base.PEGI().nl();
-                if (!showDebug)
-                {
+                if (!showDebug) {
                     string usr = user.userName;
 
                     if ("Profile".select(ref usr, users).nl()) {
@@ -102,17 +70,33 @@ namespace LinkedNotes
                         LoadUser(usr);
                     }
 
+                    pegi.nl();
+
                     "New User:".edit(60, ref tmpUserName);
 
-                    if (!users.Contains(tmpUserName) && icon.Add.Click("Add new user")) {
-                        user = new SavedProgress
+                    if (tmpUserName.Length>3 && !users.Contains(tmpUserName))
+                    {
+                        if (icon.Add.Click("Add new user"))
                         {
-                            userName = tmpUserName
-                        };
+                            user = new SavedProgress
+                            {
+                                userName = tmpUserName
+                            };
+                        }
+
+                        if (icon.Refresh.Click("Rename {0}".F(user.userName)))
+                        {
+                            users.Remove(user.userName);
+
+                            DelteUserFile(user.userName);
+
+                            user.userName = tmpUserName;
+
+                            SaveUser();
+                        }
                     }
 
                     pegi.nl();
-
                 }
 
                 if ("Get all book names".Click().nl()) {
@@ -121,13 +105,12 @@ namespace LinkedNotes
                     foreach (var e in lst) {
                         bool contains = false;
                         foreach (var b in books)
-                            if (b.name.SameAs(e)) { contains = true; break; }
+                            if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
 
                         if (!contains) {
                             var off = new NodeBook_OffLoaded
                             {
-                                name = e,
-                                IndexForPEGI = books.Count
+                                name = e
                             };
 
                             books.Add(off);
@@ -146,11 +129,8 @@ namespace LinkedNotes
 #endif
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add("vals", Values.global, this)
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
-            .Add("pb", playingInBook)
-            .Add("pn", playingInNode)
             .Add("us", users)
             .Add_String("curUser", user.userName);
 
@@ -158,21 +138,14 @@ namespace LinkedNotes
         {
             var ret = base.Decode(data);
 
-            for (int i = 0; i < books.Count; i++)
-                books[i].IndexForPEGI = i;
-
             return ret;
         }
 
         public override bool Decode(string tag, string data)
         {
-            switch (tag)
-            {
-                case "vals": data.DecodeInto(out Values.global, this); break;
+            switch (tag)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "books": data.DecodeInto(out books, this); break;
-                case "pb": playingInBook = data.ToInt(); break;
-                case "pn": playingInNode = data.ToInt(); break;
                 case "us": data.DecodeInto(out users); break;
                 case "curUser": LoadUser(data); break;
                 default: return false;

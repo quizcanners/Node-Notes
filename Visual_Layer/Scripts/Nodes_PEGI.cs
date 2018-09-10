@@ -131,11 +131,7 @@ namespace LinkedNotes
 
                 _currentNode = value;
 
-                if (_currentNode != null)
-                {
-
-                    Shortcuts.playingInBook = value.root.IndexForPEGI;
-                    Shortcuts.playingInNode = value.IndexForPEGI;
+                if (_currentNode != null) {
 
                     UpdateVisibility();
 
@@ -264,9 +260,6 @@ namespace LinkedNotes
             ClearPool();
 
             shortcuts.LoadAll();
-
-            if (Application.isPlaying)
-                CurrentNode = Shortcuts.TryGetCurrentNode();
 
             editButton.text = "Edit";
             if (addButton)

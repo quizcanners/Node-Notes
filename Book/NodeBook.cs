@@ -19,6 +19,8 @@ namespace LinkedNotes
         int inspectedNode = -1;
         int inspectedEntry = -1;
 
+        public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
+
 #if PEGI
         public static NodeBook inspected;
 
@@ -36,7 +38,7 @@ namespace LinkedNotes
         }
         
         public bool PEGI_inList(IList list, int ind, ref int edited) {
-           var changed = pegi.edit(ref name);
+           var changed = pegi.edit(ref subNode.name);
 
             if (icon.Edit.Click())
                 edited = ind;
@@ -51,16 +53,15 @@ namespace LinkedNotes
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("f", firstFree)
             .Add("sn", subNode)
-            .Add_String("n", name)
             .Add_ifNotNegative("in", inspectedNode)
             .Add_ifNotNegative("inE", inspectedEntry)
             .Add("ep", entryPoints);
           
         public override bool Decode(string tag, string data) {
             switch (tag) {
+                case "n": subNode.name = data; break;
                 case "f": firstFree = data.ToInt(); break;
                 case "sn": data.DecodeInto(out subNode); break;
-                case "n": name = data; break;
                 case "in": inspectedNode = data.ToInt(); break;
                 case "inE": inspectedEntry = data.ToInt(); break;
                 case "ep": data.DecodeInto(out entryPoints); break;

@@ -10,19 +10,21 @@ namespace LinkedNotes
     
         public int nodeIndex;
         public string values;
+        public string bookName;
 
+        public override string NameForPEGI { get => bookName; set => bookName = value; }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("vals", values)
             .Add("ind", nodeIndex)
-            .Add_String("n", name);
+            .Add_String("n", bookName);
         
         public override bool Decode(string tag, string data) {
             switch (tag)
             {
                 case "vals": values = data; break;
                 case "ind": nodeIndex = data.ToInt(); break;
-                case "n": name = data; break;
+                case "n": bookName = data; break;
                 default: return false;
             }
             return true;

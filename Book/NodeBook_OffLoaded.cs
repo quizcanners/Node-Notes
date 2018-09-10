@@ -9,6 +9,10 @@ namespace LinkedNotes {
 
         public override string NameForPEGIdisplay() => "Offloaded {0}".F(name);
 
+        public string name;
+
+        public override string NameForPEGI { get => name; set => name = value; }
+
         public override bool Decode(string tag, string data) {
 
             switch (tag) {
@@ -41,9 +45,9 @@ namespace LinkedNotes {
         public static NodeBook_OffLoaded Offload (this List<NodeBook_Base> list, NodeBook book){
             if (book != null && list.Contains(book)) {
                 int ind = list.IndexOf(book);
-                book.SaveToPersistantPath(BooksFolder, book.name);
+                book.SaveToPersistantPath(BooksFolder, book.NameForPEGI);
                 var off = new NodeBook_OffLoaded {
-                    name = book.name
+                    name = book.NameForPEGI
                 };
                 list[ind] = off;
                 return off;

@@ -76,15 +76,16 @@ namespace LinkedNotes
 
                 if (!onPlayScreen && this != Nodes_PEGI.CurrentNode && icon.Play.Click())
                     Nodes_PEGI.CurrentNode = this;
-                
-                if (Mgmt.Cut_Paste != null)  {
 
-                    bool canPaste = (Mgmt.Cut_Paste.root == root) && (!isOneOfChildrenOf(Mgmt.Cut_Paste as Node)) ;
+                var cp = Mgmt.Cut_Paste;
+
+                if (cp != null)  {
+
+                    bool canPaste = (Mgmt.Cut_Paste.root == root) && cp != this && !subNotes.Contains(cp) && (!isOneOfChildrenOf(cp as Node)) ;
                  
                         if (icon.Delete.Click("Remove Cut / Paste object"))
                             Mgmt.Cut_Paste = null;
-                        else
-                        {
+                        else {
                             (Mgmt.Cut_Paste.ToPEGIstring() + (canPaste ? "": " can't paste parent to child")).write();
                             if (canPaste && icon.Paste.Click())
                             {
@@ -93,11 +94,9 @@ namespace LinkedNotes
                                 changed = true;
                             }
                         }
-                    
                     pegi.nl();
                 }
             }
-
 
             if (!showDebug && !onPlayScreen && !InspectingTriggerStuff) {
 
@@ -110,18 +109,12 @@ namespace LinkedNotes
                     }
 
                     if (inspectedSubnode == -1) {
-
                         pegi.nl();
-
                         var newNode = name.edit_List(subNotes, ref inspectedSubnode,  ref changed);
 
                         if (newNode != null)
-                        {
-                            Debug.Log("Adding new one");
                             newNode.CreatedFor(this);
-                        }
                     }
-                
             }
             return changed;
         }
