@@ -235,6 +235,8 @@ namespace LinkedNotes
                 addButton.gameObject.SetActive(Base_Node.editingNodes);
             if (deleteButton)
                 deleteButton.gameObject.SetActive(false);
+
+            AddLogicVersion();
         }
 
         public void SetSelected(NodeCircleController node) {
@@ -290,7 +292,10 @@ namespace LinkedNotes
             }
         }
 
-        public void ToggleShowAddButtons() => CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
+        public void ToggleShowAddButtons() {
+            AddLogicVersion();
+            CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
+        }
 
         public void AddNode() => VisualizeNode(CurrentNode.Add<Node>());
 

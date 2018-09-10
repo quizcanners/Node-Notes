@@ -78,18 +78,22 @@ namespace LinkedNotes
                     Nodes_PEGI.CurrentNode = this;
                 
                 if (Mgmt.Cut_Paste != null)  {
-                    if (icon.Delete.Click())
-                        Mgmt.Cut_Paste = null;
-                    else  {
-                        Mgmt.Cut_Paste.ToPEGIstring().write();
-                        if (icon.Paste.Click())
-                        {
-                            Mgmt.Cut_Paste.MoveTo(this);
-                            Mgmt.Cut_Paste = null;
-                            changed = true;
-                        }
-                    }
 
+                    bool canPaste = (Mgmt.Cut_Paste.root == root) && (!isOneOfChildrenOf(Mgmt.Cut_Paste as Node)) ;
+                 
+                        if (icon.Delete.Click("Remove Cut / Paste object"))
+                            Mgmt.Cut_Paste = null;
+                        else
+                        {
+                            (Mgmt.Cut_Paste.ToPEGIstring() + (canPaste ? "": " can't paste parent to child")).write();
+                            if (canPaste && icon.Paste.Click())
+                            {
+                                Mgmt.Cut_Paste.MoveTo(this);
+                                Mgmt.Cut_Paste = null;
+                                changed = true;
+                            }
+                        }
+                    
                     pegi.nl();
                 }
             }
@@ -109,7 +113,7 @@ namespace LinkedNotes
 
                         pegi.nl();
 
-                        var newNode = name.edit_List(subNotes, ref inspectedSubnode, true, ref changed);
+                        var newNode = name.edit_List(subNotes, ref inspectedSubnode,  ref changed);
 
                         if (newNode != null)
                         {

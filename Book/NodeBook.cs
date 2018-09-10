@@ -27,7 +27,7 @@ namespace LinkedNotes
             inspected = this;
 
             if (subNode.inspectedSubnode == -1)
-                "Book Entries".edit_List(entryPoints, ref inspectedEntry, true);
+                "Book Entries".edit_List(entryPoints, ref inspectedEntry);
 
             changed |= subNode.Nested_Inspect();
 

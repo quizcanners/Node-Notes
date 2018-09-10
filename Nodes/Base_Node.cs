@@ -35,6 +35,21 @@ namespace LinkedNotes
             }
         }
 
+        public bool isOneOfChildrenOf(Node other) {
+
+            if (other == null)
+                return false;
+
+            if (parentNode != null && parentNode!= this) {
+                if (parentNode == other)
+                    return true;
+                else
+                    return parentNode.isOneOfChildrenOf(other);
+            }
+
+            return false;
+        }
+
         public bool Conditions_isVisibile() {
             UpdateLogic();
             return visConditionsResult;
@@ -160,6 +175,9 @@ namespace LinkedNotes
 
             if (parentNode == null)
                 return "{0} : {1} No Parent Node detected".F(IndexForPEGI, name);
+
+            if (parentNode == this)
+                return "Is it's own parent";
             return null;
         }
 

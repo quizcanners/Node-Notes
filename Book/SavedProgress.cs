@@ -46,7 +46,7 @@ namespace LinkedNotes
             if ((isADeveloper || Application.isEditor) && "Make a user".Click().nl())
                 isADeveloper = false;
 
-            "Marks ".edit_List(bookMarks,ref editedMark, true);
+            "Marks ".edit_List(bookMarks,ref editedMark);
 
             return changed;
         }

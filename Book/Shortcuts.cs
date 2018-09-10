@@ -139,7 +139,7 @@ namespace LinkedNotes
                 showDebug = false;
 
             if (!showDebug)
-                "Books ".edit_List(books, ref inspectedBook, true);
+                "Books ".edit_List(books, ref inspectedBook);
             
             return changed;
         }
