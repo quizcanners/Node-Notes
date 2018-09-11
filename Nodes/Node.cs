@@ -13,6 +13,15 @@ namespace LinkedNotes
 
         public List<Base_Node> subNotes = new List<Base_Node>();
 
+        public Node() {
+
+        }
+
+        public Node(string name)
+        {
+            NameForPEGI = name;
+        }
+
         public int inspectedSubnode = -1;
 
         public override string NeedAttention()

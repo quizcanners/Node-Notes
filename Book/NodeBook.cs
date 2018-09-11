@@ -14,12 +14,27 @@ namespace LinkedNotes
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
-        public Node subNode; 
+        public Node subNode = new Node();
         
+        #region Inspector
         int inspectedNode = -1;
         int inspectedEntry = -1;
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
+
+        public void SaveToFile() => this.SaveToPersistantPath(BooksFolder, NameForPEGI);
+        
+        public void DeleteFile()
+        {
+
+        }
+
+        public void Rename(String newName)
+        {
+            DeleteFile();
+            subNode.name = newName;
+            SaveToFile();
+        }
 
 #if PEGI
         public static NodeBook inspected;
@@ -38,7 +53,11 @@ namespace LinkedNotes
         }
         
         public bool PEGI_inList(IList list, int ind, ref int edited) {
-           var changed = pegi.edit(ref subNode.name);
+            var changed = false;
+
+            if (pegi.editDelayed(ref subNode.name)) {
+
+            }
 
             if (icon.Edit.Click())
                 edited = ind;
@@ -49,6 +68,9 @@ namespace LinkedNotes
             return changed;
         }
 #endif
+        #endregion
+        
+        #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("f", firstFree)
@@ -81,6 +103,8 @@ namespace LinkedNotes
             
             return ret;
         }
+
+        #endregion
 
     }
 }

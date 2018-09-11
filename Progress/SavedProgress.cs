@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 
 namespace LinkedNotes
 {
-    public class SavedProgress: AbstractKeepUnrecognized_STD {
+    public class SavedProgress: AbstractKeepUnrecognized_STD, IGotName {
 
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
@@ -81,6 +81,8 @@ namespace LinkedNotes
 
         static string tmpBook;
         static int tmpNode;
+
+        public string NameForPEGI { get => userName; set => userName =value; }
 
         public override bool Decode(string tag, string data) {
            switch (tag) {

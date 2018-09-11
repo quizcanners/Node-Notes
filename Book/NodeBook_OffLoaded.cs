@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 namespace LinkedNotes {
     public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
 
-        public override string NameForPEGIdisplay() => "Offloaded {0}".F(name);
+        public override string NameForPEGIdisplay() => "{0} [Offloaded]".F(name);
 
         public string name;
 
@@ -40,15 +40,16 @@ namespace LinkedNotes {
     
     public static class BookOffloadConversionExtensions {
 
-        public const string BooksFolder = "Books";
+    
         
         public static NodeBook_OffLoaded Offload (this List<NodeBook_Base> list, NodeBook book){
             if (book != null && list.Contains(book)) {
                 int ind = list.IndexOf(book);
-                book.SaveToPersistantPath(BooksFolder, book.NameForPEGI);
+                book.SaveToFile(); 
                 var off = new NodeBook_OffLoaded {
                     name = book.NameForPEGI
                 };
+
                 list[ind] = off;
                 return off;
             }
@@ -61,7 +62,7 @@ namespace LinkedNotes {
             if (offloaded != null && list.Contains(offloaded)) {
                 int ind = list.IndexOf(offloaded);
                 var book = new NodeBook();
-                book.LoadFromPersistantPath(BooksFolder, offloaded.name);
+                book.LoadFromPersistantPath(NodeBook_Base.BooksFolder, offloaded.name);
                 list[ind] = book;
                 return book;
             }

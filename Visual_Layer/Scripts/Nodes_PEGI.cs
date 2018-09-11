@@ -12,11 +12,9 @@ namespace LinkedNotes
 {
 
     [ExecuteInEditMode]
-    public class Nodes_PEGI : LogicMGMT
-    {
+    public class Nodes_PEGI : LogicMGMT {
 
 #if PEGI
-
         pegi.windowPositionData window = new pegi.windowPositionData();
 #endif
 
@@ -25,8 +23,6 @@ namespace LinkedNotes
         [NonSerialized] public Base_Node Cut_Paste;
 
         public Shortcuts shortcuts;
-
-        static Node _currentNode;
 
         public TextMeshProUGUI editButton;
 
@@ -98,23 +94,21 @@ namespace LinkedNotes
 
         public static Node CurrentNode
         {
-            get { return _currentNode; }
-            set
-            {
+            get { return Shortcuts._currentNode; }
+            set {
 
                 NodeMGMT_inst.SetSelected(null);
                 
-
                 Node wasAParent = null;
 
-                if (value != null && _currentNode != null)
+                if (value != null && Shortcuts._currentNode != null)
                 {
                     var s = value as Node;
 
                     if (s != null)
                     {
-                        if (s.subNotes.Contains(_currentNode))
-                            wasAParent = _currentNode;
+                        if (s.subNotes.Contains(Shortcuts._currentNode))
+                            wasAParent = Shortcuts._currentNode;
                     }
                 }
 
@@ -129,31 +123,29 @@ namespace LinkedNotes
 
                 firstFree = 0;
 
-                _currentNode = value;
+                Shortcuts._currentNode = value;
 
-                if (_currentNode != null) {
+                if (Shortcuts._currentNode != null) {
 
                     UpdateVisibility();
 
-                    var circle = _currentNode.visualRepresentation as NodeCircleController;
+                    var circle = Shortcuts._currentNode.visualRepresentation as NodeCircleController;
 
                     NodeMGMT_inst.SetBackground(circle.background, circle.backgroundConfig);
                 }
             }
         }
 
-        public static void UpdateVisibility(Base_Node node)
-        {
+        public static void UpdateVisibility(Base_Node node)  {
 
-            if (node != null)
-            {
-                if (node.visualRepresentation == null)
-                {
+            if (node != null) {
+
+                if (node.visualRepresentation == null)  {
+
                     if (Base_Node.editingNodes || (node.Conditions_isVisibile()))// && node.parentNode != null))
                         VisualizeNode(node);
-                }
-                else
-                {
+                } else {
+
                     if (!Base_Node.editingNodes && !node.Conditions_isVisibile())
                         (node.visualRepresentation as NodeCircleController).Unlink();
                 }
@@ -162,29 +154,31 @@ namespace LinkedNotes
 
         public static void UpdateVisibility()
         {
-            if (_currentNode != null)
+            var cn = CurrentNode;
+
+            if (cn != null)
             {
-                UpdateVisibility(_currentNode);
-                foreach (var sub in _currentNode.subNotes)
+                UpdateVisibility(cn);
+                foreach (var sub in cn.subNotes)
                     UpdateVisibility(sub);
             }
         }
 
+        #region Inspector
         #if PEGI
-        public override bool PEGI()
-        {
+
+        public override bool PEGI() {
+
             bool changed = false;
 
-            if (!circlePrefab)
-            {
+            if (!circlePrefab) {
                 changed |= "Circles Prefab".edit(ref circlePrefab).nl();
                 return changed;
             }
 
             changed |= base.PEGI();
 
-            if (!showDebug)
-            {
+            if (!showDebug) {
 
                 if ("Values ".fold_enter_exit(ref inspectedLogicBranchStuff, 1))
                     Values.global.PEGI();
@@ -199,23 +193,37 @@ namespace LinkedNotes
                 else
                     pegi.nl();
 
-                if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3))
-                {
+                if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3)) {
                     pegi.nl();
                     "Edit Button".edit(ref editButton).nl();
                     "Add Button".edit(ref addButton).nl();
                     "Delete Button".edit(ref deleteButton).nl();
-
                     "Backgrounds".edit(() => backgroundControllers, this).nl();
-
                 }
 
                 pegi.nl();
+
+                if (inspectedLogicBranchStuff == -1 && "Encode / Decode Test".Click().nl())
+                {
+                    OnDisable();
+                    OnEnable();
+                }
             }
 
             return changed;
         }
+
+        public void OnGUI() {
+
+            if (selectedNode)
+                window.Render(selectedNode);
+
+            if (CurrentNode == null && shortcuts)
+                window.Render(shortcuts);
+        }
+
         #endif
+        #endregion
 
         public NodeCircleController selectedNode;
         public void RightTopButton()
@@ -311,15 +319,5 @@ namespace LinkedNotes
             }
         }
 
-#if PEGI
-        public void OnGUI() {
-
-            if (selectedNode)
-                window.Render(selectedNode);
-
-            if (_currentNode == null && shortcuts)
-                window.Render(shortcuts);
-        }
-#endif
     }
 }
