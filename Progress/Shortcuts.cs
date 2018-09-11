@@ -34,9 +34,13 @@ namespace LinkedNotes {
             user.SaveToPersistantPath(_usersFolder, user.userName);
         }
 
-        void DeleteUser() => DeleteUser(user.userName);
+        void DeleteUser() {
+            DeleteUser_File(user.userName);
+            if (users.Count > 0)
+                LoadUser(users[0]);
+        }
         
-        void DeleteUser(string uname) {
+        void DeleteUser_File(string uname) {
             StuffDeleter.DeleteFile_PersistantFolder(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
@@ -113,7 +117,7 @@ namespace LinkedNotes {
 
                     string usr = user.userName;
 
-                    if (icon.Delete.Click())
+                    if (users.Count>0 && icon.Delete.Click())
                         DeleteUser();
                     
                     if ("Profile".select(50, ref usr, users)) {

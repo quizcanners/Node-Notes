@@ -12,16 +12,7 @@ namespace LinkedNotes
     { 
 
         public List<Base_Node> subNotes = new List<Base_Node>();
-
-        public Node() {
-
-        }
-
-        public Node(string name)
-        {
-            NameForPEGI = name;
-        }
-
+        
         public int inspectedSubnode = -1;
 
         public override string NeedAttention()
@@ -136,12 +127,28 @@ namespace LinkedNotes
              subNotes.Add(newNode);
              return newNode;
         }
-        
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add("sub", subNotes)
-            .Add("b", base.Encode())
-            .Add("isn", inspectedSubnode);
-    
+
+        LoopLock loopLock = new LoopLock();
+
+        public override StdEncoder Encode() {
+
+            if (loopLock.Unlocked) {
+                using (loopLock.Lock()) {
+
+                    var cody = this.EncodeUnrecognized()
+                     .Add("sub", subNotes)
+                     .Add("b", base.Encode())
+                     .Add("isn", inspectedSubnode);
+
+                    return cody;
+                }
+            }
+            else
+                Debug.LogError("Infinite loop detected at {0}. Node is probably became a child of itself. ".F(NameForPEGI));
+
+            return new StdEncoder();
+        }
+
         public override bool Decode(string tag, string data)
         {
             switch (tag)  {

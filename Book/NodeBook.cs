@@ -24,14 +24,23 @@ namespace LinkedNotes
 
         public void SaveToFile() => this.SaveToPersistantPath(BooksFolder, NameForPEGI);
         
-        public void DeleteFile()
-        {
+        public void DeleteFile(string bname) => StuffDeleter.DeleteFile_PersistantFolder(BooksFolder, bname);
+        
+        public void TryRename(String newName) {
 
-        }
+            if (subNode.name.SameAs(newName))
+                return;
 
-        public void Rename(String newName)
-        {
-            DeleteFile();
+            if (newName.Length < 3) {
+                Debug.LogError("Name is too short");
+                return;
+            }
+            if (Shortcuts.books.GetByIGotName(newName) != null) {
+                Debug.LogError("Book with this name already exists");
+                return;
+            }
+
+            DeleteFile(subNode.name);
             subNode.name = newName;
             SaveToFile();
         }
@@ -44,7 +53,7 @@ namespace LinkedNotes
             inspected = this;
 
             if (subNode.inspectedSubnode == -1)
-                "Book Entries".edit_List(entryPoints, ref inspectedEntry);
+                "Entry Points".edit_List(entryPoints, ref inspectedEntry);
 
             changed |= subNode.Nested_Inspect();
 
@@ -55,10 +64,10 @@ namespace LinkedNotes
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             var changed = false;
 
-            if (pegi.editDelayed(ref subNode.name)) {
-
-            }
-
+            string tmp = subNode.name;
+            if (pegi.editDelayed(ref tmp)) 
+                TryRename(tmp);
+            
             if (icon.Edit.Click())
                 edited = ind;
 

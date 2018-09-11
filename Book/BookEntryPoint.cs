@@ -9,11 +9,15 @@ using STD_Logic;
 namespace LinkedNotes
 {
 
-    public class BookEntryPoint : AbstractKeepUnrecognized_STD, IPEGI {
+    public class BookEntryPoint : AbstractKeepUnrecognized_STD, IPEGI, IGotName {
+
+        public string entryPointName = "Rename Me";
 
         public int nodeIndex = -1;
 
         public bool startPoint;
+
+        public string NameForPEGI { get => entryPointName; set => entryPointName = value; }
 
         public override bool Decode(string tag, string data)
         {
@@ -21,6 +25,7 @@ namespace LinkedNotes
             {
                 case "s": startPoint = data.ToBool(); break;
                 case "ind": nodeIndex = data.ToInt(); break;
+                case "Name": entryPointName = data; break;
                 default: return false;
             }
             return true;
@@ -28,16 +33,21 @@ namespace LinkedNotes
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_Bool("s", startPoint)
-            .Add("ind", nodeIndex);
+            .Add("ind", nodeIndex)
+            .Add_String("Name", entryPointName);
 
 #if PEGI
         public override bool PEGI()
         {
             bool changed = false;
 
-            "On Node".select_iGotIndex_SameClass<Base_Node, Node>(ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
+            "Tag".edit(40, ref entryPointName).nl();
 
-            "Game Start Point".toggle(ref startPoint).nl();
+            "Tag should not change after it was used by other book to link to this one".writeOneTimeHint("KeepTags");
+
+            "On Node".select_iGotIndex_SameClass<Base_Node, Node>(60, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
+            
+            "Can Be A Game Start".toggle(ref startPoint).nl();
 
             return changed;
         }
