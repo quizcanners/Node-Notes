@@ -8,24 +8,29 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class SavedProgress: AbstractKeepUnrecognized_STD, IGotName {
+    public class SavedProgress: AbstractKeepUnrecognized_STD, IGotName, IPEGI, IGotDisplayName {
 
+        public string startingPoint = "";
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
         public bool isADeveloper = false;
 
         static Node _currentNode;
 
-        public Node CurrentNode
-        {
+        public Node CurrentNode {
             get => _currentNode;
             set  {
+
+                if (value == null) {
+                    SaveCurrentBook();
+                    _currentNode = null;
+                    return;
+                }
 
                 if (_currentNode != null && _currentNode.root != value.root)
                     SetNextBook(value.root);
 
                 _currentNode = value;
-
             }
         }
 
@@ -49,26 +54,35 @@ namespace NodeNotes
             SetNextBook(b);
         }
 
+        void SaveCurrentBook() {
+
+            if (_currentNode != null) {
+
+                var currentBook = _currentNode.root;
+
+                if (currentBook != null) {
+                    bookMarks.Add(new BookMark()
+                    {
+                        bookName = currentBook.NameForPEGI,
+                        nodeIndex = _currentNode.IndexForPEGI,
+                        values = Values.global.Encode().ToString()
+                    });
+                }
+            }
+        }
+
         void SetNextBook (NodeBook nextBook) {
 
             if (nextBook == null)
                 Debug.LogError("Next book is null");
 
+            if (startingPoint.Length == 0)
+                startingPoint = nextBook.NameForPEGI;
+
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
 
-            if (bMarkForNextBook == null)  {
-
-                var currentBook = _currentNode.root;
-
-                if (currentBook != null)  {
-
-                    var bm = new BookMark()  {
-                        bookName = currentBook.NameForPEGI,
-                        nodeIndex = _currentNode.IndexForPEGI,
-                        values = Values.global.Encode().ToString()
-                    };
-                }
-            }
+            if (bMarkForNextBook == null)  
+                SaveCurrentBook();
             else  {
                 int ind = bookMarks.IndexOf(bMarkForNextBook);
                 bookMarks = bookMarks.GetRange(0, ind);
@@ -89,15 +103,20 @@ namespace NodeNotes
 
         #region Inspector
 
+        public string NameForPEGIdisplay() =>
+            "{0} FROM {1}".F(userName, startingPoint);
+        
         int editedMark = -1;
         public override bool PEGI() {
 
-            bool changed = base.PEGI();
+            bool changed = false; 
+
+                this.ToPEGIstring().nl();
 
             if (!isADeveloper && "Make A Developer".Click().nl())
                 isADeveloper = true;
 
-            if ((isADeveloper || Application.isEditor) && "Make a user".Click().nl())
+            if ((isADeveloper && Application.isEditor) && "Make a user".Click().nl())
                 isADeveloper = false;
 
             "Marks ".edit_List(bookMarks,ref editedMark);
@@ -114,7 +133,8 @@ namespace NodeNotes
             .Add("bm", bookMarks)
             .Add("vals", Values.global)
             .Add_Bool("dev", isADeveloper)
-            .Add_String("n", userName);
+            .Add_String("n", userName)
+            .Add_String("start", startingPoint);
 
             var cur = Shortcuts.CurrentNode;
             if (cur != null) {
@@ -148,11 +168,14 @@ namespace NodeNotes
                 case "curB": tmpBook = data; break;
                 case "dev": isADeveloper = data.ToBool(); break;
                 case "n": userName = data; break;
+                case "start": startingPoint = data; break;
                 default: return false;
            }
 
            return true;
         }
+
+ 
 
         #endregion
 

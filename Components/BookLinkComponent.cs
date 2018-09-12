@@ -6,8 +6,7 @@ using System;
 using STD_Logic;
 using PlayerAndEditorGUI;
 
-namespace NodeNotes
-{
+namespace NodeNotes {
 
     public class BookLinkComponent : Base_Node {
 
@@ -20,9 +19,25 @@ namespace NodeNotes
 
         NodeBook LinkedBook => Shortcuts.TryGetBook(linkedBookName);
 
+        Node LinkedNode  {
+            get
+            {
+                var book = LinkedBook;
+                if (book != null)   {
+                    var ep = book.entryPoints.GetByIGotName(bookEntryPoint);
+
+                    if (ep != null)  
+                          return book.allBaseNodes[ep.nodeIndex] as Node;
+                }
+                return null;
+            }
+        }
+        
         public override bool Conditions_isVisibile() {
             if (type == BookLinkType.Exit && Shortcuts.user.bookMarks.Count == 0)
                 return false;
+
+            if (type == BookLinkType.EntryPoint && linkToCurrent) return false;
 
             return base.Conditions_isVisibile();
         }
@@ -86,6 +101,18 @@ namespace NodeNotes
 
         #region Inspector
 #if PEGI
+
+        bool linkToCurrent
+        {
+            get
+            {
+                var ln = LinkedNode;
+                if (ln != null && ln == CurrentNode)
+                    return true;
+                return false;
+            }
+        }
+
         public override bool PEGI() {
 
             bool changed = base.PEGI();
@@ -110,7 +137,7 @@ namespace NodeNotes
 
                             "Transition Condition: {0}".F(Conditions_isEnabled()).write();
 
-                            if (icon.Play.Click("Execute Book Transition Test").nl())
+                            if (!linkToCurrent && icon.Play.Click("Execute Book Transition Test").nl())
                                 TryExecuteTransition();
 
                         }

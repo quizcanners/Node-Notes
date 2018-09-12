@@ -125,6 +125,7 @@ namespace NodeNotes {
         #region Inspector
 #if PEGI
         int inspectedBook = -1;
+        bool inspectUser = false;
         string tmpUserName;
         public override bool PEGI() {
 
@@ -134,67 +135,76 @@ namespace NodeNotes {
 
             if (inspectedBook == -1) {
                 
-                changed |= base.PEGI().nl();
-                if (!showDebug) {
+               // changed |= base.PEGI().nl();
 
+                if (!showDebug) {
+                    
                     string usr = user.userName;
 
-                    if (users.Count>0 && icon.Delete.Click())
-                        DeleteUser();
-                    
-                    if ("Profile".select(50, ref usr, users)) {
-                        SaveUser();
-                        LoadUser(usr);
-                    }
-
-                    pegi.nl();
-
-                    "New User:".edit(60, ref tmpUserName);
-
-                    if (tmpUserName.Length>3 && !users.Contains(tmpUserName)) {
-
-                        if (icon.Add.Click("Add new user")) 
-                            CreateUser(tmpUserName);
-
-                        if (icon.Replace.Click("Rename {0}".F(user.userName))) 
-                            RenameUser(tmpUserName);
-                    }
-
-                    pegi.nl();
-                    
-                    if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
-                        StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
-
-                    if ("Get all book names".Click("Will populate list with mentiones with books in Data folder without loading them").nl())
+                    if (!inspectUser)
                     {
-                        var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
 
-                        foreach (var e in lst)
+                        if (users.Count > 0 && icon.Delete.Click())
+                            DeleteUser();
+
+                        if ("Profile".select(50, ref usr, users))
                         {
-                            bool contains = false;
-                            foreach (var b in books)
-                                if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
+                            SaveUser();
+                            LoadUser(usr);
+                        }
 
-                            if (!contains)
+                        pegi.nl();
+
+                        "New User:".edit(60, ref tmpUserName);
+
+                        if (tmpUserName.Length > 3 && !users.Contains(tmpUserName))
+                        {
+
+                            if (icon.Add.Click("Add new user"))
+                                CreateUser(tmpUserName);
+
+                            if (icon.Replace.Click("Rename {0}".F(user.userName)))
+                                RenameUser(tmpUserName);
+                        }
+
+                        pegi.nl();
+                    }
+
+                    if (usr.fold_enter_exit(ref inspectUser).nl())
+                        changed |= user.Nested_Inspect();
+                    
+                    if (!inspectUser) {
+                        if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
+                            StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
+
+                        if ("Get all book names".Click("Will populate list with mentiones with books in Data folder without loading them").nl())
+                        {
+                            var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
+
+                            foreach (var e in lst)
                             {
-                                var off = new NodeBook_OffLoaded
-                                {
-                                    name = e
-                                };
+                                bool contains = false;
+                                foreach (var b in books)
+                                    if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
 
-                                books.Add(off);
+                                if (!contains)
+                                {
+                                    var off = new NodeBook_OffLoaded
+                                    {
+                                        name = e
+                                    };
+
+                                    books.Add(off);
+                                }
                             }
                         }
                     }
-
                 }
-
-               
             }
             else
                 showDebug = false;
 
-            if (!showDebug)
+            if (!showDebug && !inspectUser)
                 "Books ".edit_List(books, ref inspectedBook);
             
             return changed;

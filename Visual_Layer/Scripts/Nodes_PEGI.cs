@@ -83,6 +83,9 @@ namespace NodeNotes_Visual
 
             if (nnp == null)
             {
+                if (NodeMGMT_inst.circlePrefab == null)
+                    return;
+
                 nnp = Instantiate(NodeMGMT_inst.circlePrefab);
                 nnp.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
                 nodesPool.Add(nnp);
@@ -161,48 +164,57 @@ namespace NodeNotes_Visual
         }
 
         #region Inspector
-        #if PEGI
-
+#if PEGI
+        bool showCurrentNode = false;
         public override bool PEGI() {
 
             bool changed = false;
+            
+            var cn = Shortcuts.CurrentNode;
 
-            if (!circlePrefab) {
-                changed |= "Circles Prefab".edit(ref circlePrefab).nl();
-                return changed;
-            }
+            if (cn != null && "[{0}] Current: {1}".F(Shortcuts.user.bookMarks.Count,cn.ToPEGIstring()).foldout(ref showCurrentNode).nl())
+                changed |= cn.Nested_Inspect();
 
-            changed |= base.PEGI();
+            if (!showCurrentNode)
+            {
 
-            if (!showDebug) {
+                changed |= base.PEGI();
 
-                if ("Values ".fold_enter_exit(ref inspectedLogicBranchStuff, 1))
-                    Values.global.PEGI();
-
-                pegi.nl();
-
-                if (!shortcuts)
-                    "Shortcuts".edit(ref shortcuts).nl();
-                else
-                if (icon.StateMachine.fold_enter_exit("Shortcuts", ref inspectedLogicBranchStuff, 2))
-                    shortcuts.Nested_Inspect();
-                else
-                    pegi.nl();
-
-                if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3)) {
-                    pegi.nl();
-                    "Edit Button".edit(ref editButton).nl();
-                    "Add Button".edit(ref addButton).nl();
-                    "Delete Button".edit(ref deleteButton).nl();
-                    "Backgrounds".edit(() => backgroundControllers, this).nl();
-                }
-
-                pegi.nl();
-
-                if (inspectedLogicBranchStuff == -1 && "Encode / Decode Test".Click().nl())
+                if (!showDebug)
                 {
-                    OnDisable();
-                    OnEnable();
+                    
+
+                    if ("Values ".fold_enter_exit(ref inspectedLogicBranchStuff, 1))
+                        Values.global.PEGI();
+
+                    pegi.nl();
+
+                    if (!shortcuts)
+                        "Shortcuts".edit(ref shortcuts).nl();
+                    else
+                    if (icon.StateMachine.fold_enter_exit("Shortcuts", ref inspectedLogicBranchStuff, 2))
+                        shortcuts.Nested_Inspect();
+                    else
+                        pegi.nl();
+
+                    if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3))
+                    {
+                        pegi.nl();
+                        changed |= "Edit Button".edit(ref editButton).nl();
+                        changed |= "Add Button".edit(ref addButton).nl();
+                        changed |= "Delete Button".edit(ref deleteButton).nl();
+                        changed |= "Backgrounds".edit(() => backgroundControllers, this).nl();
+                        changed |= "Circles Prefab".edit(ref circlePrefab).nl();
+                    }
+
+                    pegi.nl();
+
+                    if (inspectedLogicBranchStuff == -1 && "Encode / Decode Test".Click().nl())
+                    {
+                        OnDisable();
+                        OnEnable();
+                    }
+
                 }
             }
 
@@ -250,9 +262,9 @@ namespace NodeNotes_Visual
         }
 
         private void OnDisable() {
+            shortcuts?.SaveAll();
             Shortcuts.CurrentNode = null;
             ClearPool();
-            shortcuts?.SaveAll();
         }
 
         public override void OnEnable()

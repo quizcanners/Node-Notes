@@ -23,30 +23,7 @@ namespace NodeNotes
         int inspectedEntry = -1;
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
-
-        public void SaveToFile() => this.SaveToPersistantPath(BooksFolder, NameForPEGI);
         
-        public void DeleteFile(string bname) => StuffDeleter.DeleteFile_PersistantFolder(BooksFolder, bname);
-        
-        public void TryRename(String newName) {
-
-            if (subNode.name.SameAs(newName))
-                return;
-
-            if (newName.Length < 3) {
-                Debug.LogError("Name is too short");
-                return;
-            }
-            if (Shortcuts.books.GetByIGotName(newName) != null) {
-                Debug.LogError("Book with this name already exists");
-                return;
-            }
-
-            DeleteFile(subNode.name);
-            subNode.name = newName;
-            SaveToFile();
-        }
-
 #if PEGI
         public static NodeBook inspected;
 
@@ -54,10 +31,10 @@ namespace NodeNotes
             bool changed = false;
             inspected = this;
 
+            changed |= subNode.Nested_Inspect();
+
             if (subNode.inspectedSubnode == -1)
                 "Entry Points".edit_List(entryPoints, ref inspectedEntry);
-
-            changed |= subNode.Nested_Inspect();
 
             inspected = null;
             return changed;
@@ -115,6 +92,34 @@ namespace NodeNotes
             return ret;
         }
 
+        #endregion
+
+        #region Saving_Loading
+        public void SaveToFile() => this.SaveToPersistantPath(BooksFolder, NameForPEGI);
+
+        public void DeleteFile(string bname) => StuffDeleter.DeleteFile_PersistantFolder(BooksFolder, bname);
+
+        public void TryRename(String newName)
+        {
+
+            if (subNode.name.SameAs(newName))
+                return;
+
+            if (newName.Length < 3)
+            {
+                Debug.LogError("Name is too short");
+                return;
+            }
+            if (Shortcuts.books.GetByIGotName(newName) != null)
+            {
+                Debug.LogError("Book with this name already exists");
+                return;
+            }
+
+            DeleteFile(subNode.name);
+            subNode.name = newName;
+            SaveToFile();
+        }
         #endregion
 
     }

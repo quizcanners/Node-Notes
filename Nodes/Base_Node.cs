@@ -7,7 +7,7 @@ using UnityEngine;
 namespace NodeNotes
 {
 
-    [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent))]
+    [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI {
         public Node parentNode;
         public NodeBook root;

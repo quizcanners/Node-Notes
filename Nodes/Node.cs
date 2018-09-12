@@ -8,7 +8,7 @@ using STD_Logic;
 
 namespace NodeNotes
 {
-    public class Node : Base_Node,  INeedAttention,  IPEGI
+    public class Node : Base_Node,  INeedAttention, IPEGI
     { 
 
         public List<Base_Node> subNotes = new List<Base_Node>();
@@ -93,9 +93,15 @@ namespace NodeNotes
 
             if ((!showDebug && inspectedSubnode == -1) || onPlayScreen) {
 
-                if (!onPlayScreen && this != CurrentNode && icon.Play.Click())
-                    CurrentNode = this;
-
+                if (!onPlayScreen) {
+                    if (this != CurrentNode) {
+                        if (icon.Play.Click())
+                            CurrentNode = this;
+                    }
+                    else if (parentNode != null && icon.Exit.Click())
+                        CurrentNode = parentNode;
+                }
+            
                 var cp = Shortcuts.Cut_Paste;
 
                 if (cp != null)  {
