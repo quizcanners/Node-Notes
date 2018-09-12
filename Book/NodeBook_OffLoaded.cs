@@ -4,7 +4,7 @@ using SharedTools_Stuff;
 using UnityEngine;
 using PlayerAndEditorGUI;
 
-namespace LinkedNotes {
+namespace NodeNotes {
     public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
 
         public override string NameForPEGIdisplay() => "{0} [Offloaded]".F(name);

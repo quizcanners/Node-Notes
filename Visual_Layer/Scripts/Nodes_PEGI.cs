@@ -7,21 +7,21 @@ using STD_Logic;
 using System;
 using UnityEngine.UI;
 using TMPro;
+using NodeNotes;
 
-namespace LinkedNotes
+namespace NodeNotes_Visual
 {
 
     [ExecuteInEditMode]
-    public class Nodes_PEGI : LogicMGMT {
+    public class Nodes_PEGI : NodesVisualLayerAbstract
+    {
 
 #if PEGI
         pegi.windowPositionData window = new pegi.windowPositionData();
 #endif
 
         public static Nodes_PEGI NodeMGMT_inst;
-
-        [NonSerialized] public Base_Node Cut_Paste;
-
+        
         public Shortcuts shortcuts;
 
         public TextMeshProUGUI editButton;
@@ -92,23 +92,19 @@ namespace LinkedNotes
 
         }
 
-        public static Node CurrentNode
-        {
-            get { return Shortcuts._currentNode; }
-            set {
+        public override bool TrySetCurrentNode (Node value) {
+           
+                SetSelected(null);
 
-                NodeMGMT_inst.SetSelected(null);
-                
                 Node wasAParent = null;
 
-                if (value != null && Shortcuts._currentNode != null)
-                {
-                    var s = value as Node;
+                var curNode = Shortcuts.CurrentNode;
 
-                    if (s != null)
-                    {
-                        if (s.subNotes.Contains(Shortcuts._currentNode))
-                            wasAParent = Shortcuts._currentNode;
+                if (value != null && curNode != null) {
+
+                    if (value is Node s)  {
+                        if (s.subNotes.Contains(curNode))
+                            wasAParent = curNode;
                     }
                 }
 
@@ -123,19 +119,19 @@ namespace LinkedNotes
 
                 firstFree = 0;
 
-                Shortcuts._currentNode = value;
+                Shortcuts.CurrentNode = value;
 
-                if (Shortcuts._currentNode != null) {
-
+                if (value != null) {
                     UpdateVisibility();
 
-                    var circle = Shortcuts._currentNode.visualRepresentation as NodeCircleController;
+                    var circle = value.visualRepresentation as NodeCircleController;
 
-                    NodeMGMT_inst.SetBackground(circle.background, circle.backgroundConfig);
+                    SetBackground(circle.background, circle.backgroundConfig);
                 }
-            }
-        }
 
+            return true;
+        }
+        
         public static void UpdateVisibility(Base_Node node)  {
 
             if (node != null) {
@@ -154,7 +150,7 @@ namespace LinkedNotes
 
         public static void UpdateVisibility()
         {
-            var cn = CurrentNode;
+            var cn = Shortcuts.CurrentNode;
 
             if (cn != null)
             {
@@ -218,7 +214,7 @@ namespace LinkedNotes
             if (selectedNode)
                 window.Render(selectedNode);
 
-            if (CurrentNode == null && shortcuts)
+            if (Shortcuts.CurrentNode == null && shortcuts)
                 window.Render(shortcuts);
         }
 
@@ -254,7 +250,7 @@ namespace LinkedNotes
         }
 
         private void OnDisable() {
-            CurrentNode = null;
+            Shortcuts.CurrentNode = null;
             ClearPool();
             shortcuts?.SaveAll();
         }
@@ -298,11 +294,11 @@ namespace LinkedNotes
             CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
         }
 
-        public void AddNode() => VisualizeNode(CurrentNode.Add<Node>());
+        public void AddNode() => VisualizeNode(Shortcuts.CurrentNode.Add<Node>());
 
-        public void AddLink() => VisualizeNode(CurrentNode.Add<NodeLinkComponent>());
+        public void AddLink() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeLinkComponent>());
 
-        public void AddButton() => VisualizeNode(CurrentNode.Add<NodeButtonComponent>());
+        public void AddButton() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeButtonComponent>());
 
         public void DeleteSelected() {
 

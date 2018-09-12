@@ -5,8 +5,10 @@ using UnityEngine;
 using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 using System;
+using NodeNotes;
 
-namespace LinkedNotes {
+namespace NodeNotes_Visual
+{
 
     [ExecuteInEditMode]
     public class NodeCircleController : ComponentSTD, IPEGI, IGotName
@@ -66,7 +68,7 @@ namespace LinkedNotes {
         NodeVisualConfig exploredVisuals = new NodeVisualConfig();
         NodeVisualConfig subVisuals = new NodeVisualConfig();
 
-        NodeVisualConfig ActiveConfig => this.source == Nodes_PEGI.CurrentNode ? exploredVisuals : subVisuals;
+        NodeVisualConfig ActiveConfig => this.source == Shortcuts.CurrentNode ? exploredVisuals : subVisuals;
         
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
@@ -130,7 +132,7 @@ namespace LinkedNotes {
             }
 
             if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
-                Nodes_PEGI.CurrentNode = null;
+                Shortcuts.CurrentNode = null;
 
             if (!onPlayScreen)
             "Lerp parameter {0}".F(dominantParameter).nl();
@@ -245,7 +247,7 @@ namespace LinkedNotes {
                 if (8f.SpeedToMinPortion(1-activeTextAlpha, ref portion))
                     dominantParameter = "text Alpha";
 
-                float targetCourners =  (this == dragging) ? 0 : (source == Nodes_PEGI.CurrentNode) ? 0.4f : 0.9f;
+                float targetCourners =  (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
             
                 if (4f.SpeedToMinPortion(Mathf.Abs(targetCourners - sh_courners), ref portion))
                     dominantParameter = "courners";

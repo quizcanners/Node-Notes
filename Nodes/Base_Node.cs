@@ -4,7 +4,7 @@ using STD_Logic;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
 
     [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent))]
@@ -12,11 +12,33 @@ namespace LinkedNotes
         public Node parentNode;
         public NodeBook root;
 
-        public static bool editingNodes = false;
+        int index;
+        public int IndexForPEGI { get { return index; } set { index = value; } }
 
+        public string name = "New Node";
+        public string NameForPEGI {
+            get { return name; }
+            set { name = value; }
+        }
+
+        public static Node CurrentNode { get => Shortcuts.CurrentNode; set => Shortcuts.CurrentNode = value; }
+        
         public ISTD visualRepresentation;
         public ISTD previousVisualRepresentation;
         public string configForVisualRepresentation;
+        
+        public virtual void OnMouseOver()
+        {
+
+            if (Input.GetMouseButtonDown(0) && parentNode != null)
+                parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
+
+            if (Input.GetMouseButtonDown(1) && parentNode != null)
+                parentNode.SetInspectedUpTheHierarchy(null);
+
+        }
+
+        #region Logic
 
         int logicVersion = -1;
         bool visConditionsResult = true;
@@ -25,6 +47,8 @@ namespace LinkedNotes
         ConditionBranch visCondition = new ConditionBranch();
         ConditionBranch eblCondition = new ConditionBranch();
 
+        public List<Result> results = new List<Result>();
+        
         void UpdateLogic() {
             if (logicVersion != LogicMGMT.currentLogicVersion) {
                 logicVersion = LogicMGMT.currentLogicVersion;
@@ -50,38 +74,19 @@ namespace LinkedNotes
             return false;
         }
 
-        public bool Conditions_isVisibile() {
+        public virtual bool Conditions_isVisibile() {
             UpdateLogic();
             return visConditionsResult;
         }
 
-        public bool Conditions_isEnabled() {
+        public virtual bool Conditions_isEnabled() {
             UpdateLogic();
             return visConditionsResult && enabledConditionResult;
         }
 
-        public List<Result> results = new List<Result>();
+        #endregion
         
-        protected static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
-
-        int index;
-        public int IndexForPEGI { get { return index; } set { index = value; } }
-
-        public string name = "New Node";
-        public string NameForPEGI {
-            get { return name; }
-            set { name = value; }
-        }
-        
-        public virtual void OnMouseOver() {
-
-            if (Input.GetMouseButtonDown(0) && parentNode != null)
-                parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
-            
-            if (Input.GetMouseButtonDown(1) && parentNode != null )
-                parentNode.SetInspectedUpTheHierarchy(null);
-
-        }
+        #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
         .Add_String("n", name)
@@ -109,12 +114,32 @@ namespace LinkedNotes
             return true;
         }
 
+        #endregion
+
+        #region Inspector
+
+        public static bool editingNodes = false;
+
         int inspectedResult = -1;
         public bool InspectingTriggerStuff => editEbl_Conditions || editResults || editVis_Conditions;
         bool editVis_Conditions = false;
         bool editEbl_Conditions = false;
         bool editResults = false;
-        #if PEGI
+#if PEGI
+
+        public virtual string NeedAttention()
+        {
+            if (root == null)
+                return "{0} : {1} No root detected".F(IndexForPEGI, name);
+
+            if (parentNode == null)
+                return "{0} : {1} No Parent Node detected".F(IndexForPEGI, name);
+
+            if (parentNode == this)
+                return "Is it's own parent";
+            return null;
+        }
+
 
         public override bool PEGI()
         {
@@ -129,9 +154,9 @@ namespace LinkedNotes
                 if (!InspectingTriggerStuff)
                 {
                     changed |= pegi.edit(ref name);
-                    if ((this != Mgmt.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
+                    if ((this != Shortcuts.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
                     {
-                        Nodes_PEGI.NodeMGMT_inst.Cut_Paste = this;
+                        Shortcuts.Cut_Paste = this;
                         changed = true;
                     }
                 }
@@ -166,21 +191,9 @@ namespace LinkedNotes
             return changed;
         }
 #endif
+        #endregion
 
-
-        public virtual string NeedAttention()
-        {
-            if (root == null)
-                return "{0} : {1} No root detected".F(IndexForPEGI, name);
-
-            if (parentNode == null)
-                return "{0} : {1} No Parent Node detected".F(IndexForPEGI, name);
-
-            if (parentNode == this)
-                return "Is it's own parent";
-            return null;
-        }
-
+        #region MGMT
         public virtual void MoveTo(Node node) {
             parentNode.subNotes.Remove(this);
             parentNode = node;
@@ -211,5 +224,8 @@ namespace LinkedNotes
                 parentNode = parent;
             root.allBaseNodes[index] = this;
         }
+
+        #endregion
+
     }
 }

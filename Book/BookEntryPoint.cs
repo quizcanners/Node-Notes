@@ -6,7 +6,7 @@ using PlayerAndEditorGUI;
 using System;
 using STD_Logic;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
 
     public class BookEntryPoint : AbstractKeepUnrecognized_STD, IPEGI, IGotName {

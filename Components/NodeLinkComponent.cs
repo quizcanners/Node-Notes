@@ -6,7 +6,7 @@ using System;
 using STD_Logic;
 using PlayerAndEditorGUI;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
     public class NodeLinkComponent : Base_Node
     {
@@ -27,7 +27,7 @@ namespace LinkedNotes
             if  (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {
                 var node = root.allBaseNodes[linkedNodeIndex] as Node;
                 if (node != null)
-                Nodes_PEGI.CurrentNode = node;
+                    Shortcuts.CurrentNode = node;
                 results.Apply(Values.global);
             } 
         }

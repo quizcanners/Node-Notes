@@ -6,13 +6,35 @@ using System;
 using STD_Logic;
 using PlayerAndEditorGUI;
 
-namespace LinkedNotes {
+namespace NodeNotes {
 
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
     public class Shortcuts : STD_ReferancesHolder {
 
         #region Progress
-        public static Node _currentNode;
+     
+        static LoopLock loopLock = new LoopLock();
+
+        public static Node CurrentNode {
+
+            get { return user.CurrentNode; }
+
+            set {
+                if (Application.isPlaying && visualLayer && loopLock.Unlocked) {
+                    using (loopLock.Lock()) {
+                        if (visualLayer.TrySetCurrentNode(value))
+                            user.CurrentNode = value;
+                    }
+                }
+                else
+                    user.CurrentNode = value;
+            }
+        }
+
+        public static NodesVisualLayerAbstract visualLayer;
+
+        [NonSerialized] public static Base_Node Cut_Paste;
+
         #endregion
 
         #region Users
@@ -140,7 +162,7 @@ namespace LinkedNotes {
 
                     pegi.nl();
                     
-                    if (icon.Folder.Click("Open Save files folder"))
+                    if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
                         StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
 
                     if ("Get all book names".Click("Will populate list with mentiones with books in Data folder without loading them").nl())

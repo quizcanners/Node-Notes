@@ -6,7 +6,7 @@ using PlayerAndEditorGUI;
 using System;
 using STD_Logic;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
     
     public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI {
@@ -15,7 +15,9 @@ namespace LinkedNotes
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
         public Node subNode = new Node();
-        
+
+        public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
+
         #region Inspector
         int inspectedNode = -1;
         int inspectedEntry = -1;

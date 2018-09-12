@@ -4,7 +4,7 @@ using UnityEngine;
 using SharedTools_Stuff;
 using STD_Logic;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
     public class BookMark : NodeBook_Base  {
     
@@ -13,6 +13,8 @@ namespace LinkedNotes
         public string bookName;
 
         public override string NameForPEGI { get => bookName; set => bookName = value; }
+
+        #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("vals", values)
@@ -29,6 +31,8 @@ namespace LinkedNotes
             }
             return true;
         }
+
+        #endregion
 
     }
 

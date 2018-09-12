@@ -5,7 +5,7 @@ using STD_Logic;
 using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
 
     public class NodeButtonComponent : Base_Node

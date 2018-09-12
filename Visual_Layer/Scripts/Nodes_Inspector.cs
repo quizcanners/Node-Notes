@@ -6,7 +6,7 @@ using PlayerAndEditorGUI;
 #if UNITY_EDITOR  && PEGI
 using UnityEditor;
 
-namespace LinkedNotes
+namespace NodeNotes_Visual
 {
     [CustomEditor(typeof(Nodes_PEGI))]
     public class PixelArtMeshGeneratorEditor : Editor

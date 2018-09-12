@@ -4,7 +4,7 @@ using UnityEngine;
 using PlayerAndEditorGUI;
 using SharedTools_Stuff;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
 
     public class WhiteBackground : ComponentSTD, IManageFading, IGotDisplayName

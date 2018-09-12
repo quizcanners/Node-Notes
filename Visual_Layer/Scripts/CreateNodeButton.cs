@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SharedTools_Stuff;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
 
     [ExecuteInEditMode]

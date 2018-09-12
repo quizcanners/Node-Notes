@@ -6,7 +6,7 @@ using STD_Logic;
 using System;
 using PlayerAndEditorGUI;
 
-namespace LinkedNotes
+namespace NodeNotes
 {
     public class SavedProgress: AbstractKeepUnrecognized_STD, IGotName {
 
@@ -14,26 +14,80 @@ namespace LinkedNotes
         public List<BookMark> bookMarks = new List<BookMark>();
         public bool isADeveloper = false;
 
-        void BookMarkOrReturn (NodeBook nextBook) {
-            
-            var existing = bookMarks.GetByIGotName(nextBook.NameForPEGI);
-            
-            if (existing == null) {
+        static Node _currentNode;
 
-                var currentBook = Nodes_PEGI.CurrentNode.root;
+        public Node CurrentNode
+        {
+            get => _currentNode;
+            set  {
 
-                if (currentBook != null) {
-                    var bm = new BookMark() {
+                if (_currentNode != null && _currentNode.root != value.root)
+                    SetNextBook(value.root);
+
+                _currentNode = value;
+
+            }
+        }
+
+        public string NameForPEGI { get => userName; set => userName = value; }
+
+        public void ExitCurrentBook() {
+            if (bookMarks.Count == 0) {
+                Debug.LogError("Can't Exit book because it was the Start of the journey.");
+                return;
+            }
+
+            var lastB = bookMarks.Last().bookName;
+
+            var b = Shortcuts.TryGetBook(lastB);
+
+            if (b == null) {
+                Debug.LogError("No {0} book found".F(lastB));
+                return;
+            }
+
+            SetNextBook(b);
+        }
+
+        void SetNextBook (NodeBook nextBook) {
+
+            if (nextBook == null)
+                Debug.LogError("Next book is null");
+
+            var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
+
+            if (bMarkForNextBook == null)  {
+
+                var currentBook = _currentNode.root;
+
+                if (currentBook != null)  {
+
+                    var bm = new BookMark()  {
                         bookName = currentBook.NameForPEGI,
-                        nodeIndex = Nodes_PEGI.CurrentNode.IndexForPEGI,
+                        nodeIndex = _currentNode.IndexForPEGI,
                         values = Values.global.Encode().ToString()
                     };
                 }
-            } else {
-                int ind = bookMarks.IndexOf(existing);
+            }
+            else  {
+                int ind = bookMarks.IndexOf(bMarkForNextBook);
                 bookMarks = bookMarks.GetRange(0, ind);
+
+                var bNode = nextBook.allBaseNodes[bMarkForNextBook.nodeIndex];
+
+                if (bNode == null)
+                    Debug.LogError("No node {0} in {1}".F(bMarkForNextBook.nodeIndex, bMarkForNextBook.bookName));
+                else {
+                    var n = bNode as Node;
+                    if (n == null)
+                        Debug.LogError("Node_Base {0} is note a Node ".F(bMarkForNextBook.nodeIndex));
+                    else
+                        _currentNode = n;
+                }
             }
         }
+
+        #region Inspector
 
         int editedMark = -1;
         public override bool PEGI() {
@@ -51,6 +105,10 @@ namespace LinkedNotes
             return changed;
         }
 
+        #endregion
+
+        #region Encoding_Decoding
+
         public override StdEncoder Encode() {
             var cody = this.EncodeUnrecognized()
             .Add("bm", bookMarks)
@@ -58,7 +116,7 @@ namespace LinkedNotes
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", userName);
 
-            var cur = Nodes_PEGI.CurrentNode;
+            var cur = Shortcuts.CurrentNode;
             if (cur != null) {
                 cody.Add_String("curB", cur.root.NameForPEGI)
                 .Add("cur", cur.IndexForPEGI);
@@ -73,16 +131,14 @@ namespace LinkedNotes
 
             var b = Shortcuts.TryGetBook(tmpBook);
 
-            if (b != null) 
-                Nodes_PEGI.CurrentNode = b.allBaseNodes[tmpNode] as Node;
+            if (b != null)
+                Shortcuts.CurrentNode = b.allBaseNodes[tmpNode] as Node;
 
             return ret;
         }
 
         static string tmpBook;
         static int tmpNode;
-
-        public string NameForPEGI { get => userName; set => userName =value; }
 
         public override bool Decode(string tag, string data) {
            switch (tag) {
@@ -98,7 +154,7 @@ namespace LinkedNotes
            return true;
         }
 
-
+        #endregion
 
     }
 }
