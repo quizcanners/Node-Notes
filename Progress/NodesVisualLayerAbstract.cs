@@ -7,6 +7,6 @@ using UnityEngine;
 namespace NodeNotes
 {
     public abstract class NodesVisualLayerAbstract : LogicMGMT {
-        public abstract bool TrySetCurrentNode(Node node);
+        public abstract void SetCurrentNode(Node node);
     }
 }

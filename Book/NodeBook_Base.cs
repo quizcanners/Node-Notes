@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NodeNotes
-{
+namespace NodeNotes {
 
     [DerrivedList(typeof(NodeBook), typeof(NodeBook_OffLoaded))]
     public class NodeBook_Base : AbstractKeepUnrecognized_STD, IGotDisplayName, IGotName {

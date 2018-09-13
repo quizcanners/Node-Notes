@@ -21,13 +21,12 @@ namespace NodeNotes {
 
             set {
                 if (Application.isPlaying && visualLayer && loopLock.Unlocked) {
-                    using (loopLock.Lock()) {
-                        if (visualLayer.TrySetCurrentNode(value))
-                            user.CurrentNode = value;
-                    }
+                        using (loopLock.Lock()) {
+                            visualLayer.SetCurrentNode(value);
+                        }
                 }
-                else
-                    user.CurrentNode = value;
+                
+                user.CurrentNode = value;
             }
         }
 
@@ -144,7 +143,7 @@ namespace NodeNotes {
                     if (!inspectUser)
                     {
 
-                        if (users.Count > 0 && icon.Delete.Click())
+                        if (users.Count > 1 && icon.Delete.Click())
                             DeleteUser();
 
                         if ("Profile".select(50, ref usr, users))

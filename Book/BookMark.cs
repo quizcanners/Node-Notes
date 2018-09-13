@@ -3,19 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using SharedTools_Stuff;
 using STD_Logic;
+using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class BookMark : NodeBook_Base  {
-    
+    public class BookMark : AbstractKeepUnrecognized_STD, IPEGI_ListInspect, IGotName {
+
+        public string bookName;
         public int nodeIndex;
         public string values;
-        public string bookName;
+       
+        public string NameForPEGI { get => bookName; set => bookName = value; }
 
-        public override string NameForPEGI { get => bookName; set => bookName = value; }
+        #region Inspector
+        public bool PEGI_inList(IList list, int ind, ref int edited) {
+            "Node {0} in {1}".F(nodeIndex, bookName).write();   
+            if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
+                Shortcuts.user.ReturnToMark(this);
+            
+            return false;
+        }
+        #endregion
 
         #region Encode_Decode
-
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("vals", values)
             .Add("ind", nodeIndex)
@@ -31,10 +41,7 @@ namespace NodeNotes
             }
             return true;
         }
-
         #endregion
 
     }
-
-
 }

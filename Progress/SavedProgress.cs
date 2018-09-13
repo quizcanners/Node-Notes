@@ -17,20 +17,36 @@ namespace NodeNotes
 
         static Node _currentNode;
 
+        LoopLock loopLock = new LoopLock();
+        LoopLock loopLockLocal = new LoopLock();
+
         public Node CurrentNode {
             get => _currentNode;
             set  {
 
-                if (value == null) {
-                    SaveCurrentBook();
-                    _currentNode = null;
-                    return;
+                if (loopLock.Unlocked) {
+                    using (loopLock.Lock()) {
+                        Shortcuts.CurrentNode = value;
+                    }
+
+                }  else  {
+
+                    if (loopLockLocal.Unlocked) {
+                        using (loopLockLocal.Lock()) {
+
+                            if (value == null) {
+                                SaveCurrentBook();
+                                _currentNode = null;
+                                return;
+                            }
+
+                            if (_currentNode == null || _currentNode.root != value.root)
+                                SetNextBook(value.root);
+                        }
+                    }
+
+                    _currentNode = value;
                 }
-
-                if (_currentNode != null && _currentNode.root != value.root)
-                    SetNextBook(value.root);
-
-                _currentNode = value;
             }
         }
 
@@ -71,13 +87,50 @@ namespace NodeNotes
             }
         }
 
+        public void ReturnToMark(BookMark mark) {
+            if (bookMarks.Contains(mark))
+                ReturnToMark(bookMarks.IndexOf(mark));
+            else Debug.LogError("Book Marks don't contain {0}".F(mark.ToPEGIstring()));
+        }
+
+        void ReturnToMark (int ind) {
+
+            if (ind < bookMarks.Count) {
+
+                BookMark bm = bookMarks[ind];
+
+                var book = Shortcuts.TryGetBook(bm.bookName);
+
+                if (book == null)
+                    Debug.LogError("No book {0} found".F(bm.bookName));
+                else {
+                    if (TrySetCurrentNode(book, ind))
+                    {
+                        bm.values.DecodeInto(out Values.global);
+                        bookMarks = bookMarks.GetRange(0, ind);
+                    }
+                    else
+                        Debug.LogError("Need to implement default (HUB) node");
+                }
+            }
+            else Debug.LogError("Book Marks don't hav element "+ind);
+        }
+        
         void SetNextBook (NodeBook nextBook) {
 
             if (nextBook == null)
                 Debug.LogError("Next book is null");
 
-            if (startingPoint.Length == 0)
-                startingPoint = nextBook.NameForPEGI;
+            if (bookMarks.Count == 0)
+            {
+                if (_currentNode != null)
+                    startingPoint = _currentNode.root.NameForPEGI;
+                else 
+                    startingPoint = nextBook.NameForPEGI;
+            }
+
+            if (_currentNode != null && _currentNode.root == nextBook)
+                return;
 
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
 
@@ -85,21 +138,34 @@ namespace NodeNotes
                 SaveCurrentBook();
             else  {
                 int ind = bookMarks.IndexOf(bMarkForNextBook);
-                bookMarks = bookMarks.GetRange(0, ind);
 
-                var bNode = nextBook.allBaseNodes[bMarkForNextBook.nodeIndex];
-
-                if (bNode == null)
-                    Debug.LogError("No node {0} in {1}".F(bMarkForNextBook.nodeIndex, bMarkForNextBook.bookName));
-                else {
-                    var n = bNode as Node;
-                    if (n == null)
-                        Debug.LogError("Node_Base {0} is note a Node ".F(bMarkForNextBook.nodeIndex));
-                    else
-                        _currentNode = n;
-                }
+                if (TrySetCurrentNode(nextBook, bMarkForNextBook.nodeIndex))
+                {
+                    bookMarks = bookMarks.GetRange(0, ind);
+                } else
+                    Debug.LogError( "Need to implement default (HUB) node" );
             }
         }
+
+        bool TrySetCurrentNode (NodeBook book, int nodeIndex) {
+
+            var bNode = book.allBaseNodes[nodeIndex];
+
+            if (bNode == null)
+                Debug.LogError("No node {0} in {1}".F(nodeIndex, book.NameForPEGI));
+            else {
+                var n = bNode as Node;
+                if (n == null)
+                    Debug.LogError("Node_Base {0} is note a Node ({1})".F(nodeIndex, bNode.GetType()));
+                else {
+                    CurrentNode = n;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
 
         #region Inspector
 

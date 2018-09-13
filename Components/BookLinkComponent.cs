@@ -8,11 +8,11 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes {
 
-    public class BookLinkComponent : Base_Node {
+    public class BookLinkComponent : Base_Node, IPEGI_ListInspect {
 
-        public enum BookLinkType { EntryPoint, Exit }
+        public enum BookLinkType { BookLink, BookExit }
 
-        BookLinkType type = BookLinkType.EntryPoint;
+        BookLinkType type = BookLinkType.BookLink;
 
         string linkedBookName;
         string bookEntryPoint;
@@ -34,10 +34,10 @@ namespace NodeNotes {
         }
         
         public override bool Conditions_isVisibile() {
-            if (type == BookLinkType.Exit && Shortcuts.user.bookMarks.Count == 0)
+            if (type == BookLinkType.BookExit && Shortcuts.user.bookMarks.Count == 0)
                 return false;
 
-            if (type == BookLinkType.EntryPoint && linkToCurrent) return false;
+            if (type == BookLinkType.BookLink && linkToCurrent) return false;
 
             return base.Conditions_isVisibile();
         }
@@ -48,7 +48,7 @@ namespace NodeNotes {
 
             switch (type)
             {
-                case BookLinkType.EntryPoint:
+                case BookLinkType.BookLink:
 
                     var book = LinkedBook;
                     if (book != null)
@@ -79,7 +79,7 @@ namespace NodeNotes {
                         results.Apply(Values.global);
 
                     return executed;
-                case BookLinkType.Exit:
+                case BookLinkType.BookExit:
 
                     if (Shortcuts.user.bookMarks.Count == 0)
                         return false;
@@ -113,40 +113,54 @@ namespace NodeNotes {
             }
         }
 
-        public override bool PEGI() {
+        bool shared_PEGI()
+        {
+            var changed = pegi.editEnum(ref type);
 
-            bool changed = base.PEGI();
+            switch (type)
+            {
 
-            changed |= "Type ".editEnum(40, ref type).nl();
+                case BookLinkType.BookLink:
 
-            switch (type) {
-
-                case BookLinkType.EntryPoint:
-
-                    changed |= "Link to ".select_iGotName(ref linkedBookName, Shortcuts.books).nl();
+                    changed |= pegi.select_iGotName(ref linkedBookName, Shortcuts.books);
 
                     var book = LinkedBook;
 
-                    if (book != null) {
+                    if (book != null)   {
 
-                        "Entry Point".select_iGotName(ref bookEntryPoint, book.entryPoints).nl();
+                        pegi.select_iGotName(ref bookEntryPoint, book.entryPoints);
 
                         var ep = book.GetEntryPoint(bookEntryPoint);
 
                         if (ep != null) {
-
-                            "Transition Condition: {0}".F(Conditions_isEnabled()).write();
-
-                            if (!linkToCurrent && icon.Play.Click("Execute Book Transition Test").nl())
+                            if (!linkToCurrent && icon.Play.Click("Transition Condition: {0}".F(Conditions_isEnabled())))
                                 TryExecuteTransition();
-
                         }
                     }
                     break;
-                case BookLinkType.Exit: "Will Exit to previous book".writeHint(); break;
+                case BookLinkType.BookExit: "Will Exit to previous book".write(); break;
             }
 
+            return changed;
+        }
 
+        public bool PEGI_inList(IList list, int ind, ref int edited)
+        {
+            bool changed = shared_PEGI();
+
+            if (icon.Enter.Click())
+                edited = ind;
+
+            return changed;
+
+        }
+
+        public override bool PEGI() {
+
+            bool changed = base.PEGI();
+
+            changed |= shared_PEGI().nl();
+            
             return changed;
         }
         #endif
@@ -160,7 +174,7 @@ namespace NodeNotes {
             .Add("b", base.Encode())
             .Add("t", (int)type);
 
-            if (type == BookLinkType.EntryPoint) cody
+            if (type == BookLinkType.BookLink) cody
             .Add_String("lnk", linkedBookName)
             .Add_String("ep", bookEntryPoint);
 
@@ -179,6 +193,7 @@ namespace NodeNotes {
             }
             return true;
         }
+
         #endregion
 
     }

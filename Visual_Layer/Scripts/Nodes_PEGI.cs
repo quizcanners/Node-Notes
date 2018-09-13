@@ -13,8 +13,7 @@ namespace NodeNotes_Visual
 {
 
     [ExecuteInEditMode]
-    public class Nodes_PEGI : NodesVisualLayerAbstract
-    {
+    public class Nodes_PEGI : NodesVisualLayerAbstract {
 
 #if PEGI
         pegi.windowPositionData window = new pegi.windowPositionData();
@@ -95,44 +94,49 @@ namespace NodeNotes_Visual
 
         }
 
-        public override bool TrySetCurrentNode (Node value) {
-           
-                SetSelected(null);
+        LoopLock loopLock = new LoopLock();
 
-                Node wasAParent = null;
+        public override void SetCurrentNode (Node value) {
 
-                var curNode = Shortcuts.CurrentNode;
+            if (loopLock.Unlocked)  {
+                using (loopLock.Lock()) {
+                    SetSelected(null);
 
-                if (value != null && curNode != null) {
+                    Node wasAParent = null;
 
-                    if (value is Node s)  {
-                        if (s.subNotes.Contains(curNode))
-                            wasAParent = curNode;
-                    }
-                }
+                    var curNode = Shortcuts.CurrentNode;
 
-                foreach (var n in nodesPool)
-                    if (n != null && !n.isFading)
-                    {
-                        if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
-                            n.Unlink();
-                        else
-                            n.assumedPosition = false;
+                    if (value != null && curNode != null) {
+                        if (value is Node s) {
+                            if (s.subNotes.Contains(curNode))
+                                wasAParent = curNode;
+                        }
                     }
 
-                firstFree = 0;
+                    foreach (var n in nodesPool)
+                        if (n != null && !n.isFading)
+                        {
+                            if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
+                                n.Unlink();
+                            else
+                                n.assumedPosition = false;
+                        }
 
-                Shortcuts.CurrentNode = value;
+                    firstFree = 0;
 
-                if (value != null) {
-                    UpdateVisibility();
-
-                    var circle = value.visualRepresentation as NodeCircleController;
-
-                    SetBackground(circle.background, circle.backgroundConfig);
+                    Shortcuts.CurrentNode = value;
                 }
+            }
+            
+            if (value != null) {
 
-            return true;
+                UpdateVisibility();
+
+                var circle = value.visualRepresentation as NodeCircleController;
+
+                SetBackground(circle.background, circle.backgroundConfig);
+            }
+            
         }
         
         public static void UpdateVisibility(Base_Node node)  {
@@ -172,7 +176,8 @@ namespace NodeNotes_Visual
             
             var cn = Shortcuts.CurrentNode;
 
-            if (cn != null && "[{0}] Current: {1}".F(Shortcuts.user.bookMarks.Count,cn.ToPEGIstring()).foldout(ref showCurrentNode).nl())
+            if (cn != null && "{0} -> [{1}] Current: {2} - {3}".F( Shortcuts.user.startingPoint
+                ,Shortcuts.user.bookMarks.Count,cn.root.ToPEGIstring() ,cn.ToPEGIstring()).foldout(ref showCurrentNode).nl())
                 changed |= cn.Nested_Inspect();
 
             if (!showCurrentNode)
@@ -234,22 +239,6 @@ namespace NodeNotes_Visual
         #endregion
 
         public NodeCircleController selectedNode;
-        public void RightTopButton()
-        {
-            selectedNode = null;
-            Base_Node.editingNodes = !Base_Node.editingNodes;
-            if (editButton)
-                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
-
-            CreateNodeButton.showCreateButtons = false;
-
-            if (addButton)
-                addButton.gameObject.SetActive(Base_Node.editingNodes);
-            if (deleteButton)
-                deleteButton.gameObject.SetActive(false);
-
-            AddLogicVersion();
-        }
 
         public void SetSelected(NodeCircleController node) {
             if (selectedNode)
@@ -300,7 +289,25 @@ namespace NodeNotes_Visual
                 logicVersion = currentLogicVersion;
             }
         }
+        
+        #region UI_Buttons
+        public void RightTopButton()
+        {
+            selectedNode = null;
+            Base_Node.editingNodes = !Base_Node.editingNodes;
+            if (editButton)
+                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
 
+            CreateNodeButton.showCreateButtons = false;
+
+            if (addButton)
+                addButton.gameObject.SetActive(Base_Node.editingNodes);
+            if (deleteButton)
+                deleteButton.gameObject.SetActive(false);
+
+            AddLogicVersion();
+        }
+        
         public void ToggleShowAddButtons() {
             AddLogicVersion();
             CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
@@ -326,6 +333,6 @@ namespace NodeNotes_Visual
                 }
             }
         }
-
+        #endregion
     }
 }
