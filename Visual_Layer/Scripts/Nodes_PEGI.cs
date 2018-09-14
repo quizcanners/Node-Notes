@@ -107,7 +107,8 @@ namespace NodeNotes_Visual
                     var curNode = Shortcuts.CurrentNode;
 
                     if (value != null && curNode != null) {
-                        if (value is Node s) {
+                        var s = value as Node;
+                        if (s != null) {
                             if (s.subNotes.Contains(curNode))
                                 wasAParent = curNode;
                         }
