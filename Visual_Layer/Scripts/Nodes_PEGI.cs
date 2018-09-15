@@ -98,46 +98,53 @@ namespace NodeNotes_Visual
 
         public override void SetCurrentNode (Node value) {
 
-            if (loopLock.Unlocked)  {
-                using (loopLock.Lock()) {
-                    SetSelected(null);
+            if (Application.isPlaying)
+            {
+                if (loopLock.Unlocked)
+                {
+                    using (loopLock.Lock())
+                    {
+                        SetSelected(null);
 
-                    Node wasAParent = null;
+                        Node wasAParent = null;
 
-                    var curNode = Shortcuts.CurrentNode;
+                        var curNode = Shortcuts.CurrentNode;
 
-                    if (value != null && curNode != null) {
-                        var s = value as Node;
-                        if (s != null) {
-                            if (s.subNotes.Contains(curNode))
-                                wasAParent = curNode;
-                        }
-                    }
-
-                    foreach (var n in nodesPool)
-                        if (n != null && !n.isFading)
+                        if (value != null && curNode != null)
                         {
-                            if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
-                                n.Unlink();
-                            else
-                                n.assumedPosition = false;
+                            var s = value as Node;
+                            if (s != null)
+                            {
+                                if (s.subNotes.Contains(curNode))
+                                    wasAParent = curNode;
+                            }
                         }
 
-                    firstFree = 0;
+                        foreach (var n in nodesPool)
+                            if (n != null && !n.isFading)
+                            {
+                                if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
+                                    n.Unlink();
+                                else
+                                    n.assumedPosition = false;
+                            }
 
-                    Shortcuts.CurrentNode = value;
+                        firstFree = 0;
+
+                        Shortcuts.CurrentNode = value;
+                    }
+                }
+
+                if (value != null)
+                {
+
+                    UpdateVisibility();
+
+                    var circle = value.visualRepresentation as NodeCircleController;
+
+                    SetBackground(circle.background, circle.backgroundConfig);
                 }
             }
-            
-            if (value != null) {
-
-                UpdateVisibility();
-
-                var circle = value.visualRepresentation as NodeCircleController;
-
-                SetBackground(circle.background, circle.backgroundConfig);
-            }
-            
         }
         
         public static void UpdateVisibility(Base_Node node)  {
@@ -270,6 +277,9 @@ namespace NodeNotes_Visual
             editButton.text = "Edit";
             if (addButton)
                 addButton.gameObject.SetActive(false);
+
+            Shortcuts.visualLayer = this;
+
         }
 
         void ClearPool()
