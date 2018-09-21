@@ -9,7 +9,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
 
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
-    public class Shortcuts : STD_ReferancesHolder {
+    public class Shortcuts : STD_ReferencesHolder {
 
         #region Progress
      
