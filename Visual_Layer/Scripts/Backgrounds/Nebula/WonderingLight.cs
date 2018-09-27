@@ -15,8 +15,7 @@ public class WonderingLight : MonoBehaviour {
     float forceDelay;
     public Rigidbody rigidBody;
     Vector3 blowback = Vector3.zero;
-
-
+    
     private void OnEnable()
     {
         if (!Application.isPlaying)
