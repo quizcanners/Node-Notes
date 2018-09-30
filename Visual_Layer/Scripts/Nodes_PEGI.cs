@@ -15,14 +15,11 @@ namespace NodeNotes_Visual
     [ExecuteInEditMode]
     public class Nodes_PEGI : NodesVisualLayerAbstract {
 
-#if PEGI
-        pegi.windowPositionData window = new pegi.windowPositionData();
-#endif
-
         public static Nodes_PEGI NodeMGMT_inst;
         
         public Shortcuts shortcuts;
 
+        #region UI_Buttons 
         public TextMeshProUGUI editButton;
 
         public Button addButton;
@@ -30,7 +27,59 @@ namespace NodeNotes_Visual
         public NodeCircleController circlePrefab;
 
         public Button deleteButton;
+        #endregion
 
+
+        #region Click Events
+        public void RightTopButton()
+        {
+            selectedNode = null;
+            Base_Node.editingNodes = !Base_Node.editingNodes;
+            if (editButton)
+                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
+
+            CreateNodeButton.showCreateButtons = false;
+
+            if (addButton)
+                addButton.gameObject.SetActive(Base_Node.editingNodes);
+            if (deleteButton)
+                deleteButton.gameObject.SetActive(false);
+
+            AddLogicVersion();
+        }
+
+        public void ToggleShowAddButtons()
+        {
+            AddLogicVersion();
+            CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
+        }
+
+        public void AddNode() => VisualizeNode(Shortcuts.CurrentNode.Add<Node>());
+
+        public void AddLink() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeLinkComponent>());
+
+        public void AddButton() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeButtonComponent>());
+
+        public void DeleteSelected()
+        {
+
+            if (selectedNode != null)
+            {
+
+                var node = selectedNode.source;
+
+                if (node.parentNode != null)
+                {
+                    selectedNode.Unlink();
+                    node.parentNode.subNotes.Remove(node);
+                    node.root.allBaseNodes[node.IndexForPEGI] = null;
+                    SetSelected(null);
+                }
+            }
+        }
+        #endregion
+
+        #region BG
         public List<MonoBehaviour> backgroundControllers = new List<MonoBehaviour>();
         public void SetBackground (int index, string data)
         {
@@ -51,6 +100,9 @@ namespace NodeNotes_Visual
 
 
         }
+        #endregion
+
+        #region Node MGMT
 
         static List<NodeCircleController> nodesPool = new List<NodeCircleController>();
         static int firstFree = 0;
@@ -167,16 +219,49 @@ namespace NodeNotes_Visual
         {
             var cn = Shortcuts.CurrentNode;
 
-            if (cn != null)
-            {
-                UpdateVisibility(cn);
-                foreach (var sub in cn.subNotes)
-                    UpdateVisibility(sub);
+            if (Application.isPlaying) {
+
+                if (cn != null)
+                {
+                    UpdateVisibility(cn);
+                    foreach (var sub in cn.subNotes)
+                        UpdateVisibility(sub);
+                }
             }
         }
 
+        public NodeCircleController selectedNode;
+
+        public void SetSelected(NodeCircleController node)
+        {
+            if (selectedNode)
+                selectedNode.assumedPosition = false;
+
+            selectedNode = node;
+
+            if (node)
+                node.assumedPosition = false;
+
+            if (deleteButton)
+                deleteButton.gameObject.SetActive(selectedNode);
+        }
+
+        void ClearPool()
+        {
+            foreach (var n in nodesPool)
+                if (n != null)
+                    n.DestroyWhatever();
+
+            nodesPool.Clear();
+        }
+
+
+        #endregion
+
         #region Inspector
 #if PEGI
+        pegi.windowPositionData window = new pegi.windowPositionData();
+
         bool showCurrentNode = false;
         public override bool PEGI() {
 
@@ -245,19 +330,7 @@ namespace NodeNotes_Visual
 
         #endif
         #endregion
-
-        public NodeCircleController selectedNode;
-
-        public void SetSelected(NodeCircleController node) {
-            if (selectedNode)
-                selectedNode.assumedPosition = false;
-            selectedNode = node;
-            if (node)
-                node.assumedPosition = false;
-            if (deleteButton)
-                deleteButton.gameObject.SetActive(selectedNode);
-        }
-
+        
         private void OnDisable() {
             shortcuts?.SaveAll();
             Shortcuts.CurrentNode = null;
@@ -282,15 +355,7 @@ namespace NodeNotes_Visual
 
         }
 
-        void ClearPool()
-        {
-            foreach (var n in nodesPool)
-                if (n != null)
-                    n.DestroyWhatever();
-
-            nodesPool.Clear();
-        }
-
+    
         int logicVersion = -1;
         public override void DerrivedUpdate()
         {
@@ -301,49 +366,6 @@ namespace NodeNotes_Visual
             }
         }
         
-        #region UI_Buttons
-        public void RightTopButton()
-        {
-            selectedNode = null;
-            Base_Node.editingNodes = !Base_Node.editingNodes;
-            if (editButton)
-                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
-
-            CreateNodeButton.showCreateButtons = false;
-
-            if (addButton)
-                addButton.gameObject.SetActive(Base_Node.editingNodes);
-            if (deleteButton)
-                deleteButton.gameObject.SetActive(false);
-
-            AddLogicVersion();
-        }
-        
-        public void ToggleShowAddButtons() {
-            AddLogicVersion();
-            CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
-        }
-
-        public void AddNode() => VisualizeNode(Shortcuts.CurrentNode.Add<Node>());
-
-        public void AddLink() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeLinkComponent>());
-
-        public void AddButton() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeButtonComponent>());
-
-        public void DeleteSelected() {
-
-            if (selectedNode != null) {
-
-                var node = selectedNode.source;
-
-                if (node.parentNode != null) {
-                    selectedNode.Unlink();
-                    node.parentNode.subNotes.Remove(node);
-                    node.root.allBaseNodes[node.IndexForPEGI] = null;
-                    SetSelected(null);
-                }
-            }
-        }
-        #endregion
+ 
     }
 }

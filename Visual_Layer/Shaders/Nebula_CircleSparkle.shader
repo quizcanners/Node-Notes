@@ -89,7 +89,7 @@
 
 
 		//float2 duv = (i.screenPos.xy / i.screenPos.w)*float2(1,2); 
-		float alpha = saturate(pow(saturate((1 - (off.x + off.y) * 4)),8) * (1+i.color.a*8)) * 0.05;
+		float alpha = saturate(pow(saturate((1 - (off.x + off.y) * 4)),8) * (1+i.color.a*8)) * 0.01;
 
 		float4 col = i.color;
 
@@ -113,6 +113,8 @@
 			i.viewDir.xyz, l3col.w, alpha);
 
 		col.rgb *= (directLight);
+
+		
 
 		return col;
 

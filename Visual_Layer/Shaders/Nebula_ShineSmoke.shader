@@ -100,6 +100,10 @@
 
 	float4 frag(v2f i) : COLOR{
 
+		float2 scp = i.screenPos.xy / i.screenPos.w;
+
+		float4 screenMask = tex2D(_MainTex, scp);
+
 		float2 sPos = ((i.worldPos.xz - _Nebula_Pos.xz)+16)/32 ;
 
 		float4 mask = tex2D(_Nebula_BG, sPos);
@@ -115,7 +119,7 @@
 
 		float alpha = max(0, (1 - (off.x + off.y) * 4));
 
-		float angle = toClick*0.4 + _Time.x;
+		float angle = toClick*0.4 + _Time.x + +screenMask.b*2;
 		float si = sin(angle);
 		float co = cos(angle);
 
@@ -126,7 +130,9 @@
 
 		rotUV += 0.5f;
 
-		float4 col = tex2D(_MainTex, rotUV);
+		float bluring =  - sin(angle*10 + screenMask.b + i.viewDir.z);
+
+		float4 col = tex2Dlod(_MainTex, float4(rotUV,0, (1 - toClick) * 4 - bluring));
 
 		angle = -_Time.x;
 		si = sin(angle);
@@ -140,7 +146,7 @@
 
 		rotUV2 += 0.5;
 
-		float4 col2 = tex2D(_MainTex, rotUV2);
+		float4 col2 = tex2Dlod(_MainTex, float4(rotUV2,0, (1 - toClick) * 4 + bluring));
 
 		float alp = saturate((col.g - col2.g + (abs((((_Time.x+col.r)*2) % 2)-1) -0.5)*0.3   ) * 8);
 
