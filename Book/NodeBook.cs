@@ -27,15 +27,20 @@ namespace NodeNotes
 #if PEGI
         public static NodeBook inspected;
 
+        int inspectedStuff = -1;
+
         public override bool PEGI()  {
             bool changed = false;
             inspected = this;
 
+            //if (subNode.inspectedSubnode == -1)
+            "Entry Points".fold_enter_exit_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 0).nl();
+
+            if ("Subnode".fold_enter_exit(ref inspectedStuff, 1))
             changed |= subNode.Nested_Inspect();
 
-            if (subNode.inspectedSubnode == -1)
-                "Entry Points".edit_List(entryPoints, ref inspectedEntry);
-
+            pegi.nl();
+            
             inspected = null;
             return changed;
         }

@@ -91,8 +91,7 @@ namespace NodeNotes
         public override StdEncoder Encode() => this.EncodeUnrecognized()
         .Add_String("n", name)
         .Add("i", index)
-        .Add_ifTrue("ic", editEbl_Conditions)
-        .Add_ifTrue("ir", editResults)
+        .Add("is", inspectedStuff)
         .Add_ifNotNegative("icr", inspectedResult)
         .Add("cnds", eblCondition)
         .Add("vcnds", visCondition)
@@ -103,8 +102,7 @@ namespace NodeNotes
             switch (tag) {
                 case "n": name = data; break;
                 case "i": index = data.ToInt(); break;
-                case "ic": editEbl_Conditions = data.ToBool(); break;
-                case "ir": editResults = data.ToBool(); break;
+                case "is": inspectedStuff = data.ToInt(); break;
                 case "icr": inspectedResult = data.ToInt(); break;
                 case "cnds": data.DecodeInto(out eblCondition); break;
                 case "vcnds": data.DecodeInto(out visCondition); break;
@@ -121,10 +119,7 @@ namespace NodeNotes
         public static bool editingNodes = false;
 
         int inspectedResult = -1;
-        public bool InspectingTriggerStuff => editEbl_Conditions || editResults || editVis_Conditions;
-        bool editVis_Conditions = false;
-        bool editEbl_Conditions = false;
-        bool editResults = false;
+        public bool InspectingTriggerStuff => inspectedResult != -1;
 #if PEGI
 
         public virtual string NeedAttention()
@@ -140,7 +135,7 @@ namespace NodeNotes
             return null;
         }
 
-
+        protected int inspectedStuff = -1;
         public override bool PEGI()
         {
             var changed = false;
@@ -149,38 +144,23 @@ namespace NodeNotes
             if (!onPlayScreen)
                 changed |= base.PEGI();
 
-            if (!showDebug || onPlayScreen)
-            {
-                if (!InspectingTriggerStuff)
-                {
-                    changed |= pegi.edit(ref name);
+            if (!showDebug || onPlayScreen) {
+                if (!InspectingTriggerStuff) {
+                    changed |= this.inspect_Name();
                     if ((this != Shortcuts.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
-                    {
                         Shortcuts.Cut_Paste = this;
-                        changed = true;
-                    }
                 }
 
                 pegi.nl();
 
-                if ("Visibility Conditions".foldout(ref editVis_Conditions).nl())
-                {
-                    editResults = false;
-                    editEbl_Conditions = false;
+                if ("Visibility Conditions".fold_enter_exit( ref inspectedStuff, 0).nl())
                     changed |= visCondition.PEGI();
-                }
-
-                if ("Enabled Conditions".foldout(ref editEbl_Conditions).nl()) {
-                    editResults = false;
-                    editVis_Conditions = false;
+                
+                if ("Enabled Conditions".fold_enter_exit(ref inspectedStuff, 1).nl())
                     changed |= eblCondition.PEGI();
-                }
-
-                if ("Results".foldout(ref editResults).nl()) {
-                    editEbl_Conditions = false;
-                    editVis_Conditions = false;
+                
+                if ("Results".fold_enter_exit(ref inspectedStuff, 2))
                     changed |= results.Inspect(Values.global).nl();
-                }
                 
                 pegi.nl();
             }

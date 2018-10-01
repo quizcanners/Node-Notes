@@ -13,6 +13,8 @@ namespace NodeNotes {
 
         public override string NameForPEGI { get => name; set => name = value; }
 
+        #region Encode/Decode
+
         public override bool Decode(string tag, string data) {
 
             switch (tag) {
@@ -25,6 +27,8 @@ namespace NodeNotes {
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name);
+
+        #endregion
 
 #if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {

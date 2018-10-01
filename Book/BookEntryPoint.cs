@@ -19,6 +19,8 @@ namespace NodeNotes
 
         public string NameForPEGI { get => entryPointName; set => entryPointName = value; }
 
+        #region Encode/Decode
+
         public override bool Decode(string tag, string data)
         {
             switch (tag)
@@ -36,12 +38,14 @@ namespace NodeNotes
             .Add("ind", nodeIndex)
             .Add_String("Name", entryPointName);
 
+        #endregion
+
+        #region Inspector
+
 #if PEGI
         public override bool PEGI()
         {
             bool changed = false;
-
-            "Tag".edit(40, ref entryPointName).nl();
 
             "Tag should not change after it was used by other book to link to this one".writeOneTimeHint("KeepTags");
 
@@ -52,5 +56,7 @@ namespace NodeNotes
             return changed;
         }
 #endif
+        #endregion
+
     }
 }

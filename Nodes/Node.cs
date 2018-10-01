@@ -85,6 +85,17 @@ namespace NodeNotes
             bool changed = false;
 
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
+            
+            if ((!showDebug && inspectedSubnode == -1) && (!onPlayScreen))  {
+                pegi.nl();
+
+                    if (this != CurrentNode)  {
+                        if (icon.Play.Click())
+                            CurrentNode = this;
+                    }
+                    else if (parentNode != null && icon.Exit.Click())
+                        CurrentNode = parentNode;
+            }
 
             if (onPlayScreen || inspectedSubnode == -1)
                 changed |= base.PEGI();
@@ -92,16 +103,7 @@ namespace NodeNotes
                 showDebug = false;
 
             if ((!showDebug && inspectedSubnode == -1) || onPlayScreen) {
-
-                if (!onPlayScreen) {
-                    if (this != CurrentNode) {
-                        if (icon.Play.Click())
-                            CurrentNode = this;
-                    }
-                    else if (parentNode != null && icon.Exit.Click())
-                        CurrentNode = parentNode;
-                }
-            
+                
                 var cp = Shortcuts.Cut_Paste;
 
                 if (cp != null)  {
@@ -127,8 +129,7 @@ namespace NodeNotes
             if (!showDebug && !onPlayScreen && !InspectingTriggerStuff)
             {
 
-                if (inspectedSubnode != -1)
-                {
+                if (inspectedSubnode != -1) {
                     var n = subNotes.TryGet(inspectedSubnode);
                     if (n == null || icon.Exit.Click())
                         inspectedSubnode = -1;
@@ -136,10 +137,9 @@ namespace NodeNotes
                         n.Try_Nested_Inspect();
                 }
 
-                if (inspectedSubnode == -1)
-                {
+                if (inspectedSubnode == -1) {
                     pegi.nl();
-                    var newNode = name.edit_List(subNotes, ref inspectedSubnode, ref changed);
+                    var newNode = "Sub Nodes".edit_List(subNotes, ref inspectedSubnode, ref changed);
 
                     if (newNode != null)
                         newNode.CreatedFor(this);
