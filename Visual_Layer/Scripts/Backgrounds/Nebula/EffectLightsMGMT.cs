@@ -80,7 +80,7 @@ public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName {
 
             var col = Camera.main.backgroundColor;
 
-            Camera.main.backgroundColor = MyMath.Lerp_RGB(col, Color.black, 3);
+            Camera.main.backgroundColor = MyMath.Lerp_bySpeed(col, Color.black, 3);
         }
 
         for (int c = 0; c < 4; c++)

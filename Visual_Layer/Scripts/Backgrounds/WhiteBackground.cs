@@ -58,7 +58,7 @@ namespace NodeNotes
 
                 var col = Camera.main.backgroundColor;
 
-                Camera.main.backgroundColor = MyMath.Lerp_RGB(col, Color.white, 3);
+                Camera.main.backgroundColor = MyMath.Lerp_bySpeed(col, Color.white, 3);
             }
 
         }
