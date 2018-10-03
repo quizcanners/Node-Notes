@@ -4,11 +4,9 @@ using UnityEngine;
 using PlayerAndEditorGUI;
 using SharedTools_Stuff;
 
-namespace NodeNotes
-{
+namespace NodeNotes {
 
-    public class WhiteBackground : ComponentSTD, IManageFading, IGotDisplayName
-    {
+    public class WhiteBackground : ComponentSTD, IManageFading, IGotDisplayName {
 
         public bool isFading;
 
