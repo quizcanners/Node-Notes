@@ -27,8 +27,7 @@ namespace NodeNotes
         public ISTD previousVisualRepresentation;
         public string configForVisualRepresentation;
         
-        public virtual void OnMouseOver()
-        {
+        public virtual void OnMouseOver() {
 
             if (Input.GetMouseButtonDown(0) && parentNode != null)
                 parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
@@ -53,13 +52,13 @@ namespace NodeNotes
             if (logicVersion != LogicMGMT.currentLogicVersion) {
                 logicVersion = LogicMGMT.currentLogicVersion;
 
-                visConditionsResult = visCondition.TestFor(Values.global);
+                visConditionsResult = visCondition.IsTrue;
 
-                enabledConditionResult = eblCondition.TestFor(Values.global);
+                enabledConditionResult = eblCondition.IsTrue;
             }
         }
 
-        public bool isOneOfChildrenOf(Node other) {
+        public bool IsOneOfChildrenOf(Node other) {
 
             if (other == null)
                 return false;
@@ -68,7 +67,7 @@ namespace NodeNotes
                 if (parentNode == other)
                     return true;
                 else
-                    return parentNode.isOneOfChildrenOf(other);
+                    return parentNode.IsOneOfChildrenOf(other);
             }
 
             return false;
@@ -92,7 +91,7 @@ namespace NodeNotes
         .Add_String("n", name)
         .Add("i", index)
         .Add("is", inspectedStuff)
-        .Add_ifNotNegative("icr", inspectedResult)
+        .Add_IfNotNegative("icr", inspectedResult)
         .Add("cnds", eblCondition)
         .Add("vcnds", visCondition)
         .Add("res", results)
@@ -118,6 +117,8 @@ namespace NodeNotes
 
         public static bool editingNodes = false;
 
+
+        protected int inspectedStuff = -1;
         int inspectedResult = -1;
         public bool InspectingTriggerStuff => inspectedResult != -1;
 #if PEGI
@@ -134,8 +135,7 @@ namespace NodeNotes
                 return "Is it's own parent";
             return null;
         }
-
-        protected int inspectedStuff = -1;
+        
         public override bool PEGI()
         {
             var changed = false;
@@ -158,11 +158,8 @@ namespace NodeNotes
                 
                 if ("Enabled Conditions".fold_enter_exit(ref inspectedStuff, 1).nl())
                     changed |= eblCondition.PEGI();
-                
-                if ("Results".fold_enter_exit(ref inspectedStuff, 2))
-                    changed |= results.Inspect(Values.global).nl();
-                
-                pegi.nl();
+
+                changed |= "Results".fold_enter_exit_List(results, ref inspectedResult, ref inspectedStuff, 2).nl();
             }
 
             if (changed)

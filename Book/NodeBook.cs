@@ -68,8 +68,8 @@ namespace NodeNotes
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("f", firstFree)
             .Add("sn", subNode)
-            .Add_ifNotNegative("in", inspectedNode)
-            .Add_ifNotNegative("inE", inspectedEntry)
+            .Add_IfNotNegative("in", inspectedNode)
+            .Add_IfNotNegative("inE", inspectedEntry)
             .Add("ep", entryPoints);
           
         public override bool Decode(string tag, string data) {

@@ -108,7 +108,7 @@ namespace NodeNotes
 
                 if (cp != null)  {
 
-                    bool canPaste = (cp.root == root) && cp != this && !subNotes.Contains(cp) && (!isOneOfChildrenOf(cp as Node));
+                    bool canPaste = (cp.root == root) && cp != this && !subNotes.Contains(cp) && (!IsOneOfChildrenOf(cp as Node));
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;

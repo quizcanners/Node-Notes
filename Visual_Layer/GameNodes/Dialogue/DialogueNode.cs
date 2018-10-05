@@ -1,0 +1,284 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NodeNotes;
+using PlayerAndEditorGUI;
+using SharedTools_Stuff;
+using STD_Logic;
+using UnityEngine;
+
+namespace NodeNotes_Visual.Dialogue
+{
+    public class DialogueNode : GameNodeBase {
+
+        public override string UniqueTag => "talk";
+
+        public InteractionBranch interactionBranch;
+
+        public List<Result> OnEnterResults = new List<Result>();
+        public List<Result> OnExitResults = new List<Result>();
+
+        public int myQuestVersion = -1;
+
+        public void UpdateLogic() => myQuestVersion = LogicMGMT.currentLogicVersion;
+        
+        public void Update() {
+            if (myQuestVersion != LogicMGMT.currentLogicVersion)
+                UpdateLogic();
+        }
+
+        #region Encode & Decode
+        public override StdEncoder Encode() => this.EncodeUnrecognized()
+            .Add("i", interactionBranch)
+            .Add_IfNotEmpty("ent", OnEnterResults)
+            .Add_IfNotEmpty("ext", OnExitResults);
+
+        public override bool Decode(string tag, string data) {
+            switch (tag) {
+                case "i": data.DecodeInto(out interactionBranch);  break;
+                case "ent": data.DecodeInto(out OnEnterResults); break;
+                case "ext": data.DecodeInto(out OnExitResults); break;
+                default: return false;
+            }
+            return true;
+        }
+        #endregion
+
+
+        #region Inspector
+        int inspectedResult = -1;
+        int inspectedExitResult = -1;
+#if PEGI
+
+        public override bool PEGI()
+        {
+
+            bool changed = base.PEGI();
+
+            if (showDebug)
+                return changed;
+
+            if ("Interactions".fold_enter_exit(ref inspectedStuff, 0).nl())
+                interactionBranch.PEGI();
+
+            changed |= "On Enter Results".fold_enter_exit_List(OnEnterResults, ref inspectedResult, ref inspectedStuff, 1).nl_ifFalse();
+
+
+            changed |=  "On Exit Result".fold_enter_exit_List(OnExitResults, ref inspectedExitResult, ref inspectedStuff, 2).nl_ifFalse();
+            
+            if ("Dialogue ".fold_enter_exit(ref inspectedStuff, 3).nl_ifFalse()){
+
+                if (icon.Close.Click("Close dialogue", 20))
+                    CloseInteractions();
+                else {
+                    pegi.newLine();
+                    for (int i = 0; i < _optText.Count; i++) {
+                        if (_optText[i].Click().nl()){
+                            SelectOption(i);
+                            DistantUpdate();
+                        }
+                    }
+                }
+            }
+
+            return changed;
+        }
+
+        public void GroupFilter_PEGI()
+        {
+
+            List<TriggerGroup> lst = TriggerGroup.all.GetAllObjsNoOrder();
+
+            for (int i = 0; i < lst.Count; i++)
+            {
+                TriggerGroup td = lst[i];
+                "{0}_{1}".F(td, td.IndexForPEGI).toggle(ref td.showInInspectorBrowser).nl();
+            }
+
+
+        }
+#endif
+        #endregion
+
+        public static string SingleText { get { return _optText.Count > 0 ? _optText[0] : null; } set { _optText.Clear(); _optText.Add(value); } }
+
+        public static List<string> _optText = new List<string>();
+        static List<Interaction> possibleInteractions = new List<Interaction>();
+        static List<DialogueChoice> possibleOptions = new List<DialogueChoice>();
+
+        public static bool ScrollOptsDirty;
+
+        static bool CheckOptions(Interaction ia)
+        {
+            ClearTexts();
+            int cnt = 0;
+            //for (int i = 0; i < tmp.Count; i++)
+            foreach (DialogueChoice dio in ia.options)
+                if (dio.conditions.IsTrue) {
+                    _optText.Add(dio.text.ToString());
+                    possibleOptions.Add(dio);
+                    cnt++;
+                }
+
+            ScrollOptsDirty = true;
+
+            QuestVersion = LogicMGMT.currentLogicVersion;
+
+            if (cnt > 0)
+                return true;
+            else
+                return false;
+        }
+        
+        void CollectInteractions() => CollectInteractions(interactionBranch);
+
+            void CollectInteractions(InteractionBranch gr) {
+            foreach (Interaction si in gr.elements) {
+                    if (si.conditions.IsTrue) {
+                        _optText.Add(si.texts[0].ToPEGIstring());
+                        possibleInteractions.Add(si);
+                       
+                    }
+            }
+
+            foreach (InteractionBranch sgr in gr.subBranches)
+                CollectInteractions(sgr);
+        }
+
+        public void BackToInitials() {
+            LogicMGMT.AddLogicVersion();
+            ClearTexts();
+            
+            CollectInteractions();
+
+            if (possibleInteractions.Count == 0)
+                CloseInteractions();
+            else  {
+
+                QuestVersion = LogicMGMT.currentLogicVersion;
+                ScrollOptsDirty = true;
+
+                InteractionStage = 0;
+                textNo = 0;
+
+                if (continuationReference != null)
+                {
+                    foreach (var ie in possibleInteractions)
+                        if (ie.name == continuationReference)
+                        {
+                            interaction = ie;
+                            InteractionStage++;
+                            SelectOption(0);
+                            break;
+                        }
+                }
+
+
+            }
+        }
+
+        public void StartInteractions() {
+            OnEnterResults.Apply();
+            BackToInitials();
+        }
+        
+        public void CloseInteractions() => OnExitResults.Apply();
+
+        public static int textNo;
+        public static int InteractionStage;
+
+        static Interaction interaction;
+        static DialogueChoice option;
+
+        static int QuestVersion;
+        public void DistantUpdate()  {
+ 
+                if (QuestVersion != LogicMGMT.currentLogicVersion)  {
+
+                    switch (InteractionStage)
+                    {
+                        case 0: BackToInitials(); break;
+                        case 1: GotBigText(); break;
+                        case 3: CheckOptions(interaction); break;
+                        case 5:
+                            List<Sentance> tmp = option.texts2;
+                            if (tmp.Count > textNo)
+                                SingleText = tmp[textNo].ToString();
+                            break;
+                    }
+                    QuestVersion = LogicMGMT.currentLogicVersion;
+                }
+            
+        }
+
+        static void ClearTexts()
+        {
+            _optText.Clear();
+            ScrollOptsDirty = true;
+            possibleInteractions.Clear();
+        }
+
+        static bool GotBigText()
+        {
+            if (textNo < interaction.texts.Count)
+            {
+                SingleText = interaction.texts[textNo].ToString();
+                return true;
+            }
+            return false;
+        }
+
+
+        static string continuationReference;
+        public void SelectOption(int no)
+        {
+            LogicMGMT.AddLogicVersion();
+            switch (InteractionStage)
+            {
+                case 0:
+                    InteractionStage++; interaction = possibleInteractions[no]; goto case 1;
+                case 1:
+                    continuationReference = null;
+                    textNo++;
+                    if (GotBigText()) break;
+                    InteractionStage++;
+                    goto case 2;
+                case 2:
+                    InteractionStage++;
+                    if (!CheckOptions(interaction)) goto case 4; break;
+                case 3:
+                    option = possibleOptions[no];
+                    option.results.Apply();
+                    continuationReference = option.nextOne;
+                    interaction.finalResults.Apply();
+                    textNo = -1;
+                    goto case 5;
+
+                case 4:
+                    interaction.finalResults.Apply(); BackToInitials(); break;
+
+                case 5:
+
+                    List<Sentance> txts = option.texts2;
+                    if ((txts.Count > textNo + 1))
+                    {
+                        textNo++;
+                        SingleText = txts[textNo].ToString();
+                        InteractionStage = 5;
+                        break;
+                    }
+                    goto case 6;
+                case 6:
+
+                    BackToInitials();
+                    break;
+            }
+        }
+
+
+
+
+    }
+}
