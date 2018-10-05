@@ -9,11 +9,14 @@ using SharedTools_Stuff;
 using STD_Logic;
 using UnityEngine;
 
-namespace NodeNotes_Visual.Dialogue
-{
+namespace NodeNotes_Visual.Dialogue {
+
+    [GameNode(tag, typeof(DialogueNode))]
     public class DialogueNode : GameNodeBase {
 
-        public override string UniqueTag => "talk";
+        public const string tag = "GN_talk";
+
+        public override string UniqueTag => tag;
 
         public InteractionBranch interactionBranch;
 
@@ -45,30 +48,27 @@ namespace NodeNotes_Visual.Dialogue
             return true;
         }
         #endregion
-
-
+        
         #region Inspector
         int inspectedResult = -1;
         int inspectedExitResult = -1;
-#if PEGI
+        #if PEGI
 
-        public override bool PEGI()
-        {
+        public override bool PEGI() {
 
             bool changed = base.PEGI();
 
             if (showDebug)
                 return changed;
 
-            if ("Interactions".fold_enter_exit(ref inspectedStuff, 0).nl())
+            if ("Interactions".fold_enter_exit(ref inspectedStuff, 10).nl())
                 interactionBranch.PEGI();
 
-            changed |= "On Enter Results".fold_enter_exit_List(OnEnterResults, ref inspectedResult, ref inspectedStuff, 1).nl_ifFalse();
-
-
-            changed |=  "On Exit Result".fold_enter_exit_List(OnExitResults, ref inspectedExitResult, ref inspectedStuff, 2).nl_ifFalse();
+            changed |= "On Enter Results".fold_enter_exit_List(OnEnterResults, ref inspectedResult, ref inspectedStuff, 11).nl_ifFalse();
             
-            if ("Dialogue ".fold_enter_exit(ref inspectedStuff, 3).nl_ifFalse()){
+            changed |= "On Exit Result".fold_enter_exit_List(OnExitResults, ref inspectedExitResult, ref inspectedStuff, 12).nl_ifFalse();
+            
+            if ("Play Dialogue ".fold_enter_exit(ref inspectedStuff, 13).nl_ifFalse()){
 
                 if (icon.Close.Click("Close dialogue", 20))
                     CloseInteractions();
@@ -86,19 +86,6 @@ namespace NodeNotes_Visual.Dialogue
             return changed;
         }
 
-        public void GroupFilter_PEGI()
-        {
-
-            List<TriggerGroup> lst = TriggerGroup.all.GetAllObjsNoOrder();
-
-            for (int i = 0; i < lst.Count; i++)
-            {
-                TriggerGroup td = lst[i];
-                "{0}_{1}".F(td, td.IndexForPEGI).toggle(ref td.showInInspectorBrowser).nl();
-            }
-
-
-        }
 #endif
         #endregion
 
@@ -134,7 +121,7 @@ namespace NodeNotes_Visual.Dialogue
         
         void CollectInteractions() => CollectInteractions(interactionBranch);
 
-            void CollectInteractions(InteractionBranch gr) {
+        void CollectInteractions(InteractionBranch gr) {
             foreach (Interaction si in gr.elements) {
                     if (si.conditions.IsTrue) {
                         _optText.Add(si.texts[0].ToPEGIstring());
@@ -229,8 +216,7 @@ namespace NodeNotes_Visual.Dialogue
             }
             return false;
         }
-
-
+        
         static string continuationReference;
         public void SelectOption(int no)
         {
@@ -276,9 +262,6 @@ namespace NodeNotes_Visual.Dialogue
                     break;
             }
         }
-
-
-
 
     }
 }

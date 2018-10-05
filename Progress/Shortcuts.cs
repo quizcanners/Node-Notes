@@ -15,6 +15,8 @@ namespace NodeNotes {
      
         static LoopLock loopLock = new LoopLock();
 
+
+
         public static Node CurrentNode {
 
             get { return user.CurrentNode; }

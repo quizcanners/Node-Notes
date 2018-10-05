@@ -4,8 +4,7 @@ using STD_Logic;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NodeNotes
-{
+namespace NodeNotes {
 
     [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI {

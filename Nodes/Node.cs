@@ -6,13 +6,14 @@ using System;
 using PlayerAndEditorGUI;
 using STD_Logic;
 
-namespace NodeNotes
-{
-    public class Node : Base_Node,  INeedAttention, IPEGI
-    { 
+namespace NodeNotes {
+
+    public class Node : Base_Node,  INeedAttention, IPEGI { 
 
         public List<Base_Node> subNotes = new List<Base_Node>();
-        
+
+        public List<GameNodeBase> gameNodes = new List<GameNodeBase>();
+
         public override void OnMouseOver()
         {
             if (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {
@@ -46,23 +47,32 @@ namespace NodeNotes
         
         #region Inspector
         public int inspectedSubnode = -1;
+        public int inspectedGameNode = -1;
 
         public override string NeedAttention()
         {
-            foreach (var s in subNotes)
-                if (s == null)
-                    return "{0} : {1} Got null sub node".F(IndexForPEGI, name);
-                else
+            if (loopLock.Unlocked)
+            {
+                using (loopLock.Lock())
                 {
-                    var na = s.NeedAttention();
-                    if (na != null)
-                        return na;
+                    foreach (var s in subNotes)
+                        if (s == null)
+                            return "{0} : {1} Got null sub node".F(IndexForPEGI, name);
+                        else
+                        {
+                            var na = s.NeedAttention();
+                            if (na != null)
+                                return na;
+                        }
                 }
 
-            if (root == null)
-                return "No root detected";
+                if (root == null)
+                    return "No root detected";
 
-            return null;
+                return null;
+            }
+            else return "Infinite Loop Detected";
+
         }
 
         public void SetInspectedUpTheHierarchy(Base_Node node)
@@ -79,8 +89,7 @@ namespace NodeNotes
         }
 #if PEGI
 
-        public override bool PEGI()
-        {
+        public override bool PEGI() {
 
             bool changed = false;
 
@@ -112,8 +121,7 @@ namespace NodeNotes
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
-                    else
-                    {
+                    else {
                         (cp.ToPEGIstring() + (canPaste ? "" : " can't paste parent to child")).write();
                         if (canPaste && icon.Paste.Click())
                         {
@@ -126,8 +134,10 @@ namespace NodeNotes
                 }
             }
 
-            if (!showDebug && !onPlayScreen && !InspectingTriggerStuff)
-            {
+            if (inspectedSubnode == -1 && "Game Nodes ".fold_enter_exit_List(gameNodes, ref inspectedGameNode, ref inspectedStuff, 7).nl())
+                changed = true;
+
+            if (!showDebug && !onPlayScreen && !InspectingTriggerStuff)  {
 
                 if (inspectedSubnode != -1) {
                     var n = subNotes.TryGet(inspectedSubnode);
@@ -153,18 +163,19 @@ namespace NodeNotes
         
         #region Encode_Decode
 
-        public override StdEncoder Encode()
-        {
+        public override StdEncoder Encode()  {
 
-            if (loopLock.Unlocked)
-            {
-                using (loopLock.Lock())
-                {
+            if (loopLock.Unlocked)  {
+                using (loopLock.Lock()){
 
                     var cody = this.EncodeUnrecognized()
-                     .Add("sub", subNotes)
+                     .Add_IfNotEmpty("sub", subNotes)
                      .Add("b", base.Encode())
-                     .Add("isn", inspectedSubnode);
+                     .Add_IfNotNegative("isn", inspectedSubnode);
+                  //   .Add_IfNotNegative("is", inspectedStuff);
+                    
+                    foreach (var gn in gameNodes)
+                        cody.Add(gn.UniqueTag, gn);
 
                     return cody;
                 }
@@ -175,14 +186,22 @@ namespace NodeNotes
             return new StdEncoder();
         }
 
-        public override bool Decode(string tag, string data)
-        {
-            switch (tag)
-            {
+        public override bool Decode(string tag, string data) {
+
+            switch (tag)  {
+
                 case "sub": data.DecodeInto(out subNotes); break;
                 case "b": data.DecodeInto(base.Decode); break;
                 case "isn": inspectedSubnode = data.ToInt(); break;
-                default: return false;
+               // case "is": inspectedStuff = data.ToInt(); break;
+
+                default:
+                    Type t;
+                    if (GameNodeBase.allGameNodes.TryGetValue(tag, out t)) {
+                        gameNodes.Add(data.DecodeInto_Type<GameNodeBase>(t));
+                        break;
+                    } else
+                        return false;
             }
             return true;
         }
