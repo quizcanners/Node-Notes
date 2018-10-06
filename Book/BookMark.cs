@@ -16,6 +16,7 @@ namespace NodeNotes
         public string NameForPEGI { get => bookName; set => bookName = value; }
 
         #region Inspector
+#if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             "Node {0} in {1}".F(nodeIndex, bookName).write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
@@ -23,6 +24,7 @@ namespace NodeNotes
             
             return false;
         }
+#endif
         #endregion
 
         #region Encode_Decode

@@ -57,12 +57,16 @@ namespace NodeNotes_Visual.Dialogue {
         #endregion
 
         #region Inspector
-#if PEGI
+
 
         int inspectedStuff = -1;
         int inspectedText = -1;
         int inspectedChoice = -1;
         int inspectedResult = -1;
+
+#if PEGI
+
+      
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 

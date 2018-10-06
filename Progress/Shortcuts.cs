@@ -124,10 +124,12 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-#if PEGI
         int inspectedBook = -1;
         bool inspectUser = false;
         string tmpUserName;
+
+#if PEGI
+       
         public override bool PEGI() {
 
             bool changed = false;
@@ -212,7 +214,7 @@ namespace NodeNotes {
         }
 #endif
         #endregion
-        
+
         #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()

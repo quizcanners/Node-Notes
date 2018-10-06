@@ -16,15 +16,17 @@ namespace NodeNotes
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
         public Node subNode = new Node();
 
-        public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
+      
 
         #region Inspector
         int inspectedNode = -1;
         int inspectedEntry = -1;
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
-        
+
 #if PEGI
+          public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
+
         public static NodeBook inspected;
 
         int inspectedStuff = -1;
@@ -62,7 +64,7 @@ namespace NodeNotes
         }
 #endif
         #endregion
-        
+
         #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()

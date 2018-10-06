@@ -99,9 +99,6 @@ namespace NodeNotes {
                 TryExecuteTransition();
         }
 
-        #region Inspector
-#if PEGI
-
         bool linkToCurrent
         {
             get
@@ -112,6 +109,11 @@ namespace NodeNotes {
                 return false;
             }
         }
+
+        #region Inspector
+#if PEGI
+
+   
 
         bool shared_PEGI()
         {
@@ -163,9 +165,9 @@ namespace NodeNotes {
             
             return changed;
         }
-        #endif
+#endif
         #endregion
-        
+
         #region Encode_Decode
 
         public override StdEncoder Encode() {

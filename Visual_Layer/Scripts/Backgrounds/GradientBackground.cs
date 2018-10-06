@@ -113,6 +113,11 @@ namespace NodeNotes_Visual
         Color target;
         bool lerpFinished;
 
+      /*  public ColorLerpParameter() {
+            current = Color.black;
+            target = Color.black;
+            lerpFinished = false;
+        }*/
 
         public float GetRGBAdistance() {
             if (lerpFinished) return 0;
@@ -141,6 +146,7 @@ namespace NodeNotes_Visual
             return current;
         }
 
+#if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             bool changed = pegi.edit(ref target);
             if (changed)
@@ -148,11 +154,16 @@ namespace NodeNotes_Visual
 
             return changed;
         }
+#endif
 
         public StdEncoder Encode() => new StdEncoder().Add("t", target);
 
-        public ISTD Decode(string data) => data.DecodeTagsFor(this);
-
+        public ISTD Decode(string data)
+        {
+            current = Color.black;
+            target = Color.black;
+            return data.DecodeTagsFor(this);
+        }
         public bool Decode(string tag, string data) {
             switch (tag) {
                 case "t": target = data.ToColor(); break;

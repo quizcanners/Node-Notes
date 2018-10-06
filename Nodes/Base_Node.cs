@@ -114,13 +114,6 @@ namespace NodeNotes {
 
         #region Inspector
 
-        public static bool editingNodes = false;
-
-
-        protected int inspectedStuff = -1;
-        int inspectedResult = -1;
-        public bool InspectingTriggerStuff => inspectedResult != -1;
-#if PEGI
 
         public virtual string NeedAttention()
         {
@@ -134,6 +127,16 @@ namespace NodeNotes {
                 return "Is it's own parent";
             return null;
         }
+
+        public static bool editingNodes = false;
+
+
+        protected int inspectedStuff = -1;
+        int inspectedResult = -1;
+        public bool InspectingTriggerStuff => inspectedResult != -1;
+#if PEGI
+
+      
         
         public override bool PEGI()
         {

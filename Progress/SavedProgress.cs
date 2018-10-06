@@ -171,7 +171,8 @@ namespace NodeNotes
 
         public string NameForPEGIdisplay() =>
             "{0} FROM {1}".F(userName, startingPoint);
-        
+
+#if PEGI
         int editedMark = -1;
         public override bool PEGI() {
 
@@ -189,10 +190,11 @@ namespace NodeNotes
 
             return changed;
         }
+#endif
 
-        #endregion
+#endregion
 
-        #region Encoding_Decoding
+#region Encoding_Decoding
 
         public override StdEncoder Encode() {
             var cody = this.EncodeUnrecognized()
@@ -243,7 +245,7 @@ namespace NodeNotes
 
  
 
-        #endregion
+#endregion
 
     }
 }
