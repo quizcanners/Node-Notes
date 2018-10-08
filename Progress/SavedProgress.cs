@@ -174,7 +174,7 @@ namespace NodeNotes
 
 #if PEGI
         int editedMark = -1;
-        public override bool PEGI() {
+        public override bool Inspect() {
 
             bool changed = false; 
 

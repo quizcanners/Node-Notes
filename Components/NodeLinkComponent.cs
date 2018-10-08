@@ -42,9 +42,9 @@ namespace NodeNotes {
 
         public bool PEGI_inList(IList list, int ind, ref int edited) => sharedPEGI();
 
-        public override bool PEGI()
+        public override bool Inspect()
         {
-            bool changed = base.PEGI();
+            bool changed = base.Inspect();
 
             changed |= sharedPEGI();
 

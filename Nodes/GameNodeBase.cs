@@ -9,33 +9,80 @@ using PlayerAndEditorGUI;
 namespace NodeNotes
 {
 
+    [GameNode()]
+    [DerrivedList()]
     public class GameNodeBase : Base_Node {
 
-        public static Dictionary<string, Type> allGameNodes = new Dictionary<string, Type>();
+        public static List<string> allKeys = null;
+
+        static Dictionary<string, Type> allGameNodes = null;
+
+        public static void RefreshNodeTypesList()
+        {
+            allGameNodes = new Dictionary<string, Type>();
+
+            allKeys = new List<string>();
+
+            List<Type> allTypes = CsharpFuncs.GetAllChildTypesOf<GameNodeBase>();
+
+            foreach (var t in allTypes)
+            {
+                var att = t.ClassAttribute<GameNodeAttribute>();
+
+                if (att != null)
+                {
+                    allKeys.Add(att.tag);
+                    allGameNodes.Add(att.tag, t);
+                }
+
+            }
+        }
+
+        public static Dictionary<string, Type> AllGameNodes { get {
+
+                if (allGameNodes == null)
+                    RefreshNodeTypesList();
+
+            return allGameNodes;
+            }
+        } 
+        
+        public override GameNodeBase AsGameNode => this;
 
         public virtual string UniqueTag => "Is A Base Class";
 
         public virtual void Enter() { }
 
-        public void Exit() {
-            CurrentNode = parentNode;
-        }
-
-       /* public override bool PEGI() {
-            var changed = base.PEGI();
-
-
-
-        }*/
-
+        public void Exit() =>  CurrentNode = parentNode;
+        
     }
 
 
+   
     [AttributeUsage(AttributeTargets.Class)]
-    public class GameNodeAttribute : Attribute {
+    public class GameNodeAttribute : Attribute, IAttributeWithTaggetTypes_STD {
 
-        public GameNodeAttribute(string tag, Type type) =>
-            GameNodeBase.allGameNodes.Add(tag, type);
+       public string tag;
+
+        public GameNodeAttribute(string ntag) {
+            tag = ntag;
+        }
+
+        public GameNodeAttribute() { }
+        
+        public List<string> AllTags() {
+
+            if (GameNodeBase.allKeys == null)
+                GameNodeBase.RefreshNodeTypesList();
+
+            return GameNodeBase.allKeys;
+        }
+
+        public Type GetType(string tag)  {
+            Type t;
+            GameNodeBase.AllGameNodes.TryGetValue(tag, out t);
+            return t;
+        }
     }
 
 }

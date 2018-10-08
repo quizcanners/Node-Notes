@@ -8,11 +8,53 @@ using STD_Logic;
 
 namespace NodeNotes {
 
-    public class Node : Base_Node,  INeedAttention, IPEGI { 
+    public class Node : Base_Node,  INeedAttention, IPEGI {
 
-        public List<Base_Node> subNotes = new List<Base_Node>();
+        #region SubNodes
 
-        public List<GameNodeBase> gameNodes = new List<GameNodeBase>();
+        public List<Base_Node> coreNodes = new List<Base_Node>();
+
+        public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
+
+        public IEnumerator<Base_Node> GetEnumerator()
+        {
+            foreach (var s in coreNodes)
+                yield return s;
+
+            foreach (var g in gameNodes)
+                yield return g;
+        }
+        
+        public void Add(Base_Node node)
+        {
+            var gn = node.AsGameNode;
+
+            if (gn!= null)
+                gameNodes.Add(gn);
+            else
+                coreNodes.Add(node);
+
+        }
+
+        public void Remove(Base_Node node) {
+
+            var gn = node.AsGameNode;
+
+            if (gn != null)
+                gameNodes.Remove(gn);
+            else
+                coreNodes.Remove(node);
+
+        }
+
+        public T Add<T>() where T : Base_Node, new()
+        {
+            var newNode = new T();
+            newNode.CreatedFor(this);
+            coreNodes.Add(newNode);
+            return newNode;
+        }
+        #endregion
 
         public override void OnMouseOver()
         {
@@ -29,20 +71,14 @@ namespace NodeNotes {
                 SetInspectedUpTheHierarchy(null);
         }
 
-        public T Add<T>() where T: Base_Node, new() {
-             var newNode = new T();
-             newNode.CreatedFor(this);
-             subNotes.Add(newNode);
-             return newNode;
-        }
-
         LoopLock loopLock = new LoopLock();
         
         public override void Init (NodeBook nroot, Node parent){
             base.Init(nroot, parent);
           
-            foreach (var sn in subNotes)
+            foreach (Base_Node sn in this)
                 sn.Init(nroot, this);
+
         }
         
         #region Inspector
@@ -53,17 +89,17 @@ namespace NodeNotes {
         {
             if (loopLock.Unlocked)
             {
-                using (loopLock.Lock())
-                {
-                    foreach (var s in subNotes)
-                        if (s == null)
-                            return "{0} : {1} Got null sub node".F(IndexForPEGI, name);
-                        else
-                        {
-                            var na = s.NeedAttention();
-                            if (na != null)
-                                return na;
-                        }
+                using (loopLock.Lock()) {
+
+                    var na = coreNodes.needsAttention(false, "Sub Nodes");
+
+                    if (na != null)
+                        return na;
+                    
+                    var gna = gameNodes.needsAttention(false, "Game Nodes");
+
+                    if (gna != null)
+                        return gna;
                 }
 
                 if (root == null)
@@ -78,18 +114,24 @@ namespace NodeNotes {
         public void SetInspectedUpTheHierarchy(Base_Node node)
         {
 
-            int ind = -1;
-            if (node != null && subNotes.Contains(node))
-                ind = subNotes.IndexOf(node);
+            var gn = node.AsGameNode;
 
-            inspectedSubnode = ind;
+            if (gn != null) {
+                if (gameNodes.Contains(gn))
+                    inspectedGameNode = gameNodes.IndexOf(gn);
+            }
+            else
+            {
+                if (node != null && coreNodes.Contains(node))
+                    inspectedSubnode = coreNodes.IndexOf(node);
+            }
 
             if (parentNode != null)
                 parentNode.SetInspectedUpTheHierarchy(this);
         }
 #if PEGI
 
-        public override bool PEGI() {
+        public override bool Inspect() {
 
             bool changed = false;
 
@@ -107,7 +149,7 @@ namespace NodeNotes {
             }
 
             if (onPlayScreen || inspectedSubnode == -1)
-                changed |= base.PEGI();
+                changed |= base.Inspect();
             else
                 showDebug = false;
 
@@ -117,7 +159,9 @@ namespace NodeNotes {
 
                 if (cp != null)  {
 
-                    bool canPaste = (cp.root == root) && cp != this && !subNotes.Contains(cp) && (!IsOneOfChildrenOf(cp as Node));
+                    var gn = cp.AsGameNode;
+
+                    bool canPaste = (cp.root == root) && cp != this && !coreNodes.Contains(cp) && (gn == null || !gameNodes.Contains(gn)) && (!IsOneOfChildrenOf(cp as Node));
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
@@ -134,13 +178,19 @@ namespace NodeNotes {
                 }
             }
 
-            if (inspectedSubnode == -1 && "Game Nodes ".fold_enter_exit_List(gameNodes, ref inspectedGameNode, ref inspectedStuff, 7).nl())
-                changed = true;
+            if (inspectedSubnode == -1 && "Game Nodes [{0}]".F(gameNodes.Count).fold_enter_exit(ref inspectedStuff, 7).nl())
+            {
+                var ngn = "Game Nodes".edit_List(gameNodes, ref inspectedGameNode, ref changed);
+
+                if (ngn != null)
+                    ngn.CreatedFor(this);
+
+            }
 
             if (!showDebug && !onPlayScreen && !InspectingTriggerStuff)  {
 
                 if (inspectedSubnode != -1) {
-                    var n = subNotes.TryGet(inspectedSubnode);
+                    var n = coreNodes.TryGet(inspectedSubnode);
                     if (n == null || icon.Exit.Click())
                         inspectedSubnode = -1;
                     else
@@ -149,7 +199,7 @@ namespace NodeNotes {
 
                 if (inspectedSubnode == -1) {
                     pegi.nl();
-                    var newNode = "Sub Nodes".edit_List(subNotes, ref inspectedSubnode, ref changed);
+                    var newNode = "Sub Nodes".edit_List(coreNodes, ref inspectedSubnode, ref changed);
 
                     if (newNode != null)
                         newNode.CreatedFor(this);
@@ -169,10 +219,9 @@ namespace NodeNotes {
                 using (loopLock.Lock()){
 
                     var cody = this.EncodeUnrecognized()
-                     .Add_IfNotEmpty("sub", subNotes)
+                     .Add_IfNotEmpty("sub", coreNodes)
                      .Add("b", base.Encode())
                      .Add_IfNotNegative("isn", inspectedSubnode);
-                  //   .Add_IfNotNegative("is", inspectedStuff);
                     
                     foreach (var gn in gameNodes)
                         cody.Add(gn.UniqueTag, gn);
@@ -190,14 +239,13 @@ namespace NodeNotes {
 
             switch (tag)  {
 
-                case "sub": data.DecodeInto(out subNotes); break;
+                case "sub": data.DecodeInto(out coreNodes); break;
                 case "b": data.DecodeInto(base.Decode); break;
                 case "isn": inspectedSubnode = data.ToInt(); break;
-               // case "is": inspectedStuff = data.ToInt(); break;
 
                 default:
                     Type t;
-                    if (GameNodeBase.allGameNodes.TryGetValue(tag, out t)) {
+                    if (GameNodeBase.AllGameNodes.TryGetValue(tag, out t)) {
                         gameNodes.Add(data.DecodeInto_Type<GameNodeBase>(t));
                         break;
                     } else

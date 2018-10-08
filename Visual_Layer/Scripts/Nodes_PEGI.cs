@@ -28,8 +28,7 @@ namespace NodeNotes_Visual
 
         public Button deleteButton;
         #endregion
-
-
+        
         #region Click Events
         public void RightTopButton()
         {
@@ -60,19 +59,15 @@ namespace NodeNotes_Visual
 
         public void AddButton() => VisualizeNode(Shortcuts.CurrentNode.Add<NodeButtonComponent>());
 
-        public void DeleteSelected()
-        {
+        public void DeleteSelected() {
 
-            if (selectedNode != null)
-            {
+            if (selectedNode != null) {
 
                 var node = selectedNode.source;
 
-                if (node.parentNode != null)
-                {
+                if (node.parentNode != null) {
                     selectedNode.Unlink();
-                    node.parentNode.subNotes.Remove(node);
-                    node.root.allBaseNodes[node.IndexForPEGI] = null;
+                    node.Delete();
                     SetSelected(null);
                 }
             }
@@ -167,7 +162,7 @@ namespace NodeNotes_Visual
                             var s = value as Node;
                             if (s != null)
                             {
-                                if (s.subNotes.Contains(curNode))
+                                if (s.coreNodes.Contains(curNode))
                                     wasAParent = curNode;
                             }
                         }
@@ -221,10 +216,9 @@ namespace NodeNotes_Visual
 
             if (Application.isPlaying) {
 
-                if (cn != null)
-                {
+                if (cn != null)  {
                     UpdateVisibility(cn);
-                    foreach (var sub in cn.subNotes)
+                    foreach (var sub in cn)
                         UpdateVisibility(sub);
                 }
             }
@@ -263,7 +257,7 @@ namespace NodeNotes_Visual
         pegi.windowPositionData window = new pegi.windowPositionData();
 
         bool showCurrentNode = false;
-        public override bool PEGI() {
+        public override bool Inspect() {
 
             bool changed = false;
             
@@ -276,14 +270,14 @@ namespace NodeNotes_Visual
             if (!showCurrentNode)
             {
 
-                changed |= base.PEGI();
+                changed |= base.Inspect();
 
                 if (!showDebug)
                 {
                     
 
                     if ("Values ".fold_enter_exit(ref inspectedLogicBranchStuff, 1))
-                        Values.global.PEGI();
+                        Values.global.Inspect();
 
                     pegi.nl();
 
@@ -354,8 +348,7 @@ namespace NodeNotes_Visual
             Shortcuts.visualLayer = this;
 
         }
-
-    
+        
         int logicVersion = -1;
         public override void DerrivedUpdate()
         {
@@ -365,7 +358,6 @@ namespace NodeNotes_Visual
                 logicVersion = currentLogicVersion;
             }
         }
-        
- 
+       
     }
 }

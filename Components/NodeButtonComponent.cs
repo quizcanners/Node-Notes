@@ -30,11 +30,11 @@ namespace NodeNotes
         }
         #if PEGI
 
-        public override bool PEGI()
+        public override bool Inspect()
         {
             "BUTTON".nl();
 
-            bool changed = base.PEGI();
+            bool changed = base.Inspect();
 
             return changed;
         }

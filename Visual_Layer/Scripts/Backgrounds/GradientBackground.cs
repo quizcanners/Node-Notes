@@ -27,7 +27,7 @@ namespace NodeNotes_Visual
             #region Inspector
 #if PEGI
             int inspectedStuff = -1;
-            public override bool PEGI()  {
+            public override bool Inspect()  {
 
                 bool changed = false;
 

@@ -9,16 +9,17 @@ using SharedTools_Stuff;
 using STD_Logic;
 using UnityEngine;
 
-namespace NodeNotes_Visual.Dialogue {
+namespace NodeNotes_Visual {
 
-    [GameNode(tag, typeof(DialogueNode))]
+
+    [GameNode(tag)]
     public class DialogueNode : GameNodeBase {
 
         public const string tag = "GN_talk";
 
         public override string UniqueTag => tag;
 
-        public InteractionBranch interactionBranch;
+        public InteractionBranch interactionBranch = new InteractionBranch();
 
         public List<Result> OnEnterResults = new List<Result>();
         public List<Result> OnExitResults = new List<Result>();
@@ -34,12 +35,14 @@ namespace NodeNotes_Visual.Dialogue {
 
         #region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
+            .Add("b", base.Encode)
             .Add("i", interactionBranch)
             .Add_IfNotEmpty("ent", OnEnterResults)
             .Add_IfNotEmpty("ext", OnExitResults);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
+                case "b": data.DecodeInto(base.Decode); break;
                 case "i": data.DecodeInto(out interactionBranch);  break;
                 case "ent": data.DecodeInto(out OnEnterResults); break;
                 case "ext": data.DecodeInto(out OnExitResults); break;
@@ -54,15 +57,15 @@ namespace NodeNotes_Visual.Dialogue {
         int inspectedExitResult = -1;
         #if PEGI
 
-        public override bool PEGI() {
+        public override bool Inspect() {
 
-            bool changed = base.PEGI();
+            bool changed = base.Inspect();
 
             if (showDebug)
                 return changed;
 
             if ("Interactions".fold_enter_exit(ref inspectedStuff, 10).nl())
-                interactionBranch.PEGI();
+                interactionBranch.Inspect();
 
             changed |= "On Enter Results".fold_enter_exit_List(OnEnterResults, ref inspectedResult, ref inspectedStuff, 11).nl_ifFalse();
             

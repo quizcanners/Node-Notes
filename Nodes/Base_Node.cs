@@ -25,15 +25,12 @@ namespace NodeNotes {
         public ISTD visualRepresentation;
         public ISTD previousVisualRepresentation;
         public string configForVisualRepresentation;
-        
+
+        public virtual GameNodeBase AsGameNode => null;
+
         public virtual void OnMouseOver() {
-
             if (Input.GetMouseButtonDown(0) && parentNode != null)
-                parentNode.inspectedSubnode = parentNode.subNotes.IndexOf(this);
-
-            if (Input.GetMouseButtonDown(1) && parentNode != null)
-                parentNode.SetInspectedUpTheHierarchy(null);
-
+               parentNode.SetInspectedUpTheHierarchy(this);
         }
 
         #region Logic
@@ -138,13 +135,13 @@ namespace NodeNotes {
 
       
         
-        public override bool PEGI()
+        public override bool Inspect()
         {
             var changed = false;
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
             if (!onPlayScreen)
-                changed |= base.PEGI();
+                changed |= base.Inspect();
 
             if (!showDebug || onPlayScreen) {
                 if (!InspectingTriggerStuff) {
@@ -156,10 +153,10 @@ namespace NodeNotes {
                 pegi.nl();
 
                 if ("Visibility Conditions".fold_enter_exit( ref inspectedStuff, 0).nl())
-                    changed |= visCondition.PEGI();
+                    changed |= visCondition.Inspect();
                 
                 if ("Enabled Conditions".fold_enter_exit(ref inspectedStuff, 1).nl())
-                    changed |= eblCondition.PEGI();
+                    changed |= eblCondition.Inspect();
 
                 changed |= "Results".fold_enter_exit_List(results, ref inspectedResult, ref inspectedStuff, 2).nl();
             }
@@ -174,9 +171,11 @@ namespace NodeNotes {
 
         #region MGMT
         public virtual void MoveTo(Node node) {
-            parentNode.subNotes.Remove(this);
+
+            parentNode.Remove(this);
+            node.Add(this);
             parentNode = node;
-            parentNode.subNotes.Add(this);
+
         }
 
         public virtual Base_Node CreatedFor(Node target) {
@@ -202,6 +201,16 @@ namespace NodeNotes {
             if (parent != null)
                 parentNode = parent;
             root.allBaseNodes[index] = this;
+        }
+
+        public virtual void Delete() {
+            var gn = this as GameNodeBase;
+            if (gn != null) 
+                parentNode.gameNodes.Remove(gn);
+            else
+                parentNode.coreNodes.Remove(this);
+
+            root.allBaseNodes[IndexForPEGI] = null;
         }
 
         #endregion

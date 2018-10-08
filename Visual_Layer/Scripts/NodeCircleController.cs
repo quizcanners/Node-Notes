@@ -114,7 +114,7 @@ namespace NodeNotes_Visual
 #if PEGI
 
         bool showDependencies = false;
-        public override bool PEGI() {
+        public override bool Inspect() {
             bool changed = false;
 
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
@@ -457,7 +457,7 @@ namespace NodeNotes_Visual
         }
         #if PEGI
 
-        public override bool PEGI() {
+        public override bool Inspect() {
 
             bool changed = false;
 

@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 using STD_Logic;
 using UnityEngine;
 
-namespace NodeNotes_Visual.Dialogue {
+namespace NodeNotes_Visual {
  
     public class Interaction : AbstractKeepUnrecognized_STD, IGotName {
 
@@ -70,7 +70,7 @@ namespace NodeNotes_Visual.Dialogue {
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-        public override bool PEGI() {
+        public override bool Inspect() {
             bool changed = false;
 
             if (inspectedStuff == -1)
@@ -83,7 +83,7 @@ namespace NodeNotes_Visual.Dialogue {
             changed |= "Final Results".fold_enter_exit_List(finalResults, ref inspectedResult, ref inspectedStuff, 2).nl();
 
             "Conditions".fold_enter_exit(ref inspectedStuff, 3).nl();
-                changed |= conditions.PEGI();
+                changed |= conditions.Inspect();
 
             return false;
 
@@ -137,12 +137,12 @@ namespace NodeNotes_Visual.Dialogue {
 
         public static List<Interaction> inspectedInteractions;
 
-        public override bool PEGI()
+        public override bool Inspect()
         {
             bool changed = false;
 
             if ("Text:".fold_enter_exit(ref inspectedStuff, 0).nl_ifFalse())
-                changed |= text.PEGI();
+                changed |= text.Inspect();
 
             if ("Conditions:".fold_enter_exit(ref inspectedStuff,1).nl_ifFalse())
                 conditions.Nested_Inspect();
