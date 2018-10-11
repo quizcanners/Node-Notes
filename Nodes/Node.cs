@@ -180,7 +180,7 @@ namespace NodeNotes {
 
             if (inspectedSubnode == -1 && "Game Nodes [{0}]".F(gameNodes.Count).fold_enter_exit(ref inspectedStuff, 7).nl())
             {
-                var ngn = "Game Nodes".edit_List(gameNodes, ref inspectedGameNode, ref changed);
+                var ngn = "Game Nodes".edit_List(gameNodes, ref inspectedGameNode, ref changed, GameNodeBase.all);
 
                 if (ngn != null)
                     ngn.CreatedFor(this);
@@ -224,7 +224,7 @@ namespace NodeNotes {
                      .Add_IfNotNegative("isn", inspectedSubnode);
                     
                     foreach (var gn in gameNodes)
-                        cody.Add(gn.UniqueTag, gn);
+                        cody.Add(gn.ClassTag, gn);
 
                     return cody;
                 }
@@ -245,7 +245,7 @@ namespace NodeNotes {
 
                 default:
                     Type t;
-                    if (GameNodeBase.AllGameNodes.TryGetValue(tag, out t)) {
+                    if (GameNodeBase.all.Types.TryGetValue(tag, out t)) {
                         gameNodes.Add(data.DecodeInto_Type<GameNodeBase>(t));
                         break;
                     } else

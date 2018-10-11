@@ -12,12 +12,12 @@ using UnityEngine;
 namespace NodeNotes_Visual {
 
 
-    [GameNode(tag)]
+    [TaggedType(tag)]
     public class DialogueNode : GameNodeBase {
 
         public const string tag = "GN_talk";
 
-        public override string UniqueTag => tag;
+        public override string ClassTag => tag;
 
         public InteractionBranch interactionBranch = new InteractionBranch();
 
