@@ -230,7 +230,7 @@ namespace NodeNotes
 
         public override bool Decode(string tag, string data) {
            switch (tag) {
-                case "bm": data.DecodeInto(out bookMarks); break;
+                case "bm": data.DecodeInto_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
                 case "cur": tmpNode = data.ToInt(); break;
                 case "curB": tmpBook = data; break;

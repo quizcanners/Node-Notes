@@ -81,7 +81,7 @@ namespace NodeNotes
                 case "sn": data.DecodeInto(out subNode); break;
                 case "in": inspectedNode = data.ToInt(); break;
                 case "inE": inspectedEntry = data.ToInt(); break;
-                case "ep": data.DecodeInto(out entryPoints); break;
+                case "ep": data.DecodeInto_List(out entryPoints); break;
                 default: return false;
             }
             return true;

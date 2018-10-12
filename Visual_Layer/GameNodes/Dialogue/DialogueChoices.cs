@@ -43,9 +43,9 @@ namespace NodeNotes_Visual {
             switch (tag)  {
                 case "ref": name = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
-                case "txt": data.DecodeInto(out texts); break;
-                case "opt": data.DecodeInto(out options); break;
-                case "fin": data.DecodeInto(out finalResults); break;
+                case "txt": data.DecodeInto_List(out texts); break;
+                case "opt": data.DecodeInto_List(out options); break;
+                case "fin": data.DecodeInto_List(out finalResults); break;
                 case "is": inspectedStuff = data.ToInt(); break;
                 case "it": inspectedText = data.ToInt(); break;
                 case "bc": inspectedChoice = data.ToInt(); break;
@@ -120,8 +120,8 @@ namespace NodeNotes_Visual {
                 case "goto": nextOne = data; break;
                 case "cnd": data.DecodeInto(out conditions); break;
                 case "t": text = new Sentance(data); break;
-                case "t2": data.DecodeInto(out texts2); break;
-                case "res": data.DecodeInto(out results); break;
+                case "t2": data.DecodeInto_List(out texts2); break;
+                case "res": data.DecodeInto_List(out results); break;
                 case "ins": inspectedStuff = data.ToInt(); break;
                 default: return false;
             }

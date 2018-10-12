@@ -8,15 +8,13 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes {
 
-    public class GameNodeAttribute : TaggedTypeHolder {
+    public class GameNodeAttribute : Abstract_WithTaggedTypes {
         public override TaggedTypes_STD TaggedTypes => GameNodeBase.all;
     }
 
     [GameNode]
     [DerrivedList()]
-    public abstract class GameNodeBase : Base_Node, IGotClassTag
-    {
-
+    public abstract class GameNodeBase : Base_Node, IGotClassTag {
         public override GameNodeBase AsGameNode => this;
         
         public virtual void Enter() { }
@@ -28,7 +26,30 @@ namespace NodeNotes {
         public TaggedTypes_STD AllTypes => all;
     }
 
+    [TaggedType(classTag)]
+    public class GameNodeTest0 : GameNodeBase {
+        const string classTag = "test0";
 
-   
+        public override string ClassTag => classTag;
+
+    }
+
+   // [TaggedType(classTag)]
+    public class GameNodeTest1 : GameNodeBase
+    {
+        const string classTag = "test1";
+
+        public override string ClassTag => classTag;
+
+    }
+
+    //[TaggedType(classTag)]
+    public class GameNodeTest2 : GameNodeBase
+    {
+        const string classTag = "test2";
+
+        public override string ClassTag => classTag;
+
+    }
 
 }

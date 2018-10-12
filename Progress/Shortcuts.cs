@@ -234,7 +234,7 @@ namespace NodeNotes {
         {
             switch (tag)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
-                case "books": data.DecodeInto(out books, this); break;
+                case "books": data.DecodeInto_List(out books, this); break;
                 case "us": data.DecodeInto(out users); break;
                 case "curUser": LoadUser(data); break;
                 default: return false;

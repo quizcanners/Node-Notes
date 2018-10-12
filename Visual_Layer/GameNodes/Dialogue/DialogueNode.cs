@@ -36,16 +36,16 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
-            .Add("i", interactionBranch)
+            .Add("inBr", interactionBranch)
             .Add_IfNotEmpty("ent", OnEnterResults)
             .Add_IfNotEmpty("ext", OnExitResults);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
                 case "b": data.DecodeInto(base.Decode); break;
-                case "i": data.DecodeInto(out interactionBranch);  break;
-                case "ent": data.DecodeInto(out OnEnterResults); break;
-                case "ext": data.DecodeInto(out OnExitResults); break;
+                case "inBr": data.DecodeInto(out interactionBranch);  break;
+                case "ent": data.DecodeInto_List(out OnEnterResults); break;
+                case "ext": data.DecodeInto_List(out OnExitResults); break;
                 default: return false;
             }
             return true;

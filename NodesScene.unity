@@ -769,7 +769,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.81500006, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1.0000305, y: 0}
+  m_AnchoredPosition: {x: 1, y: 0}
   m_SizeDelta: {x: -2, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &617632654
@@ -2958,7 +2958,7 @@ MonoBehaviour:
   showDebug: 0
   inspectedStuff: -1
   inspectedReference: -1
-  inspectedLogicBranchStuff: 2
+  inspectedLogicBranchStuff: -1
   inspectedTriggerGroup: -1
   tmpIndex: 5
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}

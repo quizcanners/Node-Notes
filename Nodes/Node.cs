@@ -14,6 +14,8 @@ namespace NodeNotes {
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
+        List_Data gamesNodesMeta = new List_Data();
+
         public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
 
         public IEnumerator<Base_Node> GetEnumerator()
@@ -77,13 +79,13 @@ namespace NodeNotes {
             base.Init(nroot, parent);
           
             foreach (Base_Node sn in this)
-                sn.Init(nroot, this);
+                if (sn!= null)
+                    sn.Init(nroot, this);
 
         }
         
         #region Inspector
         public int inspectedSubnode = -1;
-        public int inspectedGameNode = -1;
 
         public override string NeedAttention()
         {
@@ -118,7 +120,7 @@ namespace NodeNotes {
 
             if (gn != null) {
                 if (gameNodes.Contains(gn))
-                    inspectedGameNode = gameNodes.IndexOf(gn);
+                    gamesNodesMeta.inspectedElement = gameNodes.IndexOf(gn);
             }
             else
             {
@@ -180,7 +182,7 @@ namespace NodeNotes {
 
             if (inspectedSubnode == -1 && "Game Nodes [{0}]".F(gameNodes.Count).fold_enter_exit(ref inspectedStuff, 7).nl())
             {
-                var ngn = "Game Nodes".edit_List(gameNodes, ref inspectedGameNode, ref changed, GameNodeBase.all);
+                var ngn = "Game Nodes".edit_List(gameNodes, gamesNodesMeta, ref changed, GameNodeBase.all, true);
 
                 if (ngn != null)
                     ngn.CreatedFor(this);
@@ -219,13 +221,12 @@ namespace NodeNotes {
                 using (loopLock.Lock()){
 
                     var cody = this.EncodeUnrecognized()
-                     .Add_IfNotEmpty("sub", coreNodes)
-                     .Add("b", base.Encode())
-                     .Add_IfNotNegative("isn", inspectedSubnode);
+                        .Add_IfNotEmpty("sub", coreNodes)
+                        .Add("b", base.Encode())
+                        .Add_IfNotNegative("isn", inspectedSubnode);
                     
-                    foreach (var gn in gameNodes)
-                        cody.Add(gn.ClassTag, gn);
-
+                    cody.Add("gnMeta", gamesNodesMeta).Add_Abstract("gn", gameNodes, gamesNodesMeta);
+                   
                     return cody;
                 }
             }
@@ -239,17 +240,13 @@ namespace NodeNotes {
 
             switch (tag)  {
 
-                case "sub": data.DecodeInto(out coreNodes); break;
+                case "sub": data.DecodeInto_List(out coreNodes); break;
                 case "b": data.DecodeInto(base.Decode); break;
                 case "isn": inspectedSubnode = data.ToInt(); break;
-
-                default:
-                    Type t;
-                    if (GameNodeBase.all.Types.TryGetValue(tag, out t)) {
-                        gameNodes.Add(data.DecodeInto_Type<GameNodeBase>(t));
-                        break;
-                    } else
-                        return false;
+                case "gnMeta": data.DecodeInto(out gamesNodesMeta); break;
+                case "gn":  data.DecodeInto_List(out gameNodes, GameNodeBase.all, gamesNodesMeta); break;
+                   
+                default:  return false;
             }
             return true;
         }

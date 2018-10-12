@@ -101,7 +101,7 @@ namespace NodeNotes {
                 case "icr": inspectedResult = data.ToInt(); break;
                 case "cnds": data.DecodeInto(out eblCondition); break;
                 case "vcnds": data.DecodeInto(out visCondition); break;
-                case "res": data.DecodeInto(out results); break;
+                case "res": data.DecodeInto_List(out results); break;
                 case "vis": configForVisualRepresentation = data; break;
             }
             return true;
