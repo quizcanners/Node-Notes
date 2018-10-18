@@ -39,6 +39,8 @@ namespace NodeNotes_Visual
         float activeTextAlpha = 0;
 
         #endregion
+
+        #region Inspector
 #if PEGI
 
         public override string NameForPEGI {
@@ -61,67 +63,18 @@ namespace NodeNotes_Visual
                     newText = value;
             }
         }
-#endif
-        [NonSerialized] public bool isFading;
-        [NonSerialized] public bool assumedPosition;
-
-        NodeVisualConfig exploredVisuals = new NodeVisualConfig();
-        NodeVisualConfig subVisuals = new NodeVisualConfig();
-
-        NodeVisualConfig ActiveConfig => this.source == Shortcuts.CurrentNode ? exploredVisuals : subVisuals;
-        
-        Color sh_currentColor;
-        Vector4 sh_square = Vector4.zero;
-        float sh_blur = 0;
-        float sh_courners = 0.5f;
-        float sh_selected = 0;
-        float fadePortion = 0;
-
-        void UpdateShaders()
-        {
-
-            if (textB && textA)
-            {
-                ActiveText.color = new Color(0, 0, 0, activeTextAlpha * fadePortion);
-                PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * fadePortion);
-            }
-
-            sh_currentColor.a = fadePortion;
-
-            if (circleRendy)
-            {
-                if (circleRendy)
-                {
-                    if (Application.isPlaying)
-                    {
-                        circleRendy.material.SetColor("_Color", sh_currentColor);
-                        circleRendy.material.SetVector("_Stretch", sh_square);
-                        circleRendy.material.SetFloat("_Courners", sh_courners);
-                        circleRendy.material.SetFloat("_Blur", sh_blur);
-                        circleRendy.material.SetFloat("_Selected", sh_selected);
-                    }
-                    else
-                    {
-                        circleRendy.sharedMaterial.SetColor("_Color", sh_currentColor);
-                        circleRendy.sharedMaterial.SetVector("_Stretch", sh_square);
-                        circleRendy.sharedMaterial.SetFloat("_Courners", sh_courners);
-                        circleRendy.sharedMaterial.SetFloat("_Blur", sh_blur);
-                        circleRendy.sharedMaterial.SetFloat("_Selected", sh_selected);
-                    }
-                }
-            }
-        }
-#if PEGI
 
         bool showDependencies = false;
-        public override bool Inspect() {
+        public override bool Inspect()
+        {
             bool changed = false;
 
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
             if (source != null)
             {
-             if (source.Try_Nested_Inspect()) {
+                if (source.Try_Nested_Inspect())
+                {
                     if (name != source.name)
                         NameForPEGI = source.name;
 
@@ -135,11 +88,13 @@ namespace NodeNotes_Visual
                 Shortcuts.CurrentNode = null;
 
             if (!onPlayScreen)
-            "Lerp parameter {0}".F(dominantParameter).nl();
+                "Lerp parameter {0}".F(dominantParameter).nl();
 
-            if (circleRendy) {
+            if (circleRendy)
+            {
 
-                if (!onPlayScreen) {
+                if (!onPlayScreen)
+                {
 
                     if (newText != null)
                         "Changeing text to {0}".F(newText).nl();
@@ -149,7 +104,8 @@ namespace NodeNotes_Visual
 
                 }
 
-                if (source!= null && (source.GetType() == typeof(Node))) {
+                if (source != null && (source.GetType() == typeof(Node)))
+                {
 
                     if ("Background ".select(ref background, Mgmt.backgroundControllers).nl())
                     {
@@ -167,20 +123,22 @@ namespace NodeNotes_Visual
                             if (std != null)
                                 backgroundConfig = std.Encode().ToString();
                         }
-                    }    
+                    }
                 }
 
-               if (source == null || (!source.InspectingTriggerStuff))
-               if (ActiveConfig.Nested_Inspect()) {
-                    assumedPosition = false;
-                    sh_currentColor = ActiveConfig.targetColor;
-                    UpdateShaders();
-               }
+                if (source == null || (!source.InspectingTriggerStuff))
+                    if (ActiveConfig.Nested_Inspect())
+                    {
+                        assumedPosition = false;
+                        sh_currentColor = ActiveConfig.targetColor;
+                        UpdateShaders();
+                    }
             }
 
-            
 
-            if (!onPlayScreen) {
+
+            if (!onPlayScreen)
+            {
 
                 pegi.nl();
 
@@ -199,6 +157,58 @@ namespace NodeNotes_Visual
             return changed;
         }
 #endif
+
+        #endregion
+
+        [NonSerialized] public bool isFading;
+        [NonSerialized] public bool assumedPosition;
+
+        NodeVisualConfig exploredVisuals = new NodeVisualConfig();
+        NodeVisualConfig subVisuals = new NodeVisualConfig();
+
+        NodeVisualConfig ActiveConfig => this.source == Shortcuts.CurrentNode ? exploredVisuals : subVisuals;
+        
+        Color sh_currentColor;
+        Vector4 sh_square = Vector4.zero;
+        float sh_blur = 0;
+
+        ShaderFloatValue shadeCourners = new ShaderFloatValue("_Courners", 0,4);
+        ShaderFloatValue shadeSelected = new ShaderFloatValue("_Selected", 0, 4);
+
+        float fadePortion = 0;
+
+        void UpdateShaders() {
+            if (textB && textA) {
+                ActiveText.color = new Color(0, 0, 0, activeTextAlpha * fadePortion);
+                PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * fadePortion);
+            }
+
+            sh_currentColor.a = fadePortion;
+
+          
+                if (circleRendy)
+                {
+                
+                    if (Application.isPlaying)
+                    {
+                        circleRendy.material.SetColor("_Color", sh_currentColor);
+                        circleRendy.material.SetVector("_Stretch", sh_square);
+                       // circleRendy.material.SetFloat("_Courners", sh_courners);
+                        circleRendy.material.SetFloat("_Blur", sh_blur);
+                        //circleRendy.material.SetFloat("_Selected", sh_selected);
+                    }
+                    else
+                    {
+                        circleRendy.sharedMaterial.SetColor("_Color", sh_currentColor);
+                        circleRendy.sharedMaterial.SetVector("_Stretch", sh_square);
+                      //  circleRendy.sharedMaterial.SetFloat("_Courners", sh_courners);
+                        circleRendy.sharedMaterial.SetFloat("_Blur", sh_blur);
+                        //circleRendy.sharedMaterial.SetFloat("_Selected", sh_selected);
+                    }
+                }
+            
+        }
+
         public string dominantParameter;
         void Update() {
 
@@ -246,15 +256,16 @@ namespace NodeNotes_Visual
 
                 if (8f.SpeedToMinPortion(1-activeTextAlpha, ref portion))
                     dominantParameter = "text Alpha";
+                
+                // if (4f.SpeedToMinPortion(Mathf.Abs(targetCourners - sh_courners), ref portion))
+                //   dominantParameter = "courners";
+                shadeCourners.targetValue = (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
+                shadeCourners.Portion(ref portion, ref dominantParameter);
 
-                float targetCourners =  (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
-            
-                if (4f.SpeedToMinPortion(Mathf.Abs(targetCourners - sh_courners), ref portion))
-                    dominantParameter = "courners";
-
-                float targetSelected = (this == Mgmt.selectedNode ? 1f : 0f);
-                if (4f.SpeedToMinPortion(Mathf.Abs(sh_selected - targetSelected), ref portion))
-                    dominantParameter = "Selection Outline";
+                shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
+                shadeSelected.Portion(ref portion, ref dominantParameter);
+                //if (4f.SpeedToMinPortion(Mathf.Abs(sh_selected - targetSelected), ref portion))
+                //  dominantParameter = "Selection Outline";
 
                 float teleportPortion = ( fadePortion < 0.1f && !isFading) ? 1 : portion;
 
@@ -263,8 +274,10 @@ namespace NodeNotes_Visual
                 BGtf.localScale = scale;
                 sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, teleportPortion);
                 fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
-                sh_courners = Mathf.Lerp(sh_courners, targetCourners, teleportPortion);
-                sh_selected = Mathf.Lerp(sh_selected, targetSelected, portion);
+                shadeCourners.Lerp(portion, circleRendy);
+                //sh_courners = Mathf.Lerp(sh_courners, targetCourners, teleportPortion);
+                //sh_selected = Mathf.Lerp(sh_selected, targetSelected, portion);
+                shadeSelected.Lerp(portion, circleRendy);
 
                 needShaderUpdate = true;
                 if (portion == 1)

@@ -113,7 +113,7 @@ namespace NodeNotes {
         #region Inspector
 #if PEGI
 
-   
+        protected override string ResultsRole => "On Transition";
 
         bool shared_PEGI()
         {

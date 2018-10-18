@@ -14,6 +14,7 @@ namespace NodeNotes
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
+        public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public Node subNode = new Node();
 
       

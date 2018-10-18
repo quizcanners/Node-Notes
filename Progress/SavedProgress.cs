@@ -13,6 +13,7 @@ namespace NodeNotes
         public string startingPoint = "";
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
+        public static Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public bool isADeveloper = false;
 
         static Node _currentNode;
@@ -192,26 +193,9 @@ namespace NodeNotes
         }
 #endif
 
-#endregion
+        #endregion
 
-#region Encoding_Decoding
-
-        public override StdEncoder Encode() {
-            var cody = this.EncodeUnrecognized()
-            .Add("bm", bookMarks)
-            .Add("vals", Values.global)
-            .Add_Bool("dev", isADeveloper)
-            .Add_String("n", userName)
-            .Add_String("start", startingPoint);
-
-            var cur = Shortcuts.CurrentNode;
-            if (cur != null) {
-                cody.Add_String("curB", cur.root.NameForPEGI)
-                .Add("cur", cur.IndexForPEGI);
-            }
-
-            return cody;
-        }
+        #region Encoding_Decoding
 
         public override ISTD Decode(string data)
         {
@@ -228,8 +212,10 @@ namespace NodeNotes
         static string tmpBook;
         static int tmpNode;
 
-        public override bool Decode(string tag, string data) {
-           switch (tag) {
+        public override bool Decode(string tag, string data)
+        {
+            switch (tag)
+            {
                 case "bm": data.DecodeInto_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
                 case "cur": tmpNode = data.ToInt(); break;
@@ -237,15 +223,34 @@ namespace NodeNotes
                 case "dev": isADeveloper = data.ToBool(); break;
                 case "n": userName = data; break;
                 case "start": startingPoint = data; break;
+                case "pgnd": data.DecodeInto(out gameNodeTypeData); break;
                 default: return false;
-           }
+            }
 
-           return true;
+            return true;
         }
 
- 
 
-#endregion
+        public override StdEncoder Encode() {
+            var cody = this.EncodeUnrecognized()
+            .Add("bm", bookMarks)
+            .Add("vals", Values.global)
+            .Add_Bool("dev", isADeveloper)
+            .Add_String("n", userName)
+            .Add_String("start", startingPoint)
+            .Add("pgnd", gameNodeTypeData);
+
+            var cur = Shortcuts.CurrentNode;
+            if (cur != null) {
+                cody.Add_String("curB", cur.root.NameForPEGI)
+                .Add("cur", cur.IndexForPEGI);
+            }
+
+            return cody;
+        }
+
+     
+        #endregion
 
     }
 }

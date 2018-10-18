@@ -113,6 +113,8 @@ namespace NodeNotes {
 
         }
 
+        protected override string ResultsRole => "On Enter Results";
+
         public void SetInspectedUpTheHierarchy(Base_Node node)
         {
 

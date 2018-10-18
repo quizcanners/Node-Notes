@@ -28,7 +28,9 @@ namespace NodeNotes
             }
             return true;
         }
-        #if PEGI
+#if PEGI
+
+        protected override string ResultsRole => "On Click";
 
         public override bool Inspect()
         {

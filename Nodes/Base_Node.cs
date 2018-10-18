@@ -42,6 +42,8 @@ namespace NodeNotes {
         ConditionBranch visCondition = new ConditionBranch();
         ConditionBranch eblCondition = new ConditionBranch();
 
+        protected virtual string ResultsRole => "Role Unknown";
+
         public List<Result> results = new List<Result>();
         
         void UpdateLogic() {
@@ -158,7 +160,7 @@ namespace NodeNotes {
                 if ("Enabled Conditions".fold_enter_exit(ref inspectedStuff, 1).nl())
                     changed |= eblCondition.Inspect();
 
-                changed |= "Results".fold_enter_exit_List(results, ref inspectedResult, ref inspectedStuff, 2).nl();
+                changed |= ResultsRole.fold_enter_exit_List(results, ref inspectedResult, ref inspectedStuff, 2).nl();
             }
 
             if (changed)

@@ -10,9 +10,8 @@ using STD_Logic;
 using UnityEngine;
 
 namespace NodeNotes_Visual {
-
-
-    [TaggedType(tag)]
+    
+    [TaggedType(tag, "Dialogue Node")]
     public class DialogueNode : GameNodeBase {
 
         public const string tag = "GN_talk";
@@ -21,8 +20,8 @@ namespace NodeNotes_Visual {
 
         public InteractionBranch interactionBranch = new InteractionBranch();
 
-        public List<Result> OnEnterResults = new List<Result>();
-        public List<Result> OnExitResults = new List<Result>();
+       // public List<Result> OnEnterResults = new List<Result>();
+       // public List<Result> OnExitResults = new List<Result>();
 
         public int myQuestVersion = -1;
 
@@ -36,16 +35,12 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
-            .Add("inBr", interactionBranch)
-            .Add_IfNotEmpty("ent", OnEnterResults)
-            .Add_IfNotEmpty("ext", OnExitResults);
-
+            .Add("inBr", interactionBranch);
+        
         public override bool Decode(string tag, string data) {
             switch (tag) {
                 case "b": data.DecodeInto(base.Decode); break;
                 case "inBr": data.DecodeInto(out interactionBranch);  break;
-                case "ent": data.DecodeInto_List(out OnEnterResults); break;
-                case "ext": data.DecodeInto_List(out OnExitResults); break;
                 default: return false;
             }
             return true;
@@ -57,7 +52,8 @@ namespace NodeNotes_Visual {
         int inspectedExitResult = -1;
         #if PEGI
 
-        public override bool Inspect() {
+        protected override bool InspectGameNode()
+        {
 
             bool changed = base.Inspect();
 
@@ -67,18 +63,16 @@ namespace NodeNotes_Visual {
             if ("Interactions".fold_enter_exit(ref inspectedStuff, 10).nl())
                 interactionBranch.Inspect();
 
-            changed |= "On Enter Results".fold_enter_exit_List(OnEnterResults, ref inspectedResult, ref inspectedStuff, 11).nl_ifFalse();
-            
-            changed |= "On Exit Result".fold_enter_exit_List(OnExitResults, ref inspectedExitResult, ref inspectedStuff, 12).nl_ifFalse();
-            
             if ("Play Dialogue ".fold_enter_exit(ref inspectedStuff, 13).nl_ifFalse()){
 
                 if (icon.Close.Click("Close dialogue", 20))
-                    CloseInteractions();
-                else {
+                    Exit();
+                else  {
                     pegi.newLine();
-                    for (int i = 0; i < _optText.Count; i++) {
-                        if (_optText[i].Click().nl()){
+                    for (int i = 0; i < _optText.Count; i++)
+                    {
+                        if (_optText[i].Click().nl())
+                        {
                             SelectOption(i);
                             DistantUpdate();
                         }
@@ -92,6 +86,7 @@ namespace NodeNotes_Visual {
 #endif
         #endregion
 
+        #region Options MGMT
         public static string SingleText { get { return _optText.Count > 0 ? _optText[0] : null; } set { _optText.Clear(); _optText.Add(value); } }
 
         public static List<string> _optText = new List<string>();
@@ -143,9 +138,8 @@ namespace NodeNotes_Visual {
             
             CollectInteractions();
 
-            if (possibleInteractions.Count == 0)
-                CloseInteractions();
-            else  {
+            if (possibleInteractions.Count != 0)
+            {
 
                 QuestVersion = LogicMGMT.currentLogicVersion;
                 ScrollOptsDirty = true;
@@ -164,18 +158,16 @@ namespace NodeNotes_Visual {
                             break;
                         }
                 }
-
-
             }
+            else
+                Exit();
         }
 
-        public void StartInteractions() {
-            OnEnterResults.Apply();
+        protected override void AfterEnter() {
             BackToInitials();
         }
-        
-        public void CloseInteractions() => OnExitResults.Apply();
 
+        
         public static int textNo;
         public static int InteractionStage;
 
@@ -265,6 +257,6 @@ namespace NodeNotes_Visual {
                     break;
             }
         }
-
+        #endregion
     }
 }

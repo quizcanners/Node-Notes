@@ -19,7 +19,7 @@ namespace NodeNotes
                 using (loopLockEnt.Lock()) {
                     ExitGameNode();
                     if (gn != null)
-                        gn.Enter();
+                        gn.AfterEnter();
                 }
             
 
