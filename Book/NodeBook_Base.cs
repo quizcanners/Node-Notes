@@ -10,7 +10,7 @@ namespace NodeNotes {
 
         public const string BooksFolder = "Books";
 
-        public virtual string NameForPEGIdisplay() => NameForPEGI;
+        public virtual string NameForPEGIdisplay => NameForPEGI;
 
         public virtual string NameForPEGI { get => "ERROR, is a base class"; set { } } 
 

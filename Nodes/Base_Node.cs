@@ -8,6 +8,8 @@ namespace NodeNotes {
 
     [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI {
+
+        #region Values
         public Node parentNode;
         public NodeBook root;
 
@@ -15,10 +17,7 @@ namespace NodeNotes {
         public int IndexForPEGI { get { return index; } set { index = value; } }
 
         public string name = "New Node";
-        public string NameForPEGI {
-            get { return name; }
-            set { name = value; }
-        }
+        public string NameForPEGI { get { return name; } set { name = value; } }
 
         public static Node CurrentNode { get => Shortcuts.CurrentNode; set => Shortcuts.CurrentNode = value; }
         
@@ -27,6 +26,7 @@ namespace NodeNotes {
         public string configForVisualRepresentation;
 
         public virtual GameNodeBase AsGameNode => null;
+        #endregion
 
         public virtual void OnMouseOver() {
             if (Input.GetMouseButtonDown(0) && parentNode != null)
@@ -88,12 +88,12 @@ namespace NodeNotes {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
         .Add_String("n", name)
         .Add("i", index)
-        .Add("is", inspectedStuff)
+        .Add_IfNotNegative("is", inspectedStuff)
         .Add_IfNotNegative("icr", inspectedResult)
-        .Add("cnds", eblCondition)
-        .Add("vcnds", visCondition)
-        .Add("res", results)
-        .Add_String("vis", visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
+        .Add_IfNotDefault("cnds", eblCondition)
+        .Add_IfNotDefault("vcnds", visCondition)
+        .Add_IfNotEmpty("res", results)
+        .Add_IfNotEmpty("vis", visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
@@ -112,8 +112,7 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-
-
+        
         public virtual string NeedAttention()
         {
             if (root == null)
@@ -128,41 +127,34 @@ namespace NodeNotes {
         }
 
         public static bool editingNodes = false;
-
-
-        protected int inspectedStuff = -1;
         int inspectedResult = -1;
         public bool InspectingTriggerStuff => inspectedResult != -1;
 #if PEGI
-
-      
-        
         public override bool Inspect()
         {
             var changed = false;
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
+            pegi.nl();
+
             if (!onPlayScreen)
                 changed |= base.Inspect();
 
-            if (!showDebug || onPlayScreen) {
-                if (!InspectingTriggerStuff) {
-                    changed |= this.inspect_Name();
+            if (inspectedStuff == -1) {
+                if (GetType() == typeof(Node))
+                changed |= this.inspect_Name();
                     if ((this != Shortcuts.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
                         Shortcuts.Cut_Paste = this;
-                }
-
-                pegi.nl();
-
-                if ("Visibility Conditions".fold_enter_exit( ref inspectedStuff, 0).nl())
-                    changed |= visCondition.Inspect();
-                
-                if ("Enabled Conditions".fold_enter_exit(ref inspectedStuff, 1).nl())
-                    changed |= eblCondition.Inspect();
-
-                changed |= ResultsRole.fold_enter_exit_List(results, ref inspectedResult, ref inspectedStuff, 2).nl();
             }
 
+            pegi.nl();
+
+            changed |= "Visibility Conditions".enter_Inspect(visCondition, ref inspectedStuff, 1);
+
+            changed |= "Enabled Conditions".enter_Inspect(eblCondition, ref inspectedStuff, 2);
+
+            changed |= ResultsRole.enter_List(results, ref inspectedResult, ref inspectedStuff, 3) ;
+            
             if (changed)
                 logicVersion = -1;
 

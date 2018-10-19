@@ -170,7 +170,7 @@ namespace NodeNotes
 
         #region Inspector
 
-        public string NameForPEGIdisplay() =>
+        public string NameForPEGIdisplay =>
             "{0} FROM {1}".F(userName, startingPoint);
 
 #if PEGI

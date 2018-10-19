@@ -173,7 +173,7 @@ namespace NodeNotes {
                         pegi.nl();
                     }
 
-                    if (usr.fold_enter_exit(ref inspectUser).nl())
+                    if (usr.enter(ref inspectUser).nl())
                         changed |= user.Nested_Inspect();
                     
                     if (!inspectUser) {

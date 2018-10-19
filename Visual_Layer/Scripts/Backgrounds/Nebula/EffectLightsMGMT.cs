@@ -48,7 +48,7 @@ public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName {
 
     }
 
-    public string NameForPEGIdisplay() => "Microcosmos";
+    public string NameForPEGIdisplay => "Microcosmos";
 
     public bool TryFadeIn()  {
             for (int i = 0; i < systems.Count; i++)

@@ -39,7 +39,7 @@ namespace NodeNotes_Visual
 
         protected override bool InspectGameNode() {
             bool changed =  base.Inspect();
-            changed |= "Roster Groups".fold_enter_exit_List(bookGroups, ref inspectedGroup, ref inspectedStuff, 5);
+            changed |= "Roster Groups".enter_List(bookGroups, ref inspectedGroup, ref inspectedStuff, 5);
             return changed;
         }
 

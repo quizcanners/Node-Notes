@@ -276,7 +276,7 @@ namespace NodeNotes_Visual
                 {
                     
 
-                    if ("Values ".fold_enter_exit(ref inspectedLogicBranchStuff, 1))
+                    if ("Values ".enter(ref inspectedLogicBranchStuff, 1))
                         Values.global.Inspect();
 
                     pegi.nl();
@@ -284,12 +284,12 @@ namespace NodeNotes_Visual
                     if (!shortcuts)
                         "Shortcuts".edit(ref shortcuts).nl();
                     else
-                    if (icon.StateMachine.fold_enter_exit("Shortcuts", ref inspectedLogicBranchStuff, 2))
+                    if (icon.StateMachine.enter("Shortcuts", ref inspectedLogicBranchStuff, 2))
                         shortcuts.Nested_Inspect();
                     else
                         pegi.nl();
 
-                    if (icon.Condition.fold_enter_exit("Dependencies", ref inspectedLogicBranchStuff, 3))
+                    if (icon.Condition.enter("Dependencies", ref inspectedLogicBranchStuff, 3))
                     {
                         pegi.nl();
                         changed |= "Edit Button".edit(ref editButton).nl();

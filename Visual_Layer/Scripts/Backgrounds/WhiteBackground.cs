@@ -41,7 +41,7 @@ namespace NodeNotes {
 
         public void FadeAway() => isFading = true;
 
-        public string NameForPEGIdisplay() => "White Background";
+        public string NameForPEGIdisplay => "White Background";
 
         public bool TryFadeIn() => isFading = false;
 

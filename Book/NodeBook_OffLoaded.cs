@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
     public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
 
-        public override string NameForPEGIdisplay() => "{0} [Offloaded]".F(name);
+        public override string NameForPEGIdisplay => "{0} [Offloaded]".F(name);
 
         public string name;
 

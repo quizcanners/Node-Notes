@@ -48,8 +48,6 @@ namespace NodeNotes_Visual {
         #endregion
         
         #region Inspector
-        int inspectedResult = -1;
-        int inspectedExitResult = -1;
         #if PEGI
 
         protected override bool InspectGameNode()
@@ -57,13 +55,10 @@ namespace NodeNotes_Visual {
 
             bool changed = base.Inspect();
 
-            if (showDebug)
-                return changed;
-
-            if ("Interactions".fold_enter_exit(ref inspectedStuff, 10).nl())
+            if ("Interactions".enter(ref inspectedStuff, 10).nl())
                 interactionBranch.Inspect();
 
-            if ("Play Dialogue ".fold_enter_exit(ref inspectedStuff, 13).nl_ifFalse()){
+            if ("Play Dialogue ".enter(ref inspectedStuff, 13).nl_ifFalse()){
 
                 if (icon.Close.Click("Close dialogue", 20))
                     Exit();
@@ -83,7 +78,7 @@ namespace NodeNotes_Visual {
             return changed;
         }
 
-#endif
+        #endif
         #endregion
 
         #region Options MGMT

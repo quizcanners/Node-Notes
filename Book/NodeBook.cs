@@ -10,15 +10,15 @@ namespace NodeNotes
 {
     
     public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI {
-        
+
+        #region Values
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
         public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public Node subNode = new Node();
-
-      
-
+        #endregion
+        
         #region Inspector
         int inspectedNode = -1;
         int inspectedEntry = -1;
@@ -30,19 +30,14 @@ namespace NodeNotes
 
         public static NodeBook inspected;
 
-        int inspectedStuff = -1;
-
         public override bool Inspect()  {
             bool changed = false;
             inspected = this;
+            
+            "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1);
 
-            //if (subNode.inspectedSubnode == -1)
-            "Entry Points".fold_enter_exit_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 0).nl();
-
-            if ("Subnode".fold_enter_exit(ref inspectedStuff, 1))
-            changed |= subNode.Nested_Inspect();
-
-            pegi.nl();
+            changed |=  "Root Node".enter_Inspect(subNode, ref inspectedStuff, 2);
+      
             
             inspected = null;
             return changed;
@@ -73,7 +68,8 @@ namespace NodeNotes
             .Add("sn", subNode)
             .Add_IfNotNegative("in", inspectedNode)
             .Add_IfNotNegative("inE", inspectedEntry)
-            .Add("ep", entryPoints);
+            .Add("ep", entryPoints)
+            .Add_IfNotNegative("i",inspectedStuff);
           
         public override bool Decode(string tag, string data) {
             switch (tag) {
@@ -83,6 +79,7 @@ namespace NodeNotes
                 case "in": inspectedNode = data.ToInt(); break;
                 case "inE": inspectedEntry = data.ToInt(); break;
                 case "ep": data.DecodeInto_List(out entryPoints); break;
+                case "i": inspectedStuff = data.ToInt(); break;
                 default: return false;
             }
             return true;

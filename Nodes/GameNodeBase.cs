@@ -67,12 +67,13 @@ namespace NodeNotes {
         public override bool Inspect()
         {
             bool changed = false;
-            if (ClassTag.fold_enter_exit(ref inspectedStuff, 6))
-                InspectGameNode();
-
-            changed |= ExitResultRole.fold_enter_exit_List(onExitResults, ref editedExitResult, ref inspectedStuff, 7);
- 
+        
             changed |= base.Inspect();
+
+            changed |= ExitResultRole.enter_List(onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
+
+            if (ClassTag.enter(ref inspectedStuff, 6).nl_ifFalse())
+                InspectGameNode();
 
             return changed;
         }
@@ -126,10 +127,10 @@ namespace NodeNotes {
 
     }
 
-    [TaggedType(classTag, "Same class tag error test")]
+    [TaggedType(classTag, "test2")]
     public class GameNodeTest2 : GameNodeBase
     {
-        const string classTag = "testSame";
+        const string classTag = "test2";
 
         public override string ClassTag => classTag;
 

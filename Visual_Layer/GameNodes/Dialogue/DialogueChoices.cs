@@ -58,15 +58,11 @@ namespace NodeNotes_Visual {
 
         #region Inspector
 
-
-        int inspectedStuff = -1;
         int inspectedText = -1;
         int inspectedChoice = -1;
         int inspectedResult = -1;
 
 #if PEGI
-
-      
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 
@@ -74,15 +70,15 @@ namespace NodeNotes_Visual {
             bool changed = false;
 
             if (inspectedStuff == -1)
-                "Reference".editDelayed(ref name, 50).nl();
+                "Reference".editDelayed(ref name, 50).nl_ifFalse();
 
-            changed |= "Texts".fold_enter_exit_List(texts, ref inspectedText, ref inspectedStuff, 01).nl();
+            changed |= "Texts".enter_List(texts, ref inspectedText, ref inspectedStuff, 1).nl_ifFalse();
 
-            changed |= "Choices".fold_enter_exit_List(options, ref inspectedChoice, ref inspectedStuff, 1).nl();
+            changed |= "Choices".enter_List(options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifFalse();
            
-            changed |= "Final Results".fold_enter_exit_List(finalResults, ref inspectedResult, ref inspectedStuff, 2).nl();
+            changed |= "Final Results".enter_List(finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
 
-            "Conditions".fold_enter_exit(ref inspectedStuff, 3).nl();
+            "Conditions".enter(ref inspectedStuff, 4).nl();
                 changed |= conditions.Inspect();
 
             return false;
@@ -131,7 +127,6 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        int inspectedStuff = -1;
         int inspectedResult = -1;
 #if PEGI
 
@@ -141,15 +136,15 @@ namespace NodeNotes_Visual {
         {
             bool changed = false;
 
-            if ("Text:".fold_enter_exit(ref inspectedStuff, 0).nl_ifFalse())
+            if ("Text:".enter(ref inspectedStuff, 1).nl_ifFalse())
                 changed |= text.Inspect();
 
-            if ("Conditions:".fold_enter_exit(ref inspectedStuff,1).nl_ifFalse())
+            if ("Conditions:".enter(ref inspectedStuff,2).nl_ifFalse())
                 conditions.Nested_Inspect();
 
-            changed |= "Results:".fold_enter_exit_List(results, ref inspectedResult, ref inspectedStuff, 2).nl_ifFalse();
+            changed |= "Results:".enter_List(results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
                 
-            if ("After choice text:".fold_enter_exit(ref inspectedStuff, 3).nl_ifFalse())
+            if ("After choice text:".enter(ref inspectedStuff, 4).nl_ifFalse())
                 texts2.PEGI();
 
             if ((inspectedStuff ==-1) && "Go To:".select_iGotName(ref nextOne, inspectedInteractions).nl())

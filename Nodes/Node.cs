@@ -140,28 +140,56 @@ namespace NodeNotes {
             bool changed = false;
 
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
-            
-            if ((!showDebug && inspectedSubnode == -1) && (!onPlayScreen))  {
-                pegi.nl();
 
-                    if (this != CurrentNode)  {
+            if (!onPlayScreen)
+            {
+
+                if (inspectedSubnode == -1)
+                {
+                    if (this != CurrentNode)
+                    {
                         if (icon.Play.Click())
                             CurrentNode = this;
                     }
                     else if (parentNode != null && icon.Exit.Click())
                         CurrentNode = parentNode;
+                }
+
+                if (inspectedStuff == -1 && !InspectingTriggerStuff)
+                {
+
+                    if (inspectedSubnode != -1) {
+                        var n = coreNodes.TryGet(inspectedSubnode);
+                        if (n == null)
+                            inspectedSubnode = -1;
+                        else {
+                            if (icon.Exit.Click(name))
+                                inspectedSubnode = -1;
+                            "___{0}".F(name).nl();
+                        }
+
+                        if (inspectedSubnode != -1)
+                            n.Try_Nested_Inspect();
+                    }
+                    
+                    if (inspectedSubnode == -1) {
+                        pegi.nl();
+                        var newNode = "Sub Nodes".edit_List(coreNodes, ref inspectedSubnode, ref changed);
+
+                        if (newNode != null)
+                            newNode.CreatedFor(this);
+                    }
+
+                }
             }
 
-            if (onPlayScreen || inspectedSubnode == -1)
-                changed |= base.Inspect();
-            else
-                showDebug = false;
+            if ((inspectedSubnode == -1) || onPlayScreen)
+            {
 
-            if ((!showDebug && inspectedSubnode == -1) || onPlayScreen) {
-                
                 var cp = Shortcuts.Cut_Paste;
 
-                if (cp != null)  {
+                if (cp != null)
+                {
 
                     var gn = cp.AsGameNode;
 
@@ -169,7 +197,8 @@ namespace NodeNotes {
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
-                    else {
+                    else
+                    {
                         (cp.ToPEGIstring() + (canPaste ? "" : " can't paste parent to child")).write();
                         if (canPaste && icon.Paste.Click())
                         {
@@ -182,7 +211,15 @@ namespace NodeNotes {
                 }
             }
 
-            if (inspectedSubnode == -1 && "Game Nodes [{0}]".F(gameNodes.Count).fold_enter_exit(ref inspectedStuff, 7).nl())
+          
+          
+
+        
+
+            if (onPlayScreen || inspectedSubnode == -1)
+                changed |= base.Inspect();
+
+            if (inspectedSubnode == -1 && "Game Nodes [{0}]".F(gameNodes.Count).enter(ref inspectedStuff, 7).nl())
             {
                 var ngn = "Game Nodes".edit_List(gameNodes, gamesNodesMeta, ref changed, GameNodeBase.all, true);
 
@@ -191,24 +228,7 @@ namespace NodeNotes {
 
             }
 
-            if (!showDebug && !onPlayScreen && !InspectingTriggerStuff)  {
-
-                if (inspectedSubnode != -1) {
-                    var n = coreNodes.TryGet(inspectedSubnode);
-                    if (n == null || icon.Exit.Click())
-                        inspectedSubnode = -1;
-                    else
-                        n.Try_Nested_Inspect();
-                }
-
-                if (inspectedSubnode == -1) {
-                    pegi.nl();
-                    var newNode = "Sub Nodes".edit_List(coreNodes, ref inspectedSubnode, ref changed);
-
-                    if (newNode != null)
-                        newNode.CreatedFor(this);
-                }
-            }
+     
             return changed;
         }
 
@@ -226,8 +246,10 @@ namespace NodeNotes {
                         .Add_IfNotEmpty("sub", coreNodes)
                         .Add("b", base.Encode())
                         .Add_IfNotNegative("isn", inspectedSubnode);
-                    
-                    cody.Add("gnMeta", gamesNodesMeta).Add_Abstract("gn", gameNodes, gamesNodesMeta);
+
+                        if (gameNodes.Count>0)
+                        cody.Add("gnMeta", gamesNodesMeta)
+                            .Add_Abstract("gn", gameNodes, gamesNodesMeta);
                    
                     return cody;
                 }
