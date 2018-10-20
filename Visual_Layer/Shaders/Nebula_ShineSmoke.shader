@@ -12,7 +12,7 @@
 
 		Cull Off
 		ZWrite Off
-		Blend SrcAlpha One 
+		Blend SrcAlpha One //MinusSrcAlpha 
 
 		SubShader{
 
@@ -86,13 +86,13 @@
 		
 		float dott = dot(viewDir, vec);
 
-		float power = pow(max(0.01, dott), 1024*(0.2+ amb));
+		float power = pow(max(0.01, dott), 256*(0.5+ amb));
 
 		float frontLight = max(0, -dott);
 
 		float3 distApprox = lcol.rgb / lensq;
 
-		scatter += (distApprox * (1 + frontLight)) *lcol.a;
+		scatter += (distApprox * (1 + frontLight));// *lcol.a;
 		directLight += lcol.rgb*power;
 
 	}
@@ -102,11 +102,15 @@
 
 		float2 scp = i.screenPos.xy / i.screenPos.w;
 
-		float4 screenMask = tex2D(_MainTex, scp);
+		float4 screenMask = tex2Dlod(_MainTex, float4( scp ,0,0));
+
+		
 
 		float2 sPos = ((i.worldPos.xz - _Nebula_Pos.xz)+16)/32 ;
 
-		float4 mask = tex2D(_Nebula_BG, sPos);
+		float4 mask = tex2Dlod(_Nebula_BG, float4(sPos,0,0));
+
+	///	return mask;
 
 		float toClick = mask.r;
 
@@ -119,7 +123,7 @@
 
 		float alpha = max(0, (1 - (off.x + off.y) * 4));
 
-		float angle = toClick*0.4 + _Time.x + +screenMask.b*2;
+		float angle = toClick * 0.1 + _Time.x;// +screenMask.b * 2;
 		float si = sin(angle);
 		float co = cos(angle);
 
@@ -130,9 +134,16 @@
 
 		rotUV += 0.5f;
 
-		float bluring =  - sin(angle*10 + screenMask.b + i.viewDir.z);
+		float bluring =   sin(angle*10 + screenMask.b + i.viewDir.z);
 
-		float4 col = tex2Dlod(_MainTex, float4(rotUV,0, (1 - toClick) * 4 - bluring));
+		float4 col = tex2Dlod(_MainTex, float4(rotUV,0, (1 - toClick) * 2 + bluring));
+
+		float swaprb = saturate((bluring+1)*0.25);
+		
+		//return swaprb;
+
+		col.rb = col.rb*(1 - swaprb) + col.br *(swaprb);
+
 
 		angle = -_Time.x;
 		si = sin(angle);
@@ -146,19 +157,20 @@
 
 		rotUV2 += 0.5;
 
-		float4 col2 = tex2Dlod(_MainTex, float4(rotUV2,0, (1 - toClick) * 4 + bluring));
+		float4 col2 = tex2Dlod(_MainTex, float4(rotUV2,0, (1 - toClick) * 2 - bluring)).gbra;
 
-		float alp = saturate((col.g - col2.g + (abs((((_Time.x+col.r)*2) % 2)-1) -0.5)*0.3   ) * 8);
+		float alp = saturate((col.g - col2.g + (abs((((_Time.x+col.r)*2) % 2)-1) -0.5)*0.3   ) *2);
 
 		col = col *  alp + col2 * (1 - alp);
 
 		float4 smokyCol = tex2D(_SmokyTex, rotUV);
 
-		col = (col * (1 - toClick) + smokyCol * toClick)*i.color;
+		col = (col * (1 - toClick) + smokyCol * toClick)*
+			i.color;
 
 		col.a *= alpha;
 
-		float ambientBlock = pow((1.01 - col.a), 32 *col.a)*512 * col.g;
+		float ambientBlock = pow((1.01 - col.a), col.a*32*(1 + screenMask.r))*512 * col.g;
 
 		float3 scatter = 0;
 		float3 directLight = 0;
@@ -178,6 +190,8 @@
 		col.rgb *= (directLight*ambientBlock * 1024 
 			+scatter
 			)*pow(col.a, 2+ toClick*3);
+
+		col.rgb *= col.a;
 
 		float3 mix = col.gbr + col.brg;
 		col.rgb += mix * mix*0.02;

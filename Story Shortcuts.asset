@@ -18,6 +18,5 @@ MonoBehaviour:
     inspectedState: -1
     fileFolderHolder: STDEncodes
     SaveToFileOptions: 0
-  showDebug: 0
   inspectedStuff: -1
   inspectedReference: -1

@@ -139,15 +139,12 @@ namespace NodeNotes {
 
             bool changed = false;
 
-            bool onPlayScreen = pegi.paintingPlayAreaGUI;
+            bool hideSubnodes = pegi.paintingPlayAreaGUI && !Shortcuts.user.isADeveloper;
 
-            if (!onPlayScreen)
-            {
+            if (!hideSubnodes) {
 
-                if (inspectedSubnode == -1)
-                {
-                    if (this != CurrentNode)
-                    {
+                if (inspectedSubnode == -1) {
+                    if (this != CurrentNode) {
                         if (icon.Play.Click())
                             CurrentNode = this;
                     }
@@ -155,8 +152,7 @@ namespace NodeNotes {
                         CurrentNode = parentNode;
                 }
 
-                if (inspectedStuff == -1 && !InspectingTriggerStuff)
-                {
+                if (inspectedStuff == -1 && !InspectingTriggerStuff) {
 
                     if (inspectedSubnode != -1) {
                         var n = coreNodes.TryGet(inspectedSubnode);
@@ -183,8 +179,7 @@ namespace NodeNotes {
                 }
             }
 
-            if ((inspectedSubnode == -1) || onPlayScreen)
-            {
+            if (inspectedSubnode == -1 || hideSubnodes) {
 
                 var cp = Shortcuts.Cut_Paste;
 
@@ -209,25 +204,17 @@ namespace NodeNotes {
                     }
                     pegi.nl();
                 }
-            }
-
-          
-          
-
-        
-
-            if (onPlayScreen || inspectedSubnode == -1)
+  
                 changed |= base.Inspect();
 
-            if (inspectedSubnode == -1 && "Game Nodes [{0}]".F(gameNodes.Count).enter(ref inspectedStuff, 7).nl())
-            {
-                var ngn = "Game Nodes".edit_List(gameNodes, gamesNodesMeta, ref changed, GameNodeBase.all, true);
+                if ("Game Nodes [{0}]".F(gameNodes.Count).enter(ref inspectedStuff, 7).nl()) {
+                    var ngn = "Game Nodes".edit_List(gameNodes, gamesNodesMeta, ref changed, GameNodeBase.all, true);
 
-                if (ngn != null)
-                    ngn.CreatedFor(this);
+                    if (ngn != null)
+                        ngn.CreatedFor(this);
 
+                }
             }
-
      
             return changed;
         }

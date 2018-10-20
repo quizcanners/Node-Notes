@@ -47,8 +47,7 @@ namespace NodeNotes_Visual
             AddLogicVersion();
         }
 
-        public void ToggleShowAddButtons()
-        {
+        public void ToggleShowAddButtons() {
             AddLogicVersion();
             CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
         }
@@ -255,60 +254,56 @@ namespace NodeNotes_Visual
         #region Inspector
 #if PEGI
         pegi.windowPositionData window = new pegi.windowPositionData();
-
-        bool showCurrentNode = false;
+        
         public override bool Inspect() {
 
-            bool changed = false;
-            
-            var cn = Shortcuts.CurrentNode;
+            bool changed = base.Inspect();
 
-            if (cn != null && "{0} -> [{1}] Current: {2} - {3}".F( Shortcuts.user.startingPoint
-                ,Shortcuts.user.bookMarks.Count,cn.root.ToPEGIstring() ,cn.ToPEGIstring()).foldout(ref showCurrentNode).nl())
-                changed |= cn.Nested_Inspect();
+     
+                var cn = Shortcuts.CurrentNode;
 
-            if (!showCurrentNode)
-            {
+                if (icon.StateMachine.conditional_enter(cn != null, ref inspectedStuff , 2))
+                    changed |= cn.Nested_Inspect();
 
-                changed |= base.Inspect();
-
-                if (!showDebug)
-                {
-                    
-
-                    if ("Values ".enter(ref inspectedLogicBranchStuff, 1))
-                        Values.global.Inspect();
-
+                if (inspectedStuff == -1)  {
+                    if (cn != null)
+                        "{0} -> [{1}] Current: {2} - {3}".F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPEGIstring(), cn.ToPEGIstring()).nl();
                     pegi.nl();
-
-                    if (!shortcuts)
-                        "Shortcuts".edit(ref shortcuts).nl();
-                    else
-                    if (icon.StateMachine.enter("Shortcuts", ref inspectedLogicBranchStuff, 2))
-                        shortcuts.Nested_Inspect();
-                    else
-                        pegi.nl();
-
-                    if (icon.Condition.enter("Dependencies", ref inspectedLogicBranchStuff, 3))
-                    {
-                        pegi.nl();
-                        changed |= "Edit Button".edit(ref editButton).nl();
-                        changed |= "Add Button".edit(ref addButton).nl();
-                        changed |= "Delete Button".edit(ref deleteButton).nl();
-                        changed |= "Backgrounds".edit(() => backgroundControllers, this).nl();
-                        changed |= "Circles Prefab".edit(ref circlePrefab).nl();
-                    }
-
-                    pegi.nl();
-
-                    if (inspectedLogicBranchStuff == -1 && "Encode / Decode Test".Click().nl())
-                    {
-                        OnDisable();
-                        OnEnable();
-                    }
-
                 }
-            }
+
+                if ("Values ".enter(ref inspectedStuff, 3))
+                    Values.global.Inspect();
+
+                pegi.nl();
+
+                if (!shortcuts)
+                    "Shortcuts".edit(ref shortcuts).nl();
+                else
+                   if (icon.StateMachine.enter("Node Books", ref inspectedStuff, 4))
+                    shortcuts.Nested_Inspect();
+                else
+                    pegi.nl();
+
+                if (icon.Condition.enter("Dependencies", ref inspectedStuff, 5))
+                {
+                    pegi.nl();
+                    changed |= "Edit Button".edit(ref editButton).nl();
+                    changed |= "Add Button".edit(ref addButton).nl();
+                    changed |= "Delete Button".edit(ref deleteButton).nl();
+                    changed |= "Backgrounds".edit(() => backgroundControllers, this).nl();
+                    changed |= "Circles Prefab".edit(ref circlePrefab).nl();
+                }
+
+                pegi.nl();
+
+                if (inspectedStuff == -1 && "Encode / Decode Test".Click().nl())
+                {
+                    OnDisable();
+                    OnEnable();
+                }
+            
+
+
 
             return changed;
         }

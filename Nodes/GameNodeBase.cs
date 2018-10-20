@@ -33,7 +33,7 @@ namespace NodeNotes {
 
             results.Apply();
 
-            var data = SavedProgress.gameNodeTypeData.TryGet(ClassTag);
+            var data = Shortcuts.user.gameNodeTypeData.TryGet(ClassTag);
             if (data != null) Decode_PerUserData(data);
 
             data = parentNode.root.gameNodeTypeData.TryGet(ClassTag);
@@ -46,12 +46,11 @@ namespace NodeNotes {
 
             ExitInternal();
 
-            SavedProgress.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
+            Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
             parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookData().ToString();
 
             onExitResults.Apply();
-
-            CurrentNode = parentNode;
+            
         }
         #endregion
 

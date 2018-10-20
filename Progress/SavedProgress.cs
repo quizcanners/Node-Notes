@@ -8,13 +8,15 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class SavedProgress: AbstractKeepUnrecognized_STD, IGotName, IPEGI, IGotDisplayName {
+    public class CurrentUser: AbstractKeepUnrecognized_STD, IGotName, IPEGI, IGotDisplayName {
 
         public string startingPoint = "";
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
-        public static Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
+        public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public bool isADeveloper = false;
+
+        #region CurrentState
 
         static Node _currentNode;
 
@@ -166,7 +168,7 @@ namespace NodeNotes
 
             return false;
         }
-
+        #endregion
 
         #region Inspector
 
@@ -233,7 +235,7 @@ namespace NodeNotes
 
         public override StdEncoder Encode() {
             var cody = this.EncodeUnrecognized()
-            .Add("bm", bookMarks)
+            .Add_IfNotEmpty("bm", bookMarks)
             .Add("vals", Values.global)
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", userName)

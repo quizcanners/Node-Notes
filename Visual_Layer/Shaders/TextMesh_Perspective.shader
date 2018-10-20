@@ -279,7 +279,7 @@ c *= saturate(d - input.param.y);
 #endif
 
 #if UNDERLAY_ON
-float2 underUV = input.texcoord1.xy+(sp - 0.5)*0.01;
+float2 underUV = input.texcoord1.xy+(sp - 0.5)*0.005;
 
 d = tex2D(_MainTex, underUV).a * input.underlayParam.x;
 c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * saturate(d - input.underlayParam.y) * (1 - c.a);

@@ -4,64 +4,77 @@ using UnityEngine;
 using SharedTools_Stuff;
 using System;
 
-[ExecuteInEditMode]
-public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName {
+namespace NodeNotes_Visual
+{
 
-    public List<ParticleSystem> systems = new List<ParticleSystem>();
+    [ExecuteInEditMode]
+    public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName
+    {
 
-    public float fadeOutSpeedup = 4;
+        public List<ParticleSystem> systems = new List<ParticleSystem>();
 
-    public bool isFadingOut = false;
+        public BackPaintTextureSetter backgroundPainter;
 
-    [NonSerialized]
-    public float[] originalSimulationSpeed;
+        public float fadeOutSpeedup = 4;
 
-    public void FadeAway() {
+        public bool isFadingOut = false;
 
-        if (originalSimulationSpeed == null || originalSimulationSpeed.Length < systems.Count)
+        [NonSerialized]
+        public float[] originalSimulationSpeed;
+
+        public void FadeAway()
         {
-            originalSimulationSpeed = new float[systems.Count];
+
+            backgroundPainter.enabled = false;
+
+            if (originalSimulationSpeed == null || originalSimulationSpeed.Length < systems.Count)
+            {
+                originalSimulationSpeed = new float[systems.Count];
+                for (int i = 0; i < systems.Count; i++)
+                {
+                    var ps = systems[i];
+                    if (ps)
+                        originalSimulationSpeed[i] = ps.main.simulationSpeed;
+                }
+            }
+
             for (int i = 0; i < systems.Count; i++)
             {
                 var ps = systems[i];
+
                 if (ps)
-                    originalSimulationSpeed[i] = ps.main.simulationSpeed;
-            }
-        }
-
-        for (int i = 0; i < systems.Count; i++)
-        {
-            var ps = systems[i];
-
-            if (ps)
-            {
+                {
                     var mn = ps.main;
                     mn.simulationSpeed = originalSimulationSpeed[i] * fadeOutSpeedup;
 
                     var em = ps.emission;
 
-                em.enabled = false;
+                    em.enabled = false;
+                }
             }
+
+            isFadingOut = true;
+
         }
 
-        isFadingOut = true;
+        public string NameForPEGIdisplay => "Microcosmos";
 
-    }
+        public bool TryFadeIn()
+        {
 
-    public string NameForPEGIdisplay => "Microcosmos";
+            backgroundPainter.enabled = true;
 
-    public bool TryFadeIn()  {
             for (int i = 0; i < systems.Count; i++)
             {
                 var ps = systems[i];
                 if (ps)
                 {
 
-                if (originalSimulationSpeed != null && originalSimulationSpeed.Length == systems.Count)
-                {
-                    var mn = ps.main;
-                    mn.simulationSpeed = originalSimulationSpeed[i];
-                }
+                    if (originalSimulationSpeed != null && originalSimulationSpeed.Length == systems.Count)
+                    {
+                        var mn = ps.main;
+                        mn.simulationSpeed = originalSimulationSpeed[i];
+                    }
 
                     var em = ps.emission;
 
@@ -69,28 +82,32 @@ public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName {
                 }
             }
 
-        isFadingOut = false;
+            isFadingOut = false;
 
-        return true;
-    }
-    
-	void Update () {
-
-        if (!isFadingOut && Camera.main != null) {
-
-            var col = Camera.main.backgroundColor;
-
-            Camera.main.backgroundColor = MyMath.Lerp_bySpeed(col, Color.black, 3);
+            return true;
         }
 
-        for (int c = 0; c < 4; c++)
+        void Update()
         {
-            var ep = EffectLightPoint.all[c];
 
-            if (ep)  {
-                Shader.SetGlobalVector("l" + c + "col", ep.col.ToVector4()*ep.multiplier);
-                Shader.SetGlobalVector("l" + c + "pos", ep.transform.position.ToVector4(1));
-            } 
+            if (!isFadingOut && Camera.main != null)
+            {
+
+                var col = Camera.main.backgroundColor;
+
+                Camera.main.backgroundColor = MyMath.Lerp_bySpeed(col, Color.black, 3);
+            }
+
+            for (int c = 0; c < 4; c++)
+            {
+                var ep = EffectLightPoint.all[c];
+
+                if (ep)
+                {
+                    Shader.SetGlobalVector("l" + c + "col", ep.col.ToVector4() * ep.multiplier);
+                    Shader.SetGlobalVector("l" + c + "pos", ep.transform.position.ToVector4(1));
+                }
+            }
         }
     }
 }

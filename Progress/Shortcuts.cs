@@ -42,7 +42,7 @@ namespace NodeNotes {
 
         [NonSerialized] public static List<string> users = new List<string>();
 
-        public static SavedProgress user = new SavedProgress();
+        public static CurrentUser user = new CurrentUser();
 
         static readonly string _usersFolder = "Users";
 
@@ -75,7 +75,7 @@ namespace NodeNotes {
             {
                 SaveUser();
 
-                user = new SavedProgress
+                user = new CurrentUser
                 {
                     userName = uname
                 };
@@ -125,93 +125,72 @@ namespace NodeNotes {
 
         #region Inspector
         int inspectedBook = -1;
-        bool inspectUser = false;
         string tmpUserName;
 
 #if PEGI
        
         public override bool Inspect() {
 
-            bool changed = false;
+            bool changed = false; 
 
-            "Shortcuts".nl();
+              if (inspectedBook == -1) { 
 
-            if (inspectedBook == -1) {
-                
-               // changed |= base.PEGI().nl();
+                changed |= base.Inspect();
 
-                if (!showDebug) {
-                    
-                    string usr = user.userName;
+                if (inspectedStuff == -1) {
+                if (users.Count > 1 && icon.Delete.Click())
+                    DeleteUser();
 
-                    if (!inspectUser)
-                    {
+                string usr = user.userName;
+                if ("Profile".select(50, ref usr, users)) {
+                    SaveUser();
+                    LoadUser(usr);
+                }
+            }
 
-                        if (users.Count > 1 && icon.Delete.Click())
-                            DeleteUser();
+            if (icon.Enter.enter(ref inspectedStuff, 4).nl())
+                changed |= user.Nested_Inspect();
 
-                        if ("Profile".select(50, ref usr, users))
-                        {
-                            SaveUser();
-                            LoadUser(usr);
-                        }
+                if (inspectedStuff == -1) {
 
-                        pegi.nl();
+                    "New User:".edit(60, ref tmpUserName);
 
-                        "New User:".edit(60, ref tmpUserName);
+                    if (tmpUserName.Length > 3 && !users.Contains(tmpUserName)) {
 
-                        if (tmpUserName.Length > 3 && !users.Contains(tmpUserName))
-                        {
+                        if (icon.Add.Click("Add new user"))
+                            CreateUser(tmpUserName);
 
-                            if (icon.Add.Click("Add new user"))
-                                CreateUser(tmpUserName);
-
-                            if (icon.Replace.Click("Rename {0}".F(user.userName)))
-                                RenameUser(tmpUserName);
-                        }
-
-                        pegi.nl();
+                        if (icon.Replace.Click("Rename {0}".F(user.userName)))
+                            RenameUser(tmpUserName);
                     }
 
-                    if (usr.enter(ref inspectUser).nl())
-                        changed |= user.Nested_Inspect();
-                    
-                    if (!inspectUser) {
-                        if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
-                            StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
+                    pegi.nl();
 
-                        if ("Get all book names".Click("Will populate list with mentiones with books in Data folder without loading them").nl())
+                    if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
+                        StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
+
+                    if ("Get all book names".Click("Will populate list with mentiones with books in Data folder without loading them").nl()) {
+                        var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
+
+                        foreach (var e in lst)
                         {
-                            var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
+                            bool contains = false;
+                            foreach (var b in books)
+                                if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
 
-                            foreach (var e in lst)
-                            {
-                                bool contains = false;
-                                foreach (var b in books)
-                                    if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
-
-                                if (!contains)
-                                {
-                                    var off = new NodeBook_OffLoaded
-                                    {
-                                        name = e
-                                    };
-
-                                    books.Add(off);
-                                }
+                            if (!contains)  {
+                                var off = new NodeBook_OffLoaded { name = e };
+                                books.Add(off);
                             }
                         }
                     }
                 }
             }
-            else
-                showDebug = false;
 
-            if (!showDebug && !inspectUser)
-                "Books ".edit_List(books, ref inspectedBook);
-            
+            "Books ".edit_List(books, ref inspectedBook);
+
             return changed;
-        }
+            }
 #endif
         #endregion
 

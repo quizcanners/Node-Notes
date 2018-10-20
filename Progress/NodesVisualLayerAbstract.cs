@@ -13,8 +13,7 @@ namespace NodeNotes
 
         protected LoopLock loopLockEnt = new LoopLock();
 
-        public virtual void EnterGameNode(GameNodeBase gn)
-        {
+        public virtual void EnterGameNode(GameNodeBase gn) {
             if (loopLockEnt.Unlocked)
                 using (loopLockEnt.Lock()) {
                     ExitGameNode();
@@ -22,7 +21,6 @@ namespace NodeNotes
                         gn.Enter();
                 }
             
-
             gameNode = gn;
         }
 

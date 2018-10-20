@@ -140,8 +140,8 @@ namespace NodeNotes {
             if (!onPlayScreen)
                 changed |= base.Inspect();
 
-            if (inspectedStuff == -1) {
-                if (GetType() == typeof(Node))
+            if (inspectedStuff == -1 ) {
+                if (GetType() == typeof(Node) || onPlayScreen)
                 changed |= this.inspect_Name();
                     if ((this != Shortcuts.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
                         Shortcuts.Cut_Paste = this;
