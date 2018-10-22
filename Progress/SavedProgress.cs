@@ -13,8 +13,14 @@ namespace NodeNotes
         public string startingPoint = "";
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
-        public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public bool isADeveloper = false;
+
+        #region GameNodes
+        string preGameNodeSTD;
+
+        public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
+
+        #endregion
 
         #region CurrentState
 
@@ -214,10 +220,8 @@ namespace NodeNotes
         static string tmpBook;
         static int tmpNode;
 
-        public override bool Decode(string tag, string data)
-        {
-            switch (tag)
-            {
+        public override bool Decode(string tag, string data) {
+            switch (tag) {
                 case "bm": data.DecodeInto_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
                 case "cur": tmpNode = data.ToInt(); break;
@@ -228,10 +232,8 @@ namespace NodeNotes
                 case "pgnd": data.DecodeInto(out gameNodeTypeData); break;
                 default: return false;
             }
-
             return true;
         }
-
 
         public override StdEncoder Encode() {
             var cody = this.EncodeUnrecognized()
@@ -251,8 +253,6 @@ namespace NodeNotes
             return cody;
         }
 
-     
         #endregion
-
     }
 }

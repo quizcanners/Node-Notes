@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 using STD_Logic;
+using System.Collections;
 
 namespace NodeNotes {
 
@@ -15,8 +16,7 @@ namespace NodeNotes {
 
     [GameNode]
     [DerrivedList()]
-    public abstract class GameNodeBase : Base_Node, IGotClassTag
-    {
+    public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect {
         #region Tagged Types MGMT
         public override GameNodeBase AsGameNode => this;
         public virtual string ClassTag => StdEncoder.nullTag;
@@ -29,28 +29,45 @@ namespace NodeNotes {
 
         protected virtual void ExitInternal() { }
 
+        protected LoopLock loopLock = new LoopLock();
+
         public void Enter() {
+            if (loopLock.Unlocked)
+                using (loopLock.Lock()) {
 
-            results.Apply();
+                    var data = Shortcuts.user.gameNodeTypeData.TryGet(ClassTag);
+                    if (data != null) Decode_PerUserData(data);
+                    data = parentNode.root.gameNodeTypeData.TryGet(ClassTag);
+                    if (data != null) Decode_PerBookData(data);
 
-            var data = Shortcuts.user.gameNodeTypeData.TryGet(ClassTag);
-            if (data != null) Decode_PerUserData(data);
+                    VisualLayer.FromNodeToGame(this);
 
-            data = parentNode.root.gameNodeTypeData.TryGet(ClassTag);
-            if (data != null) Decode_PerBookData(data);
+                    results.Apply();
 
-            AfterEnter();
+                    AfterEnter();
+                }
+        }
+
+        public void FailExit() {
+            if (loopLock.Unlocked)
+                using (loopLock.Lock()) {
+                    ExitInternal();
+                    VisualLayer.FromGameToNode(true);
+                }
         }
 
         public void Exit() {
+            if (loopLock.Unlocked)
+                using (loopLock.Lock()) {
 
-            ExitInternal();
+                    ExitInternal();
+                    VisualLayer.FromGameToNode(false);
 
-            Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
-            parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookData().ToString();
+                    Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
+                    parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookData().ToString();
 
-            onExitResults.Apply();
-            
+                    onExitResults.Apply();
+                }
         }
         #endregion
 
@@ -73,6 +90,29 @@ namespace NodeNotes {
 
             if (ClassTag.enter(ref inspectedStuff, 6).nl_ifFalse())
                 InspectGameNode();
+
+            return changed;
+        }
+
+        public bool PEGI_inList(IList list, int ind, ref int edited) {
+
+            bool changed = this.inspect_Name();
+
+            if (icon.Enter.Click())
+                edited = ind;
+
+            if (VisualLayer.IsCurrentGameNode(this)) {
+                if (icon.Close.Click("Exit Game Node in Fail"))
+                    VisualLayer.FromGameToNode(true);
+
+                if (icon.Exit.Click("Exit Game Node"))
+                    VisualLayer.FromGameToNode();
+
+            } else
+            {
+                if (icon.Play.Click("Enter Game Node"))
+                    VisualLayer.FromNodeToGame(this);
+            }
 
             return changed;
         }

@@ -19,7 +19,7 @@ namespace NodeNotes_Visual
 
         public Base_Node source;
 
-        public int background = 0;
+        public string background = "";
 
         public string backgroundConfig ="";
 
@@ -41,7 +41,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-#if PEGI
+        #if PEGI
 
         public override string NameForPEGI {
             get {  return source.name; }
@@ -65,16 +65,14 @@ namespace NodeNotes_Visual
         }
 
         bool showDependencies = false;
-        public override bool Inspect()
-        {
+        public override bool Inspect() {
+
             bool changed = false;
 
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-            if (source != null)
-            {
-                if (source.Try_Nested_Inspect())
-                {
+            if (source != null) {
+                if (source.Try_Nested_Inspect()) {
                     if (name != source.name)
                         NameForPEGI = source.name;
 
@@ -90,32 +88,25 @@ namespace NodeNotes_Visual
             if (!onPlayScreen)
                 "Lerp parameter {0}".F(dominantParameter).nl();
 
-            if (circleRendy)
-            {
+            if (circleRendy) {
 
-                if (!onPlayScreen)
-                {
-
+                if (!onPlayScreen) {
                     if (newText != null)
                         "Changeing text to {0}".F(newText).nl();
 
                     if (isFading)
                         "Fading...{0}".F(fadePortion).nl();
-
                 }
 
-                if (source != null && (source.GetType() == typeof(Node)))
-                {
+                if (source != null && (source.GetType() == typeof(Node))) {
 
-                    if ("Background ".select(ref background, Mgmt.backgroundControllers).nl())
-                    {
+                    if (NodesStyleBase.all.selectTypeTag(ref background ).nl()) //"Background ".select(ref background, Mgmt.backgroundControllers).nl()) {
                         changed = true;
-                        Mgmt.SetBackground(background, backgroundConfig);
+                        Mgmt.SetBackground(this);
                     }
 
-                    var bg = Mgmt.backgroundControllers.TryGet(background);
-                    if (bg != null)
-                    {
+                    var bg = Mgmt.backgroundControllers.TryGetByTag(background);
+                    if (bg != null) {
                         if (bg.Try_Nested_Inspect())
                         {
                             changed = true;
@@ -133,31 +124,27 @@ namespace NodeNotes_Visual
                         sh_currentColor = ActiveConfig.targetColor;
                         UpdateShaders();
                     }
-            }
+            
 
-
-
-            if (!onPlayScreen)
-            {
+            if (!onPlayScreen) {
 
                 pegi.nl();
 
                 "Dependencies".foldout(ref showDependencies).nl();
 
                 if (!textA || showDependencies)
-                    "Text A".edit(ref textA);
+                    "Text A".edit(ref textA).nl();
 
                 if (!textB || showDependencies)
-                    "Text B".edit(ref textB);
+                    "Text B".edit(ref textB).nl();
 
                 if (!circleRendy || showDependencies)
-                    "Mesh Rendy".edit(ref circleRendy);
+                    "Mesh Rendy".edit(ref circleRendy).nl();
             }
 
             return changed;
         }
-#endif
-
+        #endif
         #endregion
 
         [NonSerialized] public bool isFading;
@@ -367,6 +354,8 @@ namespace NodeNotes_Visual
             }
         }
 
+
+        #region Encode & Decode
         public override ISTD Decode(string data)   {
             if (this == dragging)
                 dragging = null;
@@ -378,7 +367,7 @@ namespace NodeNotes_Visual
             switch (tag)   {
                 case "expVis": data.DecodeInto(out exploredVisuals); break;
                 case "subVis": data.DecodeInto(out subVisuals); break;
-                case "bg": background = data.ToInt(); break;
+                case "bg": background = data; break;
                 case "bg_cfg": backgroundConfig = data; break;
                 default: return false;
             }
@@ -392,11 +381,13 @@ namespace NodeNotes_Visual
             var cody = this.EncodeUnrecognized()
                 .Add("expVis", exploredVisuals)
                 .Add("subVis", subVisuals)
-                .Add("bg", background)
-                .Add_String("bg_cfg", backgroundConfig);
+                .Add_IfNotEmpty("bg", background)
+                .Add_IfNotEmpty("bg_cfg", backgroundConfig);
            
             return cody;
         }
+
+        #endregion
 
         public void LinkTo(Base_Node node)
         {
@@ -418,8 +409,8 @@ namespace NodeNotes_Visual
                 source.visualRepresentation = null;
                 source = null;
             }
-            else
-                Debug.LogError("source is null ", this);
+          // else
+            //    Debug.LogError("source is null ", this);
 
             isFading = true;
         }
@@ -442,10 +433,12 @@ namespace NodeNotes_Visual
     }
 
     public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI {
-        public Vector3 targetSize = Vector3.one;
+        public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
-        
+
+
+        #region Encode & Decode
         public override bool Decode(string tag, string data)
         {
             switch (tag)  {
@@ -468,6 +461,9 @@ namespace NodeNotes_Visual
 
             return cody;
         }
+        #endregion
+
+        #region Inspect
         #if PEGI
 
         public override bool Inspect() {
@@ -486,12 +482,13 @@ namespace NodeNotes_Visual
                 targetSize.y = y;
             }
 
-            if ("Color".edit(ref targetColor))
+            if ("Color".edit(50, ref targetColor).nl())
                 changed = true;
             
             return changed;
         }
-#endif
+        #endif
+        #endregion
     }
 
 }

@@ -15,19 +15,21 @@ namespace NodeNotes {
      
         static LoopLock loopLock = new LoopLock();
 
-
-
-        public static Node CurrentNode {
+        public static Node CurrentNode
+        {
 
             get { return user.CurrentNode; }
 
-            set {
-                if (Application.isPlaying && visualLayer && loopLock.Unlocked) {
-                        using (loopLock.Lock()) {
-                            visualLayer.SetCurrentNode(value);
-                        }
+            set
+            {
+                if (Application.isPlaying && visualLayer && loopLock.Unlocked)
+                {
+                    using (loopLock.Lock())
+                    {
+                        visualLayer.CurrentNode = value;
+                    }
                 }
-                
+
                 user.CurrentNode = value;
             }
         }

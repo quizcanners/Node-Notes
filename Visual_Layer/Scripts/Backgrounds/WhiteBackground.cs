@@ -4,26 +4,34 @@ using UnityEngine;
 using PlayerAndEditorGUI;
 using SharedTools_Stuff;
 
-namespace NodeNotes {
+namespace NodeNotes_Visual {
 
-    public class WhiteBackground : ComponentSTD, IManageFading, IGotDisplayName {
+    [TaggedType(classTag)]
+    public class WhiteBackground : NodesStyleBase {
+
+        const string classTag = "white";
+
+        public override string ClassTag => classTag;
 
         public bool isFading;
 
         public Color color = Color.white;
 
+        #region Inspector
 #if PEGI
-        public override bool Inspect()
-        {
+        public string NameForPEGIdisplay => "White Background";
+
+        public override bool Inspect() {
             bool changed = false;
 
             "Background Color".edit(ref color).nl();
 
-
             return changed;
         }
 #endif
+        #endregion
 
+        #region Encode & Decode
 
         public override bool Decode(string tag, string data)
         {
@@ -39,14 +47,11 @@ namespace NodeNotes {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("col", color);
 
-        public void FadeAway() => isFading = true;
+        #endregion
 
-        public string NameForPEGIdisplay => "White Background";
+        public override void FadeAway() => isFading = true;
 
-        public bool TryFadeIn() => isFading = false;
-
-
-
+        public override bool TryFadeIn() => isFading = false;
 
         // Update is called once per frame
         void Update()

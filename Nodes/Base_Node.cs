@@ -21,6 +21,8 @@ namespace NodeNotes {
 
         public static Node CurrentNode { get => Shortcuts.CurrentNode; set => Shortcuts.CurrentNode = value; }
         
+        public static NodesVisualLayerAbstract VisualLayer { get => Shortcuts.visualLayer;  }
+
         public ISTD visualRepresentation;
         public ISTD previousVisualRepresentation;
         public string configForVisualRepresentation;

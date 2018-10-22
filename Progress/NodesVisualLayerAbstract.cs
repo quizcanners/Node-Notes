@@ -7,35 +7,48 @@ using SharedTools_Stuff;
 namespace NodeNotes
 {
     public abstract class NodesVisualLayerAbstract : LogicMGMT {
-        public abstract void SetCurrentNode(Node node);
+        public abstract Node CurrentNode { get; set; }
 
-        public GameNodeBase gameNode = null;
+        protected GameNodeBase gameNode = null;
 
         protected LoopLock loopLockEnt = new LoopLock();
 
-        public virtual void EnterGameNode(GameNodeBase gn) {
+        public bool IsCurrentGameNode(GameNodeBase gb) => (gameNode != null && gameNode == gb);
+
+        public static Node preGameNode;
+
+        public virtual void FromNodeToGame(GameNodeBase gn) {
+
             if (loopLockEnt.Unlocked)
                 using (loopLockEnt.Lock()) {
-                    ExitGameNode();
-                    if (gn != null)
-                        gn.Enter();
+                    FromGameToNode();
+                    gn.Enter();
                 }
-            
+
+            preGameNode = CurrentNode;
+            CurrentNode = null;
             gameNode = gn;
         }
 
         protected LoopLock loopLockExit = new LoopLock();
 
-        public virtual void ExitGameNode()  {
+        public virtual void FromGameToNode(bool failed = false)  {
 
             if (loopLockExit.Unlocked)
                 using (loopLockExit.Lock())  {
-                    if (gameNode != null)
-                        gameNode.Exit();
-                 
+                    if (gameNode != null) {
+                        if (failed)
+                            gameNode.FailExit();
+                        else
+                            gameNode.Exit();
+                    }
                 }
 
             gameNode = null;
+
+            if (preGameNode != null)
+                CurrentNode = preGameNode;
+            else Debug.LogError("Pre Game Node was null");
         }
 
     }

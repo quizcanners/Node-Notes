@@ -92,14 +92,14 @@ Pass{
 	uniform sampler2D	_FaceTex;					// Alpha : Signed Distance
 uniform float		_FaceUVSpeedX;
 uniform float		_FaceUVSpeedY;
-uniform fixed4		_FaceColor;					// RGBA : Color + Opacity
+uniform float4		_FaceColor;					// RGBA : Color + Opacity
 uniform float		_FaceDilate;				// v[ 0, 1]
 uniform float		_OutlineSoftness;			// v[ 0, 1]
 
 uniform sampler2D	_OutlineTex;				// RGBA : Color + Opacity
 uniform float		_OutlineUVSpeedX;
 uniform float		_OutlineUVSpeedY;
-uniform fixed4		_OutlineColor;				// RGBA : Color + Opacity
+uniform float4		_OutlineColor;				// RGBA : Color + Opacity
 uniform float		_OutlineWidth;				// v[ 0, 1]
 
 uniform float		_Bevel;						// v[ 0, 1]
@@ -113,27 +113,27 @@ uniform float		_BumpOutline;				// v[ 0, 1]
 uniform float		_BumpFace;					// v[ 0, 1]
 
 uniform samplerCUBE	_Cube;						// Cube / sphere map
-uniform fixed4 		_ReflectFaceColor;			// RGB intensity
-uniform fixed4		_ReflectOutlineColor;
+uniform float4 		_ReflectFaceColor;			// RGB intensity
+uniform float4		_ReflectOutlineColor;
 //uniform float		_EnvTiltX;					// v[-1, 1]
 //uniform float		_EnvTiltY;					// v[-1, 1]
 uniform float3      _EnvMatrixRotation;
 uniform float4x4	_EnvMatrix;
 
-uniform fixed4		_SpecularColor;				// RGB intensity
+uniform float4		_SpecularColor;				// RGB intensity
 uniform float		_LightAngle;				// v[ 0,Tau]
 uniform float		_SpecularPower;				// v[ 0, 1]
 uniform float		_Reflectivity;				// v[ 5, 15]
 uniform float		_Diffuse;					// v[ 0, 1]
 uniform float		_Ambient;					// v[ 0, 1]
 
-uniform fixed4		_UnderlayColor;				// RGBA : Color + Opacity
+uniform float4		_UnderlayColor;				// RGBA : Color + Opacity
 uniform float		_UnderlayOffsetX;			// v[-1, 1]
 uniform float		_UnderlayOffsetY;			// v[-1, 1]
 uniform float		_UnderlayDilate;			// v[-1, 1]
 uniform float		_UnderlaySoftness;			// v[ 0, 1]
 
-uniform fixed4 		_GlowColor;					// RGBA : Color + Intesity
+uniform float4 		_GlowColor;					// RGBA : Color + Intesity
 uniform float 		_GlowOffset;				// v[-1, 1]
 uniform float 		_GlowOuter;					// v[ 0, 1]
 uniform float 		_GlowInner;					// v[ 0, 1]
@@ -170,21 +170,21 @@ uniform float		_PerspectiveFilter;
 	struct vertex_t {
 	float4	vertex			: POSITION;
 	float3	normal			: NORMAL;
-	fixed4	color : COLOR;
+	float4	color : COLOR;
 	float2	texcoord0		: TEXCOORD0;
 	float2	texcoord1		: TEXCOORD1;
 };
 
 struct pixel_t {
 	float4	vertex			: SV_POSITION;
-	fixed4	faceColor : COLOR;
-	fixed4	outlineColor : COLOR1;
+	float4	faceColor : COLOR;
+	float4	outlineColor : COLOR1;
 	float4	texcoord0		: TEXCOORD0;			// Texture UV, Mask UV
-	half4	param			: TEXCOORD1;			// Scale(x), BiasIn(y), BiasOut(z), Bias(w)
-	half4	mask			: TEXCOORD2;			// Position in clip space(xy), Softness(zw)
+	float4	param			: TEXCOORD1;			// Scale(x), BiasIn(y), BiasOut(z), Bias(w)
+	float4	mask			: TEXCOORD2;			// Position in clip space(xy), Softness(zw)
 #if (UNDERLAY_ON | UNDERLAY_INNER)
 	float4	texcoord1		: TEXCOORD3;			// Texture UV, alpha, reserved
-	half2	underlayParam	: TEXCOORD4;			// Scale(x), Bias(y)
+	float2	underlayParam	: TEXCOORD4;			// Scale(x), Bias(y)
 #endif
 	float4 screenPos : TEXCOORD5;
 };
@@ -222,10 +222,10 @@ pixel_t VertShader(vertex_t input)
 	opacity = 1.0;
 #endif
 
-	fixed4 faceColor = fixed4(input.color.rgb, opacity) * _FaceColor;
+	float4 faceColor = float4(input.color.rgb, opacity) * _FaceColor;
 	faceColor.rgb *= faceColor.a;
 
-	fixed4 outlineColor = _OutlineColor;
+	float4 outlineColor = _OutlineColor;
 	outlineColor.a *= opacity;
 	outlineColor.rgb *= outlineColor.a;
 	outlineColor = lerp(faceColor, outlineColor, sqrt(min(1.0, (outline * 2))));
@@ -250,11 +250,11 @@ pixel_t VertShader(vertex_t input)
 		faceColor,
 		outlineColor,
 		float4(input.texcoord0.x, input.texcoord0.y, maskUV.x, maskUV.y),
-		half4(scale, bias - outline, bias + outline, bias),
-		half4(vert.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * half2(_MaskSoftnessX, _MaskSoftnessY) + pixelSize.xy)),
+		float4(scale, bias - outline, bias + outline, bias),
+		float4(vert.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * float2(_MaskSoftnessX, _MaskSoftnessY) + pixelSize.xy)),
 #if (UNDERLAY_ON | UNDERLAY_INNER)
 		float4(input.texcoord0 + layerOffset, input.color.a, 0),
-		half2(layerScale, layerBias),
+		float2(layerScale, layerBias),
 #endif
 		ComputeScreenPos(vPosition)
 
@@ -265,13 +265,15 @@ pixel_t VertShader(vertex_t input)
 
 
 // PIXEL SHADER
-fixed4 PixShader(pixel_t input) : SV_Target
+float4 PixShader(pixel_t input) : SV_Target
 {
 
 	float2 sp = input.screenPos.xy / input.screenPos.w;
 
-	half d = tex2D(_MainTex, input.texcoord0.xy).a * input.param.x;
-	half4 c = input.faceColor * saturate(d - input.param.w);
+	float d = tex2D(_MainTex, input.texcoord0.xy).a * input.param.x;
+	float4 c = input.faceColor * saturate(d - input.param.w);
+
+//	return input.outlineColor.a;
 
 	#ifdef OUTLINE_ON
 c = lerp(input.outlineColor, input.faceColor, saturate(d - input.param.z));
@@ -286,18 +288,12 @@ c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * saturate(
 #endif
 
 #if UNDERLAY_INNER
-half sd = saturate(d - input.param.z);
+float sd = saturate(d - input.param.z);
 d = tex2D(_MainTex, input.texcoord1.xy).a * input.underlayParam.x;
 c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * (1 - saturate(d - input.underlayParam.y)) * sd * (1 - c.a);
 #endif
 
-// Alternative implementation to UnityGet2DClipping with support for softness.
-/*
-#if UNITY_UI_CLIP_RECT
-half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(input.mask.xy)) * input.mask.zw);
-c *= m.x * m.y;
-#endif
-*/
+
 
 #if (UNDERLAY_ON | UNDERLAY_INNER)
 c *= input.texcoord1.z;

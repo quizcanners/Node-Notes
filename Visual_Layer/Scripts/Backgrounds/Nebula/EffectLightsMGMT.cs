@@ -7,9 +7,13 @@ using System;
 namespace NodeNotes_Visual
 {
 
+    [TaggedType(classTag)]
     [ExecuteInEditMode]
-    public class EffectLightsMGMT : MonoBehaviour, IManageFading, IGotDisplayName
-    {
+    public class EffectLightsMGMT : NodesStyleBase, IGotDisplayName {
+
+        const string classTag = "nebula";
+
+        public override string ClassTag => classTag;
 
         public List<ParticleSystem> systems = new List<ParticleSystem>();
 
@@ -22,7 +26,7 @@ namespace NodeNotes_Visual
         [NonSerialized]
         public float[] originalSimulationSpeed;
 
-        public void FadeAway()
+        public override void FadeAway()
         {
 
             backgroundPainter.enabled = false;
@@ -59,7 +63,7 @@ namespace NodeNotes_Visual
 
         public string NameForPEGIdisplay => "Microcosmos";
 
-        public bool TryFadeIn()
+        public override bool TryFadeIn()
         {
 
             backgroundPainter.enabled = true;
@@ -109,5 +113,12 @@ namespace NodeNotes_Visual
                 }
             }
         }
+
+        public override bool Decode(string tag, string data)
+        {
+            return true;
+        }
+
+        public override StdEncoder Encode() => this.EncodeUnrecognized();
     }
 }

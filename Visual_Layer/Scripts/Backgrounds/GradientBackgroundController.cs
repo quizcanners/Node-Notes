@@ -7,14 +7,15 @@ using SharedTools_Stuff;
 namespace NodeNotes_Visual
 {
 
+    [TaggedType(classTag)]
+    [ExecuteInEditMode]
+     public class GradientBackgroundController : NodesStyleBase {
 
-    public class GradientBackground : MonoBehaviour
-    {
+        const string classTag = "grad";
 
-        [ExecuteInEditMode]
-        public class GradientBackgroundController : ComponentSTD, IManageFading, IPEGI {
+        public override string ClassTag => classTag;
 
-            ColorLerpParameter[] cols = new ColorLerpParameter[3];// { new ColorLerpParameter(), new ColorLerpParameter(), new ColorLerpParameter() }; // = new ColorLerpParameter[3];
+        ColorLerpParameter[] cols = new ColorLerpParameter[3];// { new ColorLerpParameter(), new ColorLerpParameter(), new ColorLerpParameter() }; // = new ColorLerpParameter[3];
 
             public GameObject backPlane;
 
@@ -63,9 +64,9 @@ namespace NodeNotes_Visual
             #endregion
 
             #region Updates
-            public void FadeAway() => isSHowing = false;
+            public override void FadeAway() => isSHowing = false;
             
-            public bool TryFadeIn() {
+            public override bool TryFadeIn() {
                 isSHowing = true;
                 if (backPlane)
                     backPlane.SetActive(true);
@@ -104,8 +105,6 @@ namespace NodeNotes_Visual
 
             #endregion
         }
-
-    }
 
     public struct ColorLerpParameter : IPEGI_ListInspect, ISTD {
         Color current;

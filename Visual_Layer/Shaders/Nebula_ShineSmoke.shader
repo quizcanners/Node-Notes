@@ -12,7 +12,7 @@
 
 		Cull Off
 		ZWrite Off
-		Blend SrcAlpha One //MinusSrcAlpha 
+		Blend SrcAlpha OneMinusSrcAlpha 
 
 		SubShader{
 

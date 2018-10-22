@@ -1502,6 +1502,7 @@ MonoBehaviour:
     SaveToFileOptions: 0
   inspectedStuff: -1
   inspectedReference: -1
+  fallbackColor: {r: 0, g: 0, b: 0, a: 1}
   isFading: 0
   color: {r: 0.103773594, g: 0.009300461, b: 0.009300461, a: 1}
 --- !u!4 &1274019442
@@ -1753,7 +1754,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 36.75
+  m_fontSize: 36.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

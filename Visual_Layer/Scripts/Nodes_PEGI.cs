@@ -74,15 +74,16 @@ namespace NodeNotes_Visual
         #endregion
 
         #region BG
-        public List<MonoBehaviour> backgroundControllers = new List<MonoBehaviour>();
-        public void SetBackground (int index, string data)
-        {
-            index = Mathf.Clamp(index, 0, backgroundControllers.Count);
-            for (int i=0; i<backgroundControllers.Count; i++)
-            {
-                var bc = backgroundControllers[i] as IManageFading;
+        public List<NodesStyleBase> backgroundControllers = new List<NodesStyleBase>();
+        public void SetBackground (NodeCircleController circle) {
+          //  var bg = circle != null ? backgroundControllers.TryGetByTag(circle.background) : null;
+            var data = circle ? circle.backgroundConfig : "";
+            var tag = circle ? circle.background : "null";
+
+            for (int i=0; i<backgroundControllers.Count; i++) {
+                var bc = backgroundControllers[i];// as IManageFading;
                 if (bc != null) {
-                    if (i == index) {
+                    if (bc.ClassTag == tag) {
                         bc.TryFadeIn();
                         data.TryDecodeInto(bc);
                     }
@@ -132,7 +133,6 @@ namespace NodeNotes_Visual
                     return;
 
                 nnp = Instantiate(NodeMGMT_inst.circlePrefab);
-                nnp.hideFlags = HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
                 nodesPool.Add(nnp);
             }
 
@@ -142,57 +142,69 @@ namespace NodeNotes_Visual
 
         LoopLock loopLock = new LoopLock();
 
-        public override void SetCurrentNode (Node value) {
+        public override Node CurrentNode
+        {
 
-            if (Application.isPlaying)
+            get
             {
+                return Shortcuts.CurrentNode;
+            }
+
+            set
+            {
+
+
                 if (loopLock.Unlocked)
                 {
                     using (loopLock.Lock())
                     {
-                        SetSelected(null);
 
-                        Node wasAParent = null;
-
-                        var curNode = Shortcuts.CurrentNode;
-
-                        if (value != null && curNode != null)
+                        if (Application.isPlaying)
                         {
-                            var s = value as Node;
-                            if (s != null)
+
+                            SetSelected(null);
+
+                            Node wasAParent = null;
+
+                            var curNode = Shortcuts.CurrentNode;
+
+                            if (value != null && curNode != null)
                             {
-                                if (s.coreNodes.Contains(curNode))
-                                    wasAParent = curNode;
+                                var s = value as Node;
+                                if (s != null)
+                                {
+                                    if (s.coreNodes.Contains(curNode))
+                                        wasAParent = curNode;
+                                }
                             }
+
+                            foreach (var n in nodesPool)
+                                if (n != null && !n.isFading)
+                                {
+                                    if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
+                                        n.Unlink();
+                                    else
+                                        n.assumedPosition = false;
+                                }
+
+                            firstFree = 0;
+
+                            Shortcuts.CurrentNode = value;
+
+                            NodeCircleController circle = value != null ? value.visualRepresentation as NodeCircleController : null;
+
+                            UpdateVisibility();
+
+                            SetBackground(circle);
                         }
-
-                        foreach (var n in nodesPool)
-                            if (n != null && !n.isFading)
-                            {
-                                if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
-                                    n.Unlink();
-                                else
-                                    n.assumedPosition = false;
-                            }
-
-                        firstFree = 0;
-
-                        Shortcuts.CurrentNode = value;
+                        else
+                            Shortcuts.CurrentNode = value;
                     }
                 }
 
-                if (value != null)
-                {
-
-                    UpdateVisibility();
-
-                    var circle = value.visualRepresentation as NodeCircleController;
-
-                    SetBackground(circle.background, circle.backgroundConfig);
-                }
             }
         }
-        
+
         public static void UpdateVisibility(Base_Node node)  {
 
             if (node != null) {
