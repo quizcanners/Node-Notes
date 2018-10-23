@@ -33,9 +33,11 @@ namespace NodeNotes
         public override bool Inspect()  {
             bool changed = false;
             inspected = this;
-           
+
+            pegi.nl();
+
             if (subNode.inspectedStuff == -1 && subNode.inspectedSubnode == -1)
-            "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1);
+            "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
 
             if (inspectedStuff == -1)
             changed |= subNode.Nested_Inspect(); //"Root Node".NestedInspect(); // (subNode, ref inspectedStuff, 2);

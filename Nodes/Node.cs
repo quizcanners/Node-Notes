@@ -133,50 +133,22 @@ namespace NodeNotes {
             if (parentNode != null)
                 parentNode.SetInspectedUpTheHierarchy(this);
         }
-#if PEGI
 
+#if PEGI
         public override bool Inspect() {
 
             bool changed = false;
 
             bool hideSubnodes = pegi.paintingPlayAreaGUI && !Shortcuts.user.isADeveloper;
 
-            if (!hideSubnodes) {
-
-                if (inspectedSubnode == -1) {
-                    if (this != CurrentNode) {
-                        if (icon.Play.Click())
-                            CurrentNode = this;
-                    }
-                    else if (parentNode != null && icon.Exit.Click())
-                        CurrentNode = parentNode;
+            if (inspectedSubnode == -1 && !hideSubnodes && inspectedStuff ==-1)  {
+                if (this != CurrentNode)
+                {
+                    if (icon.Play.Click("Enter Node"))
+                        CurrentNode = this;
                 }
-
-                if (inspectedStuff == -1 && !InspectingTriggerStuff) {
-
-                    if (inspectedSubnode != -1) {
-                        var n = coreNodes.TryGet(inspectedSubnode);
-                        if (n == null)
-                            inspectedSubnode = -1;
-                        else {
-                            if (icon.Exit.Click(name))
-                                inspectedSubnode = -1;
-                            "___{0}".F(name).nl();
-                        }
-
-                        if (inspectedSubnode != -1)
-                            n.Try_Nested_Inspect();
-                    }
-                    
-                    if (inspectedSubnode == -1) {
-                        pegi.nl();
-                        var newNode = "Sub Nodes".edit_List(coreNodes, ref inspectedSubnode, ref changed);
-
-                        if (newNode != null)
-                            newNode.CreatedFor(this);
-                    }
-
-                }
+                else if (parentNode != null && icon.Close.Click())
+                    CurrentNode = parentNode;
             }
 
             if (inspectedSubnode == -1 || hideSubnodes) {
@@ -202,20 +174,52 @@ namespace NodeNotes {
                             changed = true;
                         }
                     }
-                    pegi.nl();
                 }
   
                 changed |= base.Inspect();
 
-                if ("Game Nodes [{0}]".F(gameNodes.Count).enter(ref inspectedStuff, 7).nl()) {
-                    var ngn = "Game Nodes".edit_List(gameNodes, gamesNodesMeta, ref changed, GameNodeBase.all, true);
+                var ngn = "Game Nodes".enter_List(gameNodes, gamesNodesMeta, ref inspectedStuff, 7, GameNodeBase.all, ref changed, true);
 
-                    if (ngn != null)
-                        ngn.CreatedFor(this);
+                pegi.nl_ifFoldedOut();
+
+                if (ngn != null)
+                    ngn.CreatedFor(this);
+            }
+
+            if (!hideSubnodes) {
+
+                if (inspectedStuff == -1 && !InspectingTriggerStuff) {
+
+                    if (inspectedSubnode != -1) {
+                        var n = coreNodes.TryGet(inspectedSubnode);
+                        if (n == null)
+                            inspectedSubnode = -1;
+                        else {
+                            if (icon.Exit.Click(name))
+                                inspectedSubnode = -1;
+
+                                if (this == Shortcuts.CurrentNode && parentNode != null && icon.Active.Click())
+                                    Shortcuts.CurrentNode = parentNode;
+                                
+                            name.nl();
+                        }
+
+                        if (inspectedSubnode != -1)
+                            n.Try_Nested_Inspect();
+                    }
+
+                    if (inspectedSubnode == -1)
+                    {
+                        pegi.nl();
+                        var newNode = "Sub Nodes".edit_List(coreNodes, ref inspectedSubnode, ref changed);
+
+                        if (newNode != null)
+                            newNode.CreatedFor(this);
+                    }
 
                 }
             }
-     
+
             return changed;
         }
 

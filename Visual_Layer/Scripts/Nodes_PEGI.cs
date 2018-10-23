@@ -269,9 +269,17 @@ namespace NodeNotes_Visual
         
         public override bool Inspect() {
 
-            bool changed = base.Inspect();
+            if (gameNode != null) {
 
-     
+                if (icon.Close.Click("Exit Game Node in Fail"))
+                    FromGameToNode(true);
+                else  if (icon.Save.Click("Exit Game Node & Save"))
+                    FromGameToNode();
+                else return gameNode.Nested_Inspect();
+            }
+
+            bool changed = base.Inspect();
+            
                 var cn = Shortcuts.CurrentNode;
 
                 if (icon.StateMachine.conditional_enter(cn != null, ref inspectedStuff , 2))

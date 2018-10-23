@@ -64,7 +64,7 @@ namespace NodeNotes {
                     VisualLayer.FromGameToNode(false);
 
                     Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
-                    parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookData().ToString();
+                    parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookStaticData().ToString();
 
                     onExitResults.Apply();
                 }
@@ -80,16 +80,21 @@ namespace NodeNotes {
 
         int editedExitResult = -1;
 
-        public override bool Inspect()
-        {
+        LoopLock inspectLoopLock = new LoopLock();
+
+        public sealed override bool Inspect() {
+
             bool changed = false;
-        
-            changed |= base.Inspect();
 
-            changed |= ExitResultRole.enter_List(onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
+            if (loopLock.Unlocked)
+                using (loopLock.Lock()) {
+                    changed |= base.Inspect();
 
-            if (ClassTag.enter(ref inspectedStuff, 6).nl_ifFalse())
-                InspectGameNode();
+                    changed |= ExitResultRole.enter_List(onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
+
+                    if (ClassTag.enter(ref inspectedStuff, 8).nl_ifFalse())
+                        InspectGameNode();
+                }
 
             return changed;
         }
@@ -98,21 +103,8 @@ namespace NodeNotes {
 
             bool changed = this.inspect_Name();
 
-            if (icon.Enter.Click())
-                edited = ind;
-
-            if (VisualLayer.IsCurrentGameNode(this)) {
-                if (icon.Close.Click("Exit Game Node in Fail"))
-                    VisualLayer.FromGameToNode(true);
-
-                if (icon.Exit.Click("Exit Game Node"))
-                    VisualLayer.FromGameToNode();
-
-            } else
-            {
-                if (icon.Play.Click("Enter Game Node"))
-                    VisualLayer.FromNodeToGame(this);
-            }
+            if (icon.Play.Click("Enter Game Node"))
+                VisualLayer.FromNodeToGame(this);
 
             return changed;
         }
@@ -120,16 +112,15 @@ namespace NodeNotes {
         #endregion
 
         #region Encode & Decode
+
         public List<Result> onExitResults = new List<Result>();
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add("exit", onExitResults);
 
-        public override bool Decode(string tag, string data)
-        {
-            switch (tag)
-            {
+        public override bool Decode(string tag, string data) {
+            switch (tag) {
                 case "b": data.DecodeInto(base.Decode); break;
                 case "exit": data.DecodeInto_List(out onExitResults); break;
                 default: return false;
@@ -143,9 +134,9 @@ namespace NodeNotes {
         public virtual void Decode_PerUserData(string data) => data.DecodeInto(Decode_PerUser);
 
         // Per Node Book Data: Data will be encoded each time Node Book is Saved
-        public virtual StdEncoder Encode_PerBookData() => new StdEncoder();
-        public virtual bool Decode_PerBook(string tag, string data) => true;
-        public virtual void Decode_PerBookData(string data) => data.DecodeInto(Decode_PerBook);
+        public virtual StdEncoder Encode_PerBookStaticData() => new StdEncoder();
+        public virtual bool Decode_PerBookStatic(string tag, string data) => true;
+        public virtual void Decode_PerBookData(string data) => data.DecodeInto(Decode_PerBookStatic);
         #endregion
     }
 

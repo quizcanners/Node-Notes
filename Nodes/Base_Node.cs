@@ -137,8 +137,6 @@ namespace NodeNotes {
             var changed = false;
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-            pegi.nl();
-
             if (!onPlayScreen)
                 changed |= base.Inspect();
 
@@ -151,11 +149,11 @@ namespace NodeNotes {
 
             pegi.nl();
 
-            changed |= "Visibility Conditions".enter_Inspect(visCondition, ref inspectedStuff, 1);
+            changed |= "Visibility Conditions".enter_Inspect(visCondition, ref inspectedStuff, 1).nl_ifFolded();
 
-            changed |= "Enabled Conditions".enter_Inspect(eblCondition, ref inspectedStuff, 2);
+            changed |= "Enabled Conditions".enter_Inspect(eblCondition, ref inspectedStuff, 2).nl_ifFolded();
 
-            changed |= ResultsRole.enter_List(results, ref inspectedResult, ref inspectedStuff, 3) ;
+            changed |= ResultsRole.enter_List(results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFolded();
             
             if (changed)
                 logicVersion = -1;

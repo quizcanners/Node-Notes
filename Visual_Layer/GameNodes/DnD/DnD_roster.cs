@@ -17,11 +17,12 @@ namespace NodeNotes_Visual
         public const string tag = "DnD_rost";
         public override string ClassTag => tag;
 
-        List<DnDRosterGroup> bookGroups = new List<DnDRosterGroup>();
-        int inspectedGroup = -1;
+        static List<DnDRosterGroup> bookGroups = new List<DnDRosterGroup>();
+
+        static int inspectedGroup = -1;
 
         #region Encode & Decode
-        public override bool Decode_PerBook(string tag, string data) {
+        public override bool Decode_PerBookStatic(string tag, string data) {
             switch (tag) {
                 case "el": data.DecodeInto_List(out bookGroups); break;
                 case "i": inspectedGroup = data.ToInt(); break;
@@ -30,7 +31,7 @@ namespace NodeNotes_Visual
             return true;           
         }
 
-        public override StdEncoder Encode_PerBookData() => this.EncodeUnrecognized()
+        public override StdEncoder Encode_PerBookStaticData() => this.EncodeUnrecognized()
             .Add_IfNotEmpty("el", bookGroups)
             .Add_IfNotNegative("i", inspectedGroup);
         #endregion
@@ -38,8 +39,7 @@ namespace NodeNotes_Visual
         #region Inspector
 
         protected override bool InspectGameNode() {
-            bool changed =  base.Inspect();
-            changed |= "Roster Groups".enter_List(bookGroups, ref inspectedGroup, ref inspectedStuff, 5);
+            bool changed = "Roster Groups".edit_List(bookGroups, ref inspectedGroup);
             return changed;
         }
 
@@ -77,7 +77,7 @@ namespace NodeNotes_Visual
         public override bool Inspect()
         {
             bool changed = base.Inspect();
-
+            
             changed |= "Roster".edit_List(elements, ref inspectedElement);
 
             return changed;
@@ -113,11 +113,17 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
+
+
+
         public override bool Inspect() {
             bool changed = false;
+            
+            if (inspectedStuff == -1)
             changed |= "Description".editBig(ref description).nl();
 
-            changed |= visibilityConditions.Nested_Inspect();
+
+            changed |= "Conditions".enter_Inspect(visibilityConditions, ref inspectedStuff, 4);
 
             return changed;
         }

@@ -19,13 +19,16 @@ namespace NodeNotes
 
         public virtual void FromNodeToGame(GameNodeBase gn) {
 
+            if (CurrentNode != null)
+                preGameNode = CurrentNode;
+            else preGameNode = gn.parentNode;
+
             if (loopLockEnt.Unlocked)
                 using (loopLockEnt.Lock()) {
                     FromGameToNode();
                     gn.Enter();
                 }
 
-            preGameNode = CurrentNode;
             CurrentNode = null;
             gameNode = gn;
         }

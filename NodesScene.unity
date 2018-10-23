@@ -2141,7 +2141,7 @@ MonoBehaviour:
     inspectedState: -1
     fileFolderHolder: STDEncodes
     SaveToFileOptions: 0
-  inspectedStuff: 4
+  inspectedStuff: -1
   inspectedReference: -1
   inspectedTriggerGroup: -1
   tmpIndex: 5
