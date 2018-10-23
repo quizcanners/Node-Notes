@@ -278,8 +278,11 @@ namespace NodeNotes_Visual
                 else return gameNode.Nested_Inspect();
             }
 
-            bool changed = base.Inspect();
-            
+            if (Application.isPlaying && selectedNode)
+                return selectedNode.Nested_Inspect();
+
+            bool changed = false;
+
                 var cn = Shortcuts.CurrentNode;
 
                 if (icon.StateMachine.conditional_enter(cn != null, ref inspectedStuff , 2))
@@ -329,12 +332,11 @@ namespace NodeNotes_Visual
         }
 
         public void OnGUI() {
-
-            if (selectedNode)
-                window.Render(selectedNode);
-
-            if (Shortcuts.CurrentNode == null && shortcuts)
-                window.Render(shortcuts);
+            if (Application.isPlaying && !Base_Node.editingNodes)
+                return;
+              //  window.Render(selectedNode);
+           // else 
+                window.Render(this);
         }
 
         #endif

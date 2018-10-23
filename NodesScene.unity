@@ -1754,7 +1754,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 36.8
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1772,7 +1772,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: -1
+  m_firstOverflowCharacterIndex: 7
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -2141,10 +2141,10 @@ MonoBehaviour:
     inspectedState: -1
     fileFolderHolder: STDEncodes
     SaveToFileOptions: 0
-  inspectedStuff: -1
+  inspectedStuff: 4
   inspectedReference: -1
   inspectedTriggerGroup: -1
-  tmpIndex: 5
+  tmpIndex: 6
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   editButton: {fileID: 1742041633}
   addButton: {fileID: 2133683275}
