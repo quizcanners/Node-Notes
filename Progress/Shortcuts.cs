@@ -133,31 +133,35 @@ namespace NodeNotes {
        
         public override bool Inspect() {
 
-            bool changed = false; 
+            bool changed = false;
 
-              if (inspectedBook == -1) { 
+            if (inspectedBook == -1)
+            {
 
                 changed |= base.Inspect();
 
-                if (inspectedStuff == -1) {
-                if (users.Count > 1 && icon.Delete.Click())
-                    DeleteUser();
+                if (inspectedStuff == -1)
+                {
+                    if (users.Count > 1 && icon.Delete.Click())
+                        DeleteUser();
 
-                string usr = user.userName;
-                if ("Profile".select(50, ref usr, users)) {
-                    SaveUser();
-                    LoadUser(usr);
+                    string usr = user.userName;
+                    if (pegi.select(ref usr, users))
+                    {
+                        SaveUser();
+                        LoadUser(usr);
+                    }
                 }
-            }
 
-            if (icon.Enter.enter(ref inspectedStuff, 4).nl())
-                changed |= user.Nested_Inspect();
+                if (icon.Enter.enter(ref inspectedStuff, 4))
+                    changed |= user.Nested_Inspect();
 
-                if (inspectedStuff == -1) {
-
+                if (icon.Add.enter(ref inspectedStuff, 6))
+                {
                     "New User:".edit(60, ref tmpUserName);
 
-                    if (tmpUserName.Length > 3 && !users.Contains(tmpUserName)) {
+                    if (tmpUserName.Length > 3 && !users.Contains(tmpUserName))
+                    {
 
                         if (icon.Add.Click("Add new user"))
                             CreateUser(tmpUserName);
@@ -165,13 +169,20 @@ namespace NodeNotes {
                         if (icon.Replace.Click("Rename {0}".F(user.userName)))
                             RenameUser(tmpUserName);
                     }
+                }
+
+                if (inspectedStuff == -1)
+                {
+
+                   
 
                     pegi.nl();
 
                     if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
                         StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
 
-                    if ("Get all book names".Click("Will populate list with mentiones with books in Data folder without loading them").nl()) {
+                    if (icon.Refresh.Click("Will populate list with mentiones with books in Data folder without loading them"))
+                    {
                         var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
 
                         foreach (var e in lst)
@@ -180,7 +191,8 @@ namespace NodeNotes {
                             foreach (var b in books)
                                 if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
 
-                            if (!contains)  {
+                            if (!contains)
+                            {
                                 var off = new NodeBook_OffLoaded { name = e };
                                 books.Add(off);
                             }
@@ -188,8 +200,10 @@ namespace NodeNotes {
                     }
                 }
             }
+            else inspectedStuff = -1;
 
-            "Books ".edit_List(books, ref inspectedBook);
+            if (inspectedStuff == -1)
+                "Books ".edit_List(books, ref inspectedBook);
 
             return changed;
             }

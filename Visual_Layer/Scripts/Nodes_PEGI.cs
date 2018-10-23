@@ -281,7 +281,7 @@ namespace NodeNotes_Visual
             if (Application.isPlaying && selectedNode)
                 return selectedNode.Nested_Inspect();
 
-            bool changed = false;
+            bool changed = base.Inspect();
 
                 var cn = Shortcuts.CurrentNode;
 
@@ -293,9 +293,6 @@ namespace NodeNotes_Visual
                         "{0} -> [{1}] Current: {2} - {3}".F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPEGIstring(), cn.ToPEGIstring()).nl();
                     pegi.nl();
                 }
-
-                if ("Values ".enter(ref inspectedStuff, 3))
-                    Values.global.Inspect();
 
                 pegi.nl();
 

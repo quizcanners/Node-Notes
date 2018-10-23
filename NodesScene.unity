@@ -1354,7 +1354,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.600098, y: -7.7001953}
+  m_AnchoredPosition: {x: -13.600037, y: -7.7001953}
   m_SizeDelta: {x: -13.599976, y: -7.700001}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -1754,7 +1754,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 18
+  m_fontSize: 36.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1772,7 +1772,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 7
+  m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -2141,7 +2141,7 @@ MonoBehaviour:
     inspectedState: -1
     fileFolderHolder: STDEncodes
     SaveToFileOptions: 0
-  inspectedStuff: 4
+  inspectedStuff: -1
   inspectedReference: -1
   inspectedTriggerGroup: -1
   tmpIndex: 6

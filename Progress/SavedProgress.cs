@@ -182,21 +182,23 @@ namespace NodeNotes
             "{0} FROM {1}".F(userName, startingPoint);
 
 #if PEGI
+
         int editedMark = -1;
         public override bool Inspect() {
 
             bool changed = false; 
 
-                this.ToPEGIstring().nl();
+            this.ToPEGIstring().nl();
 
-            if (!isADeveloper && "Make A Developer".Click().nl())
+            if (Application.isEditor) 
+                "Is A Developer ".toggleIcon(ref isADeveloper, true).nl();
+            else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
+            
+            changed |= "Marks ".enter_List(bookMarks,ref editedMark, ref inspectedStuff, 0).nl_ifNotEntered();
 
-            if ((isADeveloper && Application.isEditor) && "Make a user".Click().nl())
-                isADeveloper = false;
-
-            "Marks ".edit_List(bookMarks,ref editedMark);
-
+            changed |= "Values ".enter_Inspect(Values.global, ref inspectedStuff, 1).nl_ifNotEntered();
+            
             return changed;
         }
 #endif
