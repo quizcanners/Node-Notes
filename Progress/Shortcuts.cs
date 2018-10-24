@@ -130,7 +130,10 @@ namespace NodeNotes {
         string tmpUserName;
 
 #if PEGI
-       
+
+        NodeBook replaceRecieved;
+        bool inspectReplacementOption;
+
         public override bool Inspect() {
 
             bool changed = false;
@@ -181,8 +184,8 @@ namespace NodeNotes {
                     if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
                         StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
 
-                    if (icon.Refresh.Click("Will populate list with mentiones with books in Data folder without loading them"))
-                    {
+                    if (icon.Refresh.Click("Will populate list with mentiones with books in Data folder without loading them")) {
+
                         var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
 
                         foreach (var e in lst)
@@ -202,9 +205,54 @@ namespace NodeNotes {
             }
             else inspectedStuff = -1;
 
-            if (inspectedStuff == -1)
+            if (inspectedStuff == -1) {
+
                 "Books ".edit_List(books, ref inspectedBook);
 
+                if (inspectedBook == -1)
+                {
+
+                    #region Paste Options
+
+                    if (replaceRecieved != null)
+                    {
+
+                        if (replaceRecieved.NameForPEGI.enter(ref inspectReplacementOption))
+                            replaceRecieved.Nested_Inspect();
+                        else
+                        {
+                            if (icon.Done.ClickUnfocus()) {
+
+                                var el = books.GetByIGotName(replaceRecieved);
+                                if (el != null)
+                                    books[books.IndexOf(el)] = replaceRecieved;
+                                else books.Add(replaceRecieved);
+                                
+                                replaceRecieved = null;
+                            }
+                            if (icon.Close.ClickUnfocus())
+                                replaceRecieved = null;
+                        }
+                    }
+                    else  {
+
+                        string tmp = "";
+                        if ("Paste Messaged Book".edit(140, ref tmp) || STDExtensions.LoadOnDrop(out tmp)) {
+                            var book = new NodeBook();
+                            book.DecodeFromExternal(tmp);
+                            if (books.GetByIGotName(book.NameForPEGI) == null)
+                                books.Add(book);
+                            else
+                                replaceRecieved = book;
+                        }
+                    }
+                    pegi.nl();
+
+                    #endregion
+
+                }
+
+            }
             return changed;
             }
 #endif

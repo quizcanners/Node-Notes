@@ -36,9 +36,17 @@ namespace NodeNotes
 
             pegi.nl();
 
-            if (subNode.inspectedStuff == -1 && subNode.inspectedSubnode == -1)
-            "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
+            if (subNode.inspectedStuff == -1 && subNode.inspectedSubnode == -1) {
 
+                if (inspectedStuff == -1) {
+
+                    this.Send_Recieve_PEGI(subNode.name, "Books");
+
+                }
+
+                "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
+
+            }
             if (inspectedStuff == -1)
             changed |= subNode.Nested_Inspect(); //"Root Node".NestedInspect(); // (subNode, ref inspectedStuff, 2);
       
@@ -59,6 +67,10 @@ namespace NodeNotes
 
             if (icon.Save.Click())
                 Shortcuts.books.Offload(this);
+
+            if (icon.Email.Click("Send this Book to somebody via email."))
+                this.EmailData("Book {0} ".F(subNode), "Take a look at my Node Book");
+
 
             return changed;
         }

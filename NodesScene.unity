@@ -1754,7 +1754,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 36.8
+  m_fontSize: 18.05
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2144,7 +2144,7 @@ MonoBehaviour:
   inspectedStuff: -1
   inspectedReference: -1
   inspectedTriggerGroup: -1
-  tmpIndex: 6
+  tmpIndex: 0
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   editButton: {fileID: 1742041633}
   addButton: {fileID: 2133683275}

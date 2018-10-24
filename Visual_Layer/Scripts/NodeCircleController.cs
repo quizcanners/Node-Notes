@@ -23,6 +23,8 @@ namespace NodeNotes_Visual
 
         public string backgroundConfig ="";
 
+        public string imageURL = "";
+
         #region TEXT
         public TextMeshPro textA;
 
@@ -360,6 +362,11 @@ namespace NodeNotes_Visual
             if (this == dragging)
                 dragging = null;
             assumedPosition = false;
+
+            background = "";
+            backgroundConfig = "";
+            imageURL = "";
+
             return base.Decode(data);
         }
 
@@ -369,20 +376,21 @@ namespace NodeNotes_Visual
                 case "subVis": data.DecodeInto(out subVisuals); break;
                 case "bg": background = data; break;
                 case "bg_cfg": backgroundConfig = data; break;
+                case "URL": imageURL = data; break;
                 default: return false;
             }
 
             return true;
         }
 
-        public override StdEncoder Encode()
-        {
+        public override StdEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
                 .Add("expVis", exploredVisuals)
                 .Add("subVis", subVisuals)
                 .Add_IfNotEmpty("bg", background)
-                .Add_IfNotEmpty("bg_cfg", backgroundConfig);
+                .Add_IfNotEmpty("bg_cfg", backgroundConfig)
+                .Add_IfNotEmpty("URL", imageURL);
            
             return cody;
         }

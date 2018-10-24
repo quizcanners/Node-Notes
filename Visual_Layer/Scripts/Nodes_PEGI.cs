@@ -8,6 +8,7 @@ using System;
 using UnityEngine.UI;
 using TMPro;
 using NodeNotes;
+using UnityEngine.Networking;
 
 namespace NodeNotes_Visual
 {
@@ -18,6 +19,8 @@ namespace NodeNotes_Visual
         public static Nodes_PEGI NodeMGMT_inst;
         
         public Shortcuts shortcuts;
+
+        public TextureDownloadManager webTextures = new TextureDownloadManager();
 
         #region UI_Buttons 
         public TextMeshProUGUI editButton;
@@ -281,9 +284,18 @@ namespace NodeNotes_Visual
             if (Application.isPlaying && selectedNode)
                 return selectedNode.Nested_Inspect();
 
+            if (inspectedStuff == -1 && "Encode / Decode Test".Click())
+            {
+                OnDisable();
+                OnEnable();
+            }
+
             bool changed = base.Inspect();
 
-                var cn = Shortcuts.CurrentNode;
+           
+
+
+            var cn = Shortcuts.CurrentNode;
 
                 if (icon.StateMachine.conditional_enter(cn != null, ref inspectedStuff , 2))
                     changed |= cn.Nested_Inspect();
@@ -316,12 +328,10 @@ namespace NodeNotes_Visual
 
                 pegi.nl();
 
-                if (inspectedStuff == -1 && "Encode / Decode Test".Click().nl())
-                {
-                    OnDisable();
-                    OnEnable();
-                }
-            
+                changed |= icon.Alpha.enter_inspect("Textures", webTextures, ref inspectedStuff, 6).nl_ifNotEntered();
+    
+
+          
 
 
 
@@ -343,6 +353,7 @@ namespace NodeNotes_Visual
             shortcuts?.SaveAll();
             Shortcuts.CurrentNode = null;
             ClearPool();
+            webTextures.Dispose();
         }
 
         public override void OnEnable()
@@ -372,6 +383,7 @@ namespace NodeNotes_Visual
                 logicVersion = currentLogicVersion;
             }
         }
-       
+
+
     }
 }
