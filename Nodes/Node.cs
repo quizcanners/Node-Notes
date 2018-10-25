@@ -58,6 +58,8 @@ namespace NodeNotes {
         }
         #endregion
 
+        public override Node AsNode => this;
+
         public override void OnMouseOver()
         {
             if (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {

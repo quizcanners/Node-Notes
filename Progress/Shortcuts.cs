@@ -123,6 +123,19 @@ namespace NodeNotes {
             StuffSaver.SaveToPersistantPath(_generalStuffFolder, _generalStuffFile, Encode().ToString());
         }
 
+        public static void AddOrReplace(NodeBook nb) {
+
+            var el = books.GetByIGotName(nb);
+
+            if (el != null) {
+                if (CurrentNode != null && CurrentNode.root == el)
+                    CurrentNode = null;
+                books[books.IndexOf(el)] = nb;
+            }
+            else
+                books.Add(nb);
+        }
+
         #endregion
 
         #region Inspector

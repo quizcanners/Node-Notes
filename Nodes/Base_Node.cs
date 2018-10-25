@@ -28,6 +28,7 @@ namespace NodeNotes {
         public string configForVisualRepresentation;
 
         public virtual GameNodeBase AsGameNode => null;
+        public virtual Node AsNode => null;
         #endregion
 
         public virtual void OnMouseOver() {
@@ -44,6 +45,16 @@ namespace NodeNotes {
         ConditionBranch visCondition = new ConditionBranch();
         ConditionBranch eblCondition = new ConditionBranch();
 
+        public bool TryForceEnabledConditions(bool to) {
+            bool done = eblCondition.TryForceTo(to);
+
+            if (to || (!to && !done))
+                done |= visCondition.TryForceTo(to);
+
+            UpdateLogic();
+
+            return done;
+        }
         protected virtual string ResultsRole => "Role Unknown";
 
         public List<Result> results = new List<Result>();
@@ -129,34 +140,53 @@ namespace NodeNotes {
         }
 
         public static bool editingNodes = false;
+
         int inspectedResult = -1;
         public bool InspectingTriggerStuff => inspectedResult != -1;
 #if PEGI
-        public override bool Inspect()
-        {
+        LoopLock inspectLock = new LoopLock();
+
+        public override bool Inspect() {
             var changed = false;
-            bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-            if (!onPlayScreen)
-                changed |= base.Inspect();
+            if (inspectLock.Unlocked)
+                using (inspectLock.Lock()) {
 
-            if (inspectedStuff == -1 ) {
-                if (GetType() == typeof(Node) || onPlayScreen)
-                changed |= this.inspect_Name();
-                    if ((this != Shortcuts.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
-                        Shortcuts.Cut_Paste = this;
-            }
+                    bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-            pegi.nl();
+                    if (!onPlayScreen)
+                        changed |= base.Inspect();
 
-            changed |= "Visibility Conditions".enter_Inspect(visCondition, ref inspectedStuff, 1).nl_ifFolded();
+                    if (inspectedStuff == -1)
+                    {
+                        if (GetType() == typeof(Node) || onPlayScreen)
+                            changed |= this.inspect_Name();
+                        if ((this != Shortcuts.Cut_Paste) && icon.Copy.Click("Cut/Paste"))
+                            Shortcuts.Cut_Paste = this;
+                        if (visualRepresentation != null && icon.Show.Click("Visible. Click To Hide Visual Representation."))
+                            Shortcuts.visualLayer.Hide(this);
+                        if (visualRepresentation == null && icon.Hide.Click("Hidden. Click to show visual representation."))
+                            Shortcuts.visualLayer.Show(this);
 
-            changed |= "Enabled Conditions".enter_Inspect(eblCondition, ref inspectedStuff, 2).nl_ifFolded();
+                    }
 
-            changed |= ResultsRole.enter_List(results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFolded();
-            
-            if (changed)
-                logicVersion = -1;
+                    pegi.nl();
+
+                    changed |= "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedStuff, 4).nl_ifFolded();
+
+                    visCondition.NameForPEGI = "Visibility";
+
+                    changed |= visCondition.enter_Inspect(ref inspectedStuff, 1).nl_ifFolded();
+
+                    eblCondition.NameForPEGI = "Enabled";
+
+                    changed |= eblCondition.enter_Inspect(ref inspectedStuff, 2).nl_ifFolded();
+
+                    changed |= ResultsRole.enter_List(results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFolded();
+
+                    if (changed)
+                        logicVersion = -1;
+                }
 
             return changed;
         }

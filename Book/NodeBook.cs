@@ -38,11 +38,18 @@ namespace NodeNotes
 
             if (subNode.inspectedStuff == -1 && subNode.inspectedSubnode == -1) {
 
-                if (inspectedStuff == -1) {
+                if (inspectedStuff == -1)
+                {
+                    
+                    string data;
+                    if (this.Send_Recieve_PEGI(subNode.name, "Books", out data)) {
 
-                    this.Send_Recieve_PEGI(subNode.name, "Books");
-
+                        NodeBook tmp = new NodeBook();
+                        tmp.Decode(data);
+                        if (tmp.NameForPEGI == NameForPEGI) Shortcuts.AddOrReplace(tmp);
+                    }
                 }
+                
 
                 "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
 

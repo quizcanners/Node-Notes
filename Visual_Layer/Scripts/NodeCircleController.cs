@@ -11,7 +11,7 @@ namespace NodeNotes_Visual
 {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI, IGotName
+    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect
     {
         static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
         
@@ -43,7 +43,17 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-        #if PEGI
+#if PEGI
+
+        public override bool PEGI_inList(IList list, int ind, ref int edited) {
+
+            bool changed = ActiveConfig.PEGI_inList(list, ind, ref edited);
+
+            this.clickHighlight();
+
+            return changed;
+        }
+
 
         public override string NameForPEGI {
             get {  return source.name; }
@@ -67,14 +77,17 @@ namespace NodeNotes_Visual
         }
 
         bool showDependencies = false;
-        public override bool Inspect() {
+        public override bool Inspect()
+        {
 
             bool changed = false;
 
             bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-            if (source != null) {
-                if (source.Try_Nested_Inspect()) {
+            if (source != null)
+            {
+                if (source.Try_Nested_Inspect())
+                {
                     if (name != source.name)
                         NameForPEGI = source.name;
 
@@ -87,29 +100,63 @@ namespace NodeNotes_Visual
             if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
                 Shortcuts.CurrentNode = null;
 
-            if (!onPlayScreen)
-                "Lerp parameter {0}".F(dominantParameter).nl();
+            //if (!onPlayScreen && Application.isPlaying)
+            //  ;
+            if (source != null)
+            {
+                bool enabled = source.Conditions_isEnabled();
 
-            if (circleRendy) {
+                var nd = source.AsNode;
 
-                if (!onPlayScreen) {
-                    if (newText != null)
-                        "Changeing text to {0}".F(newText).nl();
+                if (nd != null)
+                {
+                    if (isCurrent && icon.StateMachine.Click("Exit this Node"))
+                        Shortcuts.CurrentNode = null;
 
-                    if (isFading)
-                        "Fading...{0}".F(fadePortion).nl();
+                    if (!isCurrent && icon.Enter.Click("Enter this Node"))
+                        Shortcuts.CurrentNode = nd;
+
                 }
 
-                if (source != null && (source.GetType() == typeof(Node))) {
 
-                    if (NodesStyleBase.all.selectTypeTag(ref background ).nl()) //"Background ".select(ref background, Mgmt.backgroundControllers).nl()) {
-                        changed = true;
+                if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active fconditions to {0}".F(!enabled))
+                    && !source.TryForceEnabledConditions(!enabled))
+                {
+                    Debug.Log("No Conditions to force to {0}".F(!enabled));
+                }
+
+                if (isCurrent)
+                {
+                    source.name.write( PEGI_Styles.ListLabel);
+
+                    if (source != null) {
+                        if (NodesStyleBase.all.selectTypeTag(ref background).nl())
+                            changed = true;
                         Mgmt.SetBackground(this);
                     }
+                } else
+                    source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
+
+
+                pegi.nl();
+
+                if (circleRendy)
+                {
+                    if (!onPlayScreen)
+                    {
+                        if (newText != null)
+                            "Changeing text to {0}".F(newText).nl();
+
+                        if (isFading)
+                            "Fading...{0}".F(fadePortion).nl();
+                    }
+
+                 
 
                     var bg = Mgmt.backgroundControllers.TryGetByTag(background);
-                    if (bg != null) {
-                        if (bg.Try_Nested_Inspect())
+                    if (bg != null)
+                    {
+                        if (bg.Try_Nested_Inspect().nl())
                         {
                             changed = true;
                             var std = bg as ISTD;
@@ -126,36 +173,41 @@ namespace NodeNotes_Visual
                         sh_currentColor = ActiveConfig.targetColor;
                         UpdateShaders();
                     }
-            
 
-            if (!onPlayScreen) {
 
-                pegi.nl();
+                if (!onPlayScreen)
+                {
 
-                "Dependencies".foldout(ref showDependencies).nl();
+                    pegi.nl();
 
-                if (!textA || showDependencies)
-                    "Text A".edit(ref textA).nl();
+                    "Dependencies".foldout(ref showDependencies).nl();
 
-                if (!textB || showDependencies)
-                    "Text B".edit(ref textB).nl();
+                    if (!textA || showDependencies)
+                        "Text A".edit(ref textA).nl();
 
-                if (!circleRendy || showDependencies)
-                    "Mesh Rendy".edit(ref circleRendy).nl();
+                    if (!textB || showDependencies)
+                        "Text B".edit(ref textB).nl();
+
+                    if (!circleRendy || showDependencies)
+                        "Mesh Rendy".edit(ref circleRendy).nl();
+                }
             }
-
-            return changed;
+                return changed;
         }
+        
         #endif
         #endregion
 
         [NonSerialized] public bool isFading;
         [NonSerialized] public bool assumedPosition;
 
-        NodeVisualConfig exploredVisuals = new NodeVisualConfig();
-        NodeVisualConfig subVisuals = new NodeVisualConfig();
+        NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
+        NodeVisualConfig nodeActiveVisuals = new NodeVisualConfig();
+        NodeVisualConfig nodeInactiveVisuals = new NodeVisualConfig();
 
-        NodeVisualConfig ActiveConfig => this.source == Shortcuts.CurrentNode ? exploredVisuals : subVisuals;
+        bool isCurrent => source == Shortcuts.CurrentNode;
+        NodeVisualConfig ActiveConfig => 
+            (source.Conditions_isEnabled() ? (isCurrent ? nodeEnteredVisuals : nodeActiveVisuals) : nodeInactiveVisuals);
         
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
@@ -367,13 +419,18 @@ namespace NodeNotes_Visual
             backgroundConfig = "";
             imageURL = "";
 
+             nodeEnteredVisuals = new NodeVisualConfig();
+             nodeActiveVisuals = new NodeVisualConfig();
+             nodeInactiveVisuals = new NodeVisualConfig();
+
             return base.Decode(data);
         }
 
         public override bool Decode(string tag, string data)   {
             switch (tag)   {
-                case "expVis": data.DecodeInto(out exploredVisuals); break;
-                case "subVis": data.DecodeInto(out subVisuals); break;
+                case "expVis": data.DecodeInto(out nodeEnteredVisuals); break;
+                case "subVis": data.DecodeInto(out nodeActiveVisuals); break;
+                case "disVis": data.DecodeInto(out nodeInactiveVisuals); break;
                 case "bg": background = data; break;
                 case "bg_cfg": backgroundConfig = data; break;
                 case "URL": imageURL = data; break;
@@ -386,12 +443,14 @@ namespace NodeNotes_Visual
         public override StdEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
-                .Add("expVis", exploredVisuals)
-                .Add("subVis", subVisuals)
+                .Add("subVis", nodeActiveVisuals)
+                .Add("disVis", nodeInactiveVisuals)
                 .Add_IfNotEmpty("bg", background)
                 .Add_IfNotEmpty("bg_cfg", backgroundConfig)
                 .Add_IfNotEmpty("URL", imageURL);
-           
+
+            if (source.AsNode != null)
+                cody.Add("expVis", nodeEnteredVisuals); 
             return cody;
         }
 
@@ -417,10 +476,8 @@ namespace NodeNotes_Visual
                 source.visualRepresentation = null;
                 source = null;
             }
-          // else
-            //    Debug.LogError("source is null ", this);
-
-            isFading = true;
+       
+                isFading = true;
         }
 
         private void OnEnable()
@@ -440,11 +497,10 @@ namespace NodeNotes_Visual
 
     }
 
-    public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI {
+    public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI, IPEGI_ListInspect {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
-
 
         #region Encode & Decode
         public override bool Decode(string tag, string data)
@@ -464,8 +520,9 @@ namespace NodeNotes_Visual
 
             var cody = this.EncodeUnrecognized()
             .Add("sc", targetSize)
-            .Add("pos", targetLocalPosition)
-            .Add("col", targetColor);
+            .Add("pos", targetLocalPosition);
+            if (targetColor != Color.grey)
+                cody.Add("col", targetColor);
 
             return cody;
         }
@@ -495,7 +552,17 @@ namespace NodeNotes_Visual
             
             return changed;
         }
-        #endif
+
+        public bool PEGI_inList(IList list, int ind, ref int edited) {
+
+            var changed = pegi.edit(ref targetColor);
+
+            if (icon.Enter.Click())
+                edited = ind;
+
+            return changed;
+        }
+#endif
         #endregion
     }
 

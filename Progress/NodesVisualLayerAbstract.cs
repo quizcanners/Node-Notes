@@ -11,6 +11,10 @@ namespace NodeNotes
 
         protected GameNodeBase gameNode = null;
 
+        public abstract void Show(Base_Node node);
+
+        public abstract void Hide(Base_Node node);
+
         protected LoopLock loopLockEnt = new LoopLock();
 
         public bool IsCurrentGameNode(GameNodeBase gb) => (gameNode != null && gameNode == gb);

@@ -1354,7 +1354,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.600037, y: -7.7001953}
+  m_AnchoredPosition: {x: -13.600037, y: -7.700226}
   m_SizeDelta: {x: -13.599976, y: -7.700001}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -1504,7 +1504,7 @@ MonoBehaviour:
   inspectedReference: -1
   fallbackColor: {r: 0, g: 0, b: 0, a: 1}
   isFading: 0
-  color: {r: 0.103773594, g: 0.009300461, b: 0.009300461, a: 1}
+  color: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 1}
 --- !u!4 &1274019442
 Transform:
   m_ObjectHideFlags: 0
@@ -2383,6 +2383,31 @@ PrefabInstance:
     - target: {fileID: 1004868454360110, guid: c3cab6926ff117546ba0173afb11e449, type: 3}
       propertyPath: m_Name
       value: Nebula
+      objectReference: {fileID: 0}
+    - target: {fileID: 8756996908306702983, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198065207135605992, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 198065207135605992, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198781012459977936, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 198781012459977936, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3cab6926ff117546ba0173afb11e449, type: 3}
