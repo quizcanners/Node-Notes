@@ -1,6 +1,9 @@
 ﻿Shader "NodeNotes/UI/Nebula_Button" {
 	Properties{
+		_MainTex("Albedo", 2D) = "white" {}
+		_ProjTexPos("Screen Space Position", Vector) = (0,0,0,0)
 		_Color("Color", Color) = (1,1,1,1)
+		_TextureFadeIn("ShowTexture", Range(0,1)) = 0
 		_Courners("Rounding Courners", Range(0,0.9)) = 0.5
 		_Blur("Blur", Range(0,1)) = 0
 		_Selected("Selected", Range(0,1)) = 0
@@ -33,7 +36,12 @@
 	#pragma multi_compile_instancing
 	#pragma target 3.0
 
-		float4 _Color;
+
+	sampler2D _MainTex;
+	float4 _MainTex_TexelSize;
+	float4 _ProjTexPos;
+	float4 _Color;
+
 	float4 l0pos;
 	float4 l0col;
 	float4 l1pos;
@@ -45,6 +53,7 @@
 	float _Courners;
 	float4 _Stretch;
 	float _Blur;
+	float _TextureFadeIn;
 	float _Selected;
 	float4 _ClickLight;
 
@@ -92,10 +101,20 @@
 
 		const float PI2 = 3.14159 * 2;
 
+		float2 screenUV = i.screenPos.xy / i.screenPos.w;    
+		float2 inPix = (screenUV - _ProjTexPos.xy)*_ScreenParams.xy;
+
+		float2 texUV = inPix * _MainTex_TexelSize.xy;
+			texUV += 0.5;
+			texUV += _MainTex_TexelSize.xy*0.5*(_MainTex_TexelSize.zw % 2);
+
+			float4 col = tex2Dlod(_MainTex, float4(texUV, 0, 0));
+
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 
-		float4 col = _Color; 
-		
+		col.rgb = _Color.rgb * (1- _TextureFadeIn) + col.rgb* _TextureFadeIn;
+		col.a = _Color.a;
+
 		_Blur = max(_Blur, 1 - col.a);
 
 		float2 uv = i.texcoord.xy - 0.5;

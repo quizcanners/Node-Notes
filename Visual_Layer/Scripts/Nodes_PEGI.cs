@@ -20,7 +20,7 @@ namespace NodeNotes_Visual
         
         public Shortcuts shortcuts;
 
-        public TextureDownloadManager webTextures = new TextureDownloadManager();
+        public TextureDownloadManager textureDownloader = new TextureDownloadManager();
 
         #region UI_Buttons 
         public TextMeshProUGUI editButton;
@@ -347,7 +347,7 @@ namespace NodeNotes_Visual
 
                 pegi.nl();
 
-                changed |= icon.Alpha.enter_Inspect("Textures", webTextures, ref inspectedStuff, 6).nl_ifNotEntered();
+                changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedStuff, 6).nl_ifNotEntered();
     
 
           
@@ -372,7 +372,7 @@ namespace NodeNotes_Visual
             shortcuts?.SaveAll();
             Shortcuts.CurrentNode = null;
             DeleteAllNodes();
-            webTextures.Dispose();
+            textureDownloader.Dispose();
         }
 
         public override void OnEnable()

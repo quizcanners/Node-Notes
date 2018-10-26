@@ -23,8 +23,28 @@ namespace NodeNotes_Visual
 
         public string backgroundConfig ="";
 
+        #region Node Image
+        Texture coverImage = null;
         public string imageURL = "";
+        int imageIndex = -1;
 
+        void UpdateCoverImage() {
+            if (imageIndex != -1) {
+                if (Mgmt.textureDownloader.TryGetTexture(imageIndex, out coverImage)) {
+                    if (coverImage)
+                        circleRendy.MaterialWhaever().mainTexture = coverImage;
+                    imageIndex = -1;
+                }
+            }
+        }
+
+        void LoadCoverImage() {
+            if (imageURL.Length > 8)
+                imageIndex = Mgmt.textureDownloader.StartDownload(imageURL);
+        }
+
+        #endregion
+        
         #region TEXT
         public TextMeshPro textA;
 
@@ -43,18 +63,20 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-#if PEGI
+        #if PEGI
 
         public override bool PEGI_inList(IList list, int ind, ref int edited) {
 
             bool changed = ActiveConfig.PEGI_inList(list, ind, ref edited);
 
-            this.clickHighlight();
+            if (coverImage)
+                this.clickHighlight(coverImage);
+            else
+                this.clickHighlight();
 
             return changed;
         }
-
-
+        
         public override string NameForPEGI {
             get {  return source.name; }
 
@@ -76,9 +98,8 @@ namespace NodeNotes_Visual
             }
         }
 
-        bool showDependencies = false;
-        public override bool Inspect()
-        {
+        //int showDependencies = false;
+        public override bool Inspect(){
 
             bool changed = false;
 
@@ -110,10 +131,10 @@ namespace NodeNotes_Visual
 
                 if (nd != null)
                 {
-                    if (isCurrent && icon.StateMachine.Click("Exit this Node"))
+                    if (IsCurrent && icon.StateMachine.Click("Exit this Node"))
                         Shortcuts.CurrentNode = null;
 
-                    if (!isCurrent && icon.Enter.Click("Enter this Node"))
+                    if (!IsCurrent && icon.Enter.Click("Enter this Node"))
                         Shortcuts.CurrentNode = nd;
 
                 }
@@ -125,7 +146,7 @@ namespace NodeNotes_Visual
                     Debug.Log("No Conditions to force to {0}".F(!enabled));
                 }
 
-                if (isCurrent)
+                if (IsCurrent)
                 {
                     source.name.write( PEGI_Styles.ListLabel);
 
@@ -175,39 +196,54 @@ namespace NodeNotes_Visual
                     }
 
 
-                if (!onPlayScreen)
-                {
+                if (!onPlayScreen) {
 
                     pegi.nl();
-
-                    "Dependencies".foldout(ref showDependencies).nl();
-
-                    if (!textA || showDependencies)
+                    
+                    bool seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
+                    
+                    if (!textA || seeDeps)
                         "Text A".edit(ref textA).nl();
 
-                    if (!textB || showDependencies)
+                    if (!textB || seeDeps)
                         "Text B".edit(ref textB).nl();
 
-                    if (!circleRendy || showDependencies)
+                    if (!circleRendy || seeDeps)
                         "Mesh Rendy".edit(ref circleRendy).nl();
                 }
+
+                if (inspectedStuff == -1) {
+
+                    if (imageIndex != -1)
+                        "Downloading {0} [1]".F(imageURL, imageIndex).write();
+                    else {
+                        if (("URL".edit(40, ref imageURL) && imageURL.Length > 8) || (imageURL.Length > 8 && icon.Refresh.Click()))
+                            LoadCoverImage();
+                        pegi.nl();
+
+
+                        if (coverImage != null)
+                            pegi.write(coverImage, 200); pegi.nl();
+
+
+                    }
+                }
+
             }
                 return changed;
         }
         
         #endif
         #endregion
-
-        [NonSerialized] public bool isFading;
-        [NonSerialized] public bool assumedPosition;
-
+        
+        #region Visual Configuration
         NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
         NodeVisualConfig nodeActiveVisuals = new NodeVisualConfig();
         NodeVisualConfig nodeInactiveVisuals = new NodeVisualConfig();
 
-        bool isCurrent => source == Shortcuts.CurrentNode;
+        bool IsCurrent => source == Shortcuts.CurrentNode;
         NodeVisualConfig ActiveConfig => 
-            (source.Conditions_isEnabled() ? (isCurrent ? nodeEnteredVisuals : nodeActiveVisuals) : nodeInactiveVisuals);
+            (source.Conditions_isEnabled() ? (IsCurrent ? nodeEnteredVisuals : nodeActiveVisuals) : nodeInactiveVisuals);
         
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
@@ -215,6 +251,12 @@ namespace NodeNotes_Visual
 
         ShaderFloatValue shadeCourners = new ShaderFloatValue("_Courners", 0,4);
         ShaderFloatValue shadeSelected = new ShaderFloatValue("_Selected", 0, 4);
+        ShaderFloatValue textureFadeIn = new ShaderFloatValue("_TextureFadeIn", 0, 4);
+        #endregion
+
+        #region Controls & Updates
+        [NonSerialized] public bool isFading;
+        [NonSerialized] public bool assumedPosition;
 
         float fadePortion = 0;
 
@@ -224,29 +266,17 @@ namespace NodeNotes_Visual
                 PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * fadePortion);
             }
 
-            sh_currentColor.a = fadePortion;
+            if (circleRendy) {
 
-          
-                if (circleRendy)
-                {
-                
-                    if (Application.isPlaying)
-                    {
-                        circleRendy.material.SetColor("_Color", sh_currentColor);
-                        circleRendy.material.SetVector("_Stretch", sh_square);
-                       // circleRendy.material.SetFloat("_Courners", sh_courners);
-                        circleRendy.material.SetFloat("_Blur", sh_blur);
-                        //circleRendy.material.SetFloat("_Selected", sh_selected);
-                    }
-                    else
-                    {
-                        circleRendy.sharedMaterial.SetColor("_Color", sh_currentColor);
-                        circleRendy.sharedMaterial.SetVector("_Stretch", sh_square);
-                      //  circleRendy.sharedMaterial.SetFloat("_Courners", sh_courners);
-                        circleRendy.sharedMaterial.SetFloat("_Blur", sh_blur);
-                        //circleRendy.sharedMaterial.SetFloat("_Selected", sh_selected);
-                    }
-                }
+                sh_currentColor.a = fadePortion;
+                var pos = Camera.main.WorldToScreenPoint(transform.position);
+                circleRendy.MaterialWhaever().SetVector("_ProjTexPos", pos.ToVector4(0));
+
+                circleRendy.MaterialWhaever().SetColor("_Color", sh_currentColor);
+                circleRendy.MaterialWhaever().SetVector("_Stretch", sh_square);
+                circleRendy.MaterialWhaever().SetFloat("_Blur", sh_blur);
+
+            }
             
         }
 
@@ -258,6 +288,8 @@ namespace NodeNotes_Visual
             float portion = 1;
 
             var ac = ActiveConfig;
+
+            UpdateCoverImage();
 
             if (Base_Node.editingNodes && (this == dragging) && !isFading)
             {
@@ -297,16 +329,15 @@ namespace NodeNotes_Visual
 
                 if (8f.SpeedToMinPortion(1-activeTextAlpha, ref portion))
                     dominantParameter = "text Alpha";
-                
-                // if (4f.SpeedToMinPortion(Mathf.Abs(targetCourners - sh_courners), ref portion))
-                //   dominantParameter = "courners";
+
+                textureFadeIn.targetValue = coverImage ? 1 : 0;
+                textureFadeIn.Portion(ref portion, ref dominantParameter);
+
                 shadeCourners.targetValue = (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
                 shadeCourners.Portion(ref portion, ref dominantParameter);
 
                 shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
                 shadeSelected.Portion(ref portion, ref dominantParameter);
-                //if (4f.SpeedToMinPortion(Mathf.Abs(sh_selected - targetSelected), ref portion))
-                //  dominantParameter = "Selection Outline";
 
                 float teleportPortion = ( fadePortion < 0.1f && !isFading) ? 1 : portion;
 
@@ -315,10 +346,10 @@ namespace NodeNotes_Visual
                 BGtf.localScale = scale;
                 sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, teleportPortion);
                 fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
+
                 shadeCourners.Lerp(portion, circleRendy);
-                //sh_courners = Mathf.Lerp(sh_courners, targetCourners, teleportPortion);
-                //sh_selected = Mathf.Lerp(sh_selected, targetSelected, portion);
                 shadeSelected.Lerp(portion, circleRendy);
+                textureFadeIn.Lerp(portion, circleRendy);
 
                 needShaderUpdate = true;
                 if (portion == 1)
@@ -353,9 +384,7 @@ namespace NodeNotes_Visual
                 if (isFading || fadePortion < 1)
                     needShaderUpdate = true;
             }
-
-
-
+            
             if (newText != null || activeTextAlpha < 1)
             {
                 if (newText == null)
@@ -380,6 +409,8 @@ namespace NodeNotes_Visual
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 gameObject.SetActive(false);
         }
+
+
 
         static NodeCircleController dragging = null;
         Vector3 dragOffset = Vector3.zero;
@@ -408,22 +439,31 @@ namespace NodeNotes_Visual
             }
         }
 
-
+        #endregion
+        
         #region Encode & Decode
         public override ISTD Decode(string data)   {
             if (this == dragging)
                 dragging = null;
+
             assumedPosition = false;
 
             background = "";
             backgroundConfig = "";
             imageURL = "";
+            imageIndex -= 1;
+            coverImage = null;
 
-             nodeEnteredVisuals = new NodeVisualConfig();
-             nodeActiveVisuals = new NodeVisualConfig();
-             nodeInactiveVisuals = new NodeVisualConfig();
+            nodeEnteredVisuals = new NodeVisualConfig();
+            nodeActiveVisuals = new NodeVisualConfig();
+            nodeInactiveVisuals = new NodeVisualConfig();
 
-            return base.Decode(data);
+            base.Decode(data);
+
+            LoadCoverImage();
+
+
+            return this;
         }
 
         public override bool Decode(string tag, string data)   {
@@ -456,6 +496,7 @@ namespace NodeNotes_Visual
 
         #endregion
 
+        #region MGMT
         public void LinkTo(Base_Node node)
         {
             source = node;
@@ -494,7 +535,7 @@ namespace NodeNotes_Visual
             if (!isFading)
                 Unlink();
         }
-
+        #endregion
     }
 
     public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI, IPEGI_ListInspect {

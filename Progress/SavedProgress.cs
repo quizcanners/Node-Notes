@@ -244,7 +244,7 @@ namespace NodeNotes
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", userName)
             .Add_String("start", startingPoint)
-            .Add("pgnd", gameNodeTypeData);
+            .Add_IfNotEmpty("pgnd", gameNodeTypeData);
 
             var cur = Shortcuts.CurrentNode;
             if (cur != null) {
