@@ -92,7 +92,8 @@ namespace NodeNotes
             .Add_IfNotNegative("in", inspectedNode)
             .Add_IfNotNegative("inE", inspectedEntry)
             .Add("ep", entryPoints)
-            .Add_IfNotNegative("i",inspectedStuff);
+            .Add_IfNotNegative("i",inspectedStuff)
+            .Add("gn", gameNodeTypeData);
           
         public override bool Decode(string tag, string data) {
             switch (tag) {
@@ -103,6 +104,7 @@ namespace NodeNotes
                 case "inE": inspectedEntry = data.ToInt(); break;
                 case "ep": data.DecodeInto_List(out entryPoints); break;
                 case "i": inspectedStuff = data.ToInt(); break;
+                case "gn": data.DecodeInto(out gameNodeTypeData); break;
                 default: return false;
             }
             return true;

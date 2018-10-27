@@ -17,14 +17,14 @@ namespace NodeNotes_Visual
         public const string tag = "DnD_rost";
         public override string ClassTag => tag;
 
-        static List<DnDRosterGroup> bookGroups = new List<DnDRosterGroup>();
+        static List<DnDRosterGroup> perBookGroups = new List<DnDRosterGroup>();
 
         static int inspectedGroup = -1;
 
         #region Encode & Decode
         public override bool Decode_PerBookStatic(string tag, string data) {
             switch (tag) {
-                case "el": data.DecodeInto_List(out bookGroups); break;
+                case "el": data.DecodeInto_List(out perBookGroups); break;
                 case "i": inspectedGroup = data.ToInt(); break;
                 default: return false;
             }
@@ -32,14 +32,14 @@ namespace NodeNotes_Visual
         }
 
         public override StdEncoder Encode_PerBookStaticData() => this.EncodeUnrecognized()
-            .Add_IfNotEmpty("el", bookGroups)
+            .Add_IfNotEmpty("el", perBookGroups)
             .Add_IfNotNegative("i", inspectedGroup);
         #endregion
 
         #region Inspector
 
         protected override bool InspectGameNode() {
-            bool changed = "Roster Groups".edit_List(bookGroups, ref inspectedGroup);
+            bool changed = "Roster Groups".edit_List(perBookGroups, ref inspectedGroup);
             return changed;
         }
 
@@ -60,6 +60,7 @@ namespace NodeNotes_Visual
         {
             switch (tag)
             {
+                case "n": name = data; break;
                 case "el": data.DecodeInto_List(out elements); break;
                 case "i": inspectedElement = data.ToInt(); break;
                 default: return false;
@@ -68,6 +69,7 @@ namespace NodeNotes_Visual
         }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
+            .Add_String("n", name)
             .Add_IfNotEmpty("el", elements)
             .Add_IfNotNegative("i", inspectedElement);
         #endregion
@@ -113,9 +115,6 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-
-
-
         public override bool Inspect() {
             bool changed = false;
             
@@ -127,8 +126,6 @@ namespace NodeNotes_Visual
 
             return changed;
         }
-
-
         #endregion
 
     }

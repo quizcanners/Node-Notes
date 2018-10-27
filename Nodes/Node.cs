@@ -141,11 +141,11 @@ namespace NodeNotes {
 
             bool changed = false;
 
-            bool hideSubnodes = pegi.paintingPlayAreaGUI && !Shortcuts.user.isADeveloper;
+            if (inspectedSubnode != -1)
+                inspectedStuff = -1;
 
-            if (inspectedSubnode == -1 && !hideSubnodes && inspectedStuff ==-1)  {
-                if (this != CurrentNode)
-                {
+            if (inspectedSubnode == -1 && inspectedStuff ==-1)  {
+                if (this != CurrentNode) {
                     if (icon.Play.Click("Enter Node"))
                         CurrentNode = this;
                 }
@@ -153,7 +153,7 @@ namespace NodeNotes {
                     CurrentNode = parentNode;
             }
 
-            if (inspectedSubnode == -1 || hideSubnodes) {
+            if (inspectedSubnode == -1) {
 
                 var cp = Shortcuts.Cut_Paste;
 
@@ -166,16 +166,16 @@ namespace NodeNotes {
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
-                    else
-                    {
+                    else {
                         (cp.ToPEGIstring() + (canPaste ? "" : " can't paste parent to child")).write();
-                        if (canPaste && icon.Paste.Click())
-                        {
+                        if (canPaste && icon.Paste.Click()){
                             cp.MoveTo(this);
                             Shortcuts.Cut_Paste = null;
                             changed = true;
+                            Shortcuts.visualLayer.UpdateVisibility();
                         }
                     }
+                    pegi.nl();
                 }
   
                 changed |= base.Inspect();
@@ -187,9 +187,7 @@ namespace NodeNotes {
                 if (ngn != null)
                     ngn.CreatedFor(this);
             }
-
-            if (!hideSubnodes) {
-
+            
                 if (inspectedStuff == -1 && !InspectingTriggerStuff) {
 
                     if (inspectedSubnode != -1) {
@@ -220,7 +218,9 @@ namespace NodeNotes {
                     }
 
                 }
-            }
+            
+
+            
 
             return changed;
         }

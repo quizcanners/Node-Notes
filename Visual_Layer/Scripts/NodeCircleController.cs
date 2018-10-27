@@ -27,16 +27,7 @@ namespace NodeNotes_Visual
         Texture coverImage = null;
         public string imageURL = "";
         int imageIndex = -1;
-
-        void UpdateCoverImage() {
-            if (imageIndex != -1) {
-                if (Mgmt.textureDownloader.TryGetTexture(imageIndex, out coverImage)) {
-                    if (coverImage)
-                        circleRendy.MaterialWhaever().mainTexture = coverImage;
-                    imageIndex = -1;
-                }
-            }
-        }
+        float imageScaling = 1f;
 
         void LoadCoverImage() {
             if (imageURL.Length > 8)
@@ -98,144 +89,174 @@ namespace NodeNotes_Visual
             }
         }
 
+        LoopLock loopLock = new LoopLock();
+
         //int showDependencies = false;
         public override bool Inspect(){
 
             bool changed = false;
 
-            bool onPlayScreen = pegi.paintingPlayAreaGUI;
+            if (loopLock.Unlocked) {
+                using (loopLock.Lock()) {
+                    if (source.Try_Nested_Inspect()) {
+                        if (name != source.name)
+                            NameForPEGI = source.name;
 
-            if (source != null)
-            {
-                if (source.Try_Nested_Inspect())
-                {
-                    if (name != source.name)
-                        NameForPEGI = source.name;
-
-                    changed = true;
-
-                    Nodes_PEGI.UpdateVisibility();
-                }
-            }
-
-            if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
-                Shortcuts.CurrentNode = null;
-
-            //if (!onPlayScreen && Application.isPlaying)
-            //  ;
-            if (source != null)
-            {
-                bool enabled = source.Conditions_isEnabled();
-
-                var nd = source.AsNode;
-
-                if (nd != null)
-                {
-                    if (IsCurrent && icon.StateMachine.Click("Exit this Node"))
-                        Shortcuts.CurrentNode = null;
-
-                    if (!IsCurrent && icon.Enter.Click("Enter this Node"))
-                        Shortcuts.CurrentNode = nd;
-
-                }
-
-
-                if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active fconditions to {0}".F(!enabled))
-                    && !source.TryForceEnabledConditions(!enabled))
-                {
-                    Debug.Log("No Conditions to force to {0}".F(!enabled));
-                }
-
-                if (IsCurrent)
-                {
-                    source.name.write( PEGI_Styles.ListLabel);
-
-                    if (source != null) {
-                        if (NodesStyleBase.all.selectTypeTag(ref background).nl())
-                            changed = true;
-                        Mgmt.SetBackground(this);
+                        changed = true;
+                        Shortcuts.visualLayer.UpdateVisibility();
                     }
-                } else
-                    source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
+                }
+            } else {
 
+                bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
-                pegi.nl();
+                if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
+                    Shortcuts.CurrentNode = null;
 
-                if (circleRendy)
-                {
-                    if (!onPlayScreen)
-                    {
-                        if (newText != null)
-                            "Changeing text to {0}".F(newText).nl();
+                if (source != null) {
+                    bool enabled = source.Conditions_isEnabled();
 
-                        if (isFading)
-                            "Fading...{0}".F(fadePortion).nl();
+                    var nd = source.AsNode;
+
+                    if (nd != null) {
+                        if (IsCurrent && icon.StateMachine.Click("Exit this Node"))
+                            Shortcuts.CurrentNode = null;
+
+                        if (!IsCurrent && icon.Enter.Click("Enter this Node"))
+                            Shortcuts.CurrentNode = nd;
                     }
 
-                 
+                    if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active fconditions to {0}".F(!enabled)) && !source.TryForceEnabledConditions(!enabled))
+                        Debug.Log("No Conditions to force to {0}".F(!enabled));
 
-                    var bg = Mgmt.backgroundControllers.TryGetByTag(background);
-                    if (bg != null)
+                    if (IsCurrent)
                     {
-                        if (bg.Try_Nested_Inspect().nl())
+                        source.name.write(PEGI_Styles.ListLabel);
+
+                        if (source != null)
                         {
-                            changed = true;
-                            var std = bg as ISTD;
-                            if (std != null)
-                                backgroundConfig = std.Encode().ToString();
+                            if (NodesStyleBase.all.selectTypeTag(ref background).nl())
+                                changed = true;
+                            Mgmt.SetBackground(this);
                         }
                     }
-                }
+                    else
+                        source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
 
-                if (source == null || (!source.InspectingTriggerStuff))
-                    if (ActiveConfig.Nested_Inspect())
-                    {
-                        assumedPosition = false;
-                        sh_currentColor = ActiveConfig.targetColor;
-                        UpdateShaders();
-                    }
-
-
-                if (!onPlayScreen) {
 
                     pegi.nl();
-                    
-                    bool seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
-                    
-                    if (!textA || seeDeps)
-                        "Text A".edit(ref textA).nl();
 
-                    if (!textB || seeDeps)
-                        "Text B".edit(ref textB).nl();
+                    if (circleRendy)
+                    {
+                        if (!onPlayScreen)
+                        {
+                            if (newText != null)
+                                "Changeing text to {0}".F(newText).nl();
 
-                    if (!circleRendy || seeDeps)
-                        "Mesh Rendy".edit(ref circleRendy).nl();
-                }
+                            if (isFading)
+                                "Fading...{0}".F(fadePortion).nl();
+                        }
 
-                if (inspectedStuff == -1) {
 
-                    if (imageIndex != -1)
-                        "Downloading {0} [1]".F(imageURL, imageIndex).write();
-                    else {
-                        if (("URL".edit(40, ref imageURL) && imageURL.Length > 8) || (imageURL.Length > 8 && icon.Refresh.Click()))
-                            LoadCoverImage();
+
+                        var bg = Mgmt.backgroundControllers.TryGetByTag(background);
+                        if (bg != null)
+                        {
+                            if (bg.Try_Nested_Inspect().nl())
+                            {
+                                changed = true;
+                                var std = bg as ISTD;
+                                if (std != null)
+                                    backgroundConfig = std.Encode().ToString();
+                            }
+                        }
+                    }
+
+                    if (source == null || (!source.InspectingTriggerStuff))
+                        changed |= ActiveConfig.Nested_Inspect();
+
+                    if (!onPlayScreen)
+                    {
+
                         pegi.nl();
 
+                        bool seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
 
-                        if (coverImage != null)
-                            pegi.write(coverImage, 200); pegi.nl();
+                        if (!textA || seeDeps)
+                            "Text A".edit(ref textA).nl();
 
+                        if (!textB || seeDeps)
+                            "Text B".edit(ref textB).nl();
 
+                        if (!circleRendy || seeDeps)
+                            "Mesh Rendy".edit(ref circleRendy).nl();
                     }
-                }
 
+                    if (inspectedStuff == -1)
+                    {
+
+                        if (imageIndex != -1)
+                        {
+                            if (!pegi.paintingPlayAreaGUI)
+                                "Downloading {0} [1]".F(imageURL, imageIndex).write();
+                        }
+                        else
+                        {
+
+                            if ("Image".edit("Will not be saved", 40, ref coverImage).nl())
+                                SetImage();
+
+                            var shortURL = imageURL;
+                            var ind = imageURL.LastIndexOf("/");
+                            if (ind > 0)
+                                shortURL = imageURL.Substring(ind);
+
+                            bool reload = false;
+
+                            bool changedURL = "Paste URL".edit(90, ref shortURL);
+                            if (changedURL)
+                            {
+                                if (shortURL.Length > 8 || shortURL.Length == 0)
+                                {
+                                    reload = true;
+                                    imageURL = shortURL;
+                                }
+
+                                changed = true;
+                            }
+
+                            reload |= (imageURL.Length > 8 && icon.Refresh.Click());
+
+                            if (reload)
+                                LoadCoverImage();
+                            pegi.nl();
+
+
+                            if (coverImage != null) {
+                                if (!pegi.paintingPlayAreaGUI)
+                                    pegi.write(coverImage, 200); pegi.nl();
+                                changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
+                            }
+                        }
+                    }
+
+                }
             }
-                return changed;
+
+
+            if (changed)
+            {
+                SetDirty();
+                sh_currentColor = ActiveConfig.targetColor;
+                UpdateShaders();
+            }
+
+            return changed;
         }
-        
-        #endif
+
+#endif
         #endregion
-        
+
         #region Visual Configuration
         NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
         NodeVisualConfig nodeActiveVisuals = new NodeVisualConfig();
@@ -243,7 +264,7 @@ namespace NodeNotes_Visual
 
         bool IsCurrent => source == Shortcuts.CurrentNode;
         NodeVisualConfig ActiveConfig => 
-            (source.Conditions_isEnabled() ? (IsCurrent ? nodeEnteredVisuals : nodeActiveVisuals) : nodeInactiveVisuals);
+            (source == null ? nodeActiveVisuals :  ( source.Conditions_isEnabled() ? (IsCurrent ? nodeEnteredVisuals : nodeActiveVisuals) : nodeInactiveVisuals));
         
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
@@ -256,9 +277,28 @@ namespace NodeNotes_Visual
 
         #region Controls & Updates
         [NonSerialized] public bool isFading;
-        [NonSerialized] public bool assumedPosition;
+        [NonSerialized] public bool lerpsFinished;
+
+        public bool SetDirty() => lerpsFinished = false;
 
         float fadePortion = 0;
+
+        void SetImage()
+        {
+            circleRendy.MaterialWhaever().mainTexture = coverImage;
+            SetDirty();
+        }
+
+        void UpdateCoverImage()
+        {
+            if (imageIndex != -1) {
+                if (Mgmt.textureDownloader.TryGetTexture(imageIndex, out coverImage)) {
+                    SetImage();
+                    imageIndex = -1;
+                    SetDirty();
+                }
+            }
+        }
 
         void UpdateShaders() {
             if (textB && textA) {
@@ -267,10 +307,12 @@ namespace NodeNotes_Visual
             }
 
             if (circleRendy) {
-
                 sh_currentColor.a = fadePortion;
-                var pos = Camera.main.WorldToScreenPoint(transform.position);
-                circleRendy.MaterialWhaever().SetVector("_ProjTexPos", pos.ToVector4(0));
+
+                var pos = Camera.main.WorldToScreenPoint(transform.position).ToVector2();
+                pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
+
+                circleRendy.MaterialWhaever().SetVector("_ProjTexPos", pos.ToVector4(imageScaling));
 
                 circleRendy.MaterialWhaever().SetColor("_Color", sh_currentColor);
                 circleRendy.MaterialWhaever().SetVector("_Stretch", sh_square);
@@ -303,10 +345,10 @@ namespace NodeNotes_Visual
                     }
                 }
 
-                assumedPosition = false;
+                SetDirty();
             }
 
-            if (!assumedPosition)  {
+            if (!lerpsFinished)  {
 
                 float dist = (transform.localPosition - ac.targetLocalPosition).magnitude;
 
@@ -357,7 +399,7 @@ namespace NodeNotes_Visual
                     ActiveConfig.targetSize = circleRendy.transform.localScale;
                     ActiveConfig.targetLocalPosition = transform.localPosition;
 
-                    assumedPosition = true;
+                    lerpsFinished = true;
                 }
                 
                 if (scale.x > 0)
@@ -409,9 +451,7 @@ namespace NodeNotes_Visual
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 gameObject.SetActive(false);
         }
-
-
-
+        
         static NodeCircleController dragging = null;
         Vector3 dragOffset = Vector3.zero;
         static Plane upPlane = new Plane(Vector3.up, Vector3.zero);
@@ -419,7 +459,10 @@ namespace NodeNotes_Visual
         {
             if (dragging == null && Input.GetMouseButtonDown(0)) {
 
-                Nodes_PEGI.NodeMGMT_inst.SetSelected(this);
+                if (source.AsGameNode != null)
+                    Shortcuts.visualLayer.FromNodeToGame(source.AsGameNode);
+                else 
+                    Nodes_PEGI.NodeMGMT_inst.SetSelected(this);
 
                 Vector3 pos;
                 if (upPlane.MouseToPlane(out pos))  {
@@ -446,7 +489,7 @@ namespace NodeNotes_Visual
             if (this == dragging)
                 dragging = null;
 
-            assumedPosition = false;
+            SetDirty();
 
             background = "";
             backgroundConfig = "";
@@ -474,6 +517,7 @@ namespace NodeNotes_Visual
                 case "bg": background = data; break;
                 case "bg_cfg": backgroundConfig = data; break;
                 case "URL": imageURL = data; break;
+                case "imgScl": imageScaling = data.ToFloat(); break;
                 default: return false;
             }
 
@@ -488,6 +532,9 @@ namespace NodeNotes_Visual
                 .Add_IfNotEmpty("bg", background)
                 .Add_IfNotEmpty("bg_cfg", backgroundConfig)
                 .Add_IfNotEmpty("URL", imageURL);
+
+            if (imageURL.Length > 0)
+                cody.Add("imgScl", imageScaling);
 
             if (source.AsNode != null)
                 cody.Add("expVis", nodeEnteredVisuals); 
@@ -577,13 +624,13 @@ namespace NodeNotes_Visual
             bool changed = false;
 
             float x = targetSize.x;
-            if ("Width".edit(50, ref x, 1f, 5f).nl())  {
+            if ("Width".edit(50, ref x, 1f, 15f).nl())  {
                 changed = true;
                 targetSize.x = x;
             }
 
             float y = targetSize.y;
-            if ("Height".edit(50, ref y, 1f, 5f).nl()) {
+            if ("Height".edit(50, ref y, 1f, 15f).nl()) {
                 changed = true;
                 targetSize.y = y;
             }
@@ -596,7 +643,7 @@ namespace NodeNotes_Visual
 
         public bool PEGI_inList(IList list, int ind, ref int edited) {
 
-            var changed = pegi.edit(ref targetColor);
+            var changed = "col".edit(40, ref targetColor);
 
             if (icon.Enter.Click())
                 edited = ind;

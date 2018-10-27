@@ -7,6 +7,7 @@ using SharedTools_Stuff;
 using PlayerAndEditorGUI;
 using STD_Logic;
 using System.Collections;
+using UnityEngine;
 
 namespace NodeNotes {
 
@@ -25,6 +26,12 @@ namespace NodeNotes {
         #endregion
 
         #region Enter & Exit
+
+        public override void OnMouseOver() {
+            if (Input.GetMouseButtonDown(0) && parentNode != null)
+                VisualLayer.FromNodeToGame(this);
+        }
+
         protected virtual void AfterEnter() { }
 
         protected virtual void ExitInternal() { }
@@ -32,13 +39,22 @@ namespace NodeNotes {
         protected LoopLock loopLock = new LoopLock();
 
         public void Enter() {
+            Debug.Log("Entering game node");
+
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
 
                     var data = Shortcuts.user.gameNodeTypeData.TryGet(ClassTag);
                     if (data != null) Decode_PerUserData(data);
+
+                  
                     data = parentNode.root.gameNodeTypeData.TryGet(ClassTag);
-                    if (data != null) Decode_PerBookData(data);
+                    if (data != null)
+                    {
+                        Decode_PerBookData(data);
+                        Debug.Log("Loaded per book data. {0} : {1}".F(ClassTag, data));
+                    } else
+                        Debug.Log("Loading per book data failed. {0}".F(ClassTag));
 
                     VisualLayer.FromNodeToGame(this);
 
@@ -49,6 +65,8 @@ namespace NodeNotes {
         }
 
         public void FailExit() {
+            Debug.Log("Fail Exiting Game Node");
+
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
                     ExitInternal();
@@ -61,10 +79,14 @@ namespace NodeNotes {
                 using (loopLock.Lock()) {
 
                     ExitInternal();
-                    VisualLayer.FromGameToNode(false);
 
+                   
                     Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
                     parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookStaticData().ToString();
+
+                    Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.root.gameNodeTypeData[ClassTag]));
+
+                    VisualLayer.FromGameToNode(false);
 
                     onExitResults.Apply();
                 }

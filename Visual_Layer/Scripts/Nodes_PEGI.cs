@@ -124,11 +124,7 @@ namespace NodeNotes_Visual
 
             nodesPool.Clear();
         }
-
-
-
-
-
+        
         public override void Show(Base_Node node) => MakeVisible(node);
 
         static void MakeVisible(Base_Node node) {
@@ -220,7 +216,7 @@ namespace NodeNotes_Visual
                                     if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
                                         n.Unlink();
                                     else
-                                        n.assumedPosition = false;
+                                        n.SetDirty();
                                 }
 
                             firstFree = 0;
@@ -245,18 +241,19 @@ namespace NodeNotes_Visual
 
             if (node != null) {
 
-                if (node.visualRepresentation == null)  {
-                    if (Base_Node.editingNodes || ((node.parentNode != null && node.Conditions_isVisibile()) || !Application.isPlaying))
-                        MakeVisible(node);
-                } else {
+                bool shouldBeVisible = Base_Node.editingNodes || ((node.parentNode != null && node.Conditions_isVisibile()) || !Application.isPlaying);
 
-                    if (!Base_Node.editingNodes && !node.Conditions_isVisibile())
+                if (node.visualRepresentation == null)  {
+                    if (shouldBeVisible)
+                        MakeVisible(node);
+                } else 
+                    if (!shouldBeVisible)
                         NodeMGMT_inst.Hide(node); 
-                }
+                
             }
         }
 
-        public static void UpdateVisibility() {
+        public override void UpdateVisibility() {
 
             var cn = Shortcuts.CurrentNode;
 
@@ -275,12 +272,12 @@ namespace NodeNotes_Visual
         public void SetSelected(NodeCircleController node)
         {
             if (selectedNode)
-                selectedNode.assumedPosition = false;
+                selectedNode.SetDirty();
 
             selectedNode = node;
 
             if (node)
-                node.assumedPosition = false;
+                node.SetDirty();
 
             if (deleteButton)
                 deleteButton.gameObject.SetActive(selectedNode);
@@ -305,8 +302,13 @@ namespace NodeNotes_Visual
             }
 
             if (Application.isPlaying && selectedNode)
-                return selectedNode.Nested_Inspect();
-
+            {
+                if (selectedNode.Nested_Inspect()) {
+                    UpdateVisibility();
+                    return true;
+                }
+                return false;
+            }
             if (inspectedStuff == -1 && "Encode / Decode Test".Click()) {
                 OnDisable();
                 OnEnable();

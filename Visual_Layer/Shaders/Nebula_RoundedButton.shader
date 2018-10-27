@@ -102,11 +102,14 @@
 		const float PI2 = 3.14159 * 2;
 
 		float2 screenUV = i.screenPos.xy / i.screenPos.w;    
-		float2 inPix = (screenUV - _ProjTexPos.xy)*_ScreenParams.xy;
+		float2 inPix = (screenUV - _ProjTexPos.xy
+			)*_ScreenParams.xy;
 
-		float2 texUV = inPix * _MainTex_TexelSize.xy;
+		float2 texUV = inPix * _MainTex_TexelSize.xy *_ProjTexPos.z;
 			texUV += 0.5;
 			texUV += _MainTex_TexelSize.xy*0.5*(_MainTex_TexelSize.zw % 2);
+
+			//return texUV.x;
 
 			float4 col = tex2Dlod(_MainTex, float4(texUV, 0, 0));
 

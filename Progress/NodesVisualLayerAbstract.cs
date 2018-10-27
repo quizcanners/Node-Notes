@@ -58,5 +58,7 @@ namespace NodeNotes
             else Debug.LogError("Pre Game Node was null");
         }
 
+        public abstract void UpdateVisibility();
+
     }
 }

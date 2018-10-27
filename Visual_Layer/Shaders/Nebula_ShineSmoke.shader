@@ -92,7 +92,7 @@
 
 		float3 distApprox = lcol.rgb / lensq;
 
-		scatter += (distApprox * (1 + frontLight));// *lcol.a;
+		scatter += (distApprox * (1 + frontLight))*(1+lcol.a);
 		directLight += lcol.rgb*power;
 
 	}
