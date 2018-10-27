@@ -439,7 +439,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 43.2
+  m_fontSize: 42.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1354,7 +1354,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.600037, y: 0}
+  m_AnchoredPosition: {x: -13.600098, y: 0}
   m_SizeDelta: {x: -13.6, y: 0.00022125}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -2139,10 +2139,10 @@ MonoBehaviour:
     inspectedState: -1
     fileFolderHolder: STDEncodes
     SaveToFileOptions: 0
-  inspectedStuff: 4
+  inspectedStuff: -1
   inspectedReference: -1
-  inspectedTriggerGroup: -1
-  tmpIndex: 0
+  inspectedTriggerGroup: 0
+  tmpIndex: 1
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   editButton: {fileID: 1742041633}
   addButton: {fileID: 2133683275}
@@ -2252,7 +2252,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 43.55
+  m_fontSize: 42.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
