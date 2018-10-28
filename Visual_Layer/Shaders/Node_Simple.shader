@@ -1,4 +1,4 @@
-﻿Shader "NodeNotes/UI/Nebula_Button" {
+﻿Shader "NodeNotes/UI/Node_Simple" {
 	Properties{
 		_MainTex("Albedo", 2D) = "white" {}
 		_ProjTexPos("Screen Space Position", Vector) = (0,0,0,0)
@@ -8,6 +8,10 @@
 		_Blur("Blur", Range(0,1)) = 0
 		_Selected("Selected", Range(0,1)) = 0
 		_Stretch("Edge Courners", Vector) = (0,0,0,0)
+
+			[Toggle(_CLAMP)] blabla("Clamp", Float) = 0  
+
+
 	}
 		Category{
 			Tags{
@@ -26,15 +30,17 @@
 
 			CGPROGRAM
 
-
 	#include "UnityCG.cginc"
 
 	#pragma vertex vert
 	#pragma fragment frag
-	#pragma multi_compile_fog
+	//#pragma multi_compile_fog
 	#pragma multi_compile_fwdbase
 	#pragma multi_compile_instancing
 	#pragma target 3.0
+	#pragma multi_compile ____    _CLAMP
+
+		
 
 
 	sampler2D _MainTex;
@@ -64,9 +70,12 @@
 		float2 texcoord : TEXCOORD2;
 		float3 viewDir: TEXCOORD4;
 		float4 screenPos : TEXCOORD5;
+		#if _CLAMP
+		float2 mainTexScale : TEXCOORD6;
+		#endif
 	};
 
-
+	
 	v2f vert(appdata_full v) {
 		v2f o;
 		UNITY_SETUP_INSTANCE_ID(v);
@@ -76,6 +85,12 @@
 		o.viewDir.xyz = WorldSpaceViewDir(v.vertex);
 		o.texcoord = (v.texcoord.xy - 0.5) * 1.2 + 0.5;
 		o.screenPos = ComputeScreenPos(o.pos);
+
+#if _CLAMP
+		float relation = (_MainTex_TexelSize.w*(1-_Stretch.y)) / (_MainTex_TexelSize.z*(1 - _Stretch.x));
+		o.mainTexScale.x = min(1, relation);
+		o.mainTexScale.y = min(1, 1 / relation);
+#endif
 
 		return o;
 	}
@@ -101,15 +116,20 @@
 
 		const float PI2 = 3.14159 * 2;
 
-		float2 screenUV = i.screenPos.xy / i.screenPos.w;    
-		float2 inPix = (screenUV - _ProjTexPos.xy
-			)*_ScreenParams.xy;
+	
+#if _CLAMP
+			float2 texUV = ((i.texcoord.xy - 0.5) * i.mainTexScale.xy) + 0.5;
+#else
+		float2 screenUV = i.screenPos.xy / i.screenPos.w;
+
+
+		float2 inPix = (screenUV - _ProjTexPos.xy)*_ScreenParams.xy;
 
 		float2 texUV = inPix * _MainTex_TexelSize.xy *_ProjTexPos.z;
-			texUV += 0.5;
-			texUV += _MainTex_TexelSize.xy*0.5*(_MainTex_TexelSize.zw % 2);
+		texUV += 0.5;
+		texUV += _MainTex_TexelSize.xy*0.5*(_MainTex_TexelSize.zw % 2);
 
-			//return texUV.x;
+#endif
 
 			float4 col = tex2Dlod(_MainTex, float4(texUV, 0, 0));
 
@@ -151,7 +171,7 @@
 		float trim = (1 - rad) * (10 * (2 - _Blur)) *(1 - _Courners);
 		col *= saturate(trim);
 
-		col.a += saturate(trim + 1)*0.2;
+		col.a +=saturate(trim + 1)*0.2;
 
 		// Sparkle 2
 		float width = max(0, rad + angle - 0.85)*max(0, 1 + angle - rad);
@@ -160,7 +180,7 @@
 
 
 
-		return col + width * _Selected;
+		return saturate(col + width * _Selected);
 
 	}
 		ENDCG

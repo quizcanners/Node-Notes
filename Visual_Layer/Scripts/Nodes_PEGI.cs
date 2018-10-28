@@ -81,7 +81,10 @@ namespace NodeNotes_Visual
         public void SetBackground (NodeCircleController circle) {
           //  var bg = circle != null ? backgroundControllers.TryGetByTag(circle.background) : null;
             var data = circle ? circle.backgroundConfig : "";
-            var tag = circle ? circle.background : "null";
+            var tag = circle ? circle.background : "";
+
+            if (tag.Length == 0 && backgroundControllers.Count > 0)
+                tag = backgroundControllers[0].ClassTag;
 
             for (int i=0; i<backgroundControllers.Count; i++) {
                 var bc = backgroundControllers[i];// as IManageFading;
@@ -191,8 +194,7 @@ namespace NodeNotes_Visual
                     using (loopLock.Lock())
                     {
 
-                        if (Application.isPlaying)
-                        {
+                        if (Application.isPlaying) {
 
                             SetSelected(null);
 
@@ -367,9 +369,24 @@ namespace NodeNotes_Visual
                 window.Render(this);
         }
 
-        #endif
+#endif
         #endregion
-        
+
+        int logicVersion = -1;
+        public override void DerrivedUpdate()
+        {
+            if (Input.GetKey(KeyCode.Escape)) {
+                Application.Quit();
+                Debug.Log("Quit click");
+            }
+
+            if (logicVersion != currentLogicVersion)
+            {
+                UpdateVisibility();
+                logicVersion = currentLogicVersion;
+            }
+        }
+
         private void OnDisable() {
             shortcuts?.SaveAll();
             Shortcuts.CurrentNode = null;
@@ -395,15 +412,7 @@ namespace NodeNotes_Visual
 
         }
         
-        int logicVersion = -1;
-        public override void DerrivedUpdate()
-        {
-            if (logicVersion != currentLogicVersion)
-            {
-                UpdateVisibility();
-                logicVersion = currentLogicVersion;
-            }
-        }
+     
 
 
     }

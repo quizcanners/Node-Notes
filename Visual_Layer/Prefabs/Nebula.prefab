@@ -50,6 +50,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9f7432cce087d4f8e06001ebcd0f5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _nestedReferences: []
+  explorer:
+    states: []
+    inspectedState: -1
+    fileFolderHolder: STDEncodes
+    SaveToFileOptions: 0
+  inspectedStuff: -1
+  inspectedReference: -1
+  fallbackColor: {r: 0, g: 0, b: 0, a: 1}
   systems:
   - {fileID: 198065207135605992}
   - {fileID: 198781012459977936}
@@ -656,7 +665,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 10
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -5354,7 +5363,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 1000
+    maxNumParticles: 10
     size3D: 0
     rotation3D: 0
     gravityModifier:

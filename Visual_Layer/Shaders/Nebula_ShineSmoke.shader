@@ -12,7 +12,7 @@
 
 		Cull Off
 		ZWrite Off
-		Blend SrcAlpha OneMinusSrcAlpha 
+		Blend SrcAlpha One //MinusSrcAlpha 
 
 		SubShader{
 
@@ -86,7 +86,8 @@
 		
 		float dott = dot(viewDir, vec);
 
-		float power = pow(max(0.01, dott), 256*(0.5+ amb));
+		float power = pow(
+			max(0.01, dott), 128*(0.5+ amb));
 
 		float frontLight = max(0, -dott);
 
@@ -139,8 +140,6 @@
 		float4 col = tex2Dlod(_MainTex, float4(rotUV,0, (1 - toClick) * 2 + bluring));
 
 		float swaprb = saturate((bluring+1)*0.25);
-		
-		//return swaprb;
 
 		col.rb = col.rb*(1 - swaprb) + col.br *(swaprb);
 

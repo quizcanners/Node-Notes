@@ -9,8 +9,7 @@ using UnityEditor;
 namespace NodeNotes_Visual
 {
     [CustomEditor(typeof(Nodes_PEGI))]
-    public class PixelArtMeshGeneratorEditor : Editor
-    {
+    public class Nodes_PEGIEditor : Editor {
         public override void OnInspectorGUI() => ((Nodes_PEGI)target).Inspect(serializedObject);
     }
 

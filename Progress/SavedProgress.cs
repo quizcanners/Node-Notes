@@ -129,7 +129,7 @@ namespace NodeNotes
 
             if (nextBook == null)
                 Debug.LogError("Next book is null");
-
+            
             if (bookMarks.Count == 0)
             {
                 if (_currentNode != null)

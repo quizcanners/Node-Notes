@@ -22,6 +22,9 @@ namespace NodeNotes {
 
             set
             {
+                if (value == null || value.root == null)
+                    return;
+
                 if (Application.isPlaying && visualLayer && loopLock.Unlocked)
                 {
                     using (loopLock.Lock())
@@ -142,8 +145,7 @@ namespace NodeNotes {
         int inspectedBook = -1;
         string tmpUserName;
 
-#if PEGI
-
+        #if PEGI
         NodeBook replaceRecieved;
         bool inspectReplacementOption;
 
@@ -268,7 +270,7 @@ namespace NodeNotes {
             }
             return changed;
             }
-#endif
+        #endif
         #endregion
 
         #region Encode_Decode

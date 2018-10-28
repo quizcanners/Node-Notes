@@ -14,20 +14,24 @@ namespace NodeNotes_Visual
     public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect
     {
         static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
-        
+
         public Renderer circleRendy;
 
         public Base_Node source;
 
         public string background = "";
 
-        public string backgroundConfig ="";
+        public string backgroundConfig = "";
+
+        bool IsCurrent => source == Shortcuts.CurrentNode;
 
         #region Node Image
         Texture coverImage = null;
         public string imageURL = "";
         int imageIndex = -1;
         float imageScaling = 1f;
+        enum imageMode { fit, tile }
+        imageMode mode;
 
         void LoadCoverImage() {
             if (imageURL.Length > 8)
@@ -35,7 +39,7 @@ namespace NodeNotes_Visual
         }
 
         #endregion
-        
+
         #region TEXT
         public TextMeshPro textA;
 
@@ -54,7 +58,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-        #if PEGI
+#if PEGI
 
         public override bool PEGI_inList(IList list, int ind, ref int edited) {
 
@@ -67,13 +71,13 @@ namespace NodeNotes_Visual
 
             return changed;
         }
-        
+
         public override string NameForPEGI {
-            get {  return source.name; }
+            get { return source.name; }
 
             set
             {
-                source.name = value ;
+                source.name = value;
 
                 if (fadePortion < 0.1f)
                 {
@@ -92,7 +96,7 @@ namespace NodeNotes_Visual
         LoopLock loopLock = new LoopLock();
 
         //int showDependencies = false;
-        public override bool Inspect(){
+        public override bool Inspect() {
 
             bool changed = false;
 
@@ -119,8 +123,10 @@ namespace NodeNotes_Visual
                     var nd = source.AsNode;
 
                     if (nd != null) {
-                        if (IsCurrent && icon.StateMachine.Click("Exit this Node"))
-                            Shortcuts.CurrentNode = null;
+                        if (IsCurrent && nd.parentNode != null && icon.StateMachine.Click("Exit this Node"))
+                            Shortcuts.CurrentNode = nd.parentNode;
+                           
+                        
 
                         if (!IsCurrent && icon.Enter.Click("Enter this Node"))
                             Shortcuts.CurrentNode = nd;
@@ -148,8 +154,7 @@ namespace NodeNotes_Visual
 
                     if (circleRendy)
                     {
-                        if (!onPlayScreen)
-                        {
+                        if (!onPlayScreen) {
                             if (newText != null)
                                 "Changeing text to {0}".F(newText).nl();
 
@@ -172,8 +177,25 @@ namespace NodeNotes_Visual
                         }
                     }
 
-                    if (source == null || (!source.InspectingTriggerStuff))
+                    if (source == null || (!source.InspectingTriggerStuff)) {
+
+                        var altVis = PossibleOverrideVisualConfig;
+                        var act = ActiveConfig;
+
+                        if (altVis != nodeActive_Default_Visuals) {
+                            if ("Override visuals for {0}".F(altVis == nodeInactiveVisuals ? "Disabled" : "Entered")
+                                .toggleIcon(ref altVis.enabled, true).nl()) {
+                                if (altVis.enabled)
+                                    altVis.Decode(act.Encode().ToString());
+                            }
+
+                        }
+
                         changed |= ActiveConfig.Nested_Inspect();
+
+
+
+                    }
 
                     if (!onPlayScreen)
                     {
@@ -192,11 +214,9 @@ namespace NodeNotes_Visual
                             "Mesh Rendy".edit(ref circleRendy).nl();
                     }
 
-                    if (inspectedStuff == -1)
-                    {
+                    if (inspectedStuff == -1) {
 
-                        if (imageIndex != -1)
-                        {
+                        if (imageIndex != -1) {
                             if (!pegi.paintingPlayAreaGUI)
                                 "Downloading {0} [1]".F(imageURL, imageIndex).write();
                         }
@@ -233,9 +253,16 @@ namespace NodeNotes_Visual
 
 
                             if (coverImage != null) {
+
+                                if ("Img Mode".editEnum(50, ref mode).nl())
+                                    SetImage();
+
+                                if (mode == imageMode.tile)
+                                    changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
+
                                 if (!pegi.paintingPlayAreaGUI)
                                     pegi.write(coverImage, 200); pegi.nl();
-                                changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
+
                             }
                         }
                     }
@@ -258,13 +285,29 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Visual Configuration
+
+
+   
+        NodeVisualConfig nodeActive_Default_Visuals = new NodeVisualConfig();
         NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
-        NodeVisualConfig nodeActiveVisuals = new NodeVisualConfig();
         NodeVisualConfig nodeInactiveVisuals = new NodeVisualConfig();
 
-        bool IsCurrent => source == Shortcuts.CurrentNode;
-        NodeVisualConfig ActiveConfig => 
-            (source == null ? nodeActiveVisuals :  ( source.Conditions_isEnabled() ? (IsCurrent ? nodeEnteredVisuals : nodeActiveVisuals) : nodeInactiveVisuals));
+        NodeVisualConfig PossibleOverrideVisualConfig => (source == null ? nodeActive_Default_Visuals : (source.Conditions_isEnabled()
+               ? (IsCurrent ? nodeEnteredVisuals : nodeActive_Default_Visuals)
+                : nodeInactiveVisuals));
+
+        NodeVisualConfig ActiveConfig
+        {
+            get
+            {
+               var vc = PossibleOverrideVisualConfig;
+
+                if (vc.IsDefault)
+                    vc = nodeActive_Default_Visuals;
+
+                return vc;
+            }
+        }
         
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
@@ -272,7 +315,7 @@ namespace NodeNotes_Visual
 
         ShaderFloatValue shadeCourners = new ShaderFloatValue("_Courners", 0,4);
         ShaderFloatValue shadeSelected = new ShaderFloatValue("_Selected", 0, 4);
-        ShaderFloatValue textureFadeIn = new ShaderFloatValue("_TextureFadeIn", 0, 4);
+        ShaderFloatValue textureFadeIn = new ShaderFloatValue("_TextureFadeIn", 0, 10);
         #endregion
 
         #region Controls & Updates
@@ -283,10 +326,13 @@ namespace NodeNotes_Visual
 
         float fadePortion = 0;
 
-        void SetImage()
-        {
+        void SetImage() {
             circleRendy.MaterialWhaever().mainTexture = coverImage;
             SetDirty();
+            if (mode == imageMode.fit)
+                circleRendy.MaterialWhaever().EnableKeyword("_CLAMP");
+            else
+                circleRendy.MaterialWhaever().DisableKeyword("_CLAMP");
         }
 
         void UpdateCoverImage()
@@ -363,7 +409,7 @@ namespace NodeNotes_Visual
                 var BGtf = circleRendy.transform;
 
                 var scale = BGtf.localScale;
-                if (10f.SpeedToMinPortion((scale - ac.targetSize).magnitude , ref portion))
+                if (40f.SpeedToMinPortion((scale - ac.targetSize).magnitude , ref portion))
                     dominantParameter = "size";
 
                 if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref portion))
@@ -498,13 +544,13 @@ namespace NodeNotes_Visual
             coverImage = null;
 
             nodeEnteredVisuals = new NodeVisualConfig();
-            nodeActiveVisuals = new NodeVisualConfig();
+            nodeActive_Default_Visuals = new NodeVisualConfig();
+            nodeActive_Default_Visuals.enabled = true;
             nodeInactiveVisuals = new NodeVisualConfig();
 
             base.Decode(data);
 
             LoadCoverImage();
-
 
             return this;
         }
@@ -512,7 +558,7 @@ namespace NodeNotes_Visual
         public override bool Decode(string tag, string data)   {
             switch (tag)   {
                 case "expVis": data.DecodeInto(out nodeEnteredVisuals); break;
-                case "subVis": data.DecodeInto(out nodeActiveVisuals); break;
+                case "subVis": data.DecodeInto(out nodeActive_Default_Visuals); break;
                 case "disVis": data.DecodeInto(out nodeInactiveVisuals); break;
                 case "bg": background = data; break;
                 case "bg_cfg": backgroundConfig = data; break;
@@ -527,8 +573,8 @@ namespace NodeNotes_Visual
         public override StdEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
-                .Add("subVis", nodeActiveVisuals)
-                .Add("disVis", nodeInactiveVisuals)
+                .Add("subVis", nodeActive_Default_Visuals)
+                .Add_IfNotDefault("disVis", nodeInactiveVisuals)
                 .Add_IfNotEmpty("bg", background)
                 .Add_IfNotEmpty("bg_cfg", backgroundConfig)
                 .Add_IfNotEmpty("URL", imageURL);
@@ -537,7 +583,7 @@ namespace NodeNotes_Visual
                 cody.Add("imgScl", imageScaling);
 
             if (source.AsNode != null)
-                cody.Add("expVis", nodeEnteredVisuals); 
+                cody.Add_IfNotDefault("expVis", nodeEnteredVisuals); 
             return cody;
         }
 
@@ -585,12 +631,20 @@ namespace NodeNotes_Visual
         #endregion
     }
 
-    public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI, IPEGI_ListInspect {
+    public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI, IPEGI_ListInspect, ICanBeDefault_STD {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
+        public bool enabled = false;
 
         #region Encode & Decode
+        public override bool IsDefault => !enabled;
+
+        public override ISTD Decode(string data) {
+            enabled = true;
+            return base.Decode(data);
+        }
+
         public override bool Decode(string tag, string data)
         {
             switch (tag)  {
@@ -607,8 +661,8 @@ namespace NodeNotes_Visual
             targetSize.z = Mathf.Max(targetSize.z, 1);
 
             var cody = this.EncodeUnrecognized()
-            .Add("sc", targetSize)
-            .Add("pos", targetLocalPosition);
+                .Add("sc", targetSize)
+                .Add("pos", targetLocalPosition);
             if (targetColor != Color.grey)
                 cody.Add("col", targetColor);
 
