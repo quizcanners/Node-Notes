@@ -14,7 +14,7 @@ namespace NodeNotes {
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
-        List_Data gamesNodesMeta = new List_Data();
+        List_Data gamesNodesMeta = new List_Data("Game Nodes", true);
 
         public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
 
@@ -124,7 +124,7 @@ namespace NodeNotes {
 
             if (gn != null) {
                 if (gameNodes.Contains(gn))
-                    gamesNodesMeta.inspectedElement = gameNodes.IndexOf(gn);
+                    gamesNodesMeta.inspected = gameNodes.IndexOf(gn);
             }
             else
             {
@@ -162,7 +162,7 @@ namespace NodeNotes {
 
                     var gn = cp.AsGameNode;
 
-                    bool canPaste = (cp.root == root) && cp != this && !coreNodes.Contains(cp) && (gn == null || !gameNodes.Contains(gn)) && (!IsOneOfChildrenOf(cp as Node));
+                    bool canPaste = (cp.root == root) && cp != this && !coreNodes.Contains(cp) && (gn == null || !gameNodes.Contains(gn)) && (!IsOneOfChildrenOf(cp.AsNode));
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
@@ -180,7 +180,7 @@ namespace NodeNotes {
   
                 changed |= base.Inspect();
 
-                var ngn = "Game Nodes".enter_List(gameNodes, gamesNodesMeta, ref inspectedStuff, 7, GameNodeBase.all, ref changed, true);
+                var ngn = gamesNodesMeta.enter_List(ref gameNodes, ref inspectedStuff, 7, GameNodeBase.all, ref changed);
 
                 pegi.nl_ifFoldedOut();
 

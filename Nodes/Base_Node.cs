@@ -182,7 +182,7 @@ namespace NodeNotes {
 
                     changed |= eblCondition.enter_Inspect(ref inspectedStuff, 2).nl_ifFolded();
 
-                    changed |= ResultsRole.enter_List(results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFolded();
+                    changed |= ResultsRole.enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFolded();
 
                     if (changed)
                         logicVersion = -1;

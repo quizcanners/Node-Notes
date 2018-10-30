@@ -72,11 +72,11 @@ namespace NodeNotes_Visual {
             if (inspectedStuff == -1)
                 "Reference".editDelayed(ref name, 50).nl_ifFalse();
 
-            changed |= "Texts".enter_List(texts, ref inspectedText, ref inspectedStuff, 1).nl_ifFalse();
+            changed |= "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifFalse();
 
-            changed |= "Choices".enter_List(options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifFalse();
+            changed |= "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifFalse();
            
-            changed |= "Final Results".enter_List(finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
+            changed |= "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
 
             "Conditions".enter(ref inspectedStuff, 4).nl();
                 changed |= conditions.Inspect();
@@ -142,7 +142,7 @@ namespace NodeNotes_Visual {
             if ("Conditions:".enter(ref inspectedStuff,2).nl_ifFalse())
                 conditions.Nested_Inspect();
 
-            changed |= "Results:".enter_List(results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
+            changed |= "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
                 
             if ("After choice text:".enter(ref inspectedStuff, 4).nl_ifFalse())
                 texts2.PEGI();

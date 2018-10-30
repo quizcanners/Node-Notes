@@ -195,7 +195,7 @@ namespace NodeNotes
             else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
             
-            changed |= "Marks ".enter_List(bookMarks,ref editedMark, ref inspectedStuff, 0).nl_ifNotEntered();
+            changed |= "Marks ".enter_List(ref bookMarks,ref editedMark, ref inspectedStuff, 0).nl_ifNotEntered();
 
             changed |= "Values ".enter_Inspect(Values.global, ref inspectedStuff, 1).nl_ifNotEntered();
             

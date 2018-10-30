@@ -112,7 +112,7 @@ namespace NodeNotes {
                 using (loopLock.Lock()) {
                     changed |= base.Inspect();
 
-                    changed |= ExitResultRole.enter_List(onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
+                    changed |= ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
 
                     if (ClassTag.enter(ref inspectedStuff, 8).nl_ifFalse())
                         InspectGameNode();

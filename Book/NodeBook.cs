@@ -51,7 +51,7 @@ namespace NodeNotes
                 }
                 
 
-                "Entry Points".enter_List(entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
+                "Entry Points".enter_List(ref entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
 
             }
             if (inspectedStuff == -1)
