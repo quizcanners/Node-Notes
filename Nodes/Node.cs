@@ -211,7 +211,7 @@ namespace NodeNotes {
                     if (inspectedSubnode == -1)
                     {
                         pegi.nl();
-                        var newNode = "Sub Nodes".edit_List(coreNodes, ref inspectedSubnode, ref changed);
+                        var newNode = "Sub Nodes".edit_List(ref coreNodes, ref inspectedSubnode, ref changed);
 
                         if (newNode != null)
                             newNode.CreatedFor(this);

@@ -222,7 +222,7 @@ namespace NodeNotes {
 
             if (inspectedStuff == -1) {
 
-                "Books ".edit_List(books, ref inspectedBook);
+                "Books ".edit_List(ref books, ref inspectedBook);
 
                 if (inspectedBook == -1)
                 {

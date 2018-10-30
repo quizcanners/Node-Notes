@@ -39,7 +39,7 @@ namespace NodeNotes_Visual
         #region Inspector
 
         protected override bool InspectGameNode() {
-            bool changed = "Roster Groups".edit_List(perBookGroups, ref inspectedGroup);
+            bool changed = "Roster Groups".edit_List(ref perBookGroups, ref inspectedGroup);
             return changed;
         }
 
@@ -80,7 +80,7 @@ namespace NodeNotes_Visual
         {
             bool changed = base.Inspect();
             
-            changed |= "Roster".edit_List(elements, ref inspectedElement);
+            changed |= "Roster".edit_List(ref elements, ref inspectedElement);
 
             return changed;
         }
