@@ -11,7 +11,7 @@ namespace NodeNotes_Visual
 {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect
+    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex
     {
         static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
 
@@ -58,6 +58,11 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
+        public Base_Node myLastLinkedNode = null;
+        int indexInPool = 0;
+        public int IndexForPEGI { get { return indexInPool;  } set { indexInPool = value; } }
+
+
 #if PEGI
 
         public override bool PEGI_inList(IList list, int ind, ref int edited) {
@@ -286,8 +291,8 @@ namespace NodeNotes_Visual
 
         #region Visual Configuration
 
+      
 
-   
         NodeVisualConfig nodeActive_Default_Visuals = new NodeVisualConfig();
         NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
         NodeVisualConfig nodeInactiveVisuals = new NodeVisualConfig();
@@ -308,7 +313,8 @@ namespace NodeNotes_Visual
                 return vc;
             }
         }
-        
+
+
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
         float sh_blur = 0;
@@ -319,6 +325,29 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Controls & Updates
+
+        public void SetStartPositionOn(NodeCircleController other)
+        {
+            if (other != null)
+            {
+                if (source.parentNode == other.myLastLinkedNode)
+                {
+                    transform.position = other.transform.position;
+                    transform.localScale = Vector3.one;
+                }
+            }
+        }
+
+        bool fadingIntoParent = false;
+        NodeCircleController fadingRelation;
+
+        public void SetFadeAwayRelation(NodeCircleController other)
+        {
+            fadingRelation = other;
+            if (other != null)
+                fadingIntoParent = myLastLinkedNode.parentNode == other.myLastLinkedNode;
+        }
+
         [NonSerialized] public bool isFading;
         [NonSerialized] public bool lerpsFinished;
 
@@ -396,7 +425,19 @@ namespace NodeNotes_Visual
 
             if (!lerpsFinished)  {
 
-                float dist = (transform.localPosition - ac.targetLocalPosition).magnitude;
+                Vector3 targetPosition;
+
+                if (!isFading || !fadingRelation)
+                    targetPosition = ac.targetLocalPosition;
+                else {
+                    if (!fadingIntoParent)
+                        targetPosition = (transform.position - fadingRelation.transform.position).normalized * 50;
+                    else
+                        targetPosition = fadingRelation.transform.position;
+                }
+
+
+                float dist = (transform.localPosition - targetPosition).magnitude;
 
                 sh_blur = Mathf.Lerp(sh_blur, Mathf.Clamp01(dist*5), Time.deltaTime * 10);
 
@@ -429,7 +470,7 @@ namespace NodeNotes_Visual
 
                 float teleportPortion = ( fadePortion < 0.1f && !isFading) ? 1 : portion;
 
-                transform.localPosition = Vector3.Lerp(transform.localPosition, ac.targetLocalPosition, teleportPortion);
+                transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, teleportPortion);
                 scale = Vector3.Lerp(scale, ac.targetSize, teleportPortion);
                 BGtf.localScale = scale;
                 sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, teleportPortion);
@@ -440,10 +481,11 @@ namespace NodeNotes_Visual
                 textureFadeIn.Lerp(portion, circleRendy);
 
                 needShaderUpdate = true;
-                if (portion == 1)
-                {
-                    ActiveConfig.targetSize = circleRendy.transform.localScale;
-                    ActiveConfig.targetLocalPosition = transform.localPosition;
+                if (portion == 1) {
+                    if (!isFading) {
+                        ActiveConfig.targetSize = circleRendy.transform.localScale;
+                        ActiveConfig.targetLocalPosition = transform.localPosition;
+                    }
 
                     lerpsFinished = true;
                 }
@@ -495,9 +537,9 @@ namespace NodeNotes_Visual
                 UpdateShaders();
 
             if (fadePortion == 0 && isFading && Application.isPlaying)
-                gameObject.SetActive(false);
+                Mgmt.Deactivate(this);
         }
-        
+
         static NodeCircleController dragging = null;
         Vector3 dragOffset = Vector3.zero;
         static Plane upPlane = new Plane(Vector3.up, Vector3.zero);
@@ -590,8 +632,9 @@ namespace NodeNotes_Visual
         #endregion
 
         #region MGMT
-        public void LinkTo(Base_Node node)
-        {
+        public void LinkTo(Base_Node node) {
+
+            myLastLinkedNode = node;
             source = node;
             if (source.visualRepresentation != null)
                 Debug.LogError("Visual representation is not null",this);

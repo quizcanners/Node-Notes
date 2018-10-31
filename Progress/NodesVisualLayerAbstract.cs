@@ -33,8 +33,9 @@ namespace NodeNotes
                     gn.Enter();
                 }
 
-            CurrentNode = null;
             gameNode = gn;
+            CurrentNode = null;
+           
         }
 
         protected LoopLock loopLockExit = new LoopLock();

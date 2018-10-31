@@ -108,6 +108,11 @@ namespace NodeNotes_Visual
         static List<NodeCircleController> nodesPool = new List<NodeCircleController>();
         static int firstFree = 0;
 
+        public void Deactivate(NodeCircleController n) {
+            n.gameObject.SetActive(false);
+            firstFree = Mathf.Min(firstFree, n.IndexForPEGI);
+       }
+
         void Delete (NodeCircleController ctr) {
             var ind = nodesPool.IndexOf(ctr);
             nodesPool.RemoveAt(ind);
@@ -130,24 +135,32 @@ namespace NodeNotes_Visual
         
         public override void Show(Base_Node node) => MakeVisible(node);
 
-        static void MakeVisible(Base_Node node) {
+        static void MakeVisible(Base_Node node, NodeCircleController centerNode = null) {
 
             NodeCircleController nnp = null;
 
-            if (node.previousVisualRepresentation != null)
-            {
-                var tmp = node.previousVisualRepresentation as NodeCircleController;
-                if (tmp != null && tmp.isFading)
-                    nnp = tmp;
+            if (centerNode == null) {
+                centerNode = node.parentNode?.visualRepresentation as NodeCircleController;
+
+
             }
 
-            if (nnp == null)
-            {
-                while (firstFree < nodesPool.Count)
-                {
+            bool reusing = false;
+
+            if (node.previousVisualRepresentation != null) {
+                var tmp = node.previousVisualRepresentation as NodeCircleController;
+                if (tmp != null && tmp.isFading && node == tmp.myLastLinkedNode) {
+                    nnp = tmp;
+                    reusing = true;
+                    Debug.Log("Reusing previous for {0}".F(node.ToPEGIstring()));
+                }
+            }
+
+            if (nnp == null) {
+                while (firstFree < nodesPool.Count) {
                     var np = nodesPool[firstFree];
-                    if (np.isFading)
-                    {
+
+                    if (!np.gameObject.activeSelf) {
                         nnp = np;
                         break;
                     }
@@ -160,18 +173,29 @@ namespace NodeNotes_Visual
                     return;
 
                 nnp = Instantiate(NodeMGMT_inst.circlePrefab);
+                nnp.IndexForPEGI = nodesPool.Count;
                 nodesPool.Add(nnp);
+
+                Debug.Log("Creating new for {0}".F(node.ToPEGIstring()));
             }
 
             nnp.LinkTo(node);
+
+            if (!reusing)
+                nnp.SetStartPositionOn(centerNode);
         }
 
-        public override void Hide(Base_Node node) {
+        public override void Hide(Base_Node node) => MakeHidden(node);
+
+        static void MakeHidden(Base_Node node, NodeCircleController centerNode = null)
+        {
             var ncc = node.visualRepresentation as NodeCircleController;
             if (ncc) {
                 ncc.Unlink();
+                ncc.SetFadeAwayRelation(centerNode);
+
                 if (!Application.isPlaying)
-                    Delete(ncc);
+                    NodeMGMT_inst.Delete(ncc);
             }
         }
 
@@ -185,14 +209,11 @@ namespace NodeNotes_Visual
                 return Shortcuts.CurrentNode;
             }
 
-            set
-            {
+            set {
 
 
                 if (loopLock.Unlocked)
-                {
-                    using (loopLock.Lock())
-                    {
+                    using (loopLock.Lock()) {
 
                         if (Application.isPlaying) {
 
@@ -202,19 +223,16 @@ namespace NodeNotes_Visual
 
                             var curNode = Shortcuts.CurrentNode;
 
-                            if (value != null && curNode != null)
-                            {
+                            if (value != null && curNode != null) {
                                 var s = value as Node;
-                                if (s != null)
-                                {
+                                if (s != null) {
                                     if (s.coreNodes.Contains(curNode))
                                         wasAParent = curNode;
                                 }
                             }
 
                             foreach (var n in nodesPool)
-                                if (n != null && !n.isFading)
-                                {
+                                if (n != null && !n.isFading) {
                                     if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
                                         n.Unlink();
                                     else
@@ -225,21 +243,21 @@ namespace NodeNotes_Visual
 
                             Shortcuts.CurrentNode = value;
 
-                            NodeCircleController circle = value != null ? value.visualRepresentation as NodeCircleController : null;
+                            UpdateVisibility(curNode);
 
-                            UpdateVisibility();
+                            NodeCircleController circle = value != null ? value.visualRepresentation as NodeCircleController : null;
 
                             SetBackground(circle);
                         }
                         else
                             Shortcuts.CurrentNode = value;
                     }
-                }
+                
 
             }
         }
 
-        public static void UpdateVisibility(Base_Node node)  {
+        public static void UpdateVisibility(Base_Node node, NodeCircleController centerNode = null)  {
 
             if (node != null) {
 
@@ -247,27 +265,27 @@ namespace NodeNotes_Visual
 
                 if (node.visualRepresentation == null)  {
                     if (shouldBeVisible)
-                        MakeVisible(node);
+                        MakeVisible(node, centerNode);
                 } else 
                     if (!shouldBeVisible)
-                        NodeMGMT_inst.Hide(node); 
-                
+                        MakeHidden(node, centerNode); 
             }
         }
 
-        public override void UpdateVisibility() {
-
+        public static void UpdateVisibilityAround(NodeCircleController centerNode = null) {
             var cn = Shortcuts.CurrentNode;
 
             if (Application.isPlaying) {
 
-                if (cn != null)  {
-                    UpdateVisibility(cn);
+                if (cn != null) {
+                    UpdateVisibility(cn, centerNode);
                     foreach (var sub in cn)
-                        UpdateVisibility(sub);
+                        UpdateVisibility(sub, centerNode);
                 }
             }
         }
+
+        public override void UpdateVisibility() => UpdateVisibilityAround();
 
         public NodeCircleController selectedNode;
 
@@ -339,17 +357,20 @@ namespace NodeNotes_Visual
                 else
                     pegi.nl();
 
-                if (icon.Condition.enter("Dependencies", ref inspectedStuff, 5))
-                {
-                    pegi.nl();
-                    changed |= "Edit Button".edit(ref editButton).nl();
-                    changed |= "Add Button".edit(ref addButton).nl();
-                    changed |= "Delete Button".edit(ref deleteButton).nl();
-                    changed |= "Backgrounds".edit(() => backgroundControllers, this).nl();
-                    changed |= "Circles Prefab".edit(ref circlePrefab).nl();
-                }
-
+            if (icon.Condition.enter("Dependencies", ref inspectedStuff, 5))
+            {
                 pegi.nl();
+                changed |= "Edit Button".edit(ref editButton).nl();
+                changed |= "Add Button".edit(ref addButton).nl();
+                changed |= "Delete Button".edit(ref deleteButton).nl();
+                changed |= "Backgrounds".edit_Property(() => backgroundControllers, this).nl();
+                changed |= "Circles Prefab".edit(ref circlePrefab).nl();
+
+                "Nodes Pool: {0}; First Free: {1}".F(nodesPool.Count, firstFree).nl();
+
+            }
+
+            pegi.nl();
 
                 changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedStuff, 6).nl_ifNotEntered();
     
@@ -376,6 +397,7 @@ namespace NodeNotes_Visual
         public override void DerrivedUpdate()
         {
             if (Input.GetKey(KeyCode.Escape)) {
+                OnDisable();
                 Application.Quit();
                 Debug.Log("Quit click");
             }
@@ -387,7 +409,7 @@ namespace NodeNotes_Visual
             }
         }
 
-        private void OnDisable() {
+        void OnDisable() {
             shortcuts?.SaveAll();
             Shortcuts.CurrentNode = null;
             DeleteAllNodes();
