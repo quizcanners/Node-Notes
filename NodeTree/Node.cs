@@ -85,8 +85,25 @@ namespace NodeNotes {
                     sn.Init(nroot, this);
 
         }
-        
+
         #region Inspector
+
+        public override void ResetInspector() {
+
+            if (loopLock.Unlocked)
+                using (loopLock.Lock()) {
+
+                    inspectedSubnode = -1;
+
+                    foreach (var n in coreNodes)
+                        n.ResetInspector();
+                    foreach (var g in gameNodes)
+                        g.ResetInspector();
+
+                    base.ResetInspector();
+                }
+        }
+
         public int inspectedSubnode = -1;
 
         public override string NeedAttention()

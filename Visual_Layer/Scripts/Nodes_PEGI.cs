@@ -309,7 +309,13 @@ namespace NodeNotes_Visual
         #region Inspector
 #if PEGI
         pegi.windowPositionData window = new pegi.windowPositionData();
-        
+
+        public override void ResetInspector()
+        {
+            shortcuts?.ResetInspector();
+            base.ResetInspector();
+        }
+
         public override bool Inspect() {
 
             if (gameNode != null) {

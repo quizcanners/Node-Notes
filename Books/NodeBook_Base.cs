@@ -12,7 +12,7 @@ namespace NodeNotes {
 
         public virtual string NameForPEGIdisplay => NameForPEGI;
 
-        public virtual string NameForPEGI { get => "ERROR, is a base class"; set { } } 
-
+        public virtual string NameForPEGI { get => "ERROR, is a base class"; set { } }
+        
     }
 }

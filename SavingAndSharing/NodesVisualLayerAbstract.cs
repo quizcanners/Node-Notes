@@ -23,19 +23,26 @@ namespace NodeNotes
 
         public virtual void FromNodeToGame(GameNodeBase gn) {
 
-            if (CurrentNode != null)
-                preGameNode = CurrentNode;
-            else preGameNode = gn.parentNode;
+            if (gameNode != null) {
+                Debug.LogError("First exit previous Game Node");
+                return;
+            }
 
             if (loopLockEnt.Unlocked)
                 using (loopLockEnt.Lock()) {
-                    FromGameToNode();
-                    gn.Enter();
-                }
 
-            gameNode = gn;
-            CurrentNode = null;
-           
+                    if (CurrentNode != null)
+                        preGameNode = CurrentNode;
+                    else preGameNode = gn.parentNode;
+
+                    Shortcuts.user.SaveCurrentNode();
+
+                    CurrentNode = null;
+
+                    gn.Enter();
+
+                    gameNode = gn;
+                }
         }
 
         protected LoopLock loopLockExit = new LoopLock();
@@ -50,13 +57,18 @@ namespace NodeNotes
                         else
                             gameNode.Exit();
                     }
+
+                    gameNode = null;
+
+                    if (failed)
+                        Shortcuts.user.LoadCurrentNode();
+                    else
+                    {
+                        if (preGameNode != null)
+                            CurrentNode = preGameNode;
+                        else Debug.LogError("Pre Game Node was null");
+                    }
                 }
-
-            gameNode = null;
-
-            if (preGameNode != null)
-                CurrentNode = preGameNode;
-            else Debug.LogError("Pre Game Node was null");
         }
 
         public abstract void UpdateVisibility();

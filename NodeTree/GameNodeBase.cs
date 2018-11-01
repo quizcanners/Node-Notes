@@ -18,6 +18,7 @@ namespace NodeNotes {
     [GameNode]
     [DerrivedList()]
     public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect {
+
         #region Tagged Types MGMT
         public override GameNodeBase AsGameNode => this;
         public virtual string ClassTag => StdEncoder.nullTag;
@@ -39,22 +40,18 @@ namespace NodeNotes {
         protected LoopLock loopLock = new LoopLock();
 
         public void Enter() {
-            Debug.Log("Entering game node");
 
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
 
                     var data = Shortcuts.user.gameNodeTypeData.TryGet(ClassTag);
                     if (data != null) Decode_PerUserData(data);
-
-                  
+                    
                     data = parentNode.root.gameNodeTypeData.TryGet(ClassTag);
-                    if (data != null)
-                    {
+                    if (data != null)  
                         Decode_PerBookData(data);
-                        Debug.Log("Loaded per book data. {0} : {1}".F(ClassTag, data));
-                    } else
-                        Debug.Log("Loading per book data failed. {0}".F(ClassTag));
+                    else
+                        Debug.Log("No per book data for. {0}".F(ClassTag));
 
                     VisualLayer.FromNodeToGame(this);
 
@@ -65,7 +62,7 @@ namespace NodeNotes {
         }
 
         public void FailExit() {
-            Debug.Log("Fail Exiting Game Node");
+            Debug.Log("Exiting Game Node Without Saving");
 
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
@@ -110,12 +107,14 @@ namespace NodeNotes {
 
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
+
                     changed |= base.Inspect();
 
                     changed |= ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
 
                     if (ClassTag.enter(ref inspectedStuff, 8).nl_ifFalse())
                         InspectGameNode();
+
                 }
 
             return changed;

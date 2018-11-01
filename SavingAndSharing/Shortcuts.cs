@@ -142,6 +142,20 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
+
+        public override void ResetInspector() {
+            inspectReplacementOption = false;
+            tmpUserName = "";
+            replaceRecieved = null;
+            inspectedBook = -1;
+            base.ResetInspector();
+
+            foreach (var b in books)
+                b.ResetInspector();
+            
+             user.ResetInspector();
+        }
+
         int inspectedBook = -1;
         string tmpUserName;
 

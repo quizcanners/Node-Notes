@@ -18,15 +18,28 @@ namespace NodeNotes
         public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public Node subNode = new Node();
         #endregion
-        
+
         #region Inspector
+        public override void ResetInspector()
+        {
+            inspectedNode = -1;
+            inspectedEntry = -1;
+
+            subNode.ResetInspector();
+
+            foreach (var ep in entryPoints)
+                ep.ResetInspector();
+
+            base.ResetInspector();
+        }
+
         int inspectedNode = -1;
         int inspectedEntry = -1;
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
 
-#if PEGI
-          public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
+        #if PEGI
+        public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
 
         public static NodeBook inspected;
 
@@ -81,7 +94,7 @@ namespace NodeNotes
 
             return changed;
         }
-#endif
+        #endif
         #endregion
 
         #region Encode_Decode

@@ -20,9 +20,6 @@ namespace NodeNotes_Visual {
 
         public InteractionBranch interactionBranch = new InteractionBranch();
 
-       // public List<Result> OnEnterResults = new List<Result>();
-       // public List<Result> OnExitResults = new List<Result>();
-
         public int myQuestVersion = -1;
 
         public void UpdateLogic() => myQuestVersion = LogicMGMT.currentLogicVersion;
@@ -50,8 +47,7 @@ namespace NodeNotes_Visual {
         #region Inspector
         #if PEGI
 
-        protected override bool InspectGameNode()
-        {
+        protected override bool InspectGameNode() {
 
             bool changed = base.Inspect();
 

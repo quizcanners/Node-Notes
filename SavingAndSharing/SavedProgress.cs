@@ -16,9 +16,14 @@ namespace NodeNotes
         public bool isADeveloper = false;
 
         #region GameNodes
+
         string preGameNodeSTD;
 
         public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
+
+        public void SaveCurrentNode() => preGameNodeSTD = Encode().ToString();
+
+        public void LoadCurrentNode() => Decode(preGameNodeSTD);
 
         #endregion
 
@@ -181,7 +186,11 @@ namespace NodeNotes
         public string NameForPEGIdisplay =>
             "{0} FROM {1}".F(userName, startingPoint);
 
-#if PEGI
+        #if PEGI
+        public override void ResetInspector() {
+            editedMark = -1;
+            base.ResetInspector();
+        }
 
         int editedMark = -1;
         public override bool Inspect() {
@@ -201,14 +210,14 @@ namespace NodeNotes
             
             return changed;
         }
-#endif
+        #endif
 
         #endregion
 
         #region Encoding_Decoding
 
-        public override ISTD Decode(string data)
-        {
+        public override ISTD Decode(string data) {
+  
             var ret = base.Decode(data);
 
             var b = Shortcuts.TryGetBook(tmpBook);
@@ -238,6 +247,7 @@ namespace NodeNotes
         }
 
         public override StdEncoder Encode() {
+
             var cody = this.EncodeUnrecognized()
             .Add_IfNotEmpty("bm", bookMarks)
             .Add("vals", Values.global)
