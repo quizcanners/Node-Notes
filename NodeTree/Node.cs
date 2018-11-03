@@ -14,7 +14,7 @@ namespace NodeNotes {
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
-        List_Data gamesNodesMeta = new List_Data("Game Nodes", true);
+        List_Data gamesNodesMeta = new List_Data("Game Nodes", keepTypeData: true);
 
         public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
 
