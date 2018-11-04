@@ -17,6 +17,8 @@ namespace NodeNotes_Visual
 
         public Renderer circleRendy;
 
+        public MeshCollider colly;
+
         public Base_Node source;
 
         public string background = "";
@@ -24,6 +26,8 @@ namespace NodeNotes_Visual
         public string backgroundConfig = "";
 
         bool IsCurrent => source == Shortcuts.CurrentNode;
+
+        Node CurrentNode => Shortcuts.CurrentNode;
 
         #region Node Image
         Texture coverImage = null;
@@ -59,6 +63,7 @@ namespace NodeNotes_Visual
 
         #region Inspector
         public Base_Node myLastLinkedNode = null;
+       
         int indexInPool = 0;
         public int IndexForPEGI { get { return indexInPool;  } set { indexInPool = value; } }
 
@@ -104,8 +109,8 @@ namespace NodeNotes_Visual
         public override bool Inspect() {
 
             bool changed = false;
-
-            if (loopLock.Unlocked) {
+     
+            if (loopLock.Unlocked && source != null) {
                 using (loopLock.Lock()) {
                     if (source.Try_Nested_Inspect()) {
                         if (name != source.name)
@@ -116,22 +121,24 @@ namespace NodeNotes_Visual
                     }
                 }
             } else {
-
+                
                 bool onPlayScreen = pegi.paintingPlayAreaGUI;
 
                 if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
                     Shortcuts.CurrentNode = null;
 
-                if (source != null) {
+                if (source != null)
+                {
                     bool enabled = source.Conditions_isEnabled();
 
                     var nd = source.AsNode;
 
-                    if (nd != null) {
+                    if (nd != null)
+                    {
                         if (IsCurrent && nd.parentNode != null && icon.StateMachine.Click("Exit this Node"))
                             Shortcuts.CurrentNode = nd.parentNode;
-                           
-                        
+
+
 
                         if (!IsCurrent && icon.Enter.Click("Enter this Node"))
                             Shortcuts.CurrentNode = nd;
@@ -148,12 +155,12 @@ namespace NodeNotes_Visual
                         {
                             if (NodesStyleBase.all.selectTypeTag(ref background).nl())
                                 changed = true;
-                            Mgmt.SetBackground(this);
+                            Nodes_PEGI.SetBackground(this);
                         }
                     }
                     else
                         source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
-
+                }
 
                     pegi.nl();
 
@@ -193,18 +200,11 @@ namespace NodeNotes_Visual
                                 if (altVis.enabled)
                                     altVis.Decode(act.Encode().ToString());
                             }
-
                         }
-
                         changed |= ActiveConfig.Nested_Inspect();
-
-
-
                     }
 
-                    if (!onPlayScreen)
-                    {
-
+                    if (!onPlayScreen) {
                         pegi.nl();
 
                         bool seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
@@ -217,6 +217,9 @@ namespace NodeNotes_Visual
 
                         if (!circleRendy || seeDeps)
                             "Mesh Rendy".edit(ref circleRendy).nl();
+
+                        if (!colly || seeDeps)
+                            "Collider".edit(ref colly).nl();
                     }
 
                     if (inspectedStuff == -1) {
@@ -224,10 +227,7 @@ namespace NodeNotes_Visual
                         if (imageIndex != -1) {
                             if (!pegi.paintingPlayAreaGUI)
                                 "Downloading {0} [1]".F(imageURL, imageIndex).write();
-                        }
-                        else
-                        {
-
+                        }  else  {
                             if ("Image".edit("Will not be saved", 40, ref coverImage).nl())
                                 SetImage();
 
@@ -246,7 +246,6 @@ namespace NodeNotes_Visual
                                     reload = true;
                                     imageURL = shortURL;
                                 }
-
                                 changed = true;
                             }
 
@@ -271,11 +270,9 @@ namespace NodeNotes_Visual
                             }
                         }
                     }
-
-                }
+                
             }
-
-
+            
             if (changed)
             {
                 SetDirty();
@@ -290,14 +287,13 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Visual Configuration
-
-      
-
+        
         NodeVisualConfig nodeActive_Default_Visuals = new NodeVisualConfig();
         NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
         NodeVisualConfig nodeInactiveVisuals = new NodeVisualConfig();
 
-        NodeVisualConfig PossibleOverrideVisualConfig => (source == null ? nodeActive_Default_Visuals : (source.Conditions_isEnabled()
+        NodeVisualConfig PossibleOverrideVisualConfig => 
+            (source == null ? nodeActive_Default_Visuals : (source.Conditions_isEnabled()
                ? (IsCurrent ? nodeEnteredVisuals : nodeActive_Default_Visuals)
                 : nodeInactiveVisuals));
 
@@ -326,26 +322,58 @@ namespace NodeNotes_Visual
 
         #region Controls & Updates
 
-        public void SetStartPositionOn(NodeCircleController other)
-        {
-            if (other != null)
+        public void SetStartPositionOn(NodeCircleController previous) {
+
+            canJumpToPosition = false;
+
+            if (previous != null && previous != this)
             {
-                if (source.parentNode == other.myLastLinkedNode)
+                if (source.parentNode == CurrentNode)
                 {
-                    transform.position = other.transform.position;
-                    transform.localScale = Vector3.one;
+                    var vis = CurrentNode.visualRepresentation as NodeCircleController;
+                    if (vis)
+                    transform.localPosition = vis.transform.localPosition;
+                    circleRendy.transform.localScale = Vector3.one;
+                }
+                else
+                {
+                    transform.localPosition = ActiveConfig.targetLocalPosition + (ActiveConfig.targetLocalPosition - previous.transform.localPosition).normalized * 10f;
+                   
+                    circleRendy.transform.localScale = ActiveConfig.targetSize * 2f;
                 }
             }
-        }
+            else canJumpToPosition = true;
 
+            SetDirty();
+        }
+        
+        bool canJumpToPosition = false;
         bool fadingIntoParent = false;
         NodeCircleController fadingRelation;
 
-        public void SetFadeAwayRelation(NodeCircleController other)
-        {
-            fadingRelation = other;
-            if (other != null)
-                fadingIntoParent = myLastLinkedNode.parentNode == other.myLastLinkedNode;
+        public void SetFadeAwayRelation(NodeCircleController previous) {
+            if (previous != null) {
+
+                if (previous != this) {
+                    fadingIntoParent = (CurrentNode != null ? CurrentNode.Contains(previous.myLastLinkedNode) : false)
+                       && myLastLinkedNode.parentNode == previous.myLastLinkedNode;  
+
+                    if (fadingIntoParent)
+                        fadingRelation = previous;
+                    else 
+                        fadingRelation = CurrentNode?.visualRepresentation as NodeCircleController;
+
+                } else
+                {
+                    fadingIntoParent = false;
+                    fadingRelation = CurrentNode?.visualRepresentation as NodeCircleController;
+                }
+
+
+            }
+            else fadingRelation = null;
+
+            SetDirty();
         }
 
         [NonSerialized] public bool isFading;
@@ -431,11 +459,11 @@ namespace NodeNotes_Visual
                     targetPosition = ac.targetLocalPosition;
                 else {
                     if (!fadingIntoParent)
-                        targetPosition = (transform.position - fadingRelation.transform.position).normalized * 50;
+                        targetPosition = fadingRelation.transform.localPosition 
+                            + (transform.localPosition - fadingRelation.transform.localPosition).normalized * 50;
                     else
-                        targetPosition = fadingRelation.transform.position;
+                        targetPosition = fadingRelation.transform.localPosition;
                 }
-
 
                 float dist = (transform.localPosition - targetPosition).magnitude;
 
@@ -468,7 +496,7 @@ namespace NodeNotes_Visual
                 shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
                 shadeSelected.Portion(ref portion, ref dominantParameter);
 
-                float teleportPortion = ( fadePortion < 0.1f && !isFading) ? 1 : portion;
+                float teleportPortion = (canJumpToPosition && fadePortion < 0.1f && !isFading) ? 1 : portion;
 
                 transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, teleportPortion);
                 scale = Vector3.Lerp(scale, ac.targetSize, teleportPortion);
@@ -503,7 +531,7 @@ namespace NodeNotes_Visual
                 textB.rectTransform.sizeDelta = textSize;
 
             }
-            else {
+            /*else {
 
                 var before = sh_blur;
                 sh_blur =  Mathf.Lerp(sh_blur, 0, Time.deltaTime * 10);
@@ -513,7 +541,7 @@ namespace NodeNotes_Visual
                 fadePortion = MyMath.Lerp(fadePortion, isFading ? 0 : 1, 2, out portion);
                 if (isFading || fadePortion < 1)
                     needShaderUpdate = true;
-            }
+            }*/
             
             if (newText != null || activeTextAlpha < 1)
             {
@@ -644,6 +672,8 @@ namespace NodeNotes_Visual
             NameForPEGI = source.name;
             isFading = false;
             gameObject.SetActive(true);
+            if (colly)
+                colly.enabled = true;
         }
 
         public void Unlink()
@@ -655,6 +685,9 @@ namespace NodeNotes_Visual
             }
        
                 isFading = true;
+
+            if (colly)
+                colly.enabled = false;
         }
 
         private void OnEnable()

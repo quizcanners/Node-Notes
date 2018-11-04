@@ -27,6 +27,18 @@ namespace NodeNotes {
                 yield return g;
         }
         
+        public bool Contains(Base_Node node) {
+            if (node != null)
+            {
+                var gn = node.AsGameNode;
+                if (gn != null)
+                    return gameNodes.Contains(gn);
+
+                return coreNodes.Contains(node);
+            }
+            else return false;
+        }
+
         public void Add(Base_Node node)
         {
             var gn = node.AsGameNode;

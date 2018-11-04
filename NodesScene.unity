@@ -279,7 +279,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 29.75
+  m_fontSize: 38
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -439,7 +439,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 29.95
+  m_fontSize: 45.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1751,7 +1751,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 12.1
+  m_fontSize: 20.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2250,7 +2250,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 30.55
+  m_fontSize: 51.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2383,6 +2383,31 @@ PrefabInstance:
     - target: {fileID: 1432849844366775715, guid: c3cab6926ff117546ba0173afb11e449,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8756996908306702983, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198065207135605992, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 198065207135605992, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198781012459977936, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: simulationSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 198781012459977936, guid: c3cab6926ff117546ba0173afb11e449,
+        type: 3}
+      propertyPath: EmissionModule.enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

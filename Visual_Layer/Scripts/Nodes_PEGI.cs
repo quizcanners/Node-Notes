@@ -78,16 +78,18 @@ namespace NodeNotes_Visual
 
         #region BG
         public List<NodesStyleBase> backgroundControllers = new List<NodesStyleBase>();
-        public void SetBackground (NodeCircleController circle) {
+        public static void SetBackground (NodeCircleController circle) {
           //  var bg = circle != null ? backgroundControllers.TryGetByTag(circle.background) : null;
             var data = circle ? circle.backgroundConfig : "";
             var tag = circle ? circle.background : "";
 
-            if (tag.Length == 0 && backgroundControllers.Count > 0)
-                tag = backgroundControllers[0].ClassTag;
+            var bgc = NodeMGMT_inst.backgroundControllers;
 
-            for (int i=0; i<backgroundControllers.Count; i++) {
-                var bc = backgroundControllers[i];// as IManageFading;
+            if (tag.Length == 0 && bgc.Count > 0)
+                tag = bgc[0].ClassTag;
+
+            for (int i=0; i< bgc.Count; i++) {
+                var bc = bgc[i];// as IManageFading;
                 if (bc != null) {
                     if (bc.ClassTag == tag) {
                         bc.TryFadeIn();
@@ -139,11 +141,8 @@ namespace NodeNotes_Visual
 
             NodeCircleController nnp = null;
 
-            if (centerNode == null) {
+            if (centerNode == null) 
                 centerNode = node.parentNode?.visualRepresentation as NodeCircleController;
-
-
-            }
 
             bool reusing = false;
 
@@ -151,8 +150,10 @@ namespace NodeNotes_Visual
                 var tmp = node.previousVisualRepresentation as NodeCircleController;
                 if (tmp != null && tmp.isFading && node == tmp.myLastLinkedNode) {
                     nnp = tmp;
-                    reusing = true;
-                    Debug.Log("Reusing previous for {0}".F(node.ToPEGIstring()));
+                    if (tmp.gameObject.activeSelf) {
+                        reusing = true;
+                        Debug.Log("Reusing previous for {0}".F(node.ToPEGIstring()));
+                    }
                 }
             }
 
@@ -183,20 +184,25 @@ namespace NodeNotes_Visual
 
             if (!reusing)
                 nnp.SetStartPositionOn(centerNode);
+            
         }
 
         public override void Hide(Base_Node node) => MakeHidden(node);
 
-        static void MakeHidden(Base_Node node, NodeCircleController centerNode = null)
+        static void MakeHidden(Base_Node node, NodeCircleController previous = null)
         {
             var ncc = node.visualRepresentation as NodeCircleController;
             if (ncc) {
                 ncc.Unlink();
-                ncc.SetFadeAwayRelation(centerNode);
-
+            
                 if (!Application.isPlaying)
                     NodeMGMT_inst.Delete(ncc);
+                else
+                    ncc.SetFadeAwayRelation(previous);
+                
             }
+
+            
         }
 
         LoopLock loopLock = new LoopLock();
@@ -215,39 +221,42 @@ namespace NodeNotes_Visual
                 if (loopLock.Unlocked)
                     using (loopLock.Lock()) {
 
-                        if (Application.isPlaying) {
+                        if (Application.isPlaying && Shortcuts.CurrentNode != value) {
 
                             SetSelected(null);
 
-                            Node wasAParent = null;
-
-                            var curNode = Shortcuts.CurrentNode;
-
-                            if (value != null && curNode != null) {
-                                var s = value as Node;
-                                if (s != null) {
-                                    if (s.coreNodes.Contains(curNode))
-                                        wasAParent = curNode;
-                                }
-                            }
-
-                            foreach (var n in nodesPool)
-                                if (n != null && !n.isFading) {
-                                    if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
-                                        n.Unlink();
-                                    else
-                                        n.SetDirty();
-                                }
-
-                            firstFree = 0;
+          
+                 
+                            var previous = Shortcuts.CurrentNode?.visualRepresentation as NodeCircleController;
 
                             Shortcuts.CurrentNode = value;
 
-                            UpdateVisibility(curNode);
+                            UpdateVisibility(value, previous);
 
-                            NodeCircleController circle = value != null ? value.visualRepresentation as NodeCircleController : null;
+                            foreach (var n in nodesPool)
+                                UpdateVisibility(n.source, previous);
 
-                            SetBackground(circle);
+                            /*    if (value != null && curNode != null) {
+                                     var s = value as Node;
+                                     if (s != null) {
+                                         if (s.coreNodes.Contains(curNode))
+                                             wasAParent = curNode;
+                                     }
+                                 }
+
+
+                                 foreach (var n in nodesPool)
+                                     if (n != null && !n.isFading) {
+                                         if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
+                                             UpdateVisibility(n.source, center);
+                                     }*/
+
+
+                      
+                            UpdateCurrentNodeGroupVisibilityAround(previous);
+
+                            firstFree = 0;
+
                         }
                         else
                             Shortcuts.CurrentNode = value;
@@ -257,23 +266,32 @@ namespace NodeNotes_Visual
             }
         }
 
-        public static void UpdateVisibility(Base_Node node, NodeCircleController centerNode = null)  {
+        public static void UpdateVisibility(Base_Node node, NodeCircleController previous = null)  {
 
             if (node != null) {
 
-                bool shouldBeVisible = Base_Node.editingNodes || ((node.parentNode != null && node.Conditions_isVisibile()) || !Application.isPlaying);
+                bool shouldBeVisible = (Base_Node.editingNodes || 
+                    ((node.parentNode != null && node.Conditions_isVisibile()) || !Application.isPlaying))
+                    && (Shortcuts.CurrentNode != null 
+                    && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
 
                 if (node.visualRepresentation == null)  {
                     if (shouldBeVisible)
-                        MakeVisible(node, centerNode);
+                        MakeVisible(node, previous);
                 } else 
                     if (!shouldBeVisible)
-                        MakeHidden(node, centerNode); 
+                        MakeHidden(node, previous);
+
+                if (node.visualRepresentation != null)
+                    (node.visualRepresentation as NodeCircleController).SetDirty();
+
             }
         }
 
-        public static void UpdateVisibilityAround(NodeCircleController centerNode = null) {
+        public static void UpdateCurrentNodeGroupVisibilityAround(NodeCircleController centerNode = null) {
             var cn = Shortcuts.CurrentNode;
+            
+            SetBackground(cn?.visualRepresentation as NodeCircleController);
 
             if (Application.isPlaying) {
 
@@ -285,7 +303,7 @@ namespace NodeNotes_Visual
             }
         }
 
-        public override void UpdateVisibility() => UpdateVisibilityAround();
+        public override void UpdateVisibility() => UpdateCurrentNodeGroupVisibilityAround();
 
         public NodeCircleController selectedNode;
 
@@ -424,6 +442,8 @@ namespace NodeNotes_Visual
 
         public override void OnEnable()
         {
+            Shortcuts.visualLayer = this;
+
             base.OnEnable();
 
             NodeMGMT_inst = this;
@@ -436,7 +456,6 @@ namespace NodeNotes_Visual
             if (addButton)
                 addButton.gameObject.SetActive(false);
 
-            Shortcuts.visualLayer = this;
 
         }
         

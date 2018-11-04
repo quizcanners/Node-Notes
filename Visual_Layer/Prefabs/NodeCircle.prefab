@@ -160,8 +160,8 @@ MonoBehaviour:
     fileFolderHolder: STDEncodes
     SaveToFileOptions: 0
   inspectedStuff: -1
-  inspectedReference: -1
   circleRendy: {fileID: 23473017921692778}
+  colly: {fileID: 64270963018182558}
   background: 0
   backgroundConfig: 
   imageURL: 
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -570,7 +570,7 @@ MonoBehaviour:
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
   m_isInputParsingRequired: 0
-  m_inputSource: 3
+  m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 23523188328412502}
   m_subTextObjects:

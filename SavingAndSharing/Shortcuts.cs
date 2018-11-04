@@ -27,13 +27,12 @@ namespace NodeNotes {
 
                 if (Application.isPlaying && visualLayer && loopLock.Unlocked)
                 {
-                    using (loopLock.Lock())
-                    {
+                    using (loopLock.Lock()) {
                         visualLayer.CurrentNode = value;
+                      
                     }
-                }
+                } else user.CurrentNode = value;
 
-                user.CurrentNode = value;
             }
         }
 
