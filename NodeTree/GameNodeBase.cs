@@ -110,9 +110,9 @@ namespace NodeNotes {
 
                     changed |= base.Inspect();
 
-                    changed |= ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifFalse();
+                    changed |= ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifNotEntered();
 
-                    if (ClassTag.enter(ref inspectedStuff, 8).nl_ifFalse())
+                    if (ClassTag.enter(ref inspectedStuff, 8).nl_ifNotEntered())
                         InspectGameNode();
 
                 }
@@ -143,7 +143,7 @@ namespace NodeNotes {
         public override bool Decode(string tag, string data) {
             switch (tag) {
                 case "b": data.DecodeInto(base.Decode); break;
-                case "exit": data.DecodeInto_List(out onExitResults); break;
+                case "exit": data.Decode_List(out onExitResults); break;
                 default: return false;
             }
             return true;

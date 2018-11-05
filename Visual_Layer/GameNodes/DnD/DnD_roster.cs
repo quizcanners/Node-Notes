@@ -24,7 +24,7 @@ namespace NodeNotes_Visual
         #region Encode & Decode
         public override bool Decode_PerBookStatic(string tag, string data) {
             switch (tag) {
-                case "el": data.DecodeInto_List(out perBookGroups); break;
+                case "el": data.Decode_List(out perBookGroups); break;
                 case "i": inspectedGroup = data.ToInt(); break;
                 default: return false;
             }
@@ -61,7 +61,7 @@ namespace NodeNotes_Visual
             switch (tag)
             {
                 case "n": name = data; break;
-                case "el": data.DecodeInto_List(out elements); break;
+                case "el": data.Decode_List(out elements); break;
                 case "i": inspectedElement = data.ToInt(); break;
                 default: return false;
             }

@@ -233,14 +233,14 @@ namespace NodeNotes
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
-                case "bm": data.DecodeInto_List(out bookMarks); break;
+                case "bm": data.Decode_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
                 case "cur": tmpNode = data.ToInt(); break;
                 case "curB": tmpBook = data; break;
                 case "dev": isADeveloper = data.ToBool(); break;
                 case "n": userName = data; break;
                 case "start": startingPoint = data; break;
-                case "pgnd": data.DecodeInto(out gameNodeTypeData); break;
+                case "pgnd": data.Decode_Dictionary(out gameNodeTypeData); break;
                 default: return false;
             }
             return true;

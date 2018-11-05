@@ -54,7 +54,7 @@ namespace NodeNotes_Visual {
             if ("Interactions".enter(ref inspectedStuff, 10).nl())
                 interactionBranch.Inspect();
 
-            if ("Play Dialogue ".enter(ref inspectedStuff, 13).nl_ifFalse()){
+            if ("Play Dialogue ".enter(ref inspectedStuff, 13).nl_ifNotEntered()){
 
                 if (icon.Close.Click("Close dialogue", 20))
                     Exit();

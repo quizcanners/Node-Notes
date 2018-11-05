@@ -286,11 +286,11 @@ namespace NodeNotes {
 
             switch (tag)  {
 
-                case "sub": data.DecodeInto_List(out coreNodes); break;
+                case "sub": data.Decode_List(out coreNodes); break;
                 case "b": data.DecodeInto(base.Decode); break;
                 case "isn": inspectedSubnode = data.ToInt(); break;
                 case "gnMeta": gamesNodesMeta.Decode(data); break;
-                case "gn":  data.DecodeInto_List(out gameNodes, GameNodeBase.all, gamesNodesMeta); break;
+                case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, gamesNodesMeta); break;
                    
                 default:  return false;
             }

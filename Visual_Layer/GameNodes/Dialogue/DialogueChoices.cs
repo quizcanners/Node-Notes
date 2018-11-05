@@ -43,9 +43,9 @@ namespace NodeNotes_Visual {
             switch (tag)  {
                 case "ref": name = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
-                case "txt": data.DecodeInto_List(out texts); break;
-                case "opt": data.DecodeInto_List(out options); break;
-                case "fin": data.DecodeInto_List(out finalResults); break;
+                case "txt": data.Decode_List(out texts); break;
+                case "opt": data.Decode_List(out options); break;
+                case "fin": data.Decode_List(out finalResults); break;
                 case "is": inspectedStuff = data.ToInt(); break;
                 case "it": inspectedText = data.ToInt(); break;
                 case "bc": inspectedChoice = data.ToInt(); break;
@@ -70,13 +70,13 @@ namespace NodeNotes_Visual {
             bool changed = false;
 
             if (inspectedStuff == -1)
-                "Reference".editDelayed(ref name, 50).nl_ifFalse();
+                "Reference".editDelayed(ref name, 50).nl();
 
-            changed |= "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifFalse();
+            changed |= "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered();
 
-            changed |= "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifFalse();
+            changed |= "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered();
            
-            changed |= "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
+            changed |= "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered();
 
             "Conditions".enter(ref inspectedStuff, 4).nl();
                 changed |= conditions.Inspect();
@@ -116,8 +116,8 @@ namespace NodeNotes_Visual {
                 case "goto": nextOne = data; break;
                 case "cnd": data.DecodeInto(out conditions); break;
                 case "t": text = new Sentance(data); break;
-                case "t2": data.DecodeInto_List(out texts2); break;
-                case "res": data.DecodeInto_List(out results); break;
+                case "t2": data.Decode_List(out texts2); break;
+                case "res": data.Decode_List(out results); break;
                 case "ins": inspectedStuff = data.ToInt(); break;
                 default: return false;
             }
@@ -136,15 +136,15 @@ namespace NodeNotes_Visual {
         {
             bool changed = false;
 
-            if ("Text:".enter(ref inspectedStuff, 1).nl_ifFalse())
+            if ("Text:".enter(ref inspectedStuff, 1).nl_ifNotEntered())
                 changed |= text.Inspect();
 
-            if ("Conditions:".enter(ref inspectedStuff,2).nl_ifFalse())
+            if ("Conditions:".enter(ref inspectedStuff,2).nl_ifNotEntered())
                 conditions.Nested_Inspect();
 
-            changed |= "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifFalse();
+            changed |= "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered();
                 
-            if ("After choice text:".enter(ref inspectedStuff, 4).nl_ifFalse())
+            if ("After choice text:".enter(ref inspectedStuff, 4).nl_ifNotEntered())
                 texts2.PEGI();
 
             if ((inspectedStuff ==-1) && "Go To:".select_iGotName(ref nextOne, inspectedInteractions).nl())

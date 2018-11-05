@@ -115,9 +115,9 @@ namespace NodeNotes
                 case "sn": data.DecodeInto(out subNode); break;
                 case "in": inspectedNode = data.ToInt(); break;
                 case "inE": inspectedEntry = data.ToInt(); break;
-                case "ep": data.DecodeInto_List(out entryPoints); break;
+                case "ep": data.Decode_List(out entryPoints); break;
                 case "i": inspectedStuff = data.ToInt(); break;
-                case "gn": data.DecodeInto(out gameNodeTypeData); break;
+                case "gn": data.Decode_Dictionary(out gameNodeTypeData); break;
                 default: return false;
             }
             return true;

@@ -51,7 +51,7 @@ namespace NodeNotes_Visual
             {
                 switch (tag)
                 {
-                    case "cols": data.DecodeInto_Array(out cols); break;
+                    case "cols": data.Decode_Array(out cols); break;
                     default: return false;
                 }
 
