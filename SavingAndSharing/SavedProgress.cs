@@ -64,7 +64,7 @@ namespace NodeNotes
             }
         }
 
-        public string NameForPEGI { get => userName; set => userName = value; }
+        public string NameForPEGI { get => userName;  set => userName = value; }
 
         public void ExitCurrentBook() {
             if (bookMarks.Count == 0) {

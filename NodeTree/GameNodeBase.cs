@@ -97,6 +97,14 @@ namespace NodeNotes {
 
         protected virtual string ExitResultRole => "On Exit";
 
+        public override void ResetInspector() {
+            inspectedGameNodeStuff = -1;
+            editedExitResult = -1;
+
+            base.ResetInspector();
+        }
+
+        protected int inspectedGameNodeStuff = -1;
         int editedExitResult = -1;
 
         LoopLock inspectLoopLock = new LoopLock();
@@ -138,12 +146,14 @@ namespace NodeNotes {
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
-            .Add("exit", onExitResults);
+            .Add_IfNotEmpty("exit", onExitResults)
+            .Add_IfNotNegative("ign", inspectedGameNodeStuff);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
                 case "b": data.DecodeInto(base.Decode); break;
                 case "exit": data.Decode_List(out onExitResults); break;
+                case "ign": inspectedGameNodeStuff = data.ToInt(); break;
                 default: return false;
             }
             return true;

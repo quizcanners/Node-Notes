@@ -43,7 +43,7 @@ namespace NodeNotes_Visual {
             return true;
         }
         #endregion
-        
+
         #region Inspector
         #if PEGI
 
@@ -51,15 +51,15 @@ namespace NodeNotes_Visual {
 
             bool changed = base.Inspect();
 
-            if ("Interactions".enter(ref inspectedStuff, 10).nl())
+            if ("Interactions Tree".enter(ref inspectedGameNodeStuff, 10).nl())
                 interactionBranch.Inspect();
 
-            if ("Play Dialogue ".enter(ref inspectedStuff, 13).nl_ifNotEntered()){
+            if ("Play Dialogue ".enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered()){
 
                 if (icon.Close.Click("Close dialogue", 20))
                     Exit();
                 else  {
-                    pegi.newLine();
+                    pegi.nl();
                     for (int i = 0; i < _optText.Count; i++)
                     {
                         if (_optText[i].Click().nl())
@@ -110,7 +110,7 @@ namespace NodeNotes_Visual {
         
         void CollectInteractions() => CollectInteractions(interactionBranch);
 
-        void CollectInteractions(InteractionBranch gr) {
+        void CollectInteractions(LogicBranch<Interaction> gr) {
             foreach (Interaction si in gr.elements) {
                     if (si.conditions.IsTrue) {
                         _optText.Add(si.texts[0].ToPEGIstring());
@@ -119,7 +119,7 @@ namespace NodeNotes_Visual {
                     }
             }
 
-            foreach (InteractionBranch sgr in gr.subBranches)
+            foreach (var sgr in gr.subBranches)
                 CollectInteractions(sgr);
         }
 
@@ -141,7 +141,7 @@ namespace NodeNotes_Visual {
                 if (continuationReference != null)
                 {
                     foreach (var ie in possibleInteractions)
-                        if (ie.name == continuationReference)
+                        if (ie.referanceName == continuationReference)
                         {
                             interaction = ie;
                             InteractionStage++;
@@ -154,10 +154,7 @@ namespace NodeNotes_Visual {
                 Exit();
         }
 
-        protected override void AfterEnter() {
-            BackToInitials();
-        }
-
+        protected override void AfterEnter() => BackToInitials();
         
         public static int textNo;
         public static int InteractionStage;

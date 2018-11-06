@@ -32,10 +32,11 @@ namespace NodeNotes_Visual
         #region Node Image
         Texture coverImage = null;
         public string imageURL = "";
+        bool hideLabel = false;
         int imageIndex = -1;
         float imageScaling = 1f;
-        enum imageMode { fit, tile }
-        imageMode mode;
+        enum ImageMode { fit, tile }
+        ImageMode mode;
 
         void LoadCoverImage() {
             if (imageURL.Length > 8)
@@ -112,11 +113,10 @@ namespace NodeNotes_Visual
      
             if (loopLock.Unlocked && source != null) {
                 using (loopLock.Lock()) {
-                    if (source.Try_Nested_Inspect()) {
+                    if (source.Try_Nested_Inspect().changes(ref changed)) {
                         if (name != source.name)
                             NameForPEGI = source.name;
-
-                        changed = true;
+                        
                         Shortcuts.visualLayer.UpdateVisibility();
                     }
                 }
@@ -147,16 +147,12 @@ namespace NodeNotes_Visual
                     if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active fconditions to {0}".F(!enabled)) && !source.TryForceEnabledConditions(!enabled))
                         Debug.Log("No Conditions to force to {0}".F(!enabled));
 
-                    if (IsCurrent)
-                    {
+                    if (IsCurrent) {
                         source.name.write(PEGI_Styles.ListLabel);
 
-                        if (source != null)
-                        {
-                            if (NodesStyleBase.all.selectTypeTag(ref background).nl())
-                                changed = true;
-                            Nodes_PEGI.SetBackground(this);
-                        }
+                        if (source != null && NodesStyleBase.all.selectTypeTag(ref background).nl(ref changed))
+                                Nodes_PEGI.SetBackground(this);
+                        
                     }
                     else
                         source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
@@ -179,9 +175,7 @@ namespace NodeNotes_Visual
                         var bg = Mgmt.backgroundControllers.TryGetByTag(background);
                         if (bg != null)
                         {
-                            if (bg.Try_Nested_Inspect().nl())
-                            {
-                                changed = true;
+                            if (bg.Try_Nested_Inspect().nl(ref changed)) {
                                 var std = bg as ISTD;
                                 if (std != null)
                                     backgroundConfig = std.Encode().ToString();
@@ -238,31 +232,27 @@ namespace NodeNotes_Visual
 
                             bool reload = false;
 
-                            bool changedURL = "Paste URL".edit(90, ref shortURL);
-                            if (changedURL)
-                            {
-                                if (shortURL.Length > 8 || shortURL.Length == 0)
-                                {
+                            bool changedURL = "Paste URL".edit(90, ref shortURL).changes(ref changed);
+                            if (changedURL && (shortURL.Length > 8 || shortURL.Length == 0)) {
                                     reload = true;
                                     imageURL = shortURL;
-                                }
-                                changed = true;
                             }
 
-                            reload |= (imageURL.Length > 8 && icon.Refresh.Click());
+                            reload |= (imageURL.Length > 8 && icon.Refresh.Click().changes(ref changed));
 
                             if (reload)
                                 LoadCoverImage();
                             pegi.nl();
-
-
+                        
                             if (coverImage != null) {
 
                                 if ("Img Mode".editEnum(50, ref mode).nl())
                                     SetImage();
 
-                                if (mode == imageMode.tile)
-                                    changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
+                            if (mode == ImageMode.tile)
+                                changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
+                            else
+                                changed |= "Hide Label".toggleIcon(ref hideLabel, true).nl();
 
                                 if (!pegi.paintingPlayAreaGUI)
                                     pegi.write(coverImage, 200); pegi.nl();
@@ -386,7 +376,7 @@ namespace NodeNotes_Visual
         void SetImage() {
             circleRendy.MaterialWhaever().mainTexture = coverImage;
             SetDirty();
-            if (mode == imageMode.fit)
+            if (mode == ImageMode.fit)
                 circleRendy.MaterialWhaever().EnableKeyword("_CLAMP");
             else
                 circleRendy.MaterialWhaever().DisableKeyword("_CLAMP");
@@ -405,8 +395,11 @@ namespace NodeNotes_Visual
 
         void UpdateShaders() {
             if (textB && textA) {
-                ActiveText.color = new Color(0, 0, 0, activeTextAlpha * fadePortion);
-                PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * fadePortion);
+
+                float textFadePortion = (hideLabel ? (1 - textureFadeIn.value) : 1f) * fadePortion;
+
+                ActiveText.color = new Color(0, 0, 0, activeTextAlpha * textFadePortion);
+                PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * textFadePortion);
             }
 
             if (circleRendy) {
@@ -612,6 +605,7 @@ namespace NodeNotes_Visual
             imageURL = "";
             imageIndex -= 1;
             coverImage = null;
+            hideLabel = false;
 
             nodeEnteredVisuals = new NodeVisualConfig();
             nodeActive_Default_Visuals = new NodeVisualConfig();
@@ -634,6 +628,8 @@ namespace NodeNotes_Visual
                 case "bg_cfg": backgroundConfig = data; break;
                 case "URL": imageURL = data; break;
                 case "imgScl": imageScaling = data.ToFloat(); break;
+                case "imgMd": mode = (ImageMode)data.ToInt(); break;
+                case "hidTxt": hideLabel = data.ToBool(); break; 
                 default: return false;
             }
 
@@ -649,11 +645,17 @@ namespace NodeNotes_Visual
                 .Add_IfNotEmpty("bg_cfg", backgroundConfig)
                 .Add_IfNotEmpty("URL", imageURL);
 
-            if (imageURL.Length > 0)
-                cody.Add("imgScl", imageScaling);
+            if (imageURL.Length > 0) {
+                cody.Add("imgMd", (int)mode);
+                if (mode == ImageMode.tile) 
+                    cody.Add("imgScl", imageScaling);
+                        else
+                    cody.Add_IfTrue("hidTxt", hideLabel);
+            }
 
             if (source.AsNode != null)
                 cody.Add_IfNotDefault("expVis", nodeEnteredVisuals); 
+
             return cody;
         }
 
@@ -754,19 +756,14 @@ namespace NodeNotes_Visual
             bool changed = false;
 
             float x = targetSize.x;
-            if ("Width".edit(50, ref x, 1f, 15f).nl())  {
-                changed = true;
+            if ("Width".edit(50, ref x, 1f, 15f).nl(ref changed))  
                 targetSize.x = x;
-            }
-
+            
             float y = targetSize.y;
-            if ("Height".edit(50, ref y, 1f, 15f).nl()) {
-                changed = true;
+            if ("Height".edit(50, ref y, 1f, 15f).nl(ref changed)) 
                 targetSize.y = y;
-            }
-
-            if ("Color".edit(50, ref targetColor).nl())
-                changed = true;
+            
+            "Color".edit(50, ref targetColor).nl(ref changed);
             
             return changed;
         }

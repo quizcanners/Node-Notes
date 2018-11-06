@@ -10,13 +10,13 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognized_STD, IGotName {
+    public class Interaction : AbstractKeepUnrecognized_STD, IGotName, IPEGI {
 
-        public string name = "";
+        public string referanceName = "";
         public ConditionBranch conditions = new ConditionBranch();
-        public List<Sentance> texts;
-        public List<DialogueChoice> options;
-        public List<Result> finalResults;
+        public List<Sentance> texts = new List<Sentance>();
+        public List<DialogueChoice> options = new List<DialogueChoice>();
+        public List<Result> finalResults = new List<Result>();
 
         public void Execute() {
             for (int j = 0; j < options.Count; j++)
@@ -26,8 +26,13 @@ namespace NodeNotes_Visual {
         }
         
         #region Encode & Decode
+
+        public Interaction() {
+            texts.Add(new Sentance());
+        }
+
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add_IfNotEmpty("ref", name)
+            .Add_IfNotEmpty("ref", referanceName)
             .Add("Conds", conditions)
             .Add_IfNotEmpty("txt", texts)
             .Add_IfNotEmpty("opt", options)
@@ -41,7 +46,7 @@ namespace NodeNotes_Visual {
 
         public override bool Decode(string tag, string data) {
             switch (tag)  {
-                case "ref": name = data; break;
+                case "ref": referanceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
                 case "txt": data.Decode_List(out texts); break;
                 case "opt": data.Decode_List(out options); break;
@@ -62,24 +67,33 @@ namespace NodeNotes_Visual {
         int inspectedChoice = -1;
         int inspectedResult = -1;
 
+        public override void ResetInspector() {
+            inspectedText = -1;
+            inspectedChoice = -1;
+            inspectedResult = -1;
+            base.ResetInspector();
+        }
+
 #if PEGI
 
-        public string NameForPEGI { get { return name; } set { name = value; } }
+        public string NameForPEGI { get { return referanceName; } set { referanceName = value; } }
 
         public override bool Inspect() {
             bool changed = false;
 
             if (inspectedStuff == -1)
-                "Reference".editDelayed(ref name, 50).nl();
+                "Reference".editDelayed(ref referanceName, 50).nl();
 
-            changed |= "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered();
+            if (inspectedStuff == 1 && inspectedText == -1)
+                Sentance.LanguageSelector_PEGI().nl();
 
-            changed |= "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered();
+            "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
+
+            "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
            
-            changed |= "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered();
+            "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered(ref changed);
 
-            "Conditions".enter(ref inspectedStuff, 4).nl();
-                changed |= conditions.Inspect();
+            "Conditions".enter_Inspect(conditions, ref inspectedStuff, 4).nl(ref changed);
 
             return false;
 
@@ -89,9 +103,18 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class InteractionBranch : LogicBranch<Interaction>  {  }
+    public class InteractionBranch : LogicBranch<Interaction>  {
+        public override string NameForElements => "Interactions";
+
+        public override void ResetInspector() {
+
+
+            base.ResetInspector();
+        }
+
+    }
     
-    public class DialogueChoice : AbstractKeepUnrecognized_STD
+    public class DialogueChoice : AbstractKeepUnrecognized_STD, IPEGI, IGotName
     {
         public ConditionBranch conditions = new ConditionBranch();
         public Sentance text = new Sentance();
@@ -115,7 +138,7 @@ namespace NodeNotes_Visual {
             {
                 case "goto": nextOne = data; break;
                 case "cnd": data.DecodeInto(out conditions); break;
-                case "t": text = new Sentance(data); break;
+                case "t": text.Decode(data); break;
                 case "t2": data.Decode_List(out texts2); break;
                 case "res": data.Decode_List(out results); break;
                 case "ins": inspectedStuff = data.ToInt(); break;
@@ -128,32 +151,35 @@ namespace NodeNotes_Visual {
 
         #region Inspector
         int inspectedResult = -1;
-#if PEGI
+        int inspectedText = -1;
+        #if PEGI
 
         public static List<Interaction> inspectedInteractions;
 
-        public override bool Inspect()
-        {
+        public string NameForPEGI { get { return text.NameForPEGI; } set { text.NameForPEGI = value; } }
+
+        public override bool Inspect() {
             bool changed = false;
 
-            if ("Text:".enter(ref inspectedStuff, 1).nl_ifNotEntered())
-                changed |= text.Inspect();
+            if (icon.Hint.enter(text.ToPEGIstring() ,ref inspectedStuff, 1))
+                text.Nested_Inspect();
+            else Sentance.LanguageSelector_PEGI().nl();
 
             if ("Conditions:".enter(ref inspectedStuff,2).nl_ifNotEntered())
                 conditions.Nested_Inspect();
 
-            changed |= "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered();
-                
-            if ("After choice text:".enter(ref inspectedStuff, 4).nl_ifNotEntered())
-                texts2.PEGI();
+            "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered(ref changed);
 
-            if ((inspectedStuff ==-1) && "Go To:".select_iGotName(ref nextOne, inspectedInteractions).nl())
+            if (inspectedStuff == 4 && inspectedText == -1)
+                Sentance.LanguageSelector_PEGI().nl();
+            "After choice texts:".enter_List(ref texts2, ref inspectedText, ref inspectedStuff, 4).nl_ifNotEntered(ref changed);
 
-            pegi.newLine();
+            if (inspectedStuff == -1)
+                "Go To:".select_iGotName(ref nextOne, inspectedInteractions).nl();
 
             return changed;
         }
-#endif
+        #endif
         #endregion
     }
 

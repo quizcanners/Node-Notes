@@ -28,13 +28,24 @@ namespace NodeNotes {
                 if (Application.isPlaying && visualLayer && loopLock.Unlocked)
                 {
                     using (loopLock.Lock()) {
+                        expectingLoopCall = true;
                         visualLayer.CurrentNode = value;
-                      
+                        if (expectingLoopCall) {
+                            expectingLoopCall = false;
+                            user.CurrentNode = value;
+                        }
                     }
-                } else user.CurrentNode = value;
+                }
+                else
+                {
+                    expectingLoopCall = false;
+                    user.CurrentNode = value;
+                }
 
             }
         }
+
+        static bool expectingLoopCall = false;
 
         public static NodesVisualLayerAbstract visualLayer;
 

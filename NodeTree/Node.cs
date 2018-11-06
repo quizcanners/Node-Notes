@@ -197,10 +197,9 @@ namespace NodeNotes {
                         Shortcuts.Cut_Paste = null;
                     else {
                         (cp.ToPEGIstring() + (canPaste ? "" : " can't paste parent to child")).write();
-                        if (canPaste && icon.Paste.Click()){
+                        if (canPaste && icon.Paste.Click(ref changed)){
                             cp.MoveTo(this);
                             Shortcuts.Cut_Paste = null;
-                            changed = true;
                             Shortcuts.visualLayer.UpdateVisibility();
                         }
                     }
