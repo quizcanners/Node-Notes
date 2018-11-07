@@ -81,19 +81,16 @@ namespace NodeNotes_Visual {
         public override bool Inspect() {
             bool changed = false;
 
-            if (inspectedStuff == -1)
-                "Reference".editDelayed(ref referanceName, 50).nl();
-
             if (inspectedStuff == 1 && inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
-
+            
+            "Conditions".enter_Inspect(conditions, ref inspectedStuff, 4).nl(ref changed);
+            
             "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
 
             "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
            
             "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered(ref changed);
-
-            "Conditions".enter_Inspect(conditions, ref inspectedStuff, 4).nl(ref changed);
 
             return false;
 
@@ -163,7 +160,7 @@ namespace NodeNotes_Visual {
 
             if (icon.Hint.enter(text.ToPEGIstring() ,ref inspectedStuff, 1))
                 text.Nested_Inspect();
-            else Sentance.LanguageSelector_PEGI().nl();
+            else if (inspectedStuff == -1) Sentance.LanguageSelector_PEGI().nl();
 
             if ("Conditions:".enter(ref inspectedStuff,2).nl_ifNotEntered())
                 conditions.Nested_Inspect();

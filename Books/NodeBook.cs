@@ -82,7 +82,7 @@ namespace NodeNotes
             if (pegi.editDelayed(ref tmp)) 
                 TryRename(tmp);
             
-            if (icon.Edit.Click())
+            if (icon.Edit.ClickUnfocus())
                 edited = ind;
 
             if (icon.Save.Click())
