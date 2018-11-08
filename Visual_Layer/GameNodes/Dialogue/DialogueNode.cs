@@ -56,9 +56,11 @@ namespace NodeNotes_Visual {
 
             if ("Play Dialogue ".enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered()){
 
-                if (icon.Close.Click("Close dialogue", 20))
-                    Exit();
-                else  {
+                if (icon.Refresh.Click("Close dialogue", 20))
+                    BackToInitials();
+                else
+                {
+                    DistantUpdate();
                     pegi.nl();
                     for (int i = 0; i < _optText.Count; i++)
                     {
@@ -67,6 +69,8 @@ namespace NodeNotes_Visual {
                             SelectOption(i);
                             DistantUpdate();
                         }
+
+
                     }
                 }
             }
@@ -78,7 +82,9 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Options MGMT
-        public static string SingleText { get { return _optText.Count > 0 ? _optText[0] : null; } set { _optText.Clear(); _optText.Add(value); } }
+        public static string SingleText {
+            get { return _optText.Count > 0 ? _optText[0] : null; }
+            set { _optText.Clear(); _optText.Add(value); } }
 
         public static List<string> _optText = new List<string>();
         static List<Interaction> possibleInteractions = new List<Interaction>();
@@ -90,7 +96,6 @@ namespace NodeNotes_Visual {
         {
             ClearTexts();
             int cnt = 0;
-            //for (int i = 0; i < tmp.Count; i++)
             foreach (DialogueChoice dio in ia.options)
                 if (dio.conditions.IsTrue) {
                     _optText.Add(dio.text.ToString());
@@ -164,30 +169,30 @@ namespace NodeNotes_Visual {
 
         static int QuestVersion;
         public void DistantUpdate()  {
- 
-                if (QuestVersion != LogicMGMT.currentLogicVersion)  {
 
-                    switch (InteractionStage)
-                    {
-                        case 0: BackToInitials(); break;
-                        case 1: GotBigText(); break;
-                        case 3: CheckOptions(interaction); break;
-                        case 5:
-                            List<Sentance> tmp = option.texts2;
-                            if (tmp.Count > textNo)
-                                SingleText = tmp[textNo].ToString();
-                            break;
-                    }
-                    QuestVersion = LogicMGMT.currentLogicVersion;
+            if (QuestVersion != LogicMGMT.currentLogicVersion) {
+
+                switch (InteractionStage) {
+
+                    case 0: BackToInitials(); break;
+                    case 1: GotBigText(); break;
+                    case 3: CheckOptions(interaction); break;
+                    case 5:
+                        List<Sentance> tmp = option.texts2;
+                        if (tmp.Count > textNo)
+                            SingleText = tmp[textNo].ToString();
+                        break;
                 }
-            
+
+                QuestVersion = LogicMGMT.currentLogicVersion;
+            }
         }
 
-        static void ClearTexts()
-        {
+        static void ClearTexts() {
             _optText.Clear();
             ScrollOptsDirty = true;
             possibleInteractions.Clear();
+            possibleOptions.Clear();
         }
 
         static bool GotBigText()

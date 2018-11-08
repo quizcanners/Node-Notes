@@ -338,10 +338,15 @@ namespace NodeNotes_Visual
 
             if (gameNode != null) {
 
-                if (icon.Close.Click("Exit Game Node in Fail"))
-                    FromGameToNode(true);
-                else  if (icon.Save.Click("Exit Game Node & Save"))
+                if (icon.Save.Click("Exit Game Node & Save")) {
                     FromGameToNode();
+                    return true;
+                }
+
+                "GN: {0}".F(gameNode.ToPEGIstring()).write();
+
+                if (icon.Close.Click("Exit Game Node in Fail").nl())
+                    FromGameToNode(true);
                 else return gameNode.Nested_Inspect();
             }
 

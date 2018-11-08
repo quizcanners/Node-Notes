@@ -59,7 +59,7 @@ namespace NodeNotes
                     if (image.enabled) {
                         
                         float portion;
-                        rectTranform.anchoredPosition = MyMath.Lerp(rectTranform.anchoredPosition, Dest, Screen.width, out portion);
+                        rectTranform.anchoredPosition = MyMath.Lerp_bySpeed(rectTranform.anchoredPosition, Dest, Screen.width, out portion);
 
                         if (portion == 1) {
                             if (!showCreateButtons)

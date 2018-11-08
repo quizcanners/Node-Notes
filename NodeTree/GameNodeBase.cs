@@ -76,8 +76,7 @@ namespace NodeNotes {
                 using (loopLock.Lock()) {
 
                     ExitInternal();
-
-                   
+                    
                     Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
                     parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookStaticData().ToString();
 
@@ -118,7 +117,9 @@ namespace NodeNotes {
 
                     changed |= base.Inspect();
 
-                    changed |= ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7).nl_ifNotEntered();
+                    ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7, ref changed).SetLastUsedTrigger();
+                        
+                    pegi.nl_ifNotEntered();
 
                     if (ClassTag.enter(ref inspectedStuff, 8).nl_ifNotEntered())
                         InspectGameNode();

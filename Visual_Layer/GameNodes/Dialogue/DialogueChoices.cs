@@ -89,8 +89,10 @@ namespace NodeNotes_Visual {
             "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
 
             "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
-           
-            "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered(ref changed);
+
+            "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+
+            pegi.nl_ifNotEntered();
 
             return false;
 
@@ -153,9 +155,12 @@ namespace NodeNotes_Visual {
 
         public static List<Interaction> inspectedInteractions;
 
-        public string NameForPEGI { get { return text.NameForPEGI; } set { text.NameForPEGI = value; } }
+        public string NameForPEGI {
+            get { return text.NameForPEGI; }
+            set { text.NameForPEGI = value; } }
 
         public override bool Inspect() {
+
             bool changed = false;
 
             if (icon.Hint.enter(text.ToPEGIstring() ,ref inspectedStuff, 1))
@@ -165,10 +170,13 @@ namespace NodeNotes_Visual {
             if ("Conditions:".enter(ref inspectedStuff,2).nl_ifNotEntered())
                 conditions.Nested_Inspect();
 
-            "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3).nl_ifNotEntered(ref changed);
+            "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+                
+            pegi.nl_ifNotEntered();
 
             if (inspectedStuff == 4 && inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
+
             "After choice texts:".enter_List(ref texts2, ref inspectedText, ref inspectedStuff, 4).nl_ifNotEntered(ref changed);
 
             if (inspectedStuff == -1)
