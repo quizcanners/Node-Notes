@@ -104,7 +104,7 @@ namespace NodeNotes
         public void ReturnToMark(BookMark mark) {
             if (bookMarks.Contains(mark))
                 ReturnToMark(bookMarks.IndexOf(mark));
-            else Debug.LogError("Book Marks don't contain {0}".F(mark.ToPEGIstring()));
+            else Debug.LogError("Book Marks don't contain {0}".F(mark));
         }
 
         void ReturnToMark (int ind) {

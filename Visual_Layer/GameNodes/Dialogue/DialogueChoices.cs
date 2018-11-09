@@ -111,6 +111,9 @@ namespace NodeNotes_Visual {
             base.ResetInspector();
         }
 
+        public InteractionBranch() {
+            name = "root";
+        }
     }
     
     public class DialogueChoice : AbstractKeepUnrecognized_STD, IPEGI, IGotName

@@ -541,7 +541,7 @@ namespace NodeNotes_Visual
                 if (newText == null)
                     activeTextAlpha = Mathf.Lerp(activeTextAlpha, 1, portion);
                 else
-                    activeTextAlpha = MyMath.Lerp(activeTextAlpha, 1, 4);
+                    activeTextAlpha = MyMath.Lerp_bySpeed(activeTextAlpha, 1, 4);
 
                 if (activeTextAlpha == 1 && newText != null)  {
                     activeTextIsA = !activeTextIsA;

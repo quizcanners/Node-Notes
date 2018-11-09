@@ -51,29 +51,26 @@ namespace NodeNotes_Visual {
 
             bool changed = base.Inspect();
 
-            if ("Interactions Tree".enter(ref inspectedGameNodeStuff, 10).nl())
-                interactionBranch.Inspect();
+            "{0} Dialogue".F(name).write();
+            
+            if (icon.Play.enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered()){
 
-            if ("Play Dialogue ".enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered()){
-
-                if (icon.Refresh.Click("Close dialogue", 20))
+                if (icon.Refresh.Click("Restart dialogue", 20))
                     BackToInitials();
                 else
                 {
                     DistantUpdate();
                     pegi.nl();
                     for (int i = 0; i < _optText.Count; i++)
-                    {
-                        if (_optText[i].Click().nl())
-                        {
+                        if (_optText[i].Click().nl()) {
                             SelectOption(i);
                             DistantUpdate();
                         }
-
-
-                    }
+                    
                 }
             }
+
+            "Interactions Tree".enter_Inspect(interactionBranch, ref inspectedGameNodeStuff, 10).nl(ref changed);
 
             return changed;
         }
