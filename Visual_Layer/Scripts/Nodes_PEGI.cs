@@ -325,7 +325,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-#if PEGI
+        #if PEGI
         pegi.windowPositionData window = new pegi.windowPositionData();
 
         public override void ResetInspector()

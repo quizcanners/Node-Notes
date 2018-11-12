@@ -13,6 +13,7 @@ namespace NodeNotes
         public string startingPoint = "";
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
+        List_Data marksMeta = new List_Data("Book Marks", true, false, false, false);
         public bool isADeveloper = false;
 
         #region GameNodes
@@ -187,12 +188,6 @@ namespace NodeNotes
             "{0} FROM {1}".F(userName, startingPoint);
 
         #if PEGI
-        public override void ResetInspector() {
-            editedMark = -1;
-            base.ResetInspector();
-        }
-
-        int editedMark = -1;
         public override bool Inspect() {
 
             bool changed = false; 
@@ -204,9 +199,9 @@ namespace NodeNotes
             else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
             
-            changed |= "Marks ".enter_List(ref bookMarks,ref editedMark, ref inspectedStuff, 0).nl_ifNotEntered();
+            marksMeta.enter_List(ref bookMarks, ref inspectedStuff, 0).nl_ifNotEntered(ref changed);
 
-            changed |= "Values ".enter_Inspect(Values.global, ref inspectedStuff, 1).nl_ifNotEntered();
+            "Values ".enter_Inspect(Values.global, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
             
             return changed;
         }

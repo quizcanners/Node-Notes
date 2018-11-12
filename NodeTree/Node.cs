@@ -269,8 +269,8 @@ namespace NodeNotes {
                         .Add_IfNotNegative("isn", inspectedSubnode);
 
                         if (gameNodes.Count>0)
-                        cody.Add("gnMeta", gamesNodesMeta)
-                            .Add_Abstract("gn", gameNodes, gamesNodesMeta);
+                        cody.Add_Abstract("gn", gameNodes, gamesNodesMeta)
+                            .Add("gnMeta", gamesNodesMeta);
                    
                     return cody;
                 }
