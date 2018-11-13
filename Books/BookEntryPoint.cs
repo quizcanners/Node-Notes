@@ -42,12 +42,14 @@ namespace NodeNotes
 
         #region Inspector
 
-#if PEGI
+        #if PEGI
         public override bool Inspect()
         {
             bool changed = false;
 
-            "Tag should not change after it was used by other book to link to this one".writeOneTimeHint("KeepTags");
+            "{0} is a key. Don't change it after using".writeHint();
+
+            //"Tag should not change after it was used by other book to link to this one".writeOneTimeHint("KeepTags");
 
             "On Node".select_iGotIndex_SameClass<Base_Node, Node>(60, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
             

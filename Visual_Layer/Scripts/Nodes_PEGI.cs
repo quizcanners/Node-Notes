@@ -389,11 +389,11 @@ namespace NodeNotes_Visual
             if (icon.Condition.enter("Dependencies", ref inspectedStuff, 5))
             {
                 pegi.nl();
-                changed |= "Edit Button".edit(ref editButton).nl();
-                changed |= "Add Button".edit(ref addButton).nl();
-                changed |= "Delete Button".edit(ref deleteButton).nl();
+                changed |= "Edit Button".edit(90, ref editButton).nl();
+                changed |= "Add Button".edit(90, ref addButton).nl();
+                changed |= "Delete Button".edit(90, ref deleteButton).nl();
                 changed |= "Backgrounds".edit_Property(() => backgroundControllers, this).nl();
-                changed |= "Circles Prefab".edit(ref circlePrefab).nl();
+                changed |= "Circles Prefab".edit(90, ref circlePrefab).nl();
 
                 "Nodes Pool: {0}; First Free: {1}".F(nodesPool.Count, firstFree).nl();
 

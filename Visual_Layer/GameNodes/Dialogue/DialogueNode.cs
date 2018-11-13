@@ -113,16 +113,19 @@ namespace NodeNotes_Visual {
         void CollectInteractions() => CollectInteractions(interactionBranch);
 
         void CollectInteractions(LogicBranch<Interaction> gr) {
-            foreach (Interaction si in gr.elements) {
-                    if (si.conditions.IsTrue) {
+
+            if (gr.IsTrue())  {
+                foreach (Interaction si in gr.elements)  {
+                    if (si.IsTrue()) {
                         _optText.Add(si.texts[0].ToPEGIstring());
                         possibleInteractions.Add(si);
-                       
-                    }
-            }
 
-            foreach (var sgr in gr.subBranches)
-                CollectInteractions(sgr);
+                    }
+                }
+
+                foreach (var sgr in gr.subBranches)
+                    CollectInteractions(sgr);
+            }
         }
 
         public void BackToInitials() {
@@ -175,9 +178,11 @@ namespace NodeNotes_Visual {
                     case 1: GotBigText(); break;
                     case 3: CheckOptions(interaction); break;
                     case 5:
-                        List<Sentance> tmp = option.texts2;
-                        if (tmp.Count > textNo)
-                            SingleText = tmp[textNo].ToString();
+                        var sntx = option.texts2.GetNextText(ref textNo);
+
+                        if (sntx != null)
+                            SingleText = sntx.ToString();
+                        
                         break;
                 }
 
@@ -194,11 +199,14 @@ namespace NodeNotes_Visual {
 
         static bool GotBigText()
         {
-            if (textNo < interaction.texts.Count)
-            {
-                SingleText = interaction.texts[textNo].ToString();
-                return true;
+
+            var txt = interaction.texts.GetNextText(ref textNo);
+
+            if (txt != null) {
+                SingleText = txt.ToString();
+                return true; 
             }
+
             return false;
         }
         
@@ -232,15 +240,16 @@ namespace NodeNotes_Visual {
 
                 case 5:
 
-                    List<Sentance> txts = option.texts2;
-                    if ((txts.Count > textNo + 1))
-                    {
-                        textNo++;
-                        SingleText = txts[textNo].ToString();
-                        InteractionStage = 5;
-                        break;
-                    }
-                    goto case 6;
+                    textNo++;
+
+                    var sntnc = option.texts2.GetNextText(ref textNo);
+                    if (sntnc != null)
+                        SingleText = sntnc.ToString();
+                    else
+                        goto case 6;
+
+                    break;
+
                 case 6:
 
                     BackToInitials();

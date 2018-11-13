@@ -166,12 +166,74 @@ namespace NodeNotes {
         }
 
 #if PEGI
+
+
+        public override bool Inspect_AfterNamePart() {
+            var changed = false;
+            if (inspectedStuff == -1 && !InspectingTriggerStuff) {
+
+                if (inspectedSubnode != -1)
+                {
+                    var n = coreNodes.TryGet(inspectedSubnode);
+                    if (n == null)
+                        inspectedSubnode = -1;
+                    else
+                    {
+                        if (icon.Exit.Click("Exit {0}".F(name)))
+                            inspectedSubnode = -1;
+
+                        if (this == Shortcuts.CurrentNode)
+                        {
+                            name.write(PEGI_Styles.EnterLabel);
+                            if (parentNode != null && icon.Active.Click("Is Active. Click to exit."))
+                                Shortcuts.CurrentNode = parentNode;
+                          
+                        }
+                        else
+                            name.write();
+
+                        pegi.nl();
+                    }
+
+                    if (inspectedSubnode != -1)
+                        n.Try_Nested_Inspect();
+                }
+
+                if (inspectedSubnode == -1)
+                {
+                    pegi.nl();
+                    var newNode = "Sub Nodes".edit_List(ref coreNodes, ref inspectedSubnode, ref changed);
+
+                    if (newNode != null)
+                        newNode.CreatedFor(this);
+                }
+
+
+            }
+
+            if (inspectedSubnode == -1) {
+
+                var ngn = gamesNodesMeta.enter_List(ref gameNodes, ref inspectedStuff, 7, GameNodeBase.all, ref changed);
+                
+                pegi.nl_ifFoldedOut();
+
+                if (ngn != null)
+                    ngn.CreatedFor(this);
+            }
+
+            return changed;
+
+        }
+
         public override bool Inspect() {
 
             bool changed = false;
 
             if (inspectedSubnode != -1)
                 inspectedStuff = -1;
+
+
+
 
             if (inspectedSubnode == -1 && inspectedStuff ==-1)  {
                 if (this != CurrentNode) {
@@ -182,12 +244,11 @@ namespace NodeNotes {
                     CurrentNode = parentNode;
             }
 
-            if (inspectedSubnode == -1) {
+            if (inspectedSubnode == -1)  {
 
                 var cp = Shortcuts.Cut_Paste;
 
-                if (cp != null)
-                {
+                if (cp != null) {
 
                     var gn = cp.AsGameNode;
 
@@ -195,9 +256,11 @@ namespace NodeNotes {
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
-                    else {
+                    else
+                    {
                         (cp.ToPEGIstring() + (canPaste ? "" : " can't paste parent to child")).write();
-                        if (canPaste && icon.Paste.Click(ref changed)){
+                        if (canPaste && icon.Paste.Click(ref changed))
+                        {
                             cp.MoveTo(this);
                             Shortcuts.Cut_Paste = null;
                             Shortcuts.visualLayer.UpdateVisibility();
@@ -205,50 +268,19 @@ namespace NodeNotes {
                     }
                     pegi.nl();
                 }
-  
+
+
+
                 changed |= base.Inspect();
 
-                var ngn = gamesNodesMeta.enter_List(ref gameNodes, ref inspectedStuff, 7, GameNodeBase.all, ref changed);
-
-                pegi.nl_ifFoldedOut();
-
-                if (ngn != null)
-                    ngn.CreatedFor(this);
+          
             }
-            
-                if (inspectedStuff == -1 && !InspectingTriggerStuff) {
+            else
+                Inspect_AfterNamePart();
 
-                    if (inspectedSubnode != -1) {
-                        var n = coreNodes.TryGet(inspectedSubnode);
-                        if (n == null)
-                            inspectedSubnode = -1;
-                        else {
-                            if (icon.Exit.Click(name))
-                                inspectedSubnode = -1;
 
-                                if (this == Shortcuts.CurrentNode && parentNode != null && icon.Active.Click())
-                                    Shortcuts.CurrentNode = parentNode;
-                                
-                            name.nl();
-                        }
 
-                        if (inspectedSubnode != -1)
-                            n.Try_Nested_Inspect();
-                    }
 
-                    if (inspectedSubnode == -1)
-                    {
-                        pegi.nl();
-                        var newNode = "Sub Nodes".edit_List(ref coreNodes, ref inspectedSubnode, ref changed);
-
-                        if (newNode != null)
-                            newNode.CreatedFor(this);
-                    }
-
-                }
-            
-
-            
 
             return changed;
         }

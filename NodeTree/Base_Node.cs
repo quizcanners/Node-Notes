@@ -146,6 +146,10 @@ namespace NodeNotes {
 #if PEGI
         LoopLock inspectLock = new LoopLock();
 
+        public virtual bool Inspect_AfterNamePart() => false;
+
+        
+
         public override bool Inspect() {
             var changed = false;
 
@@ -171,6 +175,8 @@ namespace NodeNotes {
                     }
 
                     pegi.nl();
+
+                    Inspect_AfterNamePart().changes(ref changed);
 
                     changed |= "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedStuff, 4).nl_ifFolded();
 

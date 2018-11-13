@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognized_STD, IGotName, IPEGI {
+    public class Interaction : AbstractKeepUnrecognized_STD, IGotName, IPEGI, IAmConditional {
 
         public string referanceName = "";
         public ConditionBranch conditions = new ConditionBranch();
@@ -24,7 +24,9 @@ namespace NodeNotes_Visual {
 
             finalResults.Apply();
         }
-        
+
+        public bool CheckConditions(Values vals) => conditions.CheckConditions(vals);
+
         #region Encode & Decode
 
         public Interaction() {
@@ -33,7 +35,7 @@ namespace NodeNotes_Visual {
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotEmpty("ref", referanceName)
-            .Add("Conds", conditions)
+            .Add_IfNotDefault("Conds", conditions)
             .Add_IfNotEmpty("txt", texts)
             .Add_IfNotEmpty("opt", options)
             .Add_IfNotEmpty("fin", finalResults)
@@ -41,9 +43,7 @@ namespace NodeNotes_Visual {
             .Add_IfNotNegative("it", inspectedText)
             .Add_IfNotNegative("bc", inspectedChoice)
             .Add_IfNotNegative("ir", inspectedResult);
-
-
-
+        
         public override bool Decode(string tag, string data) {
             switch (tag)  {
                 case "ref": referanceName = data; break;
@@ -97,6 +97,8 @@ namespace NodeNotes_Visual {
             return false;
 
         }
+
+     
 #endif
         #endregion
 
@@ -104,12 +106,6 @@ namespace NodeNotes_Visual {
 
     public class InteractionBranch : LogicBranch<Interaction>  {
         public override string NameForElements => "Interactions";
-
-        public override void ResetInspector() {
-
-
-            base.ResetInspector();
-        }
 
         public InteractionBranch() {
             name = "root";
