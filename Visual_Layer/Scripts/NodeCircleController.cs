@@ -69,7 +69,7 @@ namespace NodeNotes_Visual
         public int IndexForPEGI { get { return indexInPool;  } set { indexInPool = value; } }
 
 
-#if PEGI
+        #if PEGI
 
         public override bool PEGI_inList(IList list, int ind, ref int edited) {
 
@@ -273,7 +273,7 @@ namespace NodeNotes_Visual
             return changed;
         }
 
-#endif
+        #endif
         #endregion
 
         #region Visual Configuration
@@ -390,7 +390,7 @@ namespace NodeNotes_Visual
                     imageIndex = -1;
                     SetDirty();
                 }
-            }
+            } 
         }
 
         void UpdateShaders() {

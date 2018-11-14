@@ -49,7 +49,7 @@ namespace NodeNotes
 
             pegi.nl();
 
-            if (subNode.inspectedStuff == -1 && subNode.inspectedSubnode == -1) {
+            if (subNode.inspectedStuff == -1 && !subNode.InspectingSubnode) {
 
                 if (inspectedStuff == -1)
                 {

@@ -11,10 +11,11 @@ namespace NodeNotes {
     public class Node : Base_Node,  INeedAttention, IPEGI {
 
         #region SubNodes
+        List_Data coreNodesMeta = new List_Data("Sub Nodes", keepTypeData: true, enterIcon: icon.StateMachine);
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
-        List_Data gamesNodesMeta = new List_Data("Game Nodes", keepTypeData: true);
+        List_Data gamesNodesMeta = new List_Data("Game Nodes", keepTypeData: true, enterIcon: icon.Discord);
 
         public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
 
@@ -101,11 +102,10 @@ namespace NodeNotes {
         #region Inspector
 
         public override void ResetInspector() {
-
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
 
-                    inspectedSubnode = -1;
+                    InspectingSubnode = false;
 
                     foreach (var n in coreNodes)
                         n.ResetInspector();
@@ -116,7 +116,7 @@ namespace NodeNotes {
                 }
         }
 
-        public int inspectedSubnode = -1;
+        public bool InspectingSubnode { get { return coreNodesMeta.inspected != -1; } set { if (value == false) coreNodesMeta.inspected = -1; } }
 
         public override string NeedAttention()
         {
@@ -158,7 +158,7 @@ namespace NodeNotes {
             else
             {
                 if (node != null && coreNodes.Contains(node))
-                    inspectedSubnode = coreNodes.IndexOf(node);
+                    coreNodesMeta.inspected = coreNodes.IndexOf(node);
             }
 
             if (parentNode != null)
@@ -170,17 +170,20 @@ namespace NodeNotes {
 
         public override bool Inspect_AfterNamePart() {
             var changed = false;
+
+            if (Application.isPlaying)
+                return false;
+
             if (inspectedStuff == -1 && !InspectingTriggerStuff) {
 
-                if (inspectedSubnode != -1)
-                {
-                    var n = coreNodes.TryGet(inspectedSubnode);
+                if (InspectingSubnode){
+                    var n = coreNodes.TryGet(coreNodesMeta);
                     if (n == null)
-                        inspectedSubnode = -1;
+                        InspectingSubnode = false;
                     else
                     {
                         if (icon.Exit.Click("Exit {0}".F(name)))
-                            inspectedSubnode = -1;
+                            InspectingSubnode = false;
 
                         if (this == Shortcuts.CurrentNode)
                         {
@@ -195,14 +198,13 @@ namespace NodeNotes {
                         pegi.nl();
                     }
 
-                    if (inspectedSubnode != -1)
+                    if (InspectingSubnode)
                         n.Try_Nested_Inspect();
                 }
 
-                if (inspectedSubnode == -1)
-                {
+                if (!InspectingSubnode)  {
                     pegi.nl();
-                    var newNode = "Sub Nodes".edit_List(ref coreNodes, ref inspectedSubnode, ref changed);
+                    var newNode = coreNodesMeta.edit_List(ref coreNodes, ref changed);
 
                     if (newNode != null)
                         newNode.CreatedFor(this);
@@ -211,7 +213,9 @@ namespace NodeNotes {
 
             }
 
-            if (inspectedSubnode == -1) {
+            if (!InspectingSubnode) {
+
+                gamesNodesMeta.inspected = -1;
 
                 var ngn = gamesNodesMeta.enter_List(ref gameNodes, ref inspectedStuff, 7, GameNodeBase.all, ref changed);
                 
@@ -229,13 +233,12 @@ namespace NodeNotes {
 
             bool changed = false;
 
-            if (inspectedSubnode != -1)
+            if (Application.isPlaying)
+                InspectingSubnode = false;
+            else if (InspectingSubnode)
                 inspectedStuff = -1;
-
-
-
-
-            if (inspectedSubnode == -1 && inspectedStuff ==-1)  {
+            
+            if (!InspectingSubnode && inspectedStuff ==-1 && !Application.isPlaying)  {
                 if (this != CurrentNode) {
                     if (icon.Play.Click("Enter Node"))
                         CurrentNode = this;
@@ -244,7 +247,7 @@ namespace NodeNotes {
                     CurrentNode = parentNode;
             }
 
-            if (inspectedSubnode == -1)  {
+            if (!InspectingSubnode)  {
 
                 var cp = Shortcuts.Cut_Paste;
 
@@ -268,20 +271,11 @@ namespace NodeNotes {
                     }
                     pegi.nl();
                 }
-
-
-
                 changed |= base.Inspect();
-
-          
             }
             else
                 Inspect_AfterNamePart();
-
-
-
-
-
+            
             return changed;
         }
 
@@ -298,7 +292,7 @@ namespace NodeNotes {
                     var cody = this.EncodeUnrecognized()
                         .Add_IfNotEmpty("sub", coreNodes)
                         .Add("b", base.Encode())
-                        .Add_IfNotNegative("isn", inspectedSubnode);
+                        .Add("cnm", coreNodesMeta);
 
                         if (gameNodes.Count>0)
                         cody.Add_Abstract("gn", gameNodes, gamesNodesMeta)
@@ -317,9 +311,9 @@ namespace NodeNotes {
 
             switch (tag)  {
 
-                case "sub": data.Decode_List(out coreNodes); break;
+                case "sub": data.Decode_List(out coreNodes, coreNodesMeta); break;
                 case "b": data.DecodeInto(base.Decode); break;
-                case "isn": inspectedSubnode = data.ToInt(); break;
+                case "cnm": coreNodesMeta.Decode(data); break;
                 case "gnMeta": gamesNodesMeta.Decode(data); break;
                 case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, gamesNodesMeta); break;
                    

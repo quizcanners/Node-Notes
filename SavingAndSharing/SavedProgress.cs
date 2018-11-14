@@ -17,15 +17,9 @@ namespace NodeNotes
         public bool isADeveloper = false;
 
         #region GameNodes
-
         string preGameNodeSTD;
 
         public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
-
-        public void SaveCurrentNode() => preGameNodeSTD = Encode().ToString();
-
-        public void LoadCurrentNode() => Decode(preGameNodeSTD);
-
         #endregion
 
         #region CurrentState
@@ -89,23 +83,37 @@ namespace NodeNotes
 
             if (_currentNode != null) {
 
+            
+
                 var currentBook = _currentNode.root;
 
                 if (currentBook != null) {
+
+                    Debug.Log("Saving {0} to bookmark ".F(currentBook));
+
                     bookMarks.Add(new BookMark()
                     {
                         bookName = currentBook.NameForPEGI,
                         nodeIndex = _currentNode.IndexForPEGI,
-                        values = Values.global.Encode().ToString()
+                        values = Values.global.Encode().ToString(),
+                        gameNodesData = gameNodeTypeData.Encode().ToString()
+
                     });
                 }
+                else Debug.LogError("Current Book was null");
             }
         }
 
+        public void ReturnToMark() => ReturnToMark(bookMarks.TryGetLast());
+        
         public void ReturnToMark(BookMark mark) {
-            if (bookMarks.Contains(mark))
-                ReturnToMark(bookMarks.IndexOf(mark));
-            else Debug.LogError("Book Marks don't contain {0}".F(mark));
+            if (mark != null)
+            {
+                if (bookMarks.Contains(mark))
+                    ReturnToMark(bookMarks.IndexOf(mark));
+                else Debug.LogError("Book Marks don't contain {0}".F(mark));
+            }
+            else Debug.LogError("Bookmark is null");
         }
 
         void ReturnToMark (int ind) {
@@ -119,8 +127,8 @@ namespace NodeNotes
                 if (book == null)
                     Debug.LogError("No book {0} found".F(bm.bookName));
                 else {
-                    if (TrySetCurrentNode(book, ind))
-                    {
+                    if (TrySetCurrentNode(book, bm.nodeIndex)) {
+                        bm.gameNodesData.Decode_Dictionary(out gameNodeTypeData);
                         bm.values.DecodeInto(out Values.global);
                         bookMarks = bookMarks.GetRange(0, ind);
                     }

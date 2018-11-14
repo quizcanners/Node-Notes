@@ -24,8 +24,8 @@ namespace NodeNotes
         public virtual void FromNodeToGame(GameNodeBase gn) {
 
             if (gameNode != null) {
-                Debug.LogError("First exit previous Game Node");
-                return;
+                 Debug.LogError("Exit previous Game Node");
+                FromGameToNode();
             }
 
             if (loopLockEnt.Unlocked)
@@ -34,8 +34,6 @@ namespace NodeNotes
                     if (CurrentNode != null)
                         preGameNode = CurrentNode;
                     else preGameNode = gn.parentNode;
-
-                    Shortcuts.user.SaveCurrentNode();
 
                     CurrentNode = null;
 
@@ -61,7 +59,7 @@ namespace NodeNotes
                     gameNode = null;
 
                     if (failed)
-                        Shortcuts.user.LoadCurrentNode();
+                        Shortcuts.user.ReturnToMark(); 
                     else
                     {
                         if (preGameNode != null)

@@ -20,10 +20,7 @@ namespace NodeNotes {
 
             get { return user.CurrentNode; }
 
-            set
-            {
-                if (value == null || value.root == null)
-                    return;
+            set   {
 
                 if (Application.isPlaying && visualLayer && loopLock.Unlocked)
                 {

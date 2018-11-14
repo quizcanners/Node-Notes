@@ -224,9 +224,7 @@ namespace NodeNotes_Visual
                         if (Application.isPlaying && Shortcuts.CurrentNode != value) {
 
                             SetSelected(null);
-
-          
-                 
+                            
                             var previous = Shortcuts.CurrentNode?.visualRepresentation as NodeCircleController;
 
                             Shortcuts.CurrentNode = value;
@@ -463,9 +461,6 @@ namespace NodeNotes_Visual
 
 
         }
-        
-     
-
 
     }
 }

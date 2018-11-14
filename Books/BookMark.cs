@@ -12,11 +12,12 @@ namespace NodeNotes
         public string bookName;
         public int nodeIndex;
         public string values;
-       
+        public string gameNodesData;
+
         public string NameForPEGI { get => bookName; set => bookName = value; }
 
         #region Inspector
-#if PEGI
+        #if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             "Node {0} in {1}".F(nodeIndex, bookName).write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
@@ -31,14 +32,15 @@ namespace NodeNotes
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("vals", values)
             .Add("ind", nodeIndex)
-            .Add_String("n", bookName);
+            .Add_String("n", bookName)
+            .Add_String("gnd", gameNodesData);
         
         public override bool Decode(string tag, string data) {
-            switch (tag)
-            {
+            switch (tag) {
                 case "vals": values = data; break;
                 case "ind": nodeIndex = data.ToInt(); break;
                 case "n": bookName = data; break;
+                case "gnd": gameNodesData = data; break;
                 default: return false;
             }
             return true;

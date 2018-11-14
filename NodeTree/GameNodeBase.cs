@@ -110,6 +110,9 @@ namespace NodeNotes {
 
         public sealed override bool Inspect() {
 
+            if (!Shortcuts.visualLayer.IsCurrentGameNode(this))
+                Shortcuts.visualLayer.FromNodeToGame(this);
+
             bool changed = false;
 
             if (loopLock.Unlocked)
