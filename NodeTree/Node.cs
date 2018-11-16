@@ -290,13 +290,11 @@ namespace NodeNotes {
                 using (loopLock.Lock()){
 
                     var cody = this.EncodeUnrecognized()
-                        .Add_IfNotEmpty("sub", coreNodes)
-                        .Add("b", base.Encode())
-                        .Add("cnm", coreNodesMeta);
+                        .Add("sub", coreNodes, coreNodesMeta)
+                        .Add("b", base.Encode());
 
-                        if (gameNodes.Count>0)
-                        cody.Add_Abstract("gn", gameNodes, gamesNodesMeta)
-                            .Add("gnMeta", gamesNodesMeta);
+                    if (gameNodes.Count > 0)
+                        cody.Add("gn", gameNodes, GameNodeBase.all, gamesNodesMeta);
                    
                     return cody;
                 }
@@ -310,13 +308,9 @@ namespace NodeNotes {
         public override bool Decode(string tag, string data) {
 
             switch (tag)  {
-
-                case "sub": data.Decode_List(out coreNodes, coreNodesMeta); break;
                 case "b": data.DecodeInto(base.Decode); break;
-                case "cnm": coreNodesMeta.Decode(data); break;
-                case "gnMeta": gamesNodesMeta.Decode(data); break;
-                case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, gamesNodesMeta); break;
-                   
+                case "sub": data.Decode_List(out coreNodes, out coreNodesMeta); break;
+                case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, out gamesNodesMeta); break;
                 default:  return false;
             }
             return true;

@@ -332,6 +332,22 @@ namespace NodeNotes_Visual
             base.ResetInspector();
         }
 
+        public override void InspectionTabs()
+        {
+            var cn = Shortcuts.CurrentNode;
+
+            if (cn != null) {
+                icon.Active.toggle("{0} -> [{1}] Current: {2} - {3}"
+                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPEGIstring(), cn.ToPEGIstring())
+                    , ref inspectedStuff, 2);
+            }
+            else icon.InActive.write("No Active Node");
+
+            icon.Book.toggle("Node Books", ref inspectedStuff, 4);
+
+            base.InspectionTabs();
+        }
+
         public override bool Inspect() {
 
             if (gameNode != null) {
@@ -348,44 +364,32 @@ namespace NodeNotes_Visual
                 else return gameNode.Nested_Inspect();
             }
 
-            if (Application.isPlaying && selectedNode)
-            {
+            if (Application.isPlaying && selectedNode) {
                 if (selectedNode.Nested_Inspect()) {
                     UpdateVisibility();
                     return true;
                 }
                 return false;
             }
-            if (inspectedStuff == -1 && "Encode / Decode Test".Click()) {
-                OnDisable();
-                OnEnable();
-            }
 
             bool changed = base.Inspect();
-            
+
             var cn = Shortcuts.CurrentNode;
 
-                if (icon.StateMachine.conditional_enter(cn != null, ref inspectedStuff , 2))
-                    changed |= cn.Nested_Inspect();
+            if (cn!= null && inspectedStuff ==2)
+                changed |= cn.Nested_Inspect();
 
-                if (inspectedStuff == -1)  {
-                    if (cn != null)
-                        "{0} -> [{1}] Current: {2} - {3}".F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPEGIstring(), cn.ToPEGIstring()).nl();
-                    pegi.nl();
-                }
-
-                pegi.nl();
+            pegi.nl();
 
                 if (!shortcuts)
                     "Shortcuts".edit(ref shortcuts).nl();
                 else
-                   if (icon.StateMachine.enter("Node Books", ref inspectedStuff, 4))
+                   if (inspectedStuff == 4)
                     shortcuts.Nested_Inspect();
                 else
                     pegi.nl();
 
-            if (icon.Condition.enter("Dependencies", ref inspectedStuff, 5))
-            {
+            if (icon.Create.enter("Dependencies", ref inspectedStuff, 5)) {
                 pegi.nl();
                 changed |= "Edit Button".edit(90, ref editButton).nl();
                 changed |= "Add Button".edit(90, ref addButton).nl();
@@ -394,17 +398,16 @@ namespace NodeNotes_Visual
                 changed |= "Circles Prefab".edit(90, ref circlePrefab).nl();
 
                 "Nodes Pool: {0}; First Free: {1}".F(nodesPool.Count, firstFree).nl();
-
             }
 
             pegi.nl();
 
-                changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedStuff, 6).nl_ifNotEntered();
-    
+            changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedStuff, 6).nl_ifNotEntered();
 
-          
-
-
+            if (inspectedStuff == -1 && "Encode / Decode Test".Click()) {
+                OnDisable();
+                OnEnable();
+            }
 
             return changed;
         }
