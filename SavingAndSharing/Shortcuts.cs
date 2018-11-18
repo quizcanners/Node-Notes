@@ -150,7 +150,13 @@ namespace NodeNotes {
 
         #region Inspector
 
-        public override void ResetInspector() {
+
+
+        int inspectedBook = -1;
+        string tmpUserName;
+
+#if PEGI
+                public override void ResetInspector() {
             inspectReplacementOption = false;
             tmpUserName = "";
             replaceRecieved = null;
@@ -163,10 +169,6 @@ namespace NodeNotes {
              user.ResetInspector();
         }
 
-        int inspectedBook = -1;
-        string tmpUserName;
-
-        #if PEGI
         NodeBook replaceRecieved;
         bool inspectReplacementOption;
 
@@ -248,7 +250,7 @@ namespace NodeNotes {
                 if (inspectedBook == -1)
                 {
 
-                    #region Paste Options
+        #region Paste Options
 
                     if (replaceRecieved != null)
                     {
@@ -284,14 +286,14 @@ namespace NodeNotes {
                     }
                     pegi.nl();
 
-                    #endregion
+        #endregion
 
                 }
 
             }
             return changed;
             }
-        #endif
+#endif
         #endregion
 
         #region Encode_Decode

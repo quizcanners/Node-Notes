@@ -118,7 +118,30 @@ namespace NodeNotes {
 
         public bool InspectingSubnode { get { return coreNodesMeta.inspected != -1; } set { if (value == false) coreNodesMeta.inspected = -1; } }
 
-        public override string NeedAttention()
+
+        protected override string ResultsRole => "On Enter Results";
+
+        public void SetInspectedUpTheHierarchy(Base_Node node)
+        {
+
+            var gn = node.AsGameNode;
+
+            if (gn != null) {
+                if (gameNodes.Contains(gn))
+                    gamesNodesMeta.inspected = gameNodes.IndexOf(gn);
+            }
+            else
+            {
+                if (node != null && coreNodes.Contains(node))
+                    coreNodesMeta.inspected = coreNodes.IndexOf(node);
+            }
+
+            if (parentNode != null)
+                parentNode.SetInspectedUpTheHierarchy(this);
+        }
+
+#if PEGI
+                public override string NeedAttention()
         {
             if (loopLock.Unlocked)
             {
@@ -143,29 +166,6 @@ namespace NodeNotes {
             else return "Infinite Loop Detected";
 
         }
-
-        protected override string ResultsRole => "On Enter Results";
-
-        public void SetInspectedUpTheHierarchy(Base_Node node)
-        {
-
-            var gn = node.AsGameNode;
-
-            if (gn != null) {
-                if (gameNodes.Contains(gn))
-                    gamesNodesMeta.inspected = gameNodes.IndexOf(gn);
-            }
-            else
-            {
-                if (node != null && coreNodes.Contains(node))
-                    coreNodesMeta.inspected = coreNodes.IndexOf(node);
-            }
-
-            if (parentNode != null)
-                parentNode.SetInspectedUpTheHierarchy(this);
-        }
-
-#if PEGI
 
 
         public override bool Inspect_AfterNamePart() {
@@ -281,7 +281,7 @@ namespace NodeNotes {
 
 #endif
         #endregion
-        
+
         #region Encode_Decode
 
         public override StdEncoder Encode()  {

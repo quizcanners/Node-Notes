@@ -108,6 +108,7 @@ namespace NodeNotes {
 
         LoopLock inspectLoopLock = new LoopLock();
 
+#if PEGI
         public sealed override bool Inspect() {
 
             if (!Shortcuts.visualLayer.IsCurrentGameNode(this))
@@ -142,9 +143,11 @@ namespace NodeNotes {
             return changed;
         }
 
-        #endregion
+#endif
 
-        #region Encode & Decode
+#endregion
+
+#region Encode & Decode
 
         public List<Result> onExitResults = new List<Result>();
 
@@ -172,7 +175,7 @@ namespace NodeNotes {
         public virtual StdEncoder Encode_PerBookStaticData() => new StdEncoder();
         public virtual bool Decode_PerBookStatic(string tag, string data) => true;
         public virtual void Decode_PerBookData(string data) => data.DecodeInto(Decode_PerBookStatic);
-        #endregion
+#endregion
     }
 
     [TaggedType(classTag)]
