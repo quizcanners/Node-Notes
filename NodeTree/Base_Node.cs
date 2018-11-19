@@ -147,9 +147,7 @@ namespace NodeNotes {
         LoopLock inspectLock = new LoopLock();
 
         public virtual bool Inspect_AfterNamePart() => false;
-
         
-
         public override bool Inspect() {
             var changed = false;
 

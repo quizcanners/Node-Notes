@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Blur: 1
+    - _Blur: 0
     - _BumpScale: 1
     - _Courners: 0.9
     - _Cutoff: 0.5
@@ -73,12 +73,12 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TextureFadeIn: 0
+    - _TextureFadeIn: 1
     - _UVSec: 0
     - _ZWrite: 1
     - blabla: 0
     m_Colors:
-    - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _Color: {r: 0.485994, g: 0.691877, b: 0.738095, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ProjTexPos: {r: 0.67815095, g: 0.42753816, b: 1, a: 0}
-    - _Stretch: {r: 0.4, g: 0, b: 0, a: 0}
+    - _ProjTexPos: {r: 0.84137166, g: 0.6989627, b: 1, a: 0}
+    - _Stretch: {r: 0.3616421, g: 0, b: 0, a: 0}

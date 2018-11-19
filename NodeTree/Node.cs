@@ -117,8 +117,7 @@ namespace NodeNotes {
         }
 
         public bool InspectingSubnode { get { return coreNodesMeta.inspected != -1; } set { if (value == false) coreNodesMeta.inspected = -1; } }
-
-
+        
         protected override string ResultsRole => "On Enter Results";
 
         public void SetInspectedUpTheHierarchy(Base_Node node)
@@ -141,7 +140,7 @@ namespace NodeNotes {
         }
 
 #if PEGI
-                public override string NeedAttention()
+        public override string NeedAttention()
         {
             if (loopLock.Unlocked)
             {
@@ -166,8 +165,7 @@ namespace NodeNotes {
             else return "Infinite Loop Detected";
 
         }
-
-
+        
         public override bool Inspect_AfterNamePart() {
             var changed = false;
 
@@ -309,8 +307,8 @@ namespace NodeNotes {
 
             switch (tag)  {
                 case "b": data.DecodeInto(base.Decode); break;
-                case "sub": data.Decode_List(out coreNodes, out coreNodesMeta); break;
-                case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, out gamesNodesMeta); break;
+                case "sub": data.Decode_List(out coreNodes, ref coreNodesMeta); break;
+                case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, ref gamesNodesMeta); break;
                 default:  return false;
             }
             return true;

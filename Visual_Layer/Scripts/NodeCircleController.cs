@@ -11,7 +11,7 @@ namespace NodeNotes_Visual
 {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex
+    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, IlinkedLerping
     {
         static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
 
@@ -301,13 +301,166 @@ namespace NodeNotes_Visual
         }
 
 
+        #endregion
+        
+        #region Lerping
+        
         Color sh_currentColor;
         Vector4 sh_square = Vector4.zero;
         float sh_blur = 0;
 
-        ShaderFloatValue shadeCourners = new ShaderFloatValue("_Courners", 0,4);
-        ShaderFloatValue shadeSelected = new ShaderFloatValue("_Selected", 0, 4);
-        ShaderFloatValue textureFadeIn = new ShaderFloatValue("_TextureFadeIn", 0, 10);
+        LinkedLerp_ShaderFloatValue shadeCourners = new LinkedLerp_ShaderFloatValue("_Courners", 0, 4);
+        LinkedLerp_ShaderFloatValue shadeSelected = new LinkedLerp_ShaderFloatValue("_Selected", 0, 4);
+        LinkedLerp_ShaderFloatValue textureFadeIn = new LinkedLerp_ShaderFloatValue("_TextureFadeIn", 0, 10);
+        LinkedLerp_TransformLocalPosition localPos = new LinkedLerp_TransformLocalPosition(null, 50);
+        LinkedLerp_TransformLocalScale localScale = new LinkedLerp_TransformLocalScale(null, 40);
+
+        public void Portion(ref float portion, ref string dominantParameter)  {
+
+            if (!lerpsFinished)  {
+
+                var ac = ActiveConfig;
+
+                if (!isFading || !fadingRelation)
+                    localPos.targetValue = ac.targetLocalPosition;
+                else
+                {
+                    if (!fadingIntoParent)
+                        localPos.targetValue = fadingRelation.transform.localPosition
+                            + (transform.localPosition - fadingRelation.transform.localPosition).normalized * 50;
+                    else
+                        localPos.targetValue = fadingRelation.transform.localPosition;
+                }
+                
+                localPos.Portion(ref portion, ref dominantParameter);
+
+                localScale.targetValue = ac.targetSize;
+
+                localScale.Portion(ref portion, ref dominantParameter);
+
+                if (12f.SpeedToMinPortion(ac.targetColor.DistanceRGB(sh_currentColor), ref portion))
+                    dominantParameter = "color";
+
+                if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref portion))
+                    dominantParameter = "fade";
+
+                if (8f.SpeedToMinPortion(1 - activeTextAlpha, ref portion))
+                    dominantParameter = "text Alpha";
+
+                textureFadeIn.targetValue = coverImage ? 1 : 0;
+                textureFadeIn.Portion(ref portion, ref dominantParameter);
+
+                shadeCourners.targetValue = (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
+                shadeCourners.Portion(ref portion, ref dominantParameter);
+
+                shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
+                shadeSelected.Portion(ref portion, ref dominantParameter);
+            }
+
+        }
+
+        public void Lerp(float portion) {
+
+            var ac = ActiveConfig;
+
+            bool needShaderUpdate = false;
+
+            if (!lerpsFinished)  {
+
+                needShaderUpdate = true;
+
+                float teleportPortion = (canJumpToPosition && fadePortion < 0.1f && !isFading) ? 1 : portion;
+
+                sh_blur = Mathf.Lerp(sh_blur, Mathf.Clamp01((transform.localPosition - localPos.targetValue).magnitude * 5), Time.deltaTime * 10);
+
+                sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, teleportPortion);
+                fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
+
+                localPos.Lerp(teleportPortion);
+                localScale.Lerp(teleportPortion);
+                shadeCourners.Lerp(portion, circleRendy);
+                shadeSelected.Lerp(portion, circleRendy);
+                textureFadeIn.Lerp(portion, circleRendy);
+
+                if (portion == 1) {
+                    if (!isFading) {
+                        ActiveConfig.targetSize = circleRendy.transform.localScale;
+                        ActiveConfig.targetLocalPosition = transform.localPosition;
+                    }
+
+                    lerpsFinished = true;
+                }
+
+                var scale = localScale.Value;
+
+                if (scale.x > 0)
+                    sh_square.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
+                else sh_square.x = 0;
+                if (scale.y > 0)
+                    sh_square.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
+                else sh_square.y = 0;
+
+                var textSize = new Vector2(17 + scale.x * 3, 5f + Mathf.Max(0, (scale.y - 1f) * 3f));
+
+                textA.rectTransform.sizeDelta = textSize;
+                textB.rectTransform.sizeDelta = textSize;
+            }
+
+            if (newText != null || activeTextAlpha < 1) {
+                if (newText == null)
+                    activeTextAlpha = Mathf.Lerp(activeTextAlpha, 1, portion);
+                else
+                    activeTextAlpha = MyMath.Lerp_bySpeed(activeTextAlpha, 1, 4);
+
+                if (activeTextAlpha == 1 && newText != null) {
+                    activeTextIsA = !activeTextIsA;
+                    ActiveText.text = newText;
+                    gameObject.name = newText;
+                    activeTextAlpha = 0;
+                    newText = null;
+                }
+
+                needShaderUpdate = true;
+            }
+
+            if (needShaderUpdate)
+                UpdateShaders();
+
+            if (fadePortion == 0 && isFading && Application.isPlaying)
+                Mgmt.Deactivate(this);
+        }
+
+
+        public string dominantParameter;
+        void Update() {
+
+            UpdateCoverImage();
+
+            if (Base_Node.editingNodes && (this == dragging) && !isFading) {
+                if (!Input.GetMouseButton(0))
+                    dragging = null;
+                else
+                {
+                    Vector3 pos;
+                    if (upPlane.MouseToPlane(out pos))
+                    {
+                        transform.position = pos + dragOffset;
+                        ActiveConfig.targetLocalPosition = transform.localPosition;
+                    }
+                }
+
+                SetDirty();
+            }
+
+            // Replace with Global portion precalculation from all the nodes
+            float portion = 1;
+
+            Portion(ref portion, ref dominantParameter);
+
+            Lerp(portion);
+
+        }
+
         #endregion
 
         #region Controls & Updates
@@ -416,149 +569,6 @@ namespace NodeNotes_Visual
 
             }
             
-        }
-
-        public string dominantParameter;
-        void Update() {
-
-            bool needShaderUpdate = false;
-            
-            float portion = 1;
-
-            var ac = ActiveConfig;
-
-            UpdateCoverImage();
-
-            if (Base_Node.editingNodes && (this == dragging) && !isFading)
-            {
-                if (!Input.GetMouseButton(0))
-                    dragging = null;
-                else  {
-                    Vector3 pos;
-                    if (upPlane.MouseToPlane(out pos)) {
-                        transform.position = pos + dragOffset;
-                        ac.targetLocalPosition = transform.localPosition;
-                    }
-                }
-
-                SetDirty();
-            }
-
-            if (!lerpsFinished)  {
-
-                Vector3 targetPosition;
-
-                if (!isFading || !fadingRelation)
-                    targetPosition = ac.targetLocalPosition;
-                else {
-                    if (!fadingIntoParent)
-                        targetPosition = fadingRelation.transform.localPosition 
-                            + (transform.localPosition - fadingRelation.transform.localPosition).normalized * 50;
-                    else
-                        targetPosition = fadingRelation.transform.localPosition;
-                }
-
-                float dist = (transform.localPosition - targetPosition).magnitude;
-
-                sh_blur = Mathf.Lerp(sh_blur, Mathf.Clamp01(dist*5), Time.deltaTime * 10);
-
-                if (50f.SpeedToMinPortion(dist, ref portion))
-                    dominantParameter = "postiton";
-
-                if (12f.SpeedToMinPortion(ac.targetColor.DistanceRGB(sh_currentColor), ref portion))
-                    dominantParameter = "color";
-
-                var BGtf = circleRendy.transform;
-
-                var scale = BGtf.localScale;
-                if (40f.SpeedToMinPortion((scale - ac.targetSize).magnitude , ref portion))
-                    dominantParameter = "size";
-
-                if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref portion))
-                    dominantParameter = "fade";
-
-                if (8f.SpeedToMinPortion(1-activeTextAlpha, ref portion))
-                    dominantParameter = "text Alpha";
-
-                textureFadeIn.targetValue = coverImage ? 1 : 0;
-                textureFadeIn.Portion(ref portion, ref dominantParameter);
-
-                shadeCourners.targetValue = (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
-                shadeCourners.Portion(ref portion, ref dominantParameter);
-
-                shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
-                shadeSelected.Portion(ref portion, ref dominantParameter);
-
-                float teleportPortion = (canJumpToPosition && fadePortion < 0.1f && !isFading) ? 1 : portion;
-
-                transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, teleportPortion);
-                scale = Vector3.Lerp(scale, ac.targetSize, teleportPortion);
-                BGtf.localScale = scale;
-                sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, teleportPortion);
-                fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, portion);
-
-                shadeCourners.Lerp(portion, circleRendy);
-                shadeSelected.Lerp(portion, circleRendy);
-                textureFadeIn.Lerp(portion, circleRendy);
-
-                needShaderUpdate = true;
-                if (portion == 1) {
-                    if (!isFading) {
-                        ActiveConfig.targetSize = circleRendy.transform.localScale;
-                        ActiveConfig.targetLocalPosition = transform.localPosition;
-                    }
-
-                    lerpsFinished = true;
-                }
-                
-                if (scale.x > 0)
-                    sh_square.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
-                else sh_square.x = 0;
-                if (scale.y > 0)
-                    sh_square.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
-                else sh_square.y = 0;
-                
-                var textSize = new Vector2(17 + scale.x * 3, 5f + Mathf.Max(0, (scale.y - 1f) * 3f));
-
-                textA.rectTransform.sizeDelta = textSize;
-                textB.rectTransform.sizeDelta = textSize;
-
-            }
-            /*else {
-
-                var before = sh_blur;
-                sh_blur =  Mathf.Lerp(sh_blur, 0, Time.deltaTime * 10);
-                if (before != sh_blur)
-                    needShaderUpdate = true;
-
-                fadePortion = MyMath.Lerp(fadePortion, isFading ? 0 : 1, 2, out portion);
-                if (isFading || fadePortion < 1)
-                    needShaderUpdate = true;
-            }*/
-            
-            if (newText != null || activeTextAlpha < 1)
-            {
-                if (newText == null)
-                    activeTextAlpha = Mathf.Lerp(activeTextAlpha, 1, portion);
-                else
-                    activeTextAlpha = MyMath.Lerp_bySpeed(activeTextAlpha, 1, 4);
-
-                if (activeTextAlpha == 1 && newText != null)  {
-                    activeTextIsA = !activeTextIsA;
-                    ActiveText.text = newText;
-                    gameObject.name = newText;
-                    activeTextAlpha = 0;
-                    newText = null;
-                }
-
-                needShaderUpdate = true;
-            }
-            
-            if (needShaderUpdate)
-                UpdateShaders();
-
-            if (fadePortion == 0 && isFading && Application.isPlaying)
-                Mgmt.Deactivate(this);
         }
 
         static NodeCircleController dragging = null;
@@ -694,6 +704,9 @@ namespace NodeNotes_Visual
 
         private void OnEnable()
         {
+            localPos._transform = transform;
+            localScale._transform = circleRendy.transform;
+
             if (Application.isEditor)
             {
              
@@ -706,6 +719,8 @@ namespace NodeNotes_Visual
             if (!isFading)
                 Unlink();
         }
+
+
         #endregion
     }
 
