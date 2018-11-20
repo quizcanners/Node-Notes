@@ -424,8 +424,7 @@ namespace NodeNotes_Visual
         #endregion
 
         int logicVersion = -1;
-        public override void DerrivedUpdate()
-        {
+        public override void DerrivedUpdate() {
             if (Input.GetKey(KeyCode.Escape)) {
                 OnDisable();
                 Application.Quit();
@@ -437,6 +436,14 @@ namespace NodeNotes_Visual
                 UpdateVisibility();
                 logicVersion = currentLogicVersion;
             }
+
+            float portion = 1;
+            string dom = "";
+
+            nodesPool.Portion(ref portion, ref dom);
+
+            nodesPool.Lerp(portion);
+
         }
 
         void OnDisable() {
@@ -464,6 +471,8 @@ namespace NodeNotes_Visual
 
 
         }
+
+        
 
     }
 }

@@ -7,12 +7,11 @@ using PlayerAndEditorGUI;
 using System;
 using NodeNotes;
 
-namespace NodeNotes_Visual
-{
+namespace NodeNotes_Visual {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, IlinkedLerping
-    {
+    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, IlinkedLerping {
+
         static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
 
         public Renderer circleRendy;
@@ -309,13 +308,16 @@ namespace NodeNotes_Visual
         Vector4 sh_square = Vector4.zero;
         float sh_blur = 0;
 
-        LinkedLerp_ShaderFloatValue shadeCourners = new LinkedLerp_ShaderFloatValue("_Courners", 0, 4);
-        LinkedLerp_ShaderFloatValue shadeSelected = new LinkedLerp_ShaderFloatValue("_Selected", 0, 4);
-        LinkedLerp_ShaderFloatValue textureFadeIn = new LinkedLerp_ShaderFloatValue("_TextureFadeIn", 0, 10);
+        LinkedLerp_MaterialFloat shadeCourners = new LinkedLerp_MaterialFloat("_Courners", 0, 4);
+        LinkedLerp_MaterialFloat shadeSelected = new LinkedLerp_MaterialFloat("_Selected", 0, 4);
+        LinkedLerp_MaterialFloat textureFadeIn = new LinkedLerp_MaterialFloat("_TextureFadeIn", 0, 10);
         LinkedLerp_TransformLocalPosition localPos = new LinkedLerp_TransformLocalPosition(null, 50);
         LinkedLerp_TransformLocalScale localScale = new LinkedLerp_TransformLocalScale(null, 40);
 
         public void Portion(ref float portion, ref string dominantParameter)  {
+
+            if (!gameObject.activeSelf)
+                return;
 
             if (!lerpsFinished)  {
 
@@ -323,8 +325,7 @@ namespace NodeNotes_Visual
 
                 if (!isFading || !fadingRelation)
                     localPos.targetValue = ac.targetLocalPosition;
-                else
-                {
+                else {
                     if (!fadingIntoParent)
                         localPos.targetValue = fadingRelation.transform.localPosition
                             + (transform.localPosition - fadingRelation.transform.localPosition).normalized * 50;
@@ -356,10 +357,12 @@ namespace NodeNotes_Visual
                 shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
                 shadeSelected.Portion(ref portion, ref dominantParameter);
             }
-
         }
 
         public void Lerp(float portion) {
+
+            if (!gameObject.activeSelf)
+                return;
 
             var ac = ActiveConfig;
 
@@ -429,14 +432,14 @@ namespace NodeNotes_Visual
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 Mgmt.Deactivate(this);
         }
-
-
+        
         public string dominantParameter;
+
         void Update() {
 
             UpdateCoverImage();
 
-            if (Base_Node.editingNodes && (this == dragging) && !isFading) {
+            if (Base_Node.editingNodes && (this == dragging) && !isFading && lerpsFinished) {
                 if (!Input.GetMouseButton(0))
                     dragging = null;
                 else
@@ -453,11 +456,11 @@ namespace NodeNotes_Visual
             }
 
             // Replace with Global portion precalculation from all the nodes
-            float portion = 1;
+          //  float portion = 1;
 
-            Portion(ref portion, ref dominantParameter);
+          //  Portion(ref portion, ref dominantParameter);
 
-            Lerp(portion);
+          //  Lerp(portion);
 
         }
 
