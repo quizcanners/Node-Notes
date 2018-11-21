@@ -1,6 +1,9 @@
 ﻿Shader "NodeNotes/UI/Node_Simple" {
 	Properties{
-		_MainTex("Albedo", 2D) = "white" {}
+		_MainTex("Main Texture", 2D) = "white" {}
+		_Next_MainTex("Transitioning to", 2D) = "white" {}
+		_Transition("Transition", Range(0,1)) = 0
+
 		_ProjTexPos("Screen Space Position", Vector) = (0,0,0,0)
 		_Color("Color", Color) = (1,1,1,1)
 		_TextureFadeIn("ShowTexture", Range(0,1)) = 0
@@ -45,6 +48,10 @@
 
 	sampler2D _MainTex;
 	float4 _MainTex_TexelSize;
+	sampler2D _Next_MainTex;
+	float4 _Next_MainTex_TexelSize;
+	float _Transition;
+
 	float4 _ProjTexPos;
 	float4 _Color;
 
@@ -87,7 +94,8 @@
 		o.screenPos = ComputeScreenPos(o.pos);
 
 #if _CLAMP
-		float relation = (_MainTex_TexelSize.w*(1-_Stretch.y)) / (_MainTex_TexelSize.z*(1 - _Stretch.x));
+		float relation = (_MainTex_TexelSize.w*(1-_Stretch.y)) / (_MainTex_TexelSize.z*(1 - _Stretch.x))* (1-_Transition)
+			+ (_Next_MainTex_TexelSize.w*(1 - _Stretch.y)) / (_Next_MainTex_TexelSize.z*(1 - _Stretch.x))* (_Transition);
 		o.mainTexScale.x = min(1, relation);
 		o.mainTexScale.y = min(1, 1 / relation);
 #endif
@@ -118,10 +126,12 @@
 
 	
 #if _CLAMP
-			float2 texUV = ((i.texcoord.xy - 0.5) * i.mainTexScale.xy) + 0.5;
+		float2 texUV = ((i.texcoord.xy - 0.5) * i.mainTexScale.xy) + 0.5;
 #else
 		float2 screenUV = i.screenPos.xy / i.screenPos.w;
 
+		_MainTex_TexelSize = _MainTex_TexelSize * (1 - _Transition) 
+			+ _Next_MainTex_TexelSize * _Transition;
 
 		float2 inPix = (screenUV - _ProjTexPos.xy)*_ScreenParams.xy;
 
@@ -131,7 +141,7 @@
 
 #endif
 
-			float4 col = tex2Dlod(_MainTex, float4(texUV, 0, 0));
+		float4 col = tex2Dlod(_MainTex, float4(texUV, 0, 0))*(1 - _Transition) + tex2Dlod(_Next_MainTex, float4(texUV, 0, 0))*_Transition;
 
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 

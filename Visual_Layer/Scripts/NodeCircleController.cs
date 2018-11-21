@@ -308,18 +308,19 @@ namespace NodeNotes_Visual {
         Vector4 sh_square = Vector4.zero;
         float sh_blur = 0;
 
-        LinkedLerp_MaterialFloat shadeCourners = new LinkedLerp_MaterialFloat("_Courners", 0, 4);
-        LinkedLerp_MaterialFloat shadeSelected = new LinkedLerp_MaterialFloat("_Selected", 0, 4);
-        LinkedLerp_MaterialFloat textureFadeIn = new LinkedLerp_MaterialFloat("_TextureFadeIn", 0, 10);
-        LinkedLerp_TransformLocalPosition localPos = new LinkedLerp_TransformLocalPosition(null, 50);
-        LinkedLerp_TransformLocalScale localScale = new LinkedLerp_TransformLocalScale(null, 40);
+        LinkedLerp.MaterialFloat shadeCourners = new LinkedLerp.MaterialFloat("_Courners", 0, 4);
+        LinkedLerp.MaterialFloat shadeSelected = new LinkedLerp.MaterialFloat("_Selected", 0, 4);
+        LinkedLerp.MaterialFloat textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10);
+        LinkedLerp.Transform_LocalPosition localPos = new LinkedLerp.Transform_LocalPosition(null, 50);
+        LinkedLerp.Transform_LocalScale localScale = new LinkedLerp.Transform_LocalScale(null, 40);
+        LinkedLerp.RendererMaterialTextureTransition texTrns = new LinkedLerp.RendererMaterialTextureTransition();
 
         public void Portion(ref float portion, ref string dominantParameter)  {
 
             if (!gameObject.activeSelf)
                 return;
 
-            if (!lerpsFinished)  {
+            if (!lerpsFinished && (this != dragging))  {
 
                 var ac = ActiveConfig;
 
@@ -356,6 +357,8 @@ namespace NodeNotes_Visual {
 
                 shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
                 shadeSelected.Portion(ref portion, ref dominantParameter);
+
+                texTrns.Portion(ref portion, ref dominantParameter);
             }
         }
 
@@ -368,7 +371,7 @@ namespace NodeNotes_Visual {
 
             bool needShaderUpdate = false;
 
-            if (!lerpsFinished)  {
+            if (!lerpsFinished && (this != dragging))  {
 
                 needShaderUpdate = true;
 
@@ -381,9 +384,11 @@ namespace NodeNotes_Visual {
 
                 localPos.Lerp(teleportPortion);
                 localScale.Lerp(teleportPortion);
-                shadeCourners.Lerp(portion, circleRendy);
-                shadeSelected.Lerp(portion, circleRendy);
-                textureFadeIn.Lerp(portion, circleRendy);
+                shadeCourners.Lerp(teleportPortion, circleRendy);
+                shadeSelected.Lerp(teleportPortion, circleRendy);
+                textureFadeIn.Lerp(teleportPortion, circleRendy);
+
+                texTrns.Lerp(textureFadeIn.value < 0.1f ? 1 : teleportPortion);
 
                 if (portion == 1) {
                     if (!isFading) {
@@ -439,29 +444,18 @@ namespace NodeNotes_Visual {
 
             UpdateCoverImage();
 
-            if (Base_Node.editingNodes && (this == dragging) && !isFading && lerpsFinished) {
-                if (!Input.GetMouseButton(0))
+            if (this == dragging) {
+                if (isFading || !Base_Node.editingNodes || !Input.GetMouseButton(0))
                     dragging = null;
-                else
-                {
-                    Vector3 pos;
-                    if (upPlane.MouseToPlane(out pos))
-                    {
-                        transform.position = pos + dragOffset;
-                        ActiveConfig.targetLocalPosition = transform.localPosition;
-                    }
+                else  {
+                        Vector3 pos;
+                        if (upPlane.MouseToPlane(out pos)) {
+                            transform.position = pos + dragOffset;
+                            ActiveConfig.targetLocalPosition = transform.localPosition;
+                        }
                 }
-
                 SetDirty();
             }
-
-            // Replace with Global portion precalculation from all the nodes
-          //  float portion = 1;
-
-          //  Portion(ref portion, ref dominantParameter);
-
-          //  Lerp(portion);
-
         }
 
         #endregion
@@ -530,16 +524,20 @@ namespace NodeNotes_Visual {
         float fadePortion = 0;
 
         void SetImage() {
-            circleRendy.MaterialWhaever().mainTexture = coverImage;
-            SetDirty();
+            var mat = circleRendy.MaterialWhaever();
+
+            texTrns.TargetTexture = coverImage;
+
             if (mode == ImageMode.fit)
-                circleRendy.MaterialWhaever().EnableKeyword("_CLAMP");
+                mat.EnableKeyword("_CLAMP");
             else
-                circleRendy.MaterialWhaever().DisableKeyword("_CLAMP");
+                mat.DisableKeyword("_CLAMP");
+
+            SetDirty();
         }
 
-        void UpdateCoverImage()
-        {
+        void UpdateCoverImage() {
+
             if (imageIndex != -1) {
                 if (Mgmt.textureDownloader.TryGetTexture(imageIndex, out coverImage)) {
                     SetImage();
@@ -705,14 +703,14 @@ namespace NodeNotes_Visual {
                 colly.enabled = false;
         }
 
-        private void OnEnable()
-        {
+        private void OnEnable() {
+
             localPos._transform = transform;
             localScale._transform = circleRendy.transform;
+            texTrns.Renderer = circleRendy;
 
-            if (Application.isEditor)
-            {
-             
+            if (Application.isEditor) {
+
                 if (!circleRendy)
                     circleRendy = GetComponent<MeshRenderer>();
             }
