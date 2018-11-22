@@ -605,7 +605,7 @@ namespace NodeNotes_Visual {
         #endregion
         
         #region Encode & Decode
-        public override ISTD Decode(string data)   {
+        public override void Decode(string data)   {
             if (this == dragging)
                 dragging = null;
 
@@ -619,15 +619,16 @@ namespace NodeNotes_Visual {
             hideLabel = false;
 
             nodeEnteredVisuals = new NodeVisualConfig();
-            nodeActive_Default_Visuals = new NodeVisualConfig();
-            nodeActive_Default_Visuals.enabled = true;
+            nodeActive_Default_Visuals = new NodeVisualConfig
+            {
+                enabled = true
+            };
             nodeInactiveVisuals = new NodeVisualConfig();
 
             base.Decode(data);
 
             LoadCoverImage();
-
-            return this;
+            
         }
 
         public override bool Decode(string tag, string data)   {
@@ -734,9 +735,9 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
         public override bool IsDefault => !enabled;
 
-        public override ISTD Decode(string data) {
+        public override void Decode(string data) {
             enabled = true;
-            return base.Decode(data);
+            base.Decode(data);
         }
 
         public override bool Decode(string tag, string data)

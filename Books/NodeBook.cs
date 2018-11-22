@@ -123,16 +123,15 @@ namespace NodeNotes
             return true;
         }
     
-        public override ISTD Decode(string data) {
+        public override void Decode(string data) {
             
-           var ret = data.DecodeTagsFor(this);
+           data.DecodeTagsFor(this);
 
             if (subNode == null)
                 subNode = new Node();
 
             subNode.Init(this, null);
             
-            return ret;
         }
 
         #endregion

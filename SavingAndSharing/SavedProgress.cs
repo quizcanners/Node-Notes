@@ -17,8 +17,6 @@ namespace NodeNotes
         public bool isADeveloper = false;
 
         #region GameNodes
-        string preGameNodeSTD;
-
         public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         #endregion
 
@@ -223,16 +221,15 @@ namespace NodeNotes
 
         #region Encoding_Decoding
 
-        public override ISTD Decode(string data) {
+        public override void Decode(string data) {
   
-            var ret = base.Decode(data);
+            base.Decode(data);
 
             var b = Shortcuts.TryGetBook(tmpBook);
 
             if (b != null)
                 Shortcuts.CurrentNode = b.allBaseNodes[tmpNode] as Node;
-
-            return ret;
+            
         }
 
         static string tmpBook;

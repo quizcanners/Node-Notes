@@ -41,10 +41,10 @@ namespace NodeNotes_Visual
 
             #region Encoding/Decoding
 
-            public override ISTD Decode(string data)
+            public override void Decode(string data)
             {
                 backPlane.SetActive(true);
-                return base.Decode(data);
+                base.Decode(data);
             }
 
             public override bool Decode(string tag, string data)
@@ -156,11 +156,11 @@ namespace NodeNotes_Visual
 
         public StdEncoder Encode() => new StdEncoder().Add("t", target);
 
-        public ISTD Decode(string data)
+        public void Decode(string data)
         {
             current = Color.black;
             target = Color.black;
-            return data.DecodeTagsFor(this);
+            data.DecodeTagsFor(this);
         }
         public bool Decode(string tag, string data) {
             switch (tag) {

@@ -303,14 +303,7 @@ namespace NodeNotes {
             .Add("books", books, this)
             .Add("us", users)
             .Add_String("curUser", user.userName);
-
-        public override ISTD Decode(string data) {
-
-            var ret = base.Decode(data);
-
-            return ret;
-        }
-
+        
         public override bool Decode(string tag, string data)
         {
             switch (tag)  {
