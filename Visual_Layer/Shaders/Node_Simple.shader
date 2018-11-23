@@ -1,6 +1,6 @@
 ﻿Shader "NodeNotes/UI/Node_Simple" {
 	Properties{
-		_MainTex("Main Texture", 2D) = "white" {}
+		_MainTex_Current("Main Texture", 2D) = "white" {}
 		_Next_MainTex("Transitioning to", 2D) = "white" {}
 		_Transition("Transition", Range(0,1)) = 0
 
@@ -46,8 +46,8 @@
 		
 
 
-	sampler2D _MainTex;
-	float4 _MainTex_TexelSize;
+	sampler2D _MainTex_Current;
+	float4 _MainTex_Current_TexelSize;
 	sampler2D _Next_MainTex;
 	float4 _Next_MainTex_TexelSize;
 	float _Transition;
@@ -94,7 +94,7 @@
 		o.screenPos = ComputeScreenPos(o.pos);
 
 #if _CLAMP
-		float relation = (_MainTex_TexelSize.w*(1-_Stretch.y)) / (_MainTex_TexelSize.z*(1 - _Stretch.x))* (1-_Transition)
+		float relation = (_MainTex_Current_TexelSize.w*(1-_Stretch.y)) / (_MainTex_Current_TexelSize.z*(1 - _Stretch.x))* (1-_Transition)
 			+ (_Next_MainTex_TexelSize.w*(1 - _Stretch.y)) / (_Next_MainTex_TexelSize.z*(1 - _Stretch.x))* (_Transition);
 		o.mainTexScale.x = min(1, relation);
 		o.mainTexScale.y = min(1, 1 / relation);
@@ -130,18 +130,18 @@
 #else
 		float2 screenUV = i.screenPos.xy / i.screenPos.w;
 
-		_MainTex_TexelSize = _MainTex_TexelSize * (1 - _Transition) 
+		float4 texelSize = _MainTex_Current_TexelSize * (1 - _Transition)
 			+ _Next_MainTex_TexelSize * _Transition;
 
 		float2 inPix = (screenUV - _ProjTexPos.xy)*_ScreenParams.xy;
 
-		float2 texUV = inPix * _MainTex_TexelSize.xy *_ProjTexPos.z;
+		float2 texUV = inPix * texelSize.xy *_ProjTexPos.z;
 		texUV += 0.5;
-		texUV += _MainTex_TexelSize.xy*0.5*(_MainTex_TexelSize.zw % 2);
+		texUV += texelSize.xy*0.5*(texelSize.zw % 2);
 
 #endif
 
-		float4 col = tex2Dlod(_MainTex, float4(texUV, 0, 0))*(1 - _Transition) + tex2Dlod(_Next_MainTex, float4(texUV, 0, 0))*_Transition;
+		float4 col = tex2Dlod(_MainTex_Current, float4(texUV, 0, 0))*(1 - _Transition) + tex2Dlod(_Next_MainTex, float4(texUV, 0, 0))*_Transition;
 
 		i.viewDir.xyz = normalize(i.viewDir.xyz);
 
