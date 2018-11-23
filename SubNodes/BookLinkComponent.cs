@@ -187,7 +187,7 @@ namespace NodeNotes {
         {
             switch (tag)
             {
-                case "b": data.DecodeInto(base.Decode); break;
+                case "b": data.DecodeInto(base.Decode, this); break;
                 case "t": type = (BookLinkType)data.ToInt(); break;
                 case "lnk": linkedBookName = data; break;
                 case "ep": bookEntryPoint = data; break;

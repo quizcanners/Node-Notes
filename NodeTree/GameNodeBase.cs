@@ -153,14 +153,16 @@ namespace NodeNotes {
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
+            .Add_String("unrecGN", "test")
             .Add_IfNotEmpty("exit", onExitResults)
             .Add_IfNotNegative("ign", inspectedGameNodeStuff);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
-                case "b": data.DecodeInto(base.Decode); break;
+                case "b": data.DecodeInto(base.Decode, this); break;
                 case "exit": data.Decode_List(out onExitResults); break;
                 case "ign": inspectedGameNodeStuff = data.ToInt(); break;
+                case "unrecGN": Debug.Log("Unrecognized at Game Node recieved"); return false;
                 default: return false;
             }
             return true;

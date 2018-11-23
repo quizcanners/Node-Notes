@@ -23,7 +23,7 @@ namespace NodeNotes
         {
             switch (tag)
             {
-                case "b": data.DecodeInto(base.Decode); break;
+                case "b": data.DecodeInto(base.Decode, this); break;
                 default: return false;
             }
             return true;
