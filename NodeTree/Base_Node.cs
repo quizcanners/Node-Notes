@@ -99,8 +99,6 @@ namespace NodeNotes {
         #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-              .Add_String("unrecBaseNode", "test")
-             .Add_String("unrecBaseNode2", "test2")
         .Add_String("n", name)
         .Add("i", index)
         .Add_IfNotNegative("is", inspectedStuff)
@@ -120,8 +118,6 @@ namespace NodeNotes {
                 case "vcnds": data.DecodeInto(out visCondition); break;
                 case "res": data.Decode_List(out results); break;
                 case "vis": configForVisualRepresentation = data; break;
-                case "unrecBaseNode": Debug.Log("Unrecognized at base Node recieved " + data); return false;
-                case "unrecBaseNode2": Debug.Log("Unrecognized at base Node recieved" + data); return false;
             }
             return true;
         }

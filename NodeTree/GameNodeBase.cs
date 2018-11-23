@@ -162,7 +162,6 @@ namespace NodeNotes {
                 case "b": data.DecodeInto(base.Decode, this); break;
                 case "exit": data.Decode_List(out onExitResults); break;
                 case "ign": inspectedGameNodeStuff = data.ToInt(); break;
-                case "unrecGN": Debug.Log("Unrecognized at Game Node recieved"); return false;
                 default: return false;
             }
             return true;
