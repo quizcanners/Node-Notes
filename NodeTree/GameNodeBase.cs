@@ -19,9 +19,11 @@ namespace NodeNotes {
     [DerrivedList()]
     public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect {
 
+        public List<Result> onExitResults = new List<Result>();
+        
         #region Tagged Types MGMT
         public override GameNodeBase AsGameNode => this;
-        public virtual string ClassTag => StdEncoder.nullTag;
+        public abstract string ClassTag { get;  } 
         public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(GameNodeBase));
         public TaggedTypes_STD AllTypes => all;
         #endregion
@@ -147,9 +149,7 @@ namespace NodeNotes {
 
 #endregion
 
-#region Encode & Decode
-
-        public List<Result> onExitResults = new List<Result>();
+        #region Encode & Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)

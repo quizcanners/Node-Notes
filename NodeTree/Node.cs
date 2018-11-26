@@ -116,7 +116,7 @@ namespace NodeNotes {
                 }
         }
 
-        public bool InspectingSubnode { get { return coreNodesMeta.inspected != -1; } set { if (value == false) coreNodesMeta.inspected = -1; } }
+        public bool InspectingSubnode { get { return coreNodesMeta.Inspecting; } set { if (value == false) coreNodesMeta.Inspecting  = false; } }
         
         protected override string ResultsRole => "On Enter Results";
 
@@ -213,7 +213,7 @@ namespace NodeNotes {
 
             if (!InspectingSubnode) {
 
-                gamesNodesMeta.inspected = -1;
+                gamesNodesMeta.Inspecting = false;
 
                 var ngn = gamesNodesMeta.enter_List(ref gameNodes, ref inspectedStuff, 7, GameNodeBase.all, ref changed);
                 
@@ -292,7 +292,7 @@ namespace NodeNotes {
                         .Add("b", base.Encode());
 
                     if (gameNodes.Count > 0)
-                        cody.Add("gn", gameNodes, GameNodeBase.all, gamesNodesMeta);
+                        cody.Add("gn", gameNodes, gamesNodesMeta, GameNodeBase.all);
                    
                     return cody;
                 }
@@ -308,7 +308,7 @@ namespace NodeNotes {
             switch (tag)  {
                 case "b": data.DecodeInto(base.Decode, this); break;
                 case "sub": data.Decode_List(out coreNodes, ref coreNodesMeta); break;
-                case "gn":  data.Decode_List(out gameNodes, GameNodeBase.all, ref gamesNodesMeta); break;
+                case "gn":  data.Decode_List(out gameNodes, ref gamesNodesMeta, GameNodeBase.all); break;
                 default:  return false;
             }
             return true;
