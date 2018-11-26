@@ -306,7 +306,7 @@ namespace NodeNotes {
         public override bool Decode(string tag, string data) {
 
             switch (tag)  {
-                case "b": data.DecodeInto(base.Decode, this); break;
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "sub": data.Decode_List(out coreNodes, ref coreNodesMeta); break;
                 case "gn":  data.Decode_List(out gameNodes, ref gamesNodesMeta, GameNodeBase.all); break;
                 default:  return false;

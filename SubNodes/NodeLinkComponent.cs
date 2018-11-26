@@ -65,7 +65,7 @@ namespace NodeNotes {
         {
             switch (tag)
             {
-                case "b": data.DecodeInto(base.Decode, this); break;
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "lnk": linkedNodeIndex = data.ToInt(); break;
                 default: return false;
             }

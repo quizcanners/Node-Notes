@@ -159,7 +159,7 @@ namespace NodeNotes {
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
-                case "b": data.DecodeInto(base.Decode, this); break;
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "exit": data.Decode_List(out onExitResults); break;
                 case "ign": inspectedGameNodeStuff = data.ToInt(); break;
                 default: return false;
@@ -170,12 +170,12 @@ namespace NodeNotes {
         // Per User data will be Encoded/Decoded each time the node is Entered during play
         public virtual StdEncoder Encode_PerUserData() => new StdEncoder();
         public virtual bool Decode_PerUser(string tag, string data) => true;
-        public virtual void Decode_PerUserData(string data) => data.DecodeInto(Decode_PerUser);
+        public virtual void Decode_PerUserData(string data) => data.Decode_Delegate(Decode_PerUser);
 
         // Per Node Book Data: Data will be encoded each time Node Book is Saved
         public virtual StdEncoder Encode_PerBookStaticData() => new StdEncoder();
         public virtual bool Decode_PerBookStatic(string tag, string data) => true;
-        public virtual void Decode_PerBookData(string data) => data.DecodeInto(Decode_PerBookStatic);
+        public virtual void Decode_PerBookData(string data) => data.Decode_Delegate(Decode_PerBookStatic);
 #endregion
     }
 
