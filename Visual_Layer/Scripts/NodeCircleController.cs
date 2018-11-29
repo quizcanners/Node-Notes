@@ -10,7 +10,7 @@ using NodeNotes;
 namespace NodeNotes_Visual {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, IlinkedLerping {
+    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, ILinkedLerping {
 
         static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
 
@@ -189,7 +189,7 @@ namespace NodeNotes_Visual {
 
                         if (altVis != nodeActive_Default_Visuals) {
                             if ("Override visuals for {0}".F(altVis == nodeInactiveVisuals ? "Disabled" : "Entered")
-                                .toggleIcon(ref altVis.enabled, true).nl()) {
+                                .toggleIcon(ref altVis.enabled).nl()) {
                                 if (altVis.enabled)
                                     altVis.Decode(act.Encode().ToString());
                             }
@@ -251,7 +251,7 @@ namespace NodeNotes_Visual {
                             if (mode == ImageMode.tile)
                                 changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
                             else
-                                changed |= "Hide Label".toggleIcon(ref hideLabel, true).nl();
+                                changed |= "Hide Label".toggleIcon(ref hideLabel).nl();
 
                                 if (!pegi.paintingPlayAreaGUI)
                                     pegi.write(coverImage, 200); pegi.nl();

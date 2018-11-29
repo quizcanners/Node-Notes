@@ -201,7 +201,7 @@ namespace NodeNotes
             this.ToPEGIstring().nl();
 
             if (Application.isEditor) 
-                "Is A Developer ".toggleIcon(ref isADeveloper, true).nl();
+                "Is A Developer ".toggleIcon(ref isADeveloper).nl();
             else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
             
