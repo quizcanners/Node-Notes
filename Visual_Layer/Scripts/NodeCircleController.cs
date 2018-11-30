@@ -308,12 +308,12 @@ namespace NodeNotes_Visual {
         Vector4 sh_square = Vector4.zero;
         float sh_blur = 0;
 
-        LinkedLerp.MaterialFloat shadeCourners = new LinkedLerp.MaterialFloat("_Courners", 0, 4);
-        LinkedLerp.MaterialFloat shadeSelected = new LinkedLerp.MaterialFloat("_Selected", 0, 4);
-        LinkedLerp.MaterialFloat textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10);
-        LinkedLerp.Transform_LocalPosition localPos = new LinkedLerp.Transform_LocalPosition(null, 50);
-        LinkedLerp.Transform_LocalScale localScale = new LinkedLerp.Transform_LocalScale(null, 40);
-        LinkedLerp.RendererMaterialTextureTransition texTrns = new LinkedLerp.RendererMaterialTextureTransition();
+        LinkedLerp.MaterialFloat shadeCourners;
+        LinkedLerp.MaterialFloat shadeSelected;
+        LinkedLerp.MaterialFloat textureFadeIn;
+        LinkedLerp.Transform_LocalPosition localPos;
+        LinkedLerp.Transform_LocalScale localScale;
+        LinkedLerp.RendererMaterialTextureTransition texTrns;
 
         public void Portion(ref float portion, ref string dominantParameter)  {
 
@@ -384,9 +384,9 @@ namespace NodeNotes_Visual {
 
                 localPos.Lerp(teleportPortion);
                 localScale.Lerp(teleportPortion);
-                shadeCourners.Lerp(teleportPortion, circleRendy);
-                shadeSelected.Lerp(teleportPortion, circleRendy);
-                textureFadeIn.Lerp(teleportPortion, circleRendy);
+                shadeCourners.Lerp(teleportPortion);
+                shadeSelected.Lerp(teleportPortion);
+                textureFadeIn.Lerp(teleportPortion);
 
                 texTrns.Lerp(textureFadeIn.value < 0.1f ? 1 : teleportPortion);
 
@@ -706,15 +706,18 @@ namespace NodeNotes_Visual {
 
         private void OnEnable() {
 
-            localPos._transform = transform;
-            localScale._transform = circleRendy.transform;
-            texTrns.Renderer = circleRendy;
-
             if (Application.isEditor) {
-
                 if (!circleRendy)
                     circleRendy = GetComponent<MeshRenderer>();
             }
+
+            shadeCourners = new LinkedLerp.MaterialFloat("_Courners", 0, 4, circleRendy);
+            shadeSelected = new LinkedLerp.MaterialFloat("_Selected", 0, 4, circleRendy);
+            textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10, circleRendy);
+            localPos = new LinkedLerp.Transform_LocalPosition(transform, 50);
+            localScale = new LinkedLerp.Transform_LocalScale(circleRendy.transform, 40);
+            texTrns = new LinkedLerp.RendererMaterialTextureTransition(circleRendy, 1);
+
         }
 
         void OnDisable() {

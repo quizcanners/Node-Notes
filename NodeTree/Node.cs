@@ -145,16 +145,8 @@ namespace NodeNotes {
             if (loopLock.Unlocked)
             {
                 using (loopLock.Lock()) {
-
-                    var na = coreNodes.needsAttention(false, "Sub Nodes");
-
-                    if (na != null)
-                        return na;
-                    
-                    var gna = gameNodes.needsAttention(false, "Game Nodes");
-
-                    if (gna != null)
-                        return gna;
+                    if (coreNodes.NeedsAttention("Sub Nodes") || gameNodes.NeedsAttention("Game Nodes"))
+                        return pegi.LastNeedAttentionMessage;
                 }
 
                 if (root == null)
