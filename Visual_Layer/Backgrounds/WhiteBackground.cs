@@ -57,7 +57,7 @@ namespace NodeNotes_Visual {
         void Update()
         {
 
-            if (!isFading && Camera.main != null) {
+            if (!isFading && Camera.main) {
 
                 var col = Camera.main.backgroundColor;
 

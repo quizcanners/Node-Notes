@@ -63,7 +63,7 @@ namespace NodeNotes_Visual
 
         public void DeleteSelected() {
 
-            if (selectedNode != null) {
+            if (selectedNode) {
 
                 var node = selectedNode.source;
 
@@ -79,7 +79,7 @@ namespace NodeNotes_Visual
         #region BG
         public List<NodesStyleBase> backgroundControllers = new List<NodesStyleBase>();
         public static void SetBackground (NodeCircleController circle) {
-          //  var bg = circle != null ? backgroundControllers.TryGetByTag(circle.background) : null;
+
             var data = circle ? circle.backgroundConfig : "";
             var tag = circle ? circle.background : "";
 
@@ -89,7 +89,7 @@ namespace NodeNotes_Visual
                 tag = bgc[0].ClassTag;
 
             for (int i=0; i< bgc.Count; i++) {
-                var bc = bgc[i];// as IManageFading;
+                var bc = bgc[i];
                 if (bc != null) {
                     if (bc.ClassTag == tag) {
                         bc.TryFadeIn();
@@ -124,13 +124,14 @@ namespace NodeNotes_Visual
 
         void DeleteAllNodes() {
             foreach (var e in nodesPool)
-                if (e!= null) {
-                if (Application.isPlaying)
-                     e.isFading = true;
-                else
-                    e.gameObject.DestroyWhatever();
+                if (e)
+                {
+                    if (Application.isPlaying)
+                        e.isFading = true;
+                    else
+                        e.gameObject.DestroyWhatever();
 
-            }
+                }
 
             nodesPool.Clear();
         }
@@ -148,7 +149,7 @@ namespace NodeNotes_Visual
 
             if (node.previousVisualRepresentation != null) {
                 var tmp = node.previousVisualRepresentation as NodeCircleController;
-                if (tmp != null && tmp.isFading && node == tmp.myLastLinkedNode) {
+                if (tmp && tmp.isFading && node == tmp.myLastLinkedNode) {
                     nnp = tmp;
                     if (tmp.gameObject.activeSelf) {
                         reusing = true;
@@ -233,24 +234,7 @@ namespace NodeNotes_Visual
 
                             foreach (var n in nodesPool)
                                 UpdateVisibility(n.source, previous);
-
-                            /*    if (value != null && curNode != null) {
-                                     var s = value as Node;
-                                     if (s != null) {
-                                         if (s.coreNodes.Contains(curNode))
-                                             wasAParent = curNode;
-                                     }
-                                 }
-
-
-                                 foreach (var n in nodesPool)
-                                     if (n != null && !n.isFading) {
-                                         if (!n.source.Equals(value) && (!n.source.Equals(wasAParent)))
-                                             UpdateVisibility(n.source, center);
-                                     }*/
-
-
-                      
+                     
                             UpdateCurrentNodeGroupVisibilityAround(previous);
 
                             firstFree = 0;

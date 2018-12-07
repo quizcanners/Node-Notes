@@ -243,7 +243,7 @@ namespace NodeNotes_Visual {
                                 LoadCoverImage();
                             pegi.nl();
                         
-                            if (coverImage != null) {
+                            if (coverImage) {
 
                                 if ("Img Mode".editEnum(50, ref mode).nl())
                                     SetImage();
@@ -466,7 +466,7 @@ namespace NodeNotes_Visual {
 
             canJumpToPosition = false;
 
-            if (previous != null && previous != this)
+            if (previous && previous != this)
             {
                 if (source.parentNode == CurrentNode)
                 {
@@ -492,7 +492,7 @@ namespace NodeNotes_Visual {
         NodeCircleController fadingRelation;
 
         public void SetFadeAwayRelation(NodeCircleController previous) {
-            if (previous != null) {
+            if (previous) {
 
                 if (previous != this) {
                     fadingIntoParent = (CurrentNode != null ? CurrentNode.Contains(previous.myLastLinkedNode) : false)
