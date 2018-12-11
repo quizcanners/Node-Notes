@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognized_STD, IGotName, IPEGI, IAmConditional {
+    public class Interaction : AbstractKeepUnrecognized_STD, IGotName, IPEGI, IAmConditional, INeedAttention {
 
         public string referanceName = "";
         public ConditionBranch conditions = new ConditionBranch();
@@ -63,9 +63,17 @@ namespace NodeNotes_Visual {
 
         #region Inspector
 
+        public static List<Interaction> inspectedList;
+        
+        public void RenameReferenceName (string oldName, string newName) {
+            foreach (var o in options)
+                o.RenameReference(oldName, newName);
+        }
+
         int inspectedText = -1;
         int inspectedChoice = -1;
         int inspectedResult = -1;
+        public static bool renameLinkedReferances = true; 
 
         public override void ResetInspector() {
             inspectedText = -1;
@@ -75,16 +83,34 @@ namespace NodeNotes_Visual {
         }
 
 #if PEGI
+        public string NeedAttention() {
 
-        public string NameForPEGI { get { return referanceName; } set { referanceName = value; } }
+            var na = options.NeedAttentionMessage();
+            if (na != null)
+                return na;
+
+            return texts.NeedAttentionMessage("texts", false);
+        }
+        
+        public string NameForPEGI { get { return referanceName; }
+            set { 
+                if (renameLinkedReferances && DialogueNode.inspected != null)
+                    DialogueNode.inspected.interactionBranch.RenameReferance(referanceName, value);
+                referanceName = value;
+            } }
 
         public override bool Inspect() {
             bool changed = false;
 
+            if (inspectedStuff == -1) {
+                this.inspect_Name("Reanme Reference", "Other choices can set this interaction as a next one").changes(ref changed);
+                pegi.toggle(ref renameLinkedReferances, icon.Link, icon.UnLinked, "Will all the references to this Interaction be renamed as well.").nl(ref changed);
+            }
+
             if (inspectedStuff == 1 && inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
-            
-            "Conditions".enter_Inspect(conditions, ref inspectedStuff, 4).nl(ref changed);
+
+            conditions.enter_Inspect_AsList(ref inspectedStuff, 4).nl(ref changed);
             
             "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
 
@@ -98,7 +124,9 @@ namespace NodeNotes_Visual {
 
         }
 
-     
+      
+
+
 #endif
         #endregion
 
@@ -107,12 +135,29 @@ namespace NodeNotes_Visual {
     public class InteractionBranch : LogicBranch<Interaction>  {
         public override string NameForElements => "Interactions";
 
+        void RenameReferenceLoop(LogicBranch<Interaction> br, string oldName, string newName) {
+            foreach (var e in br.elements)
+                e.RenameReferenceName(oldName, newName);
+
+            foreach (var sb in br.subBranches)
+                RenameReferenceLoop(sb, oldName, newName);
+        }
+
+        public override bool Inspect()
+        {
+            CollectAll(ref Interaction.inspectedList);
+
+            return base.Inspect();
+        }
+
+        public void RenameReferance (string oldName, string newName) => RenameReferenceLoop(this, oldName, newName);
+        
         public InteractionBranch() {
             name = "root";
         }
     }
     
-    public class DialogueChoice : AbstractKeepUnrecognized_STD, IPEGI, IGotName
+    public class DialogueChoice : AbstractKeepUnrecognized_STD, IPEGI, IGotName, INeedAttention
     {
         public ConditionBranch conditions = new ConditionBranch();
         public Sentance text = new Sentance();
@@ -148,11 +193,23 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
+
+        public void RenameReference(string oldName, string newName) => nextOne = nextOne.SameAs(oldName) ? newName : nextOne;
+            
         int inspectedResult = -1;
         int inspectedText = -1;
         #if PEGI
 
-        public static List<Interaction> inspectedInteractions;
+        public string NeedAttention() {
+
+            var na = text.NeedAttention();
+            if (na != null) return na;
+
+            na = texts2.NeedAttentionMessage();
+            if (na != null) return na;
+
+            return null;
+        }
 
         public string NameForPEGI {
             get { return text.NameForPEGI; }
@@ -166,24 +223,28 @@ namespace NodeNotes_Visual {
                 text.Nested_Inspect();
             else if (inspectedStuff == -1) Sentance.LanguageSelector_PEGI().nl();
 
-            if ("Conditions:".enter(ref inspectedStuff,2).nl_ifNotEntered())
-                conditions.Nested_Inspect();
+            conditions.enter_Inspect_AsList(ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
 
-            "Results:".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+            "Results".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
                 
             pegi.nl_ifNotEntered();
 
             if (inspectedStuff == 4 && inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
 
-            "After choice texts:".enter_List(ref texts2, ref inspectedText, ref inspectedStuff, 4).nl_ifNotEntered(ref changed);
+            "After choice texts".enter_List(ref texts2, ref inspectedText, ref inspectedStuff, 4).nl_ifNotEntered(ref changed);
+
+            if (!nextOne.IsNullOrEmpty() && icon.Delete.Click("Remove any followups"))
+                nextOne = "";
 
             if (inspectedStuff == -1)
-                "Go To:".select_iGotName(ref nextOne, inspectedInteractions).nl();
+                "Go To".select_iGotName(60, ref nextOne, Interaction.inspectedList).nl();
 
             return changed;
         }
-        #endif
+
+    
+#endif
         #endregion
     }
 

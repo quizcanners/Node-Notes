@@ -42,8 +42,8 @@ namespace NodeNotes {
         bool visConditionsResult = true;
         bool enabledConditionResult = true;
         
-        ConditionBranch visCondition = new ConditionBranch();
-        ConditionBranch eblCondition = new ConditionBranch();
+        ConditionBranch visCondition = new ConditionBranch("Visibe");
+        ConditionBranch eblCondition = new ConditionBranch("Enabled");
 
         public bool TryForceEnabledConditions(bool to) {
             bool done = eblCondition.TryForceTo(to);
@@ -114,8 +114,8 @@ namespace NodeNotes {
                 case "i": index = data.ToInt(); break;
                 case "is": inspectedStuff = data.ToInt(); break;
                 case "icr": inspectedResult = data.ToInt(); break;
-                case "cnds": data.DecodeInto(out eblCondition); break;
-                case "vcnds": data.DecodeInto(out visCondition); break;
+                case "cnds":  eblCondition.Decode(data); break;
+                case "vcnds": visCondition.Decode(data); break;
                 case "res": data.Decode_List(out results); break;
                 case "vis": configForVisualRepresentation = data; break;
             }
@@ -178,11 +178,7 @@ namespace NodeNotes {
 
                     changed |= "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedStuff, 4).nl_ifFolded();
 
-                    visCondition.NameForPEGI = "Visibility";
-
                     changed |= visCondition.enter_Inspect(ref inspectedStuff, 1).nl_ifFolded();
-
-                    eblCondition.NameForPEGI = "Enabled";
 
                     changed |= eblCondition.enter_Inspect(ref inspectedStuff, 2).nl_ifFolded();
 

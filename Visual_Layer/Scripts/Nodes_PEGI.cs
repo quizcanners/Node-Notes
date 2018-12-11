@@ -407,6 +407,8 @@ namespace NodeNotes_Visual
 #endif
         #endregion
 
+        LerpData lerpData = new LerpData();
+
         int logicVersion = -1;
         public override void DerrivedUpdate() {
             if (Input.GetKey(KeyCode.Escape)) {
@@ -421,13 +423,11 @@ namespace NodeNotes_Visual
                 logicVersion = currentLogicVersion;
             }
 
-            float portion = 1;
-            string dom = "";
+            lerpData.Reset();
 
-            nodesPool.Portion(ref portion, ref dom);
+            nodesPool.Portion(lerpData);
 
-            nodesPool.Lerp(portion);
-
+            nodesPool.Lerp(lerpData);
         }
 
         void OnDisable() {

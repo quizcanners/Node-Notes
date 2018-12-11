@@ -47,13 +47,17 @@ namespace NodeNotes_Visual {
         #region Inspector
         #if PEGI
 
+        public static DialogueNode inspected;
+
         protected override bool InspectGameNode() {
+            inspected = this;
 
             bool changed = base.Inspect();
 
             "{0} Dialogue".F(name).write();
-            
-            if (icon.Play.enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered()){
+
+            if (icon.Play.enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered())
+            {
 
                 if (icon.Refresh.Click("Restart dialogue", 20))
                     BackToInitials();
@@ -62,15 +66,18 @@ namespace NodeNotes_Visual {
                     DistantUpdate();
                     pegi.nl();
                     for (int i = 0; i < _optText.Count; i++)
-                        if (_optText[i].Click().nl()) {
+                        if (_optText[i].Click().nl())
+                        {
                             SelectOption(i);
                             DistantUpdate();
                         }
-                    
+
                 }
             }
+            else
+                interactionBranch.Nested_Inspect().nl(ref changed);
 
-            "Interactions Tree".enter_Inspect(interactionBranch, ref inspectedGameNodeStuff, 10).nl(ref changed);
+            inspected = null;
 
             return changed;
         }
@@ -134,8 +141,7 @@ namespace NodeNotes_Visual {
             
             CollectInteractions();
 
-            if (possibleInteractions.Count != 0)
-            {
+            if (possibleInteractions.Count != 0) {
 
                 QuestVersion = LogicMGMT.currentLogicVersion;
                 ScrollOptsDirty = true;
@@ -143,11 +149,9 @@ namespace NodeNotes_Visual {
                 InteractionStage = 0;
                 textNo = 0;
 
-                if (continuationReference != null)
-                {
+                if (!continuationReference.IsNullOrEmpty()) {
                     foreach (var ie in possibleInteractions)
-                        if (ie.referanceName == continuationReference)
-                        {
+                        if (ie.referanceName.SameAs(continuationReference)) {
                             interaction = ie;
                             InteractionStage++;
                             SelectOption(0);
@@ -237,7 +241,6 @@ namespace NodeNotes_Visual {
 
                 case 4:
                     interaction.finalResults.Apply(); BackToInitials(); break;
-
                 case 5:
 
                     textNo++;
