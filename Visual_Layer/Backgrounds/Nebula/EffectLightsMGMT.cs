@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SharedTools_Stuff;
+using PlayerAndEditorGUI;
 using System;
 
 namespace NodeNotes_Visual

@@ -1,4 +1,4 @@
-﻿Shader "MilkLab/Effects/GradientBackground" {
+﻿Shader "Playtime Painter/Basic/GradientBackground" {
 	Properties{
 		
 		_MainTex("Noise Texture (RGB)", 2D) = "white" {}

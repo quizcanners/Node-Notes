@@ -100,7 +100,6 @@ namespace NodeNotes {
         }
 
         #region Inspector
-
         public override void ResetInspector() {
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
@@ -139,7 +138,7 @@ namespace NodeNotes {
                 parentNode.SetInspectedUpTheHierarchy(this);
         }
 
-#if PEGI
+        #if PEGI
         public override string NeedAttention()
         {
             if (loopLock.Unlocked)
@@ -222,13 +221,11 @@ namespace NodeNotes {
         public override bool Inspect() {
 
             bool changed = false;
-
-            if (Application.isPlaying)
-                InspectingSubnode = false;
-            else if (InspectingSubnode)
+            
+            if (InspectingSubnode)
                 inspectedStuff = -1;
             
-            if (!InspectingSubnode && inspectedStuff ==-1 && !Application.isPlaying)  {
+            if (!InspectingSubnode && inspectedStuff ==-1)  {
                 if (this != CurrentNode) {
                     if (icon.Play.Click("Enter Node"))
                         CurrentNode = this;
@@ -268,8 +265,7 @@ namespace NodeNotes {
             
             return changed;
         }
-
-#endif
+        #endif
         #endregion
 
         #region Encode_Decode

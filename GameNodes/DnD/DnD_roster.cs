@@ -10,9 +10,9 @@ using SharedTools_Stuff;
 using STD_Logic;
 using UnityEngine;
 
-namespace NodeNotes_Visual
-{
-    [TaggedType(tag, "DnD roster tags")]
+namespace NodeNotes_Visual {
+
+    [TaggedType(tag, "DnD roster")]
     public class DnD_roster : GameNodeBase {
         public const string tag = "DnD_rost";
         public override string ClassTag => tag;
@@ -36,14 +36,14 @@ namespace NodeNotes_Visual
             .Add_IfNotNegative("i", inspectedGroup);
         #endregion
 
-#region Inspector
-#if PEGI
+        #region Inspector
+        #if PEGI
         protected override bool InspectGameNode() {
             bool changed = "Roster Groups".edit_List(ref perBookGroups, ref inspectedGroup);
             return changed;
         }
-#endif
-#endregion
+        #endif
+        #endregion
 
     }
 
@@ -55,7 +55,7 @@ namespace NodeNotes_Visual
         List<DnDrosterElement> elements = new List<DnDrosterElement>();
         int inspectedElement = -1;
 
-#region Encode & Decode
+        #region Encode & Decode
         public override bool Decode(string tag, string data)
         {
             switch (tag)
@@ -72,10 +72,10 @@ namespace NodeNotes_Visual
             .Add_String("n", name)
             .Add_IfNotEmpty("el", elements)
             .Add_IfNotNegative("i", inspectedElement);
-#endregion
+        #endregion
 
-#region Inspector
-#if PEGI
+        #region Inspector
+        #if PEGI
         public override bool Inspect()
         {
             bool changed = base.Inspect();
@@ -84,8 +84,9 @@ namespace NodeNotes_Visual
 
             return changed;
         }
-#endif
-#endregion
+        #endif
+        #endregion
+
     }
 
     public class DnDrosterElement : AbstractKeepUnrecognized_STD, IPEGI, IGotName {
@@ -97,7 +98,7 @@ namespace NodeNotes_Visual
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-#region Encode & Decode
+        #region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("d", description)
@@ -112,23 +113,22 @@ namespace NodeNotes_Visual
             }
             return true;
         }
-#endregion
+        #endregion
 
-#region Inspector
-#if PEGI
+        #region Inspector
+        #if PEGI
         public override bool Inspect() {
             bool changed = false;
             
             if (inspectedStuff == -1)
             changed |= "Description".editBig(ref description).nl();
-
-
+            
             changed |= "Conditions".enter_Inspect(visibilityConditions, ref inspectedStuff, 4);
 
             return changed;
         }
-#endif
-#endregion
+        #endif
+        #endregion
 
     }
 

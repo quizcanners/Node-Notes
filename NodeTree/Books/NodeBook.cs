@@ -67,6 +67,7 @@ namespace NodeNotes
                 "Entry Points".enter_List(ref entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
 
             }
+
             if (inspectedStuff == -1)
             changed |= subNode.Nested_Inspect(); //"Root Node".NestedInspect(); // (subNode, ref inspectedStuff, 2);
       
