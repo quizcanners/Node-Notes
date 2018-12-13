@@ -28,12 +28,12 @@ namespace NodeNotes {
         }
 
         #region Inspector
-#if PEGI
+        #if PEGI
 
         protected override string ResultsRole => "On Link Usage";
 
-        bool sharedPEGI()
-        {
+        bool sharedPEGI() {
+
             var changed = "Node Link ".select_iGotIndex_SameClass<Base_Node, Node>(65, ref linkedNodeIndex, root.allBaseNodes.GetAllObjsNoOrder());
 
             if (icon.Play.Click("Execute Transition"))
@@ -52,7 +52,8 @@ namespace NodeNotes {
 
             return changed;
         }
-#endif
+
+        #endif
         #endregion
         
         #region Encode_Decode

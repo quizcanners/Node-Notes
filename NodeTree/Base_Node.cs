@@ -7,11 +7,22 @@ using UnityEngine;
 namespace NodeNotes {
 
     [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
-    public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI {
+    public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass
+    {
 
         #region Values
         public Node parentNode;
         public NodeBook root;
+
+        public void Copy_NonSTDdata_From_PreviousInstance(object previous) {
+            var other = previous as Base_Node;
+            if (other != null) {
+                parentNode = other.parentNode;
+                root = other.root;
+                visualRepresentation = other.visualRepresentation;
+                previousVisualRepresentation = other.previousVisualRepresentation;
+            }
+        }
 
         int index;
         public int IndexForPEGI { get { return index; } set { index = value; } }
@@ -143,7 +154,7 @@ namespace NodeNotes {
 
         int inspectedResult = -1;
         public bool InspectingTriggerStuff => inspectedResult != -1;
-#if PEGI
+        #if PEGI
         LoopLock inspectLock = new LoopLock();
 
         public virtual bool Inspect_AfterNamePart() => false;
@@ -192,7 +203,7 @@ namespace NodeNotes {
 
             return changed;
         }
-#endif
+        #endif
         #endregion
 
         #region MGMT
