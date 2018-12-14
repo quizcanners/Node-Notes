@@ -30,7 +30,7 @@ namespace NodeNotes
                 for (int i = 0; i < transform.childCount; i++)
                     children.Add(transform.GetChild(i).gameObject);
 
-            if (rectTranform == null)
+            if (!rectTranform)
                 rectTranform = GetComponent<RectTransform>();
 
             startPosition = rectTranform.anchoredPosition;

@@ -142,7 +142,7 @@ namespace NodeNotes_Visual
 
             NodeCircleController nnp = null;
 
-            if (centerNode == null) 
+            if (!centerNode) 
                 centerNode = node.parentNode?.visualRepresentation as NodeCircleController;
 
             bool reusing = false;
@@ -158,7 +158,7 @@ namespace NodeNotes_Visual
                 }
             }
 
-            if (nnp == null) {
+            if (!nnp) {
                 while (firstFree < nodesPool.Count) {
                     var np = nodesPool[firstFree];
 
@@ -170,8 +170,8 @@ namespace NodeNotes_Visual
                 }
             }
 
-            if (nnp == null) {
-                if (NodeMGMT_inst.circlePrefab == null)
+            if (!nnp) {
+                if (!NodeMGMT_inst.circlePrefab)
                     return;
 
                 nnp = Instantiate(NodeMGMT_inst.circlePrefab);
@@ -308,7 +308,7 @@ namespace NodeNotes_Visual
 
         #region Inspector
         #if PEGI
-        pegi.windowPositionData window = new pegi.windowPositionData();
+        pegi.WindowPositionData window = new pegi.WindowPositionData();
 
         public override void ResetInspector()
         {
