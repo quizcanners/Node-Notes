@@ -96,7 +96,6 @@ namespace NodeNotes {
             foreach (Base_Node sn in this)
                 if (sn!= null)
                     sn.Init(nroot, this);
-
         }
 
         #region Inspector
@@ -210,7 +209,7 @@ namespace NodeNotes {
                 
                 pegi.nl_ifFoldedOut();
 
-                if (ngn != null)
+                if (ngn != null) 
                     ngn.CreatedFor(this);
             }
 
@@ -277,7 +276,7 @@ namespace NodeNotes {
 
                     var cody = this.EncodeUnrecognized()
                         .Add("sub", coreNodes, coreNodesMeta)
-                        .Add("b", base.Encode());
+                        .Add("b", base.Encode);
 
                     if (gameNodes.Count > 0)
                         cody.Add("gn", gameNodes, gamesNodesMeta, GameNodeBase.all);

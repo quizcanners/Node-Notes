@@ -22,8 +22,14 @@ namespace NodeNotes_Visual {
         static int inspectedGroup = -1;
 
         #region Encode & Decode
-        public override bool Decode_PerBookStatic(string tag, string data) {
+
+        public override StdEncoder Encode() => 
+            this.EncodeUnrecognized()
+            .Add("b", base.Encode);
+
+        public override bool Decode(string tag, string data) {
             switch (tag) {
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "el": data.Decode_List(out perBookGroups); break;
                 case "i": inspectedGroup = data.ToInt(); break;
                 default: return false;

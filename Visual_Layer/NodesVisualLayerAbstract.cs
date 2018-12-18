@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SharedTools_Stuff;
+using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
@@ -31,8 +32,14 @@ namespace NodeNotes
             if (loopLockEnt.Unlocked)
                 using (loopLockEnt.Lock()) {
 
-                    if (CurrentNode != null)
-                        preGameNode = CurrentNode;
+                    if (CurrentNode != null) {
+                        if (CurrentNode as Node != null)
+                            preGameNode = CurrentNode;
+                        else {
+                            Debug.LogError("Current Node {0}: {1} is not a Node".F(CurrentNode.ToPEGIstring(), CurrentNode.GetType().ToPEGIstring_Type()));
+                            preGameNode = gn.parentNode;
+                        } 
+                    }
                     else preGameNode = gn.parentNode;
 
                     CurrentNode = null;

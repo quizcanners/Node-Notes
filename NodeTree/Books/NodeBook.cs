@@ -14,6 +14,28 @@ namespace NodeNotes
         #region Values
         public int firstFree = 0;
         public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
+
+        Base_Node this[int ind] { get { return allBaseNodes[ind]; } }
+
+        public void Register(Base_Node node) {
+            if (node != null) {
+
+                var cur = allBaseNodes[node.IndexForPEGI];
+
+                if (cur != null && cur != node) {
+                  
+                    while (this[firstFree] != null) firstFree++;
+                    Debug.LogError("Trying to replace {0} with {1}. Assigning index {2}".F(cur, node, firstFree));
+                    node.IndexForPEGI = firstFree;
+                    allBaseNodes[firstFree] = node;
+                    firstFree++;
+                }
+                else
+                    allBaseNodes[node.IndexForPEGI] = node;
+
+            } else Debug.LogError("Registering NULL node");
+        }
+
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
         public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
         public Node subNode = new Node();

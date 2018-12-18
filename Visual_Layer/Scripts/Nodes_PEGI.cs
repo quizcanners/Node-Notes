@@ -9,6 +9,10 @@ using UnityEngine.UI;
 using TMPro;
 using NodeNotes;
 using UnityEngine.Networking;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace NodeNotes_Visual
 {
@@ -224,6 +228,9 @@ namespace NodeNotes_Visual
 
                         if (Application.isPlaying && Shortcuts.CurrentNode != value) {
 
+                            if (value as Node == null)
+                                Debug.LogError("{0} is not a Node Type: {1}".F(value.ToPEGIstring(), value.GetType().ToPEGIstring_Type()));
+
                             SetSelected(null);
                             
                             var previous = Shortcuts.CurrentNode?.visualRepresentation as NodeCircleController;
@@ -435,6 +442,8 @@ namespace NodeNotes_Visual
             Shortcuts.CurrentNode = null;
             DeleteAllNodes();
             textureDownloader.Dispose();
+
+
         }
 
         public override void OnEnable()

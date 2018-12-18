@@ -173,7 +173,7 @@ namespace NodeNotes {
         public override StdEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
-            .Add("b", base.Encode())
+            .Add("b", base.Encode)
             .Add("t", (int)type);
 
             if (type == BookLinkType.BookLink) cody

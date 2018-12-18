@@ -17,7 +17,7 @@ namespace NodeNotes
         }
         
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add("b", base.Encode());
+            .Add("b", base.Encode);
 
         public override bool Decode(string tag, string data)
         {

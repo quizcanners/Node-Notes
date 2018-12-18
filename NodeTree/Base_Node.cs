@@ -1,6 +1,7 @@
 ﻿using PlayerAndEditorGUI;
 using SharedTools_Stuff;
 using STD_Logic;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -237,7 +238,7 @@ namespace NodeNotes {
             root = r;
             if (parent != null)
                 parentNode = parent;
-            root.allBaseNodes[index] = this;
+            root.Register(this); //allBaseNodes[index] = this;
         }
 
         public virtual void Delete() {
