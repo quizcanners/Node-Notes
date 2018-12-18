@@ -139,6 +139,55 @@ namespace NodeNotes_Visual {
         }
         #endregion
 
+        static bool ExitOrDrawPEGI<T>(NativeArray<T> array, ref int index, List_Data ld = null) where T : struct
+        {
+            bool changed = false;
+
+            if (index >= 0)
+            {
+                if (array == null || index >= array.Length || icon.List.ClickUnfocus("Return to {0} array".F(pegi.GetCurrentListLabel<T>(ld))).nl())
+                    index = -1;
+                else
+                    changed |= array[index].Try_Nested_Inspect();
+            }
+
+            return changed;
+        }
+
+        public static T edit_Array<T>(ref NativeArray<T> array, ref int inspected, ref bool changed, List_Data datas = null) where T : struct
+        {
+            T added = default(T);
+
+            if (array == null)
+            {
+                if ("init array".ClickUnfocus().nl())
+                    array = new NativeArray<T>();
+            }
+            else
+            {
+
+                changed |= ExitOrDrawPEGI(array, ref inspected);
+
+                if (inspected == -1)
+                {
+                    for (int i = 0; i < array.Length; i++)
+                        changed |= array[i].Name_ClickInspect_PEGI<T>(null, i, ref inspected, datas).nl();
+                }
+            }
+
+            return added;
+        }
+
+        public static bool edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected, List_Data datas = null) where T : struct
+        {
+            label.write_ListLabel(ref inspected);
+            bool changed = false;
+            edit_Array(ref array, ref inspected, ref changed, datas).listLabel_Used();
+
+            return changed;
+        }
+
+
 
         public static EntityManager manager;
 
