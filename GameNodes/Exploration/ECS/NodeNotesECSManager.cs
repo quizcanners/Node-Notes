@@ -22,7 +22,9 @@ namespace NodeNotes_Visual {
         public TaggedTypes_STD AllTypes => all;
 
         public static Entity inspectedEntity;
-        public abstract void AddComponent(Entity e);
+        public virtual void AddComponent(Entity e) => e.Add(ComponentType);
+
+        public abstract ComponentType ComponentType { get; }
 
         public abstract void SetData(Entity e);
     }
@@ -47,12 +49,17 @@ namespace NodeNotes_Visual {
         #endregion
 
         public override string ClassTag => classTag;
-
-        public override void AddComponent(Entity e) => e.Add<Position>();
         
+        static ComponentType type = ComponentType.Create<Position>();
+
+        public override ComponentType ComponentType => type;
+
+
         public bool PEGI_inList(IList list, int ind, ref int edited) => "pos".edit(30, ref pos);
 
-        public override void SetData(Entity e) => e.Set(new Position() { Value = new float3(pos.x, pos.y, pos.z) });
+        public override void SetData(Entity e) => Set(e,pos);
+
+        public static Entity Set(Entity e, Vector3 pos) => e.Set(new Position() { Value = new float3(pos.x, pos.y, pos.z) });
     }
 
     [TaggedType(classTag, "Rotation")]
@@ -76,8 +83,10 @@ namespace NodeNotes_Visual {
         }
         #endregion
 
-        public override void AddComponent(Entity e) => e.Add<Rotation>();
-        
+        static ComponentType type = ComponentType.Create<Rotation>();
+
+        public override ComponentType ComponentType => type;
+
         public override void SetData(Entity e) => e.Set(new Rotation() { Value = new quaternion() { value = new float4(qt.x,qt.y,qt.z,qt.w)} });
 
         public bool PEGI_inList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
@@ -85,6 +94,92 @@ namespace NodeNotes_Visual {
 
 
     public static class NodeNotesECSManager {
+
+        public static EntityManager manager;
+
+        public static void Init() {
+            Debug.Log("Getting manager");
+            manager = World.Active.GetOrCreateManager<EntityManager>();
+        }
+
+        #region Entity MGMT
+        public static Entity Instantiate(GameObject prefab)
+        {
+            Entity e = manager.Instantiate(prefab);
+
+            if (prefab)
+            {
+                Debug.Log("Instantiating ECS from prefab {0}".F(prefab));
+                e.Set(new PhisicsArrayObject { testValue = e.Index });
+            }
+            return e;
+        }
+
+        public static Entity Instantiate(this EntityArchetype arch)
+        {
+
+            Entity e = manager.CreateEntity(arch);
+            return e;
+
+        }
+        
+        public static Entity Add(this Entity ent, ComponentType type) {
+            manager.AddComponent(ent, type);
+            return ent;
+        }
+
+        public static Entity Add<T>(this Entity ent) where T : struct, IComponentData
+        {
+            manager.AddComponent(ent, typeof(T));
+            return ent;
+        }
+
+        public static Entity Set<T>(this Entity ent, T dta) where T : struct, IComponentData {
+            manager.SetComponentData(ent, dta);
+            return ent;
+        }
+
+        public static void Destroy(this Entity ent) => manager.DestroyEntity(ent);
+
+        public static Entity SetPosition(this Entity ent, Vector3 pos) => Entity_PositionSTD.Set(ent, pos);
+
+        public static T Get<T>(this Entity ent) where T : struct, IComponentData =>
+            manager.GetComponentData<T>(ent);
+
+        public static bool Has<T>(this Entity ent) where T : struct, IComponentData =>
+            manager.HasComponent<T>(ent);
+
+        public static NativeArray<ComponentType> GetComponentTypes (this Entity ent) =>
+            manager.GetComponentTypes(ent, Allocator.Temp);
+        #endregion
+
+        #region Entity Config 
+        public static List<ComponentType> GetComponentTypes (this List<EntityDataSTD_Base> cmps) {
+            var lst = new List<ComponentType>();
+
+            foreach (var c in cmps)
+                lst.Add(c.ComponentType);
+
+            return lst;
+
+        }
+
+        public static EntityArchetype ToArchetype(this List<EntityDataSTD_Base> cmps) => manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+
+        public static Entity Instantiate(this List<EntityDataSTD_Base> cmps)
+        {
+
+            Entity e = manager.CreateEntity();
+
+            foreach (var c in cmps)
+            {
+                c.AddComponent(e);
+                c.SetData(e);
+            }
+
+            return e;
+        }
+        #endregion
 
         #region Encode & Decode
         public static StdEncoder Encode(this float3 v3) => new StdEncoder()
@@ -98,7 +193,8 @@ namespace NodeNotes_Visual {
           .Add_IfNotEpsilon("z", q.value.z)
           .Add_IfNotEpsilon("w", q.value.w);
 
-        public static float3 ToFloat3(this string data) {
+        public static float3 ToFloat3(this string data)
+        {
             float3 tmp = new float3();
 
             var cody = new StdDecoder(data);
@@ -138,6 +234,80 @@ namespace NodeNotes_Visual {
             return tmp;
         }
         #endregion
+
+        #region Inspector
+        static int exploredEntity = -1;
+        public static bool Inspect()   {
+
+            var changed = false;
+
+            if (manager != null) {
+
+                NativeArray<Entity> all = manager.GetAllEntities(Allocator.Temp);
+
+                GameObject go = null;
+
+                if ("instantiate".edit(ref go).nl())
+                    Instantiate(go);
+
+                for (int i = 0; i < all.Length; i++)
+                {
+                    var e = all[i];
+
+                    if (e.ToPEGIstring().foldout(ref exploredEntity, i).nl())
+                        e.Inspect().nl(ref changed);
+                    
+                }
+
+            }
+            else if (icon.Search.Click("Find manager"))
+                Init();
+
+            return changed;
+        }
+
+        public static bool Inspect(this Entity e) {
+            bool changed = false;
+
+            if (e.Has<PhisicsArrayObject>()) {
+                var cmps = manager.GetComponentData<PhisicsArrayObject>(e);
+                cmps.Inspect_AsInList();
+            }
+
+            if (e.Has<Position>()) {
+                var pos = e.Get<Position>();
+                "Position".write(60);
+                "X".edit(20,ref pos.Value.x).changes(ref changed);
+                "Y".edit(20, ref pos.Value.y).changes(ref changed);
+                "Z".edit(20, ref pos.Value.z).changes(ref changed);
+                if (changed)
+                    e.Set(pos);
+                pegi.nl();
+            }
+
+            if (e.Has<Rotation>())
+            {
+                var rot = e.Get<Rotation>();
+
+                var q = rot.Value.value;
+
+                Vector3 eul = (new Quaternion(q.x, q.y, q.z, q.w)).eulerAngles;
+
+                "Rotation".edit(60, ref eul).nl(ref changed);
+
+                if (changed) {
+                    var qt = new Quaternion();
+                    qt.eulerAngles = eul;
+
+                    rot.Value.value = new Unity.Mathematics.float4(qt.x, qt.y, qt.z, qt.w);
+                    e.Set(rot);
+                }
+
+                pegi.nl();
+            }
+
+            return changed;
+        }
 
         static bool ExitOrDrawPEGI<T>(NativeArray<T> array, ref int index, List_Data ld = null) where T : struct
         {
@@ -186,131 +356,6 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-
-
-
-        public static EntityManager manager;
-
-        public static void Init()
-        {
-            Debug.Log("Getting manager");
-            manager = World.Active.GetOrCreateManager<EntityManager>();
-        }
-
-        public static Entity Add<T>(this Entity ent) where T : struct, IComponentData
-        {
-            manager.AddComponent(ent, typeof(T));
-            return ent;
-        }
-
-        public static Entity Set<T>(this Entity ent, T dta) where T : struct, IComponentData
-        {
-            manager.SetComponentData(ent, dta);
-            return ent;
-        }
-
-        public static T Get<T>(this Entity ent) where T : struct, IComponentData =>
-            manager.GetComponentData<T>(ent);
-
-        public static bool Has<T>(this Entity ent) where T : struct, IComponentData =>
-            manager.HasComponent<T>(ent);
-
-        public static NativeArray<ComponentType> GetComponentTypes (this Entity ent) =>
-            manager.GetComponentTypes(ent, Allocator.Temp);
-
-        public static Entity Instantiate(GameObject prefab) {
-            Entity e = manager.Instantiate(prefab);
-
-            if (prefab)  {
-                Debug.Log("Instantiating ECS from prefab {0}".F(prefab));
-                e.Set(new ExplorationLerpData { Value = e.Index });
-            }
-            return e;
-        }
-
-        public static Entity Instantiate(List<EntityDataSTD_Base> cmps) { 
-            Entity e = manager.CreateEntity();
-
-            foreach (var c in cmps) {
-                c.AddComponent(e);
-                c.SetData(e);
-            }
-
-            return e;
-        }
-
-
-        static int exploredEntity = -1;
-        public static bool Inspect()   {
-
-            var changed = false;
-
-            if (manager != null) {
-
-                NativeArray<Entity> all = manager.GetAllEntities(Allocator.Temp);
-
-                GameObject go = null;
-
-                if ("instantiate".edit(ref go).nl())
-                    Instantiate(go);
-
-                for (int i = 0; i < all.Length; i++)
-                {
-                    var e = all[i];
-
-                    if (e.ToPEGIstring().foldout(ref exploredEntity, i).nl())
-                        e.Inspect().nl(ref changed);
-                    
-                }
-
-            }
-            else if (icon.Search.Click("Find manager"))
-                Init();
-
-            return changed;
-        }
-
-        public static bool Inspect(this Entity e) {
-            bool changed = false;
-
-            if (e.Has<ExplorationLerpData>()) {
-                var cmps = manager.GetComponentData<ExplorationLerpData>(e);
-                cmps.Inspect_AsInList();
-            }
-
-            if (e.Has<Position>()) {
-                var pos = e.Get<Position>();
-                "Position".write(60);
-                "X".edit(20,ref pos.Value.x).changes(ref changed);
-                "Y".edit(20, ref pos.Value.y).changes(ref changed);
-                "Z".edit(20, ref pos.Value.z).changes(ref changed);
-                if (changed)
-                    e.Set(pos);
-                pegi.nl();
-            }
-
-            if (e.Has<Rotation>())
-            {
-                var rot = e.Get<Rotation>();
-
-                var q = rot.Value.value;
-
-                Vector3 eul = (new Quaternion(q.x, q.y, q.z, q.w)).eulerAngles;
-
-                "Rotation".edit(60, ref eul).nl(ref changed);
-
-                if (changed) {
-                    var qt = new Quaternion();
-                    qt.eulerAngles = eul;
-
-                    rot.Value.value = new Unity.Mathematics.float4(qt.x, qt.y, qt.z, qt.w);
-                    e.Set(rot);
-                }
-
-                pegi.nl();
-            }
-
-            return changed;
-        }
+        #endregion
     }
 }

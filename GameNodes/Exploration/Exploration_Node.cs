@@ -89,10 +89,11 @@ namespace NodeNotes_Visual.Exploration {
     public class Exploration_ECSinstance : Exploration_Element, IPEGI_ListInspect, IGotName, IPEGI {
         string name = "Unnamed";
         string instanceConfig;
-        int instanceIndex = -1;
+        bool instanciated = false;
 
         List<EntityDataSTD_Base> entityComponents = new List<EntityDataSTD_Base>();
         List_Data componentsMeta = new List_Data("Components");
+        EntityArchetype archetype;
 
         static EntityManager Manager => NodeNotesECSManager.manager;
 
@@ -101,15 +102,18 @@ namespace NodeNotes_Visual.Exploration {
         public override void OnExit() => DestroyInstance();
 
         void DestroyInstance() {
-            if (instanceIndex != -1) {
-                instanceIndex = -1;
+            if (instanciated) {
+                instanciated = false;
                 Manager.DestroyEntity(instance);
             }
         }
 
         void Instantiate() {
+            if (!archetype.Valid)
+                archetype = entityComponents.ToArchetype();
+
             instance = NodeNotesECSManager.Instantiate(entityComponents);
-            instanceIndex = instance.Index;
+            instanciated = true;
         }
 
         #region Encode & Decode
@@ -144,15 +148,15 @@ namespace NodeNotes_Visual.Exploration {
 
             var changed = this.inspect_Name();
 
-            var active = instanceIndex != -1;
+         
 
-            if ((active ? icon.Active : icon.InActive).Click("Inspect"))
+            if ((instanciated ? icon.Active : icon.InActive).Click("Inspect"))
                 edited = ind;
             
-           if (!active && icon.Play.Click())
+           if (!instanciated && icon.Play.Click())
                 Instantiate();
 
-            if (active && icon.Delete.Click("Delete instance"))
+            if (instanciated && icon.Delete.Click("Delete instance"))
                 DestroyInstance();
 
             return changed;
@@ -162,24 +166,28 @@ namespace NodeNotes_Visual.Exploration {
 
             var changed = false;
 
-            var active = instanceIndex != -1;
-
-            if (active) {
+            if (instanciated) {
                 var cmps = instance.GetComponentTypes();
                 "Got {0} components".F(cmps.Length);
             }
 
-            if (!active && icon.Play.Click())
+            if (!instanciated && icon.Play.Click())
                 Instantiate();
 
-            if (active && icon.Delete.Click("Delete instance"))
+            if (instanciated && icon.Delete.Click("Delete instance"))
                 DestroyInstance();
 
             pegi.nl();
 
-            if (componentsMeta.enter_List(ref entityComponents, ref inspectedStuff, 1).nl(ref changed) && active) 
-                foreach (var e in entityComponents)
-                    e.SetData(instance);
+            if (componentsMeta.enter_List(ref entityComponents, ref inspectedStuff, 1).nl(ref changed)) {
+
+                archetype = entityComponents.ToArchetype();
+
+                if (instanciated) {
+                    DestroyInstance();
+                    Instantiate();
+                }
+            }
  
             return changed;
         }

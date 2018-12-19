@@ -9,16 +9,14 @@ using Unity.Mathematics;
 
 
 
-namespace NodeNotes_Visual
-{
-
-
+namespace NodeNotes_Visual {
 
     [Serializable]
-    public struct ExplorationLerpData : IComponentData, IGotDisplayName, IPEGI_ListInspect, ISTD {
-        public float Value;
-        public float3 targetPosition;
-        public quaternion targetRotation; 
+    public struct PhisicsArrayObject : IComponentData, IGotDisplayName, IPEGI_ListInspect, ISTD {
+
+        public int index;
+
+        public float testValue;
 
         public string NameForPEGIdisplay => "Exploration Lerp Data";
 
@@ -46,7 +44,7 @@ namespace NodeNotes_Visual
         }
     }
 
-    public class Exploration_Fader : ComponentDataWrapper<ExplorationLerpData> { }
+    public class Exploration_Fader : ComponentDataWrapper<PhisicsArrayObject> { }
 
 
 }
