@@ -15,10 +15,11 @@ namespace NodeNotes_Visual.ECS {
     [ComponentSTDAttribute]
     public abstract class Component_STD_Abstract : AbstractKeepUnrecognized_STD, IGotClassTag, IPEGI_ListInspect
     {
-
+        #region Tagged Types
         public abstract string ClassTag { get; }
         public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(Component_STD_Abstract));
         public TaggedTypes_STD AllTypes => all;
+        #endregion
 
         #region Component MGMT
         public virtual void AddComponent(Entity e) => e.Add(ComponentType);
@@ -62,33 +63,14 @@ namespace NodeNotes_Visual.ECS {
         #endregion
     }
 
-    public abstract class Component_STD_Generic<T> : Component_STD_Abstract where T : struct, IComponentData
-    {
-
-        static ComponentType type = ComponentType.Create<T>();
-
-        public override ComponentType ComponentType => type;
+    public abstract class Component_STD_Generic<T> : Component_STD_Abstract where T : struct, IComponentData {
 
         public static EntityManager Manager => NodeNotesECSManager.manager;
 
-        public override string ClassTag => throw new System.NotImplementedException();
-
-        public Entity Add(Entity ent)
-        {
-            Manager.AddComponent(ent, typeof(T));
-            return ent;
-        }
-
-        public static Entity Set(Entity ent, T dta)
-        {
-            Manager.SetComponentData(ent, dta);
-            return ent;
-        }
-
-        public Entity SetPosition(Entity ent, Vector3 pos) => Position_STD.Set(ent, pos);
-
-        public static T Get(Entity ent) => Manager.GetComponentData<T>(ent);
-
+        static ComponentType type = ComponentType.Create<T>();
+        
+        public override ComponentType ComponentType => type;
+        
         public override IComponentData GetComponent(Entity e) => e.Get<T>();
 
         public override void SetData(Entity e, IComponentData cmp) => e.Set((T)cmp);

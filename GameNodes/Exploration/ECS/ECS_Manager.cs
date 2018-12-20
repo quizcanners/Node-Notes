@@ -9,9 +9,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
-
-   
-
+    
     public static class NodeNotesECSManager {
 
         public static EntityManager manager;
@@ -57,8 +55,6 @@ namespace NodeNotes_Visual.ECS {
             manager.SetComponentData(ent, dta);
             return ent;
         }
-
-        public static Entity SetPosition(this Entity ent, Vector3 pos) => Position_STD.Set(ent, pos);
 
         public static T Get<T>(this Entity ent) where T : struct, IComponentData =>
             manager.GetComponentData<T>(ent);
