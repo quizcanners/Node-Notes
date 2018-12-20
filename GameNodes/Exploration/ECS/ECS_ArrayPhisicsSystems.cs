@@ -8,19 +8,17 @@ using Unity.Burst;
 using SharedTools_Stuff;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace NodeNotes_Visual {
-    
+namespace NodeNotes_Visual.ECS {
 
     [ExecuteInEditMode]
     public class ECS_WeightlessObjects : JobComponentSystem {
 
         [BurstCompile]
-        struct MovementJob : IJobProcessComponentData<Position, PhisicsArrayObject>
-        {
+        struct MovementJob : IJobProcessComponentData<Position, PhisicsArrayDynamic_Component> {
             public float deltaTime;
             [ReadOnly] public NativeArray<int> previousArray;
 
-            public void Execute(ref Position pos, ref PhisicsArrayObject dta) {
+            public void Execute(ref Position pos, ref PhisicsArrayDynamic_Component dta) {
                 dta.testValue += previousArray[0] * deltaTime;
             }
         }
@@ -36,12 +34,8 @@ namespace NodeNotes_Visual {
 
             jh = moveJob.Schedule(this, inputDeps);
 
-          //  Debug.Log("Previous Array: {0}".F(ECS_ObjectsToArray.previousPositions[0]));
-
             return jh;
         }
-
-
     }
 
     [UpdateBefore(typeof(ECS_ObjectsToArray))]
@@ -76,14 +70,14 @@ namespace NodeNotes_Visual {
         #endregion
 
         [BurstCompile]
-        struct MovementJob : IJobProcessComponentData<Position, PhisicsArrayObject> {
+        struct MovementJob : IJobProcessComponentData<Position, PhisicsArrayDynamic_Component> {
             public float deltaTime;
             [ReadOnly]
             public NativeArray<int> previousArray;
             [WriteOnly]
             public NativeArray<int> currentArray;
 
-            public void Execute(ref Position pos, ref PhisicsArrayObject dta)
+            public void Execute(ref Position pos, ref PhisicsArrayDynamic_Component dta)
             {
                 dta.testValue += deltaTime;
 

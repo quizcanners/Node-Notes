@@ -8,8 +8,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.Collections;
+using NodeNotes_Visual.ECS;
 
-namespace NodeNotes_Visual.Exploration {
+namespace NodeNotes_Visual {
 
     [TaggedType(tag, "Exploration Node")]
     public class Exploration_Node : GameNodeBase {
@@ -91,7 +92,7 @@ namespace NodeNotes_Visual.Exploration {
         string instanceConfig;
         bool instanciated = false;
 
-        List<EntityDataSTD_Base> entityComponents = new List<EntityDataSTD_Base>();
+        List<Component_STD_Abstract> entityComponents = new List<Component_STD_Abstract>();
         List_Data componentsMeta = new List_Data("Components");
         EntityArchetype archetype;
 
@@ -126,13 +127,13 @@ namespace NodeNotes_Visual.Exploration {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("cfg", instanceConfig)
-            .Add("ent", entityComponents, componentsMeta, EntityDataSTD_Base.all);
+            .Add("ent", entityComponents, componentsMeta, Component_STD_Abstract.all);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
                 case "n": name = data; break;
                 case "cfg": instanceConfig = data; break;
-                case "ent": data.Decode_List(out entityComponents, ref componentsMeta, EntityDataSTD_Base.all); break;
+                case "ent": data.Decode_List(out entityComponents, ref componentsMeta, Component_STD_Abstract.all); break;
                 default: return false;
             }
             return true;
@@ -179,13 +180,23 @@ namespace NodeNotes_Visual.Exploration {
 
             pegi.nl();
 
+            Component_STD_Abstract.inspectedEntity = instance;
+
             if (componentsMeta.enter_List(ref entityComponents, ref inspectedStuff, 1).nl(ref changed)) {
 
-                archetype = entityComponents.ToArchetype();
+                var narch = entityComponents.ToArchetype();
 
-                if (instanciated) {
-                    DestroyInstance();
-                    Instantiate();
+                if (narch != archetype)
+                {
+                    Debug.Log("Archetype was changed");
+
+                    archetype = narch;
+
+                    if (instanciated)
+                    {
+                        DestroyInstance();
+                        Instantiate();
+                    }
                 }
             }
  

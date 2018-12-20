@@ -8,90 +8,9 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-namespace NodeNotes_Visual {
+namespace NodeNotes_Visual.ECS {
 
-    public class EntitySTDAttribute : Abstract_WithTaggedTypes {
-        public override TaggedTypes_STD TaggedTypes => EntityDataSTD_Base.all;
-    }
-
-    [EntitySTD]
-    public abstract class EntityDataSTD_Base : AbstractKeepUnrecognized_STD, IGotClassTag{
-
-        public abstract string ClassTag { get; }
-        public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(EntityDataSTD_Base));
-        public TaggedTypes_STD AllTypes => all;
-
-        public static Entity inspectedEntity;
-        public virtual void AddComponent(Entity e) => e.Add(ComponentType);
-
-        public abstract ComponentType ComponentType { get; }
-
-        public abstract void SetData(Entity e);
-    }
-
-    [TaggedType(classTag, "Position")]
-    public class Entity_PositionSTD : EntityDataSTD_Base, IPEGI_ListInspect {
-        const string classTag = "pos";
-
-        Vector3 pos;
-
-        #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add_IfNotZero("pos", pos);
-
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
-                case "pos": pos = data.ToVector3(); break;
-                default: return false;
-            }
-            return true;
-        }
-        #endregion
-
-        public override string ClassTag => classTag;
-        
-        static ComponentType type = ComponentType.Create<Position>();
-
-        public override ComponentType ComponentType => type;
-
-
-        public bool PEGI_inList(IList list, int ind, ref int edited) => "pos".edit(30, ref pos);
-
-        public override void SetData(Entity e) => Set(e,pos);
-
-        public static Entity Set(Entity e, Vector3 pos) => e.Set(new Position() { Value = new float3(pos.x, pos.y, pos.z) });
-    }
-
-    [TaggedType(classTag, "Rotation")]
-    public class Entity_RotationSTD : EntityDataSTD_Base, IPEGI_ListInspect {
-        const string classTag = "rot";
-        Quaternion qt;
-        public override string ClassTag => classTag;
-
-        #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add(classTag, qt);
-
-        public override bool Decode(string tag, string data)
-        {
-            switch (tag)
-            {
-                case classTag: qt = data.ToQuaternion(); break;
-                default: return false;
-            }
-            return true;
-        }
-        #endregion
-
-        static ComponentType type = ComponentType.Create<Rotation>();
-
-        public override ComponentType ComponentType => type;
-
-        public override void SetData(Entity e) => e.Set(new Rotation() { Value = new quaternion() { value = new float4(qt.x,qt.y,qt.z,qt.w)} });
-
-        public bool PEGI_inList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
-    }
-
+   
 
     public static class NodeNotesECSManager {
 
@@ -110,7 +29,7 @@ namespace NodeNotes_Visual {
             if (prefab)
             {
                 Debug.Log("Instantiating ECS from prefab {0}".F(prefab));
-                e.Set(new PhisicsArrayObject { testValue = e.Index });
+                e.Set(new PhisicsArrayDynamic_Component { testValue = e.Index });
             }
             return e;
         }
@@ -139,22 +58,22 @@ namespace NodeNotes_Visual {
             return ent;
         }
 
-        public static void Destroy(this Entity ent) => manager.DestroyEntity(ent);
-
-        public static Entity SetPosition(this Entity ent, Vector3 pos) => Entity_PositionSTD.Set(ent, pos);
+        public static Entity SetPosition(this Entity ent, Vector3 pos) => Position_STD.Set(ent, pos);
 
         public static T Get<T>(this Entity ent) where T : struct, IComponentData =>
             manager.GetComponentData<T>(ent);
 
         public static bool Has<T>(this Entity ent) where T : struct, IComponentData =>
             manager.HasComponent<T>(ent);
-
+        
+        public static void Destroy(this Entity ent) => manager.DestroyEntity(ent);
+        
         public static NativeArray<ComponentType> GetComponentTypes (this Entity ent) =>
             manager.GetComponentTypes(ent, Allocator.Temp);
         #endregion
 
         #region Entity Config 
-        public static List<ComponentType> GetComponentTypes (this List<EntityDataSTD_Base> cmps) {
+        public static List<ComponentType> GetComponentTypes (this List<Component_STD_Abstract> cmps) {
             var lst = new List<ComponentType>();
 
             foreach (var c in cmps)
@@ -164,9 +83,9 @@ namespace NodeNotes_Visual {
 
         }
 
-        public static EntityArchetype ToArchetype(this List<EntityDataSTD_Base> cmps) => manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+        public static EntityArchetype ToArchetype(this List<Component_STD_Abstract> cmps) => manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
 
-        public static Entity Instantiate(this List<EntityDataSTD_Base> cmps)
+        public static Entity Instantiate(this List<Component_STD_Abstract> cmps)
         {
 
             Entity e = manager.CreateEntity();
@@ -269,8 +188,8 @@ namespace NodeNotes_Visual {
         public static bool Inspect(this Entity e) {
             bool changed = false;
 
-            if (e.Has<PhisicsArrayObject>()) {
-                var cmps = manager.GetComponentData<PhisicsArrayObject>(e);
+            if (e.Has<PhisicsArrayDynamic_Component>()) {
+                var cmps = manager.GetComponentData<PhisicsArrayDynamic_Component>(e);
                 cmps.Inspect_AsInList();
             }
 
