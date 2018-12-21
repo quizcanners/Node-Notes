@@ -243,7 +243,7 @@ namespace NodeNotes_Visual {
             if ((instance ? icon.Active : icon.InActive).Click("Inspect"))
                 edited = ind;
 
-            instance.clickHighlight();
+            instance.ClickHighlight();
 
             if (!instance) {
                 var el = Exploration_Node.monoBehaviourPrefabs.TryGet(prefabIndex);

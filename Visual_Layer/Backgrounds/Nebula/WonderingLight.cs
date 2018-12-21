@@ -29,8 +29,7 @@ public class WonderingLight : MonoBehaviour {
         blowback = Vector3.zero;
         rigidBody.velocity = Vector3.zero;
     }
-
-    // Update is called once per frame
+    
     void Update () {
 
         if (rigidBody)

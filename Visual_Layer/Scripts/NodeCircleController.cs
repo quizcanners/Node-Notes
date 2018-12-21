@@ -75,9 +75,9 @@ namespace NodeNotes_Visual {
             bool changed = ActiveConfig.PEGI_inList(list, ind, ref edited);
 
             if (coverImage)
-                this.clickHighlight(coverImage);
+                this.ClickHighlight(coverImage);
             else
-                this.clickHighlight();
+                this.ClickHighlight();
 
             return changed;
         }

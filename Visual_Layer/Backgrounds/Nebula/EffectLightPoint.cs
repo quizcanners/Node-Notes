@@ -15,10 +15,6 @@ public class EffectLightPoint : MonoBehaviour {
         all[index] = this;
 	}
 
-    private void OnDisable()
-    => all[index] = this;
+    private void OnDisable() => all[index] = this;
    
-    protected virtual void Update () {
-		
-	}
 }
