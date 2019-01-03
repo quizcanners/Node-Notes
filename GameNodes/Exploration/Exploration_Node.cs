@@ -284,7 +284,7 @@ namespace NodeNotes_Visual {
                 if (ifd != null)
                     ifd.FadeAway();
                 else {
-                    instance.DestroyWhatever();
+                    instance.gameObject.DestroyWhatever();
                     instance = null;
                 }
             }
