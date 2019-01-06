@@ -60,9 +60,9 @@ namespace NodeNotes_Visual.ECS {
     public class ECS_ObjectsToArray : JobComponentSystem {
 
         #region values
-        const int width = 128;
-        const int length = 128;
-        const int height = 32;
+        const int width = 8;
+        const int length = 8;
+        const int height = 2;
         public const int size = width * length * height;
         public static NativeArray<int> previousPositions;
         public static NativeArray<int> currentPositions;
