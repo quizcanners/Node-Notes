@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using Unity.Burst;
-using SharedTools_Stuff;
+using QuizCannersUtilities;
 using Unity.Collections.LowLevel.Unsafe;
 
 namespace NodeNotes_Visual.ECS {

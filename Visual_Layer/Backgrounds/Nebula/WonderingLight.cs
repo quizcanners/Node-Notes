@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SharedTools_Stuff;
+using QuizCannersUtilities;
 
 [ExecuteInEditMode]
 public class WonderingLight : MonoBehaviour {
