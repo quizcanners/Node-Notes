@@ -9,14 +9,9 @@ using UnityEditor;
 namespace NodeNotes_Visual
 {
     [CustomEditor(typeof(Nodes_PEGI))]
-    public class Nodes_PEGIEditor : Editor {
-        public override void OnInspectorGUI() => ((Nodes_PEGI)target).Inspect(serializedObject);
-    }
+    public class Nodes_PEGIEditor : PEGI_Editor<Nodes_PEGI> {  }
 
     [CustomEditor(typeof(NodeCircleController))]
-    public class NodeCircleControllerEditor : Editor
-    {
-        public override void OnInspectorGUI() => ((NodeCircleController)target).Inspect(serializedObject);
-    }
+    public class NodeCircleControllerEditor : PEGI_Editor<NodeCircleController>  {  }
 }
 #endif
