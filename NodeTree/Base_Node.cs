@@ -111,25 +111,25 @@ namespace NodeNotes {
         #region Encode_Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-        .Add_String("n", name)
-        .Add("i", index)
-        .Add_IfNotNegative("is", inspectedStuff)
-        .Add_IfNotNegative("icr", inspectedResult)
-        .Add_IfNotDefault("cnds", eblCondition)
-        .Add_IfNotDefault("vcnds", visCondition)
-        .Add_IfNotEmpty("res", results)
-        .Add_IfNotEmpty("vis", visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
+        .Add_String(        "n", name)
+        .Add(               "i", index)
+        .Add_IfNotNegative( "is", inspectedStuff)
+        .Add_IfNotNegative( "icr", inspectedResult)
+        .Add_IfNotDefault(  "cnds", eblCondition)
+        .Add_IfNotDefault(  "vcnds", visCondition)
+        .Add_IfNotEmpty(    "res",  results)
+        .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
         public override bool Decode(string tag, string data) {
             switch (tag) {
-                case "n": name = data; break;
-                case "i": index = data.ToInt(); break;
-                case "is": inspectedStuff = data.ToInt(); break;
-                case "icr": inspectedResult = data.ToInt(); break;
-                case "cnds":  eblCondition.Decode(data); break;
-                case "vcnds": visCondition.Decode(data); break;
-                case "res": data.Decode_List(out results); break;
-                case "vis": configForVisualRepresentation = data; break;
+                case "n":       name = data; break;
+                case "i":       index = data.ToInt(); break;
+                case "is":      inspectedStuff = data.ToInt(); break;
+                case "icr":     inspectedResult = data.ToInt(); break;
+                case "cnds":    eblCondition.Decode(data); break;
+                case "vcnds":   visCondition.Decode(data); break;
+                case "res":     data.Decode_List(out results); break;
+                case "vis":     configForVisualRepresentation = data; break;
             }
             return true;
         }
