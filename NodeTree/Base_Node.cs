@@ -8,7 +8,7 @@ using UnityEngine;
 namespace NodeNotes {
 
     [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
-    public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass
+    public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect
     {
 
         #region Values
@@ -137,6 +137,39 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
+
+        public virtual icon InspectorIcon => icon.State;
+
+        public virtual string inspectHint => "Inspect Node";
+
+        public virtual bool PEGI_inList(IList list, int ind, ref int edited)
+        {
+
+            index.ToString().write(20);
+
+            var changed = this.inspect_Name();
+            
+            this.Click_Enter_Attention(InspectorIcon, inspectHint, false);
+
+            return changed;
+        }
+
+        public virtual bool String_SearchMatch(string searchString)
+        {
+            if (visCondition.SearchMatch_Obj(searchString))
+                return true;
+
+            if (eblCondition.SearchMatch_Obj(searchString))
+                return true;
+
+            if (visualRepresentation.SearchMatch_Obj(searchString))
+                return true;
+
+            if (results.SearchMatch(searchString))
+                return true;
+            
+            return false;
+        }
         
         public virtual string NeedAttention()
         {
@@ -250,7 +283,7 @@ namespace NodeNotes {
 
             root.allBaseNodes[IndexForPEGI] = null;
         }
-
+        
         #endregion
 
     }

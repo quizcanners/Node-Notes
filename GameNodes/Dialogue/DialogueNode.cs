@@ -12,7 +12,7 @@ using UnityEngine;
 namespace NodeNotes_Visual {
     
     [TaggedType(tag, "Dialogue Node")]
-    public class DialogueNode : GameNodeBase {
+    public class DialogueNode : GameNodeBase  {
 
         public const string tag = "GN_talk";
 
@@ -45,7 +45,12 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if PEGI
+
+      
+
+#if PEGI
+
+
 
         public static DialogueNode inspected;
 
@@ -259,6 +264,8 @@ namespace NodeNotes_Visual {
                     break;
             }
         }
+
+      
         #endregion
     }
 }

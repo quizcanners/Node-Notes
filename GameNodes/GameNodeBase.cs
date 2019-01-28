@@ -11,13 +11,15 @@ using UnityEngine;
 
 namespace NodeNotes {
 
-    public class GameNodeAttribute : Abstract_WithTaggedTypes {
+    public class GameNodeAttribute : Abstract_WithTaggedTypes
+    {
         public override TaggedTypes_STD TaggedTypes => GameNodeBase.all;
     }
 
     [GameNode]
     [DerrivedList()]
-    public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect {
+    public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect
+    {
 
         public List<Result> onExitResults = new List<Result>();
         
@@ -93,6 +95,7 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
+      
         protected virtual bool InspectGameNode() => false;
 
         protected override string ResultsRole => "On Enter";
@@ -135,8 +138,8 @@ namespace NodeNotes {
 
             return changed;
         }
-
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
+        
+        public override bool PEGI_inList(IList list, int ind, ref int edited) {
 
             IndexForPEGI.ToString().write(20);
 

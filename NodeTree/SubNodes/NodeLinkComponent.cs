@@ -30,6 +30,10 @@ namespace NodeNotes {
         #region Inspector
         #if PEGI
 
+        public override icon InspectorIcon => icon.Link;
+
+        public override string inspectHint => "Inspect Node Link";
+
         protected override string ResultsRole => "On Link Usage";
 
         bool sharedPEGI() {
@@ -42,7 +46,7 @@ namespace NodeNotes {
             return changed;
         }
 
-        public bool PEGI_inList(IList list, int ind, ref int edited) => sharedPEGI();
+        public override bool PEGI_inList(IList list, int ind, ref int edited) => sharedPEGI();
 
         public override bool Inspect()
         {

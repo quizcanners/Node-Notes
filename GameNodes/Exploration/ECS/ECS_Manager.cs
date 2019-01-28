@@ -263,11 +263,11 @@ namespace NodeNotes_Visual.ECS {
             return added;
         }
 
-        public static bool edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected, List_Data datas = null) where T : struct
+        public static bool edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected) where T : struct
         {
             label.write_Search_ListLabel(ref inspected, null);
             bool changed = false;
-            edit_Array(ref array, ref inspected, ref changed, datas).listLabel_Used();
+            edit_Array(ref array, ref inspected, ref changed).listLabel_Used();
 
             return changed;
         }

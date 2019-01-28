@@ -2466,7 +2466,7 @@ MonoBehaviour:
   explorer:
     states: []
     fileFolderHolder: STDEncodes
-  inspectedStuff: -1
+  inspectedStuff: 4
   _nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: 1

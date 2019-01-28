@@ -113,9 +113,13 @@ namespace NodeNotes {
         #region Inspector
 #if PEGI
 
+        public override icon InspectorIcon => icon.Book;
+
+        public override string inspectHint => "Inspect Book Link";
+
         protected override string ResultsRole => "On Transition";
 
-        bool shared_PEGI()
+        bool list_PEGI()
         {
             var changed = pegi.editEnum(ref type);
 
@@ -146,9 +150,9 @@ namespace NodeNotes {
             return changed;
         }
 
-        public bool PEGI_inList(IList list, int ind, ref int edited)
+        public override bool PEGI_inList(IList list, int ind, ref int edited)
         {
-            bool changed = shared_PEGI();
+            bool changed = list_PEGI();
 
             if (icon.Enter.Click())
                 edited = ind;
@@ -161,7 +165,7 @@ namespace NodeNotes {
 
             bool changed = base.Inspect();
 
-            changed |= shared_PEGI().nl();
+            changed |= list_PEGI().nl();
             
             return changed;
         }
