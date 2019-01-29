@@ -11,7 +11,7 @@ namespace NodeNotes_Visual {
     [ExecuteInEditMode]
     public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, ILinkedLerping {
 
-        static Nodes_PEGI Mgmt => Nodes_PEGI.NodeMGMT_inst;
+        static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
 
         public Renderer circleRendy;
 
@@ -430,7 +430,7 @@ namespace NodeNotes_Visual {
                     UpdateShaders();
 
                 if (fadePortion == 0 && isFading && Application.isPlaying)
-                    Mgmt.Deactivate(this);
+                    Nodes_PEGI.Deactivate(this);
             }
         }
         
@@ -578,7 +578,7 @@ namespace NodeNotes_Visual {
                 if (source.AsGameNode != null)
                     Shortcuts.visualLayer.FromNodeToGame(source.AsGameNode);
                 else 
-                    Nodes_PEGI.NodeMGMT_inst.SetSelected(this);
+                    Nodes_PEGI.nodeMgmtInstPegi.SetSelected(this);
 
                 Vector3 pos;
                 if (upPlane.MouseToPlane(out pos))  {
