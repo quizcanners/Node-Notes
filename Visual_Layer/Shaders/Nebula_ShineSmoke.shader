@@ -143,7 +143,7 @@
 
 					float4 col2 = tex2Dlod(_MainTex, float4(rotUV2,0, (1 - toClick) * 2 - bluring)).gbra;
 
-					float alp = saturate((col.g - col2.g + (abs((((_Time.x+col.r)*2) % 2)-1) -0.5)*0.3   ) *2);
+					float alp = saturate((col.g - col2.g + (abs(fmod(((_Time.x+col.r)*2), 2)-1) -0.5)*0.3   ) *2);
 
 					col = col *  alp + col2 * (1 - alp);
 

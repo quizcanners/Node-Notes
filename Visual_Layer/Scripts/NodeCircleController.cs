@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using QuizCannersUtilities;
@@ -447,7 +446,7 @@ namespace NodeNotes_Visual {
                 else  {
                         Vector3 pos;
                         if (upPlane.MouseToPlane(out pos)) {
-                            transform.position = pos + dragOffset;
+                            transform.localPosition = pos + dragOffset;
                             ActiveConfig.targetLocalPosition = transform.localPosition;
                         }
                 }

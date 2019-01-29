@@ -128,7 +128,7 @@
 
 					float2 texUV = inPix * texelSize.xy *_ProjTexPos.z;
 					texUV += 0.5;
-					texUV += texelSize.xy*0.5*(texelSize.zw % 2);
+					texUV += texelSize.xy*0.5*fmod(texelSize.zw, 2);
 
 					#endif
 
@@ -149,7 +149,7 @@
 					float angle = atan2(-uv.x, -uv.y) + 0.001;
 					angle = saturate(max(angle,PI2 - max(0, -angle)- max(0, angle * 999999)) / PI2);
 
-					angle = abs((_Time.x * 8) % 1 - angle);
+					angle = abs(frac(_Time.x * 8) - angle);
 					float above = max(0, angle - 0.5);
 					angle = saturate((min(angle, 0.5 - above) - 0.25) * 4);
 
