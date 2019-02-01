@@ -1,4 +1,4 @@
-﻿Shader "Playtime Painter/Basic/GradientBackground" {
+﻿Shader "Playtime Painter/Effects/GradientBackground" {
 	Properties{
 		_MainTex("Noise Texture (RGB)", 2D) = "white" {}
 	}
@@ -10,7 +10,7 @@
 			"RenderType" = "Transparent"
 		}
 
-		ColorMask RGBA
+		ColorMask RGB
 		Cull Off
 		ZWrite Off
 		ZTest Off
@@ -25,7 +25,6 @@
 
 				#pragma vertex vert
 				#pragma fragment frag
-				#pragma multi_compile_fog
 				#pragma multi_compile_fwdbase
 				#pragma multi_compile_instancing
 				#pragma target 3.0

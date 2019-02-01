@@ -24,7 +24,6 @@
 
 				#pragma vertex vert
 				#pragma fragment frag
-				#pragma multi_compile_fog
 				#pragma multi_compile_fwdbase
 
 				uniform sampler2D _MainTex;
