@@ -148,8 +148,9 @@ namespace NodeNotes {
             index.ToString().write(20);
 
             var changed = this.inspect_Name();
-            
-            this.Click_Enter_Attention(InspectorIcon, inspectHint, false);
+
+            if (this.Click_Enter_Attention(InspectorIcon, inspectHint, false))
+                edited = ind;
 
             return changed;
         }
