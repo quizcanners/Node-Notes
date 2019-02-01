@@ -546,7 +546,7 @@ namespace NodeNotes_Visual {
         void UpdateShaders() {
             if (textB && textA) {
 
-                float textFadePortion = (hideLabel ? (1 - textureFadeIn.value) : 1f) * fadePortion;
+                float textFadePortion = (hideLabel ? (1 - textureFadeIn.Value) : 1f) * fadePortion;
 
                 ActiveText.color = new Color(0, 0, 0, activeTextAlpha * textFadePortion);
                 PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * textFadePortion);

@@ -29,8 +29,9 @@ namespace NodeNotes_Visual
 
         public override void FadeAway()
         {
-
-            backgroundPainter.enabled = false;
+            
+            if (backgroundPainter)
+                backgroundPainter.enabled = false;
 
             if (originalSimulationSpeed == null || originalSimulationSpeed.Length < systems.Count)
             {

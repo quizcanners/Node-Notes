@@ -310,13 +310,13 @@ namespace NodeNotes_Visual
         #if PEGI
         pegi.WindowPositionData_PEGI_GUI window = new pegi.WindowPositionData_PEGI_GUI();
 
-        public override void ResetInspector()
+        protected override void ResetInspector()
         {
             shortcuts?.ResetInspector();
             base.ResetInspector();
         }
 
-        public override void InspectionTabs()
+        protected override void InspectionTabs()
         {
             var cn = Shortcuts.CurrentNode;
 
