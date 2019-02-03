@@ -565,7 +565,6 @@ namespace NodeNotes_Visual {
                 circleRendy.MaterialWhaever().SetFloat("_Blur", sh_blur);
 
             }
-            
         }
 
         static NodeCircleController dragging = null;
@@ -575,15 +574,17 @@ namespace NodeNotes_Visual {
         {
             if (dragging == null && Input.GetMouseButtonDown(0)) {
 
-                if (source.AsGameNode != null)
-                    Shortcuts.visualLayer.FromNodeToGame(source.AsGameNode);
+                var gn = source.AsGameNode;
+
+                if (gn != null)
+                    Shortcuts.visualLayer.FromNodeToGame(gn);
                 else 
                     Nodes_PEGI.nodeMgmtInstPegi.SetSelected(this);
 
                 Vector3 pos;
                 if (upPlane.MouseToPlane(out pos))  {
                     dragging = this;
-                    dragOffset = transform.position - pos;
+                    dragOffset =  transform.position - pos;
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace NodeNotes
 
         public static bool showCreateButtons = false;
 
-        public Image image;
+        public Graphic[] graphicElements;
         public List<GameObject> children = new List<GameObject>();
         public float delay = 0f;
         float timer = 0;
@@ -22,9 +22,14 @@ namespace NodeNotes
 
         Vector2 startPosition = Vector3.zero;
 
+        private void OnEnable()
+        {
+            if (graphicElements.IsNullOrEmpty())
+                graphicElements = GetComponentsInChildren<Graphic>();
+            
+        }
+
         private void Start() {
-            if (!image)
-                image = GetComponent<Image>();
 
             if (children.Count == 0)
                 for (int i = 0; i < transform.childCount; i++)
@@ -40,7 +45,10 @@ namespace NodeNotes
         }
 
         void SetEnabled(bool to)  {
-            image.enabled = to;
+
+            foreach (var e in graphicElements)
+                if (e) e.enabled = to;
+
             foreach (var c in children)
                 if (c)
                     c.SetActive(to);
@@ -56,7 +64,7 @@ namespace NodeNotes
                 if (timer > 0)
                     timer -= Time.deltaTime;
                 else  {
-                    if (image.enabled) {
+                    if (graphicElements[0].enabled) {
                         
                         float portion;
                         rectTranform.anchoredPosition = MyMath.Lerp(rectTranform.anchoredPosition, Dest, Screen.width, out portion);

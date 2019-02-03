@@ -50,21 +50,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9f7432cce087d4f8e06001ebcd0f5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nestedReferences: []
   explorer:
     states: []
-    inspectedState: -1
     fileFolderHolder: STDEncodes
-    SaveToFileOptions: 0
   inspectedStuff: -1
-  inspectedReference: -1
+  _nestedReferences: []
   fallbackColor: {r: 0, g: 0, b: 0, a: 1}
   systems:
   - {fileID: 198065207135605992}
   - {fileID: 198781012459977936}
   backgroundPainter: {fileID: 8756996908306702983}
   fadeOutSpeedup: 4
-  isFadingOut: 0
+  isFadingOut: 1
 --- !u!1 &1056841102334816
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,7 +103,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1056841102334816}
   serializedVersion: 6
   lengthInSec: 5
-  simulationSpeed: 1
+  simulationSpeed: 100
   stopAction: 0
   cullingMode: 3
   ringBufferMode: 0
@@ -925,7 +922,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -3767,7 +3764,7 @@ ParticleSystem:
     serializedVersion: 2
     enabled: 0
     subEmitters:
-    - serializedVersion: 2
+    - serializedVersion: 3
       emitter: {fileID: 0}
       type: 0
       properties: 0
@@ -4804,7 +4801,7 @@ ParticleSystem:
   m_GameObject: {fileID: 1192239517192654}
   serializedVersion: 6
   lengthInSec: 100
-  simulationSpeed: 1
+  simulationSpeed: 100
   stopAction: 0
   cullingMode: 1
   ringBufferMode: 0
@@ -5623,7 +5620,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -8465,7 +8462,7 @@ ParticleSystem:
     serializedVersion: 2
     enabled: 0
     subEmitters:
-    - serializedVersion: 2
+    - serializedVersion: 3
       emitter: {fileID: 0}
       type: 0
       properties: 0
@@ -9887,7 +9884,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6489088821002902358
 Transform:
   m_ObjectHideFlags: 0
@@ -9952,7 +9949,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1432849844366775715}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8510e282223bc484790038d1bcfdb45b, type: 3}
   m_Name: 
