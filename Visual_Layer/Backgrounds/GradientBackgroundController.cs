@@ -15,160 +15,109 @@ namespace NodeNotes_Visual
 
         public override string ClassTag => classTag;
 
-        ColorLerpParameter[] cols = new ColorLerpParameter[3];// { new ColorLerpParameter(), new ColorLerpParameter(), new ColorLerpParameter() }; // = new ColorLerpParameter[3];
+        LinkedLerp.MaterialColor[] cols;
 
-            public GameObject backPlane;
+        public GameObject backPlane;
 
-            bool isSHowing = false;
-            
-            const float lerpSpeed = 0.5f;
+        bool isSHowing = false;
 
-            public static readonly List<string> globalShaderValues = new List<string> { "_BG_GRAD_COL_1", "_BG_GRAD_COL_2", "_BG_CENTER_COL" };
-            
-            #region Inspector
-#if PEGI
-            public override bool Inspect()  {
+        float lerpSpeed = 0.5f;
 
-                bool changed = false;
-
-                if (inspectedStuff == -1 && !Application.isPlaying) 
-                    "Back Plane".edit(ref backPlane).nl();
-                
-                return changed;
-            }
-#endif
-            #endregion
-
-            #region Encoding/Decoding
-
-            public override void Decode(string data)
+        void OnEnable()
+        {
+            if (cols.IsNullOrEmpty())
             {
-                backPlane.SetActive(true);
-                base.Decode(data);
-            }
-
-            public override bool Decode(string tag, string data)
-            {
-                switch (tag)
-                {
-                    case "cols": data.Decode_Array(out cols); break;
-                    default: return false;
-                }
-
-                return true;
-            }
-
-            public override StdEncoder Encode() => this.EncodeUnrecognized()
-                .Add("cols", cols);
-
-            #endregion
-
-            #region Updates
-            public override void FadeAway() => isSHowing = false;
-            
-            public override bool TryFadeIn() {
-                isSHowing = true;
-                if (backPlane)
-                    backPlane.SetActive(true);
-
-                return true;
-            }
-
-            float lastPortion = 1;
-            // Update is called once per frame
-            void Update() {
-
-                if (backPlane && backPlane.activeSelf){
-                    
-                    lastPortion = 1;
-
-                    int to = globalShaderValues.Count;
-                    
-                    if (Application.isPlaying)
-                        for (int i = 0; i < to; i++)
-                            cols[i].MinPortion(lerpSpeed, ref lastPortion);
-
-                    for (int i = 0; i < to; i++)
-                        Shader.SetGlobalColor(globalShaderValues[i], cols[i].Lerp(lastPortion));
-                    
-                    if (!isSHowing && lastPortion == 1)
-                        backPlane.SetActive(false);
-                    
-                }
-            }
-
-            void OnEnable() {
-                if (!backPlane && transform.childCount > 0)
-                    backPlane = transform.GetChild(0).gameObject;
+                cols = new LinkedLerp.MaterialColor[3];
+                cols[0] = new LinkedLerp.MaterialColor("_BG_GRAD_COL_1", Color.white, lerpSpeed);
+                cols[0] = new LinkedLerp.MaterialColor("_BG_GRAD_COL_2", Color.white, lerpSpeed);
+                cols[0] = new LinkedLerp.MaterialColor("_BG_CENTER_COL", Color.white, lerpSpeed);
 
             }
 
-            #endregion
+            if (!backPlane && transform.childCount > 0)
+                backPlane = transform.GetChild(0).gameObject;
         }
 
-    public struct ColorLerpParameter : IPEGI_ListInspect, ISTD {
-        Color current;
-        Color target;
-        bool lerpFinished;
+        #region Inspector
+        #if PEGI
+        public override bool Inspect()
+        {
 
-      /*  public ColorLerpParameter() {
-            current = Color.black;
-            target = Color.black;
-            lerpFinished = false;
-        }*/
+            bool changed = false;
 
-        public float GetRGBAdistance() {
-            if (lerpFinished) return 0;
-            var d = current.DistanceRGBA(target);
-            if (d == 0)
-                lerpFinished = true;
-            return d;
-        }
+            if (inspectedStuff == -1 && !Application.isPlaying)
+                "Back Plane".edit(ref backPlane).nl();
 
-        public void MinPortion(float speed, ref float portion) {
-            if (!lerpFinished)
-                speed.SpeedToMinPortion(GetRGBAdistance(), ref portion);
-        }
-
-        public Color LerpTo { set { target = value; lerpFinished = false; } }
-
-        public Color Lerp (float portion) {
-
-            if (!lerpFinished) {
-                Color.Lerp(current, target, portion);
-
-                if (portion == 1)
-                    lerpFinished = true;
+            if ("Speed".edit(60, ref lerpSpeed).nl(ref changed)) {
+                foreach (var c in cols)
+                    c.speedLimit = lerpSpeed;
             }
-
-            return current;
-        }
-
-#if PEGI
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
-            bool changed = pegi.edit(ref target);
-            if (changed)
-                current = target;
 
             return changed;
         }
-#endif
+        #endif
+        #endregion
 
-        public StdEncoder Encode() => new StdEncoder().Add("t", target);
+        #region Encoding/Decoding
 
-        public void Decode(string data)
+        public override void Decode(string data)
         {
-            current = Color.black;
-            target = Color.black;
-            data.DecodeTagsFor(this);
+            backPlane.SetActive(true);
+            base.Decode(data);
         }
-        public bool Decode(string tag, string data) {
-            switch (tag) {
-                case "t": target = data.ToColor(); break;
+
+        public override bool Decode(string tag, string data)
+        {
+            switch (tag)
+            {
+                case "sp": lerpSpeed = data.ToFloat(); break;
                 default: return false;
             }
+
+           return true;
+        }
+
+        public override StdEncoder Encode() => this.EncodeUnrecognized()
+            .Add("sp", lerpSpeed);
+
+        #endregion
+
+        #region Updates
+        public override void FadeAway() => isSHowing = false;
+
+        public override bool TryFadeIn()
+        {
+            isSHowing = true;
+            if (backPlane)
+                backPlane.SetActive(true);
+
             return true;
         }
+
+        float lastPortion = 1;
+        LerpData ld = new LerpData();
+
+        void Update()
+        {
+
+            if (backPlane && backPlane.activeSelf)
+            {
+                
+                ld.Reset();
+
+                if (Application.isPlaying) {
+                    cols.Portion(ld);
+                    cols.Lerp(ld);
+                    
+                }
+
+                if (!isSHowing && lastPortion == 1)
+                    backPlane.SetActive(false);
+
+            }
+        }
+
+        #endregion
     }
 
 }

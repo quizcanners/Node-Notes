@@ -14,13 +14,12 @@ public class ClickToPlaneFollower : MonoBehaviour {
 
     Plane plane = new Plane(Vector3.up, Vector3.zero);
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    ShaderProperty.VectorValue clockStrengthProperty = new ShaderProperty.VectorValue("_ClickStrength");
 
+    ShaderProperty.ColorValue colorValueProperty = new ShaderProperty.ColorValue("_Color");
+    
     float strength = 0;
-	// Update is called once per frame
+
 	void Update () {
 
         if (Input.GetMouseButton(0))
@@ -42,12 +41,14 @@ public class ClickToPlaneFollower : MonoBehaviour {
                 trail.Clear();
         }
 
-        Shader.SetGlobalVector("_ClickStrength", new Vector4(strength, 0,0,0));
+        clockStrengthProperty.GlobalValue = new Vector4(strength, 0,0,0);
 
         targetColor.a = strength;
 
+        colorValueProperty.lastValue = targetColor;
+
         foreach (var m in materials)
-            if (m) m.SetColor("_Color", targetColor);
+            colorValueProperty.SetOn(m); 
 
 
     }

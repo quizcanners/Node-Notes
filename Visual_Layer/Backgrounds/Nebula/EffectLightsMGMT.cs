@@ -104,23 +104,35 @@ namespace NodeNotes_Visual
                 Camera.main.backgroundColor = MyMath.Lerp_bySpeed(col, Color.black, 3);
             }
 
+    
             for (int c = 0; c < 4; c++)
             {
                 var ep = EffectLightPoint.all[c];
 
-                if (ep)
-                {
-                    Shader.SetGlobalVector("l" + c + "col", ep.col.ToVector4() * ep.multiplier);
-                    Shader.SetGlobalVector("l" + c + "pos", ep.transform.position.ToVector4(1));
+                if (ep) {
+                    cols_Properties[c].GlobalValue = ep.col.ToVector4() * ep.multiplier;
+                    pos_Properties[c].GlobalValue = ep.transform.position.ToVector4(1);
                 }
             }
         }
 
-        public override bool Decode(string tag, string data)
+        static List<ShaderProperty.VectorValue> cols_Properties;
+        static List<ShaderProperty.VectorValue> pos_Properties;
+
+        void OnEnable()
         {
-            return true;
+            if (cols_Properties.IsNullOrEmpty())
+            {
+                cols_Properties = new List<ShaderProperty.VectorValue>();
+                pos_Properties = new List<ShaderProperty.VectorValue>();
+                for (int i = 0; i < 4; i++)
+                {
+                    cols_Properties.Add(new ShaderProperty.VectorValue("l" + i + "col"));
+                    pos_Properties.Add(new ShaderProperty.VectorValue("l" + i + "pos"));
+                }
+            }
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized();
+     
     }
 }

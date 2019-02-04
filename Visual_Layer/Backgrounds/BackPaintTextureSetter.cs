@@ -16,9 +16,13 @@ namespace NodeNotes_Visual {
 
         public Camera paintCamera;
 
+        ShaderProperty.TextureValue nebulaTex_Property = new ShaderProperty.TextureValue("_Nebula_BG");
+
+        ShaderProperty.VectorValue nebulaPos_Property = new ShaderProperty.VectorValue("_Nebula_Pos");
+
         // Use this for initialization
         void OnEnable() {
-            Shader.SetGlobalTexture("_Nebula_BG", backPaintTexture);
+            nebulaTex_Property.GlobalValue = backPaintTexture;
 
         }
 
@@ -28,7 +32,7 @@ namespace NodeNotes_Visual {
             if (paintCamera)
                 paintCamera.Render();
 
-            Shader.SetGlobalVector("_Nebula_Pos", transform.position.ToVector4(transform.localScale.x));
+            nebulaPos_Property.GlobalValue = transform.position.ToVector4(transform.localScale.x);
 
         }
     }

@@ -109,7 +109,7 @@
 
 					float alpha = max(0, (1 - (off.x + off.y) * 4));
 
-					float angle = toClick * 0.1 + _Time.x;// +screenMask.b * 2;
+					float angle = toClick * 0.1 + _Time.x;
 					float si = sin(angle);
 					float co = cos(angle);
 
