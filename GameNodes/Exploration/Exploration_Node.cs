@@ -63,6 +63,8 @@ namespace NodeNotes_Visual {
 
         #region Inspector
         int inspectedPrefab = -1;
+
+#if PEGI
         protected override bool InspectGameNode() {
             var changed = false;
 
@@ -75,8 +77,9 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
+#endif
 
-        #endregion
+#endregion
 
     }
 
@@ -117,7 +120,7 @@ namespace NodeNotes_Visual {
             instanciated = true;
         }
 
-        #region Encode & Decode
+#region Encode & Decode
         public override void Decode(string data) {
             if (Manager == null)
                 NodeNotesECSManager.Init();
@@ -139,12 +142,12 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        #endregion
+#endregion
 
-        #region Inspector
+#region Inspector
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-        #if PEGI
+#if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {
 
             var changed = this.inspect_Name();
@@ -202,8 +205,8 @@ namespace NodeNotes_Visual {
  
             return changed;
         }
-        #endif
-        #endregion
+#endif
+#endregion
     }
 
     public class Exploration_MonoInstance : Exploration_Element, IPEGI_ListInspect, IGotName, IManageFading
@@ -213,7 +216,7 @@ namespace NodeNotes_Visual {
         string instanceConfig;
         MonoBehaviour instance;
 
-        #region Encode & Decode
+#region Encode & Decode
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
@@ -230,12 +233,12 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        #endregion
+#endregion
         
-        #region Inspector
+#region Inspector
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-        #if PEGI
+#if PEGI
         public bool PEGI_inList(IList list, int ind, ref int edited) {
 
             var changed = this.inspect_Name();
@@ -270,7 +273,7 @@ namespace NodeNotes_Visual {
 
 
 #endif
-        #endregion
+#endregion
         
         public void FadeAway() {
 

@@ -17,8 +17,9 @@ namespace NodeNotes_Visual.ECS {
         public uint phisixIndex;
 
         public float testValue;
-        
+
         #region Inspector
+#if PEGI
         public string NameForPEGIdisplay => "Phisics Array index";
 
         public bool PEGI_inList(IList list, int ind, ref int edited) {
@@ -31,10 +32,11 @@ namespace NodeNotes_Visual.ECS {
 
             return changed;
         }
+#endif
 
-        #endregion
+#endregion
 
-        #region Encode & Decode
+#region Encode & Decode
         public StdEncoder Encode() => new StdEncoder()
             .Add("i", phisixIndex)
             .Add("tv", testValue);
@@ -49,7 +51,7 @@ namespace NodeNotes_Visual.ECS {
         }
 
         public void Decode(string data) => data.DecodeTagsFor(this);
-        #endregion
+#endregion
 
     }
 
@@ -57,39 +59,41 @@ namespace NodeNotes_Visual.ECS {
     public class PhisicsArrayDynamic_STD : Component_STD_Generic<PhisicsArrayDynamic_Component>
     {
 
-        #region Tagged Class
+#region Tagged Class
         const string classTag = "phArr";
         public override string ClassTag => classTag;
-        #endregion
+#endregion
 
-        #region Set Data
+#region Set Data
 
         public override void SetData(Entity e) 
             => e.Set(new PhisicsArrayDynamic_Component() { phisixIndex = 0 });
 
-        #endregion
+#endregion
     }
-    #endregion
+#endregion
 
     
-    #region Unity Native Components
+#region Unity Native Components
     [TaggedType(classTag, "Position")]
     public class Position_STD : Component_STD_Generic<Position>, IPEGI_ListInspect
     {
-        #region Tagged Class
+#region Tagged Class
         const string classTag = "pos";
         public override string ClassTag => classTag;
-        #endregion
+#endregion
 
         Vector3 startPosition;
         
         public override void SetData(Entity e) => e.Set_Position(startPosition);
-        
-        #region Inspector
-        public override bool PEGI_inList(IList list, int ind, ref int edited) => "pos".edit(30, ref startPosition);
-        #endregion
 
-        #region Encode & Decode
+        #region Inspector
+#if PEGI
+        public override bool PEGI_inList(IList list, int ind, ref int edited) => "pos".edit(30, ref startPosition);
+#endif
+#endregion
+
+#region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotZero("pos", startPosition);
 
@@ -102,27 +106,29 @@ namespace NodeNotes_Visual.ECS {
             }
             return true;
         }
-        #endregion
+#endregion
 
     }
 
     [TaggedType(classTag, "Rotation")]
     public class Rotation_STD : Component_STD_Generic<Rotation>, IPEGI_ListInspect {
 
-        #region Tagged class
+#region Tagged class
         const string classTag = "rot";
         public override string ClassTag => classTag;
-        #endregion
+#endregion
 
         Quaternion qt;
 
         public override void SetData(Entity e) => e.Set_Rotation(qt);
-        
-        #region Inspector
-        public override bool PEGI_inList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
-        #endregion
 
-        #region Encode & Decode
+        #region Inspector
+#if PEGI
+        public override bool PEGI_inList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
+#endif
+#endregion
+
+#region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add(classTag, qt);
 
@@ -135,13 +141,13 @@ namespace NodeNotes_Visual.ECS {
             }
             return true;
         }
-        #endregion
+#endregion
 
     }
-    #endregion
+#endregion
 
 
-    #region Extensions 
+#region Extensions 
 
     public static class ECS_STD_Extensions {
 
@@ -150,5 +156,5 @@ namespace NodeNotes_Visual.ECS {
         public static Entity Set_Rotation (this Entity e, Quaternion qt) => e.Set(new Rotation() { Value = new quaternion() { value = new float4(qt.x, qt.y, qt.z, qt.w) } });
     }
 
-    #endregion
+#endregion
 }

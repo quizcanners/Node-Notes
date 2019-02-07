@@ -35,7 +35,8 @@ namespace NodeNotes_Visual.ECS {
         public abstract bool HasComponent(Entity e);
         #endregion
 
-        #region Inspector
+#region Inspector
+#if PEGI
         public static Entity inspectedEntity;
         public virtual bool PEGI_inList(IList list, int ind, ref int edited)
         {
@@ -60,7 +61,8 @@ namespace NodeNotes_Visual.ECS {
 
             return false;
         }
-        #endregion
+#endif
+#endregion
     }
 
     public abstract class Component_STD_Generic<T> : Component_STD_Abstract where T : struct, IComponentData {
@@ -77,6 +79,6 @@ namespace NodeNotes_Visual.ECS {
 
         public override bool HasComponent(Entity e) => Manager.HasComponent<T>(e);
     }
-    #endregion
+#endregion
 
 }

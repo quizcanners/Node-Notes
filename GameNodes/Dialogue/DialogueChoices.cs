@@ -143,12 +143,14 @@ namespace NodeNotes_Visual {
                 RenameReferenceLoop(sb, oldName, newName);
         }
 
+#if PEGI
         public override bool Inspect()
         {
             CollectAll(ref Interaction.inspectedList);
 
             return base.Inspect();
         }
+#endif
 
         public void RenameReferance (string oldName, string newName) => RenameReferenceLoop(this, oldName, newName);
         
@@ -165,7 +167,7 @@ namespace NodeNotes_Visual {
         public List<Result> results = new List<Result>();
         public string nextOne = "";
 
-        #region Encode & Decode
+#region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
          .Add_IfNotEmpty("goto", nextOne)
          .Add("cnd", conditions)
@@ -190,15 +192,15 @@ namespace NodeNotes_Visual {
             return true;
 
         }
-        #endregion
+#endregion
 
-        #region Inspector
+#region Inspector
 
         public void RenameReference(string oldName, string newName) => nextOne = nextOne.SameAs(oldName) ? newName : nextOne;
             
         int inspectedResult = -1;
         int inspectedText = -1;
-        #if PEGI
+#if PEGI
 
         public string NeedAttention() {
 
@@ -245,7 +247,7 @@ namespace NodeNotes_Visual {
 
     
 #endif
-        #endregion
+#endregion
     }
 
 

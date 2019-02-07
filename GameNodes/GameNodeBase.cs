@@ -115,6 +115,7 @@ namespace NodeNotes {
         LoopLock inspectLoopLock = new LoopLock();
 
 #if PEGI
+            
         public sealed override bool Inspect() {
 
             if (!Shortcuts.visualLayer.IsCurrentGameNode(this))
@@ -153,7 +154,7 @@ namespace NodeNotes {
 
 #endif
 
-#endregion
+        #endregion
 
         #region Encode & Decode
 

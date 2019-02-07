@@ -151,6 +151,9 @@ namespace NodeNotes_Visual.ECS {
         #endregion
 
         #region Inspector
+#if PEGI
+
+        
         static int exploredEntity = -1;
         public static bool Inspect()   {
 
@@ -271,6 +274,8 @@ namespace NodeNotes_Visual.ECS {
 
             return changed;
         }
+#endif
+
         #endregion
     }
 }
