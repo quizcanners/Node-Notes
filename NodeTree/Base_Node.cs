@@ -142,7 +142,7 @@ namespace NodeNotes {
 
         public virtual string inspectHint => "Inspect Node";
 
-#if PEGI
+        #if PEGI
 
         public virtual bool PEGI_inList(IList list, int ind, ref int edited)
         {
@@ -157,7 +157,7 @@ namespace NodeNotes {
             return changed;
         }
 
-               public virtual bool String_SearchMatch(string searchString)
+        public virtual bool String_SearchMatch(string searchString)
         {
             if (visCondition.SearchMatch_Obj(searchString))
                 return true;
@@ -187,7 +187,7 @@ namespace NodeNotes {
             return null;
         }
 
-#endif
+        #endif
 
 
 
@@ -247,7 +247,7 @@ namespace NodeNotes {
 #endif
 #endregion
 
-#region MGMT
+        #region MGMT
         public virtual void MoveTo(Node node) {
 
             parentNode.Remove(this);
@@ -291,7 +291,7 @@ namespace NodeNotes {
             root.allBaseNodes[IndexForPEGI] = null;
         }
         
-#endregion
+        #endregion
 
     }
 }

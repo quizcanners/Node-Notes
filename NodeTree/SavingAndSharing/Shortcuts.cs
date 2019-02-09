@@ -125,7 +125,7 @@ namespace NodeNotes {
 
         static readonly string _generalStuffFile = "config";
 
-        public void LoadAll() => this.LoadFromPersistantPath(_generalStuffFolder, _generalStuffFile);
+        public bool LoadAll() => this.LoadFromPersistantPath(_generalStuffFolder, _generalStuffFile);
 
         public void SaveAll()
         {

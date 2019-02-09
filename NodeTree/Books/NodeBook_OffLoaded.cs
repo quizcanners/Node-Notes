@@ -66,9 +66,12 @@ namespace NodeNotes {
             if (offloaded != null && list.Contains(offloaded)) {
                 int ind = list.IndexOf(offloaded);
                 var book = new NodeBook();
-                book.LoadFromPersistantPath(NodeBook_Base.BooksFolder, offloaded.name);
-                list[ind] = book;
-                return book;
+
+                if (book.LoadFromPersistantPath(NodeBook_Base.BooksFolder, offloaded.name)) {
+                    list[ind] = book;
+                    return book;
+                }
+
             }
             else Debug.LogError("List does not contain the book you are loading");
             return null;

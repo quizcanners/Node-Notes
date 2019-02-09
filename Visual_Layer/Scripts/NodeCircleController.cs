@@ -558,14 +558,20 @@ namespace NodeNotes_Visual {
                 var pos = Camera.main.WorldToScreenPoint(transform.position).ToVector2();
                 pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
 
-                circleRendy.MaterialWhaever().SetVector("_ProjTexPos", pos.ToVector4(imageScaling));
+                var mat = circleRendy.MaterialWhaever();
 
-                circleRendy.MaterialWhaever().SetColor("_Color", sh_currentColor);
-                circleRendy.MaterialWhaever().SetVector("_Stretch", sh_square);
-                circleRendy.MaterialWhaever().SetFloat("_Blur", sh_blur);
+                mat.Set(projPos, pos.ToVector4(imageScaling));
+                mat.Set(mcolor, sh_currentColor);
+                mat.Set(stretch, sh_square);
+                mat.Set(blur, sh_blur);
 
             }
         }
+
+        ShaderProperty.ColorValue mcolor = new ShaderProperty.ColorValue("_Color");
+        ShaderProperty.VectorValue projPos = new ShaderProperty.VectorValue("_ProjTexPos");
+        ShaderProperty.VectorValue stretch = new ShaderProperty.VectorValue("_Stretch");
+        ShaderProperty.FloatValue blur = new ShaderProperty.FloatValue("_Blur");
 
         static NodeCircleController dragging = null;
         Vector3 dragOffset = Vector3.zero;

@@ -9,7 +9,7 @@ using STD_Logic;
 namespace NodeNotes
 {
     
-    public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI {
+    public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI, IPEGI_Searchable {
 
         #region Values
         public int firstFree = 0;
@@ -42,6 +42,9 @@ namespace NodeNotes
         #endregion
 
         #region Inspector
+
+        public bool String_SearchMatch(string searchString) =>  subNode.SearchMatch_Obj(searchString);
+        
         public override void ResetInspector()
         {
             inspectedNode = -1;
@@ -101,7 +104,7 @@ namespace NodeNotes
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             var changed = false;
 
-            string tmp = subNode.name;
+            string tmp = NameForPEGI;
             if (pegi.editDelayed(ref tmp)) 
                 TryRename(tmp);
             
@@ -164,7 +167,7 @@ namespace NodeNotes
 
         public void DeleteFile(string bname) => StuffDeleter.DeleteFile_PersistantFolder(BooksFolder, bname);
 
-        public void TryRename(String newName)
+        public void TryRename(string newName)
         {
 
             if (subNode.name.SameAs(newName))
@@ -181,10 +184,11 @@ namespace NodeNotes
                 return;
             }
 
-            DeleteFile(subNode.name);
-            subNode.name = newName;
+            DeleteFile(NameForPEGI);
+            NameForPEGI = newName;
             SaveToFile();
         }
+
         #endregion
 
     }
