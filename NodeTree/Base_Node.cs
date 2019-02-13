@@ -206,7 +206,7 @@ namespace NodeNotes {
             if (inspectLock.Unlocked)
                 using (inspectLock.Lock()) {
 
-                    bool onPlayScreen = pegi.paintingPlayAreaGUI;
+                    bool onPlayScreen = pegi.paintingPlayAreaGui;
 
                     if (!onPlayScreen)
                         changed |= base.Inspect();
