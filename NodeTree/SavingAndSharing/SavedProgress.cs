@@ -13,7 +13,7 @@ namespace NodeNotes
         public string startingPoint = "";
         public string userName = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
-        List_Data marksMeta = new List_Data("Book Marks", true, false, false, false);
+        ListMetaData marksMeta = new ListMetaData("Book Marks", true, false, false, false);
         public bool isADeveloper = false;
 
         #region GameNodes
@@ -190,7 +190,7 @@ namespace NodeNotes
 
         #region Inspector
 
-        public string NameForPEGIdisplay =>
+        public string NameForDisplayPEGI =>
             "{0} FROM {1}".F(userName, startingPoint);
 
         #if PEGI
@@ -235,8 +235,8 @@ namespace NodeNotes
         static string tmpBook;
         static int tmpNode;
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "bm": data.Decode_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
                 case "cur": tmpNode = data.ToInt(); break;

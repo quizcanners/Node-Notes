@@ -80,7 +80,7 @@ namespace NodeNotes
                 {
                     
                     string data;
-                    if (this.Send_Recieve_PEGI(subNode.name, "Books", out data)) {
+                    if (this.SendRecievePegi(subNode.name, "Books", out data)) {
 
                         NodeBook tmp = new NodeBook();
                         tmp.Decode(data);
@@ -108,7 +108,7 @@ namespace NodeNotes
             if (pegi.editDelayed(ref tmp)) 
                 TryRename(tmp);
             
-            if (icon.Edit.ClickUnfocus())
+            if (icon.Edit.ClickUnFocus())
                 edited = ind;
 
             if (icon.Save.Click())
@@ -134,8 +134,8 @@ namespace NodeNotes
             .Add_IfNotNegative("i",inspectedStuff)
             .Add("gn", gameNodeTypeData);
           
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "n": subNode.name = data; break;
                 case "f": firstFree = data.ToInt(); break;
                 case "sn": data.DecodeInto(out subNode); break;
@@ -163,9 +163,9 @@ namespace NodeNotes
         #endregion
 
         #region Saving_Loading
-        public void SaveToFile() => this.SaveToPersistantPath(BooksFolder, NameForPEGI);
+        public void SaveToFile() => this.SaveToPersistentPath(BooksFolder, NameForPEGI);
 
-        public void DeleteFile(string bname) => StuffDeleter.DeleteFile_PersistantFolder(BooksFolder, bname);
+        public void DeleteFile(string bookName) => StuffDeleter.DeleteFile_PersistentFolder(BooksFolder, bookName);
 
         public void TryRename(string newName)
         {

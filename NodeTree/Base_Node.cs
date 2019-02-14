@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace NodeNotes {
 
-    [DerrivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
+    [DerivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognized_STD, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect
     {
 
@@ -120,8 +120,8 @@ namespace NodeNotes {
         .Add_IfNotEmpty(    "res",  results)
         .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "n":       name = data; break;
                 case "i":       index = data.ToInt(); break;
                 case "is":      inspectedStuff = data.ToInt(); break;

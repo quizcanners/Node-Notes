@@ -34,8 +34,8 @@ namespace NodeNotes_Visual {
             .Add("b", base.Encode)
             .Add("inBr", interactionBranch);
         
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break; 
                 case "inBr": data.DecodeInto(out interactionBranch);  break;
                 default: return false;

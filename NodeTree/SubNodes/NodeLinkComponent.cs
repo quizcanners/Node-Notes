@@ -66,9 +66,9 @@ namespace NodeNotes {
             .Add("b", base.Encode)
             .Add("lnk", linkedNodeIndex);
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "lnk": linkedNodeIndex = data.ToInt(); break;

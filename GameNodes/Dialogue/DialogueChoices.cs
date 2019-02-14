@@ -44,8 +44,8 @@ namespace NodeNotes_Visual {
             .Add_IfNotNegative("bc", inspectedChoice)
             .Add_IfNotNegative("ir", inspectedResult);
         
-        public override bool Decode(string tag, string data) {
-            switch (tag)  {
+        public override bool Decode(string tg, string data) {
+            switch (tg)  {
                 case "ref": referanceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
                 case "txt": data.Decode_List(out texts); break;
@@ -176,10 +176,10 @@ namespace NodeNotes_Visual {
          .Add_IfNotEmpty("res", results)
          .Add_IfNotNegative("ins", inspectedStuff);
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
 
-            switch (tag)
+            switch (tg)
             {
                 case "goto": nextOne = data; break;
                 case "cnd": data.DecodeInto(out conditions); break;

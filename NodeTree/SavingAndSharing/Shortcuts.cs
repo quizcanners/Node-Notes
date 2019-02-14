@@ -59,14 +59,14 @@ namespace NodeNotes {
         static readonly string _usersFolder = "Users";
 
         void LoadUser(string uname) {
-            StuffLoader.LoadFromPersistantPath(_usersFolder, uname).DecodeInto(out user);
+            StuffLoader.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
             tmpUserName = uname;
         }
 
         void SaveUser() {
             if (!users.Contains(user.userName))
                 users.Add(user.userName);
-            user.SaveToPersistantPath(_usersFolder, user.userName);
+            user.SaveToPersistentPath(_usersFolder, user.userName);
         }
 
         void DeleteUser() {
@@ -76,7 +76,7 @@ namespace NodeNotes {
         }
         
         void DeleteUser_File(string uname) {
-            StuffDeleter.DeleteFile_PersistantFolder(_usersFolder, uname);
+            StuffDeleter.DeleteFile_PersistentFolder(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -125,12 +125,12 @@ namespace NodeNotes {
 
         static readonly string _generalStuffFile = "config";
 
-        public bool LoadAll() => this.LoadFromPersistantPath(_generalStuffFolder, _generalStuffFile);
+        public bool LoadAll() => this.LoadFromPersistentPath(_generalStuffFolder, _generalStuffFile);
 
         public void SaveAll()
         {
             SaveUser();
-            StuffSaver.SaveToPersistantPath(_generalStuffFolder, _generalStuffFile, Encode().ToString());
+            StuffSaver.SaveToPersistentPath(_generalStuffFolder, _generalStuffFile, Encode().ToString());
         }
 
         public static void AddOrReplace(NodeBook nb) {
@@ -174,7 +174,7 @@ namespace NodeNotes {
 
         public override bool Inspect() {
 
-            bool changed = false;
+            var changed = false;
 
             if (inspectedBook == -1)
             {
@@ -220,23 +220,23 @@ namespace NodeNotes {
                     pegi.nl();
 
                     if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
-                        StuffExplorer.OpenPersistantFolder(NodeBook_Base.BooksFolder);
+                        StuffExplorer.OpenPersistentFolder(NodeBook_Base.BooksFolder);
 
                     if (icon.Refresh.Click("Will populate list with mentiones with books in Data folder without loading them")) {
 
-                        var lst = StuffLoader.ListFileNamesFromPersistantFolder(NodeBook_Base.BooksFolder);
+                        var lst = StuffLoader.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
 
                         foreach (var e in lst)
                         {
-                            bool contains = false;
+                            var contains = false;
                             foreach (var b in books)
                                 if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
 
-                            if (!contains)
-                            {
-                                var off = new NodeBook_OffLoaded { name = e };
-                                books.Add(off);
-                            }
+                            if (contains) continue;
+                            
+                            var off = new NodeBook_OffLoaded { name = e };
+                            books.Add(off);
+                            
                         }
                     }
                 }
@@ -259,7 +259,7 @@ namespace NodeNotes {
                             replaceRecieved.Nested_Inspect();
                         else
                         {
-                            if (icon.Done.ClickUnfocus()) {
+                            if (icon.Done.ClickUnFocus()) {
 
                                 var el = books.GetByIGotName(replaceRecieved);
                                 if (el != null)
@@ -268,7 +268,7 @@ namespace NodeNotes {
                                 
                                 replaceRecieved = null;
                             }
-                            if (icon.Close.ClickUnfocus())
+                            if (icon.Close.ClickUnFocus())
                                 replaceRecieved = null;
                         }
                     }
@@ -304,9 +304,9 @@ namespace NodeNotes {
             .Add("us", users)
             .Add_String("curUser", user.userName);
         
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)  {
+            switch (tg)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "books": data.Decode_List(out books, this); break;
                 case "us": data.Decode_List(out users); break;

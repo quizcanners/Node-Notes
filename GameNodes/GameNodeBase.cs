@@ -17,7 +17,7 @@ namespace NodeNotes {
     }
 
     [GameNode]
-    [DerrivedList()]
+    [DerivedList()]
     public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect
     {
 
@@ -164,8 +164,8 @@ namespace NodeNotes {
             .Add_IfNotEmpty("exit", onExitResults)
             .Add_IfNotNegative("ign", inspectedGameNodeStuff);
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "exit": data.Decode_List(out onExitResults); break;
                 case "ign": inspectedGameNodeStuff = data.ToInt(); break;

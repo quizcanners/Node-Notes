@@ -21,9 +21,9 @@ namespace NodeNotes
 
         #region Encode/Decode
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "s": startPoint = data.ToBool(); break;
                 case "ind": nodeIndex = data.ToInt(); break;

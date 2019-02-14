@@ -520,7 +520,7 @@ namespace NodeNotes_Visual {
         float fadePortion = 0;
 
         void SetImage() {
-            var mat = circleRendy.MaterialWhaever();
+            var mat = circleRendy.MaterialWhatever();
 
             texTrns.TargetTexture = coverImage;
 
@@ -558,7 +558,7 @@ namespace NodeNotes_Visual {
                 var pos = Camera.main.WorldToScreenPoint(transform.position).ToVector2();
                 pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
 
-                var mat = circleRendy.MaterialWhaever();
+                var mat = circleRendy.MaterialWhatever();
 
                 mat.Set(projPos, pos.ToVector4(imageScaling));
                 mat.Set(mcolor, sh_currentColor);
@@ -634,8 +634,8 @@ namespace NodeNotes_Visual {
             
         }
 
-        public override bool Decode(string tag, string data)   {
-            switch (tag)   {
+        public override bool Decode(string tg, string data)   {
+            switch (tg)   {
                 case "expVis": data.DecodeInto(out nodeEnteredVisuals); break;
                 case "subVis": data.DecodeInto(out nodeActive_Default_Visuals); break;
                 case "disVis": data.DecodeInto(out nodeInactiveVisuals); break;
@@ -746,9 +746,9 @@ namespace NodeNotes_Visual {
             base.Decode(data);
         }
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)  {
+            switch (tg)  {
                 case "sc": targetSize = data.ToVector3(); break;
                 case "pos": targetLocalPosition = data.ToVector3(); break;
                 case "col": targetColor = data.ToColor(); break;

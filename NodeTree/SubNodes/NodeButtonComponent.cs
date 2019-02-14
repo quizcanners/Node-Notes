@@ -19,9 +19,9 @@ namespace NodeNotes
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode);
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 default: return false;

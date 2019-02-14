@@ -227,13 +227,13 @@ namespace NodeNotes_Visual.ECS {
             return changed;
         }
 
-        static bool ExitOrDrawPEGI<T>(NativeArray<T> array, ref int index, List_Data ld = null) where T : struct
+        static bool ExitOrDrawPEGI<T>(NativeArray<T> array, ref int index, ListMetaData ld = null) where T : struct
         {
             bool changed = false;
 
             if (index >= 0)
             {
-                if (array == null || index >= array.Length || icon.List.ClickUnfocus("Return to {0} array".F(pegi.GetCurrentListLabel<T>(ld))).nl())
+                if (array == null || index >= array.Length || icon.List.ClickUnFocus("Return to {0} array".F(pegi.GetCurrentListLabel<T>(ld))).nl())
                     index = -1;
                 else
                     changed |= array[index].Try_Nested_Inspect();
@@ -242,13 +242,13 @@ namespace NodeNotes_Visual.ECS {
             return changed;
         }
 
-        public static T edit_Array<T>(ref NativeArray<T> array, ref int inspected, ref bool changed, List_Data datas = null) where T : struct
+        public static T edit_Array<T>(ref NativeArray<T> array, ref int inspected, ref bool changed, ListMetaData metaDatas = null) where T : struct
         {
             T added = default(T);
 
             if (array == null)
             {
-                if ("init array".ClickUnfocus().nl())
+                if ("init array".ClickUnFocus().nl())
                     array = new NativeArray<T>();
             }
             else
@@ -259,7 +259,7 @@ namespace NodeNotes_Visual.ECS {
                 if (inspected == -1)
                 {
                     for (int i = 0; i < array.Length; i++)
-                        changed |= array[i].Name_ClickInspect_PEGI<T>(null, i, ref inspected, datas).nl();
+                        changed |= array[i].Name_ClickInspect_PEGI<T>(null, i, ref inspected, metaDatas).nl();
                 }
             }
 

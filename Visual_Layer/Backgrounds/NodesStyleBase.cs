@@ -12,7 +12,7 @@ namespace NodeNotes_Visual {
     public abstract class NodesStyleBase : ComponentSTD, IManageFading, IPEGI, IGotClassTag {
 
         #region Tagged Types MGMT
-        public virtual string ClassTag => StdEncoder.nullTag;
+        public virtual string ClassTag => StdEncoder.NullTag;
         public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(NodesStyleBase));
         public TaggedTypes_STD AllTypes => all;
         #endregion

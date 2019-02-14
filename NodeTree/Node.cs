@@ -11,11 +11,11 @@ namespace NodeNotes {
     public class Node : Base_Node,  INeedAttention, IPEGI {
 
         #region SubNodes
-        List_Data coreNodesMeta = new List_Data("Sub Nodes", keepTypeData: true, enterIcon: icon.StateMachine);
+        ListMetaData coreNodesMeta = new ListMetaData("Sub Nodes", keepTypeData: true, enterIcon: icon.StateMachine);
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
-        List_Data gamesNodesMeta = new List_Data("Game Nodes", keepTypeData: true, enterIcon: icon.Discord);
+        ListMetaData gamesNodesMeta = new ListMetaData("Game Nodes", keepTypeData: true, enterIcon: icon.Discord);
 
         public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
 
@@ -290,9 +290,9 @@ namespace NodeNotes {
             return new StdEncoder();
         }
 
-        public override bool Decode(string tag, string data) {
+        public override bool Decode(string tg, string data) {
 
-            switch (tag)  {
+            switch (tg)  {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "sub": data.Decode_List(out coreNodes, ref coreNodesMeta); break;
                 case "gn":  data.Decode_List(out gameNodes, ref gamesNodesMeta, GameNodeBase.all); break;

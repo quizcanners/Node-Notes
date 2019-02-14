@@ -6,12 +6,12 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes {
 
-    [DerrivedList(typeof(NodeBook), typeof(NodeBook_OffLoaded))]
+    [DerivedList(typeof(NodeBook), typeof(NodeBook_OffLoaded))]
     public class NodeBook_Base : AbstractKeepUnrecognized_STD, IGotDisplayName, IGotName {
 
         public const string BooksFolder = "Books";
 
-        public virtual string NameForPEGIdisplay => NameForPEGI;
+        public virtual string NameForDisplayPEGI => NameForPEGI;
 
         public virtual string NameForPEGI { get => "ERROR, is a base class"; set { } }
         

@@ -27,8 +27,8 @@ namespace NodeNotes_Visual {
             this.EncodeUnrecognized()
             .Add("b", base.Encode);
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "el": data.Decode_List(out perBookGroups); break;
                 case "i": inspectedGroup = data.ToInt(); break;
@@ -62,9 +62,9 @@ namespace NodeNotes_Visual {
         int inspectedElement = -1;
 
         #region Encode & Decode
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "n": name = data; break;
                 case "el": data.Decode_List(out elements); break;
@@ -110,8 +110,8 @@ namespace NodeNotes_Visual {
             .Add_IfNotEmpty("d", description)
             .Add("vc", visibilityConditions);
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "n": name = data; break;
                 case  "d": description = data; break;
                 case "vc": data.DecodeInto(out visibilityConditions); break;

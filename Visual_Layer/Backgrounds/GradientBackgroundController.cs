@@ -66,9 +66,9 @@ namespace NodeNotes_Visual
             base.Decode(data);
         }
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "sp": lerpSpeed = data.ToFloat(); break;
                 default: return false;

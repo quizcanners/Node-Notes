@@ -63,7 +63,7 @@ namespace NodeNotes_Visual
 
         }
 
-        public string NameForPEGIdisplay => "Microcosmos";
+        public string NameForDisplayPEGI => "Microcosmos";
 
         public override bool TryFadeIn()
         {

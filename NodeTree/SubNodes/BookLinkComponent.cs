@@ -187,9 +187,9 @@ namespace NodeNotes {
             return cody;
         }
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "t": type = (BookLinkType)data.ToInt(); break;

@@ -26,7 +26,7 @@ namespace NodeNotes_Visual {
         public static List<MonoBehaviour> monoBehaviourPrefabs = new List<MonoBehaviour>();
 
         static List<Exploration_Element> instances = new List<Exploration_Element>();
-        static List_Data instancesMeta = new List_Data("Instances");
+        static ListMetaData instancesMeta = new ListMetaData("Instances");
 
 
         protected override void OnExit() {
@@ -36,9 +36,9 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag) {
+            switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "pos": playerPosition = data.ToVector3(); break;
                 case "expl": data.Decode_References(out monoBehaviourPrefabs); break;
@@ -83,7 +83,7 @@ namespace NodeNotes_Visual {
 
     }
 
-    [DerrivedList(typeof(Exploration_MonoInstance), typeof(Exploration_ECSinstance))]
+    [DerivedList(typeof(Exploration_MonoInstance), typeof(Exploration_ECSinstance))]
     public class Exploration_Element : AbstractKeepUnrecognized_STD  {
 
         public virtual void OnExit() { }
@@ -96,7 +96,7 @@ namespace NodeNotes_Visual {
         bool instanciated = false;
 
         List<Component_STD_Abstract> entityComponents = new List<Component_STD_Abstract>();
-        List_Data componentsMeta = new List_Data("Components");
+        ListMetaData componentsMeta = new ListMetaData("Components");
         EntityArchetype archetype;
 
         static EntityManager Manager => NodeNotesECSManager.manager;
@@ -132,8 +132,8 @@ namespace NodeNotes_Visual {
             .Add_IfNotEmpty("cfg", instanceConfig)
             .Add("ent", entityComponents, componentsMeta, Component_STD_Abstract.all);
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "n": name = data; break;
                 case "cfg": instanceConfig = data; break;
                 case "ent": data.Decode_List(out entityComponents, ref componentsMeta, Component_STD_Abstract.all); break;
@@ -223,8 +223,8 @@ namespace NodeNotes_Visual {
             .Add("ind", prefabIndex)
             .Add_IfNotEmpty("cfg", instanceConfig);
 
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "n": name = data; break;
                 case "ind": prefabIndex = data.ToInt(); break;
                 case "cfg": instanceConfig = data; break;

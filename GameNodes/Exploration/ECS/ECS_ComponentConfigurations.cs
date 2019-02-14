@@ -20,7 +20,7 @@ namespace NodeNotes_Visual.ECS {
 
         #region Inspector
 #if PEGI
-        public string NameForPEGIdisplay => "Phisics Array index";
+        public string NameForDisplayPEGI => "Phisics Array index";
 
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             var changed = "PhisX Index".edit(80, ref phisixIndex);
@@ -41,8 +41,8 @@ namespace NodeNotes_Visual.ECS {
             .Add("i", phisixIndex)
             .Add("tv", testValue);
 
-        public bool Decode(string tag, string data) {
-            switch (tag) {
+        public bool Decode(string tg, string data) {
+            switch (tg) {
                 case "i": phisixIndex = data.ToUInt(); break;
                 case "tv": testValue = data.ToFloat(); break;
                 default: return false;
@@ -97,9 +97,9 @@ namespace NodeNotes_Visual.ECS {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotZero("pos", startPosition);
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case "pos": startPosition = data.ToVector3(); break;
                 default: return false;
@@ -132,9 +132,9 @@ namespace NodeNotes_Visual.ECS {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add(classTag, qt);
 
-        public override bool Decode(string tag, string data)
+        public override bool Decode(string tg, string data)
         {
-            switch (tag)
+            switch (tg)
             {
                 case classTag: qt = data.ToQuaternion(); break;
                 default: return false;

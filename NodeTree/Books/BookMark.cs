@@ -35,8 +35,8 @@ namespace NodeNotes
             .Add_String("n", bookName)
             .Add_String("gnd", gameNodesData);
         
-        public override bool Decode(string tag, string data) {
-            switch (tag) {
+        public override bool Decode(string tg, string data) {
+            switch (tg) {
                 case "vals": values = data; break;
                 case "ind": nodeIndex = data.ToInt(); break;
                 case "n": bookName = data; break;

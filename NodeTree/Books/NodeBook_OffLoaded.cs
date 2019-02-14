@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
     public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
 
-        public override string NameForPEGIdisplay => "{0} [Offloaded]".F(name);
+        public override string NameForDisplayPEGI => "{0} [Offloaded]".F(name);
 
         public string name;
 
@@ -15,9 +15,9 @@ namespace NodeNotes {
 
         #region Encode/Decode
 
-        public override bool Decode(string tag, string data) {
+        public override bool Decode(string tg, string data) {
 
-            switch (tag) {
+            switch (tg) {
                 case "n": name = data; break;
                 default: return false;
             }
@@ -64,10 +64,10 @@ namespace NodeNotes {
         public static NodeBook LoadBook (this List<NodeBook_Base> list, NodeBook_OffLoaded offloaded) {
 
             if (offloaded != null && list.Contains(offloaded)) {
-                int ind = list.IndexOf(offloaded);
+                var ind = list.IndexOf(offloaded);
                 var book = new NodeBook();
 
-                if (book.LoadFromPersistantPath(NodeBook_Base.BooksFolder, offloaded.name)) {
+                if (book.LoadFromPersistentPath(NodeBook_Base.BooksFolder, offloaded.name)) {
                     list[ind] = book;
                     return book;
                 }
