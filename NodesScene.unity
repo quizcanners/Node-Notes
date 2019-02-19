@@ -162,7 +162,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 12
+  field of view: 32
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -279,7 +279,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 52.05
+  m_fontSize: 46.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -439,7 +439,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 62.35
+  m_fontSize: 56.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -740,10 +740,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.27
-  roundingCourners: 0.518
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &222778178
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -752,38 +751,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 222778175}
   m_CullTransparentMesh: 0
---- !u!84 &534225147
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Painter Buffer 0 _ 2048
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 2048
-  m_Height: 2048
-  m_AntiAliasing: 1
-  m_DepthFormat: 0
-  m_ColorFormat: 52
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 0
-    m_WrapV: 0
-    m_WrapW: 0
-  m_Dimension: 2
-  m_VolumeDepth: 1
 --- !u!1 &570300049
 GameObject:
   m_ObjectHideFlags: 0
@@ -815,7 +782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52a4e34f1478688479020caf8c573659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meshRendy: {fileID: 570300052}
+  meshRenderer: {fileID: 570300052}
   meshFilter: {fileID: 570300051}
   modifiedBound:
     m_Center: {x: 0, y: 0, z: 0}
@@ -946,10 +913,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.343
-  roundingCourners: 0.512
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &616585680
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1140,10 +1106,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.27
-  roundingCourners: 0.518
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &727767802
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1296,10 +1261,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.474
-  roundingCourners: 0.75
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &737095459
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1374,10 +1338,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.52
-  roundingCourners: 0.22
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &759714315
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1386,6 +1349,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759714312}
   m_CullTransparentMesh: 0
+--- !u!84 &790662499
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Painter Buffer 1 _ 2048
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 2048
+  m_Height: 2048
+  m_AntiAliasing: 1
+  m_DepthFormat: 0
+  m_ColorFormat: 11
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 0
+    m_WrapV: 0
+    m_WrapW: 0
+  m_Dimension: 2
+  m_VolumeDepth: 1
 --- !u!1 &806629719
 GameObject:
   m_ObjectHideFlags: 0
@@ -1610,10 +1605,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.474
-  roundingCourners: 0.75
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &808421428
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1622,13 +1616,13 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 808421424}
   m_CullTransparentMesh: 0
---- !u!84 &817646504
+--- !u!84 &944552725
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Painter Buffer 1 _ 2048
+  m_Name: Painter Buffer 0 _ 2048
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -1638,10 +1632,10 @@ RenderTexture:
   m_Height: 2048
   m_AntiAliasing: 1
   m_DepthFormat: 0
-  m_ColorFormat: 52
+  m_ColorFormat: 11
   m_MipMap: 0
   m_GenerateMips: 1
-  m_SRGB: 0
+  m_SRGB: 1
   m_UseDynamicScale: 0
   m_BindMS: 0
   m_TextureSettings:
@@ -1845,10 +1839,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.474
-  roundingCourners: 0.75
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &1235906093
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1999,12 +1992,12 @@ MonoBehaviour:
   theCamera: {fileID: 1318016895}
   brushPrefab: {fileID: 114218434713451120, guid: 28dd40865c642244687d2f1f5835f69e,
     type: 3}
-  brushRendy: {fileID: 570300050}
+  brushRenderer: {fileID: 570300050}
   defaultMaterial: {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
-  BigRT_pair:
-  - {fileID: 534225147}
-  - {fileID: 817646504}
-  bigRTversion: 0
+  bigRtPair:
+  - {fileID: 944552725}
+  - {fileID: 790662499}
+  bigRtVersion: 0
   secondBufferDebug: {fileID: 0}
   autodisabledBufferTarget: {fileID: 0}
   secondBufferUpdated: 0
@@ -2093,10 +2086,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.259
-  roundingCourners: 0.75
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!114 &1417408137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2323,10 +2315,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.474
-  roundingCourners: 0.75
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &1419288881
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2561,10 +2552,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.27
-  roundingCourners: 0.518
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &1490522838
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2639,10 +2629,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.27
-  roundingCourners: 0.518
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &1507042906
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2853,7 +2842,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 62.35
+  m_fontSize: 56.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3120,10 +3109,10 @@ MonoBehaviour:
   explorer:
     states: []
     fileFolderHolder: STDEncodes
-  inspectedStuff: 4
+  inspectedStuff: -1
   _nestedReferences: []
   inspectedTriggerGroup: -1
-  tmpIndex: 1
+  tmpIndex: -1
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   editButton: {fileID: 1742041633}
   addButton: {fileID: 2133683275}
@@ -3374,10 +3363,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.343
-  roundingCourners: 0.512
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &1875139662
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3577,10 +3565,9 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  edgeSmoothness: 0.5
-  roundingCourners: 0.5
+  roundedCorners:
+  - 0
   feedPositionData: 1
-  _camera: {fileID: 0}
 --- !u!222 &2133683277
 CanvasRenderer:
   m_ObjectHideFlags: 0

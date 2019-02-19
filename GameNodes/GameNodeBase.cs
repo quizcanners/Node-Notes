@@ -18,10 +18,9 @@ namespace NodeNotes {
 
     [GameNode]
     [DerivedList()]
-    public abstract class GameNodeBase : Base_Node, IGotClassTag, IPEGI_ListInspect
+    public abstract class GameNodeBase : Base_Node, IGotClassTag
     {
-
-        public List<Result> onExitResults = new List<Result>();
+        private List<Result> _onExitResults = new List<Result>();
         
         #region Tagged Types MGMT
         public override GameNodeBase AsGameNode => this;
@@ -48,11 +47,11 @@ namespace NodeNotes {
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
 
-                    var data = Shortcuts.user.gameNodeTypeData.TryGet(ClassTag);
+                    var data = Shortcuts.user.gameNodesData.TryGet(ClassTag);
                     if (data != null)
                         Decode(data);
                     
-                    data = parentNode.root.gameNodeTypeData.TryGet(ClassTag);
+                    data = parentNode.root.gameNodesData.TryGet(ClassTag);
                     if (data != null)  
                         Decode(data);
                     else
@@ -82,14 +81,14 @@ namespace NodeNotes {
 
                     OnExit();
                     
-                    Shortcuts.user.gameNodeTypeData[ClassTag] = Encode_PerUserData().ToString();
-                    parentNode.root.gameNodeTypeData[ClassTag] = Encode_PerBookStaticData().ToString();
+                    Shortcuts.user.gameNodesData[ClassTag] = Encode_PerUserData().ToString();
+                    parentNode.root.gameNodesData[ClassTag] = Encode_PerBookStaticData().ToString();
 
-                    Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.root.gameNodeTypeData[ClassTag]));
+                    Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.root.gameNodesData[ClassTag]));
 
                     VisualLayer.FromGameToNode(false);
 
-                    onExitResults.Apply();
+                    _onExitResults.Apply();
                 }
         }
         #endregion
@@ -104,38 +103,42 @@ namespace NodeNotes {
 
         public override void ResetInspector() {
             inspectedGameNodeStuff = -1;
-            editedExitResult = -1;
+            _editedExitResult = -1;
 
             base.ResetInspector();
         }
 
         protected int inspectedGameNodeStuff = -1;
-        int editedExitResult = -1;
+        private int _editedExitResult = -1;
 
-        LoopLock inspectLoopLock = new LoopLock();
+        private readonly LoopLock _inspectLoopLock = new LoopLock();
 
 #if PEGI
-            
+
+        protected virtual string GameNodeTypeName => ClassTag; 
+        
         public sealed override bool Inspect() {
 
             if (!Shortcuts.visualLayer.IsCurrentGameNode(this))
                 Shortcuts.visualLayer.FromNodeToGame(this);
 
-            bool changed = false;
+            var changed = false;
 
-            if (loopLock.Unlocked)
-                using (loopLock.Lock()) {
+            if (!_inspectLoopLock.Unlocked) return changed;
+            
+            using (_inspectLoopLock.Lock()) {
 
-                    changed |= base.Inspect();
+                changed |= base.Inspect();
 
-                    ExitResultRole.enter_List(ref onExitResults, ref editedExitResult, ref inspectedStuff, 7, ref changed).SetLastUsedTrigger();
+                if (showLogic)
+                    ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref inspectedStuff, 7, ref changed).SetLastUsedTrigger();
                         
-                    pegi.nl_ifNotEntered();
+                pegi.nl_ifNotEntered();
 
-                    if (ClassTag.enter(ref inspectedStuff, 8).nl_ifNotEntered())
-                        InspectGameNode();
+                if (GameNodeTypeName.enter(ref inspectedStuff, 8).nl_ifNotEntered())
+                    InspectGameNode();
 
-                }
+            }
 
             return changed;
         }
@@ -161,13 +164,13 @@ namespace NodeNotes {
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add_String("unrecGN", "test")
-            .Add_IfNotEmpty("exit", onExitResults)
+            .Add_IfNotEmpty("exit", _onExitResults)
             .Add_IfNotNegative("ign", inspectedGameNodeStuff);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break;
-                case "exit": data.Decode_List(out onExitResults); break;
+                case "exit": data.Decode_List(out _onExitResults); break;
                 case "ign": inspectedGameNodeStuff = data.ToInt(); break;
                 default: return false;
             }

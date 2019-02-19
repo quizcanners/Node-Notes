@@ -33,9 +33,9 @@ namespace NodeNotes
 
 #if PEGI
 
-        public override icon InspectorIcon => icon.Done;
+        protected override icon InspectorIcon => icon.Done;
 
-        public override string inspectHint => "Inspect Button";
+        protected override string InspectionHint => "Inspect Button";
 
         protected override string ResultsRole => "On Click";
 

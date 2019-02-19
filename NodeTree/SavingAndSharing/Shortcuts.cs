@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using QuizCannersUtilities;
 using System;
@@ -60,7 +59,7 @@ namespace NodeNotes {
 
         void LoadUser(string uname) {
             StuffLoader.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
-            tmpUserName = uname;
+            _tmpUserName = uname;
         }
 
         void SaveUser() {
@@ -150,17 +149,15 @@ namespace NodeNotes {
 
         #region Inspector
 
-
-
-        int inspectedBook = -1;
-        string tmpUserName;
+        private int _inspectedBook = -1;
+        private string _tmpUserName;
 
 #if PEGI
-                public override void ResetInspector() {
-            inspectReplacementOption = false;
-            tmpUserName = "";
-            replaceRecieved = null;
-            inspectedBook = -1;
+        public override void ResetInspector() {
+            _inspectReplacementOption = false;
+            _tmpUserName = "";
+            _replaceReceived = null;
+            _inspectedBook = -1;
             base.ResetInspector();
 
             foreach (var b in books)
@@ -169,21 +166,21 @@ namespace NodeNotes {
              user.ResetInspector();
         }
 
-        NodeBook replaceRecieved;
-        bool inspectReplacementOption;
+        private NodeBook _replaceReceived;
+        private bool _inspectReplacementOption;
 
         public override bool Inspect() {
 
             var changed = false;
 
-            if (inspectedBook == -1)
+            if (_inspectedBook == -1)
             {
 
-                changed |= base.Inspect();
+              //  changed |= base.Inspect();
 
                 if (inspectedStuff == -1)
                 {
-                    if (users.Count > 1 && icon.Delete.Click())
+                    if (users.Count > 1 && icon.Delete.Click("Delete User"))
                         DeleteUser();
 
                     string usr = user.userName;
@@ -194,35 +191,35 @@ namespace NodeNotes {
                     }
                 }
 
-                if (icon.Enter.enter(ref inspectedStuff, 4))
+                if (icon.Enter.enter(ref inspectedStuff, 4, "Inspect user"))
                     changed |= user.Nested_Inspect();
 
-                if (icon.Add.enter(ref inspectedStuff, 6))
-                {
-                    "New User:".edit(60, ref tmpUserName);
+                if (icon.Edit.enter(ref inspectedStuff, 6, "Edit or Add user")) {
 
-                    if (tmpUserName.Length > 3 && !users.Contains(tmpUserName))
-                    {
+                    "Name:".edit(60, ref _tmpUserName);
 
+                    if (_tmpUserName.Length <= 3)
+                        "Too short".writeHint();
+                    else if (users.Contains(_tmpUserName))
+                        "Name exists".writeHint();
+                    else{
                         if (icon.Add.Click("Add new user"))
-                            CreateUser(tmpUserName);
+                            CreateUser(_tmpUserName);
 
                         if (icon.Replace.Click("Rename {0}".F(user.userName)))
-                            RenameUser(tmpUserName);
+                            RenameUser(_tmpUserName);
                     }
                 }
 
                 if (inspectedStuff == -1)
                 {
 
-                   
-
                     pegi.nl();
 
                     if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
                         StuffExplorer.OpenPersistentFolder(NodeBook_Base.BooksFolder);
 
-                    if (icon.Refresh.Click("Will populate list with mentiones with books in Data folder without loading them")) {
+                    if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
 
                         var lst = StuffLoader.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
 
@@ -245,31 +242,31 @@ namespace NodeNotes {
 
             if (inspectedStuff == -1) {
 
-                "Books ".edit_List(ref books, ref inspectedBook);
+                "Books ".edit_List(ref books, ref _inspectedBook);
 
-                if (inspectedBook == -1)
+                if (_inspectedBook == -1)
                 {
 
         #region Paste Options
 
-                    if (replaceRecieved != null)
+                    if (_replaceReceived != null)
                     {
 
-                        if (replaceRecieved.NameForPEGI.enter(ref inspectReplacementOption))
-                            replaceRecieved.Nested_Inspect();
+                        if (_replaceReceived.NameForPEGI.enter(ref _inspectReplacementOption))
+                            _replaceReceived.Nested_Inspect();
                         else
                         {
                             if (icon.Done.ClickUnFocus()) {
 
-                                var el = books.GetByIGotName(replaceRecieved);
+                                var el = books.GetByIGotName(_replaceReceived);
                                 if (el != null)
-                                    books[books.IndexOf(el)] = replaceRecieved;
-                                else books.Add(replaceRecieved);
+                                    books[books.IndexOf(el)] = _replaceReceived;
+                                else books.Add(_replaceReceived);
                                 
-                                replaceRecieved = null;
+                                _replaceReceived = null;
                             }
                             if (icon.Close.ClickUnFocus())
-                                replaceRecieved = null;
+                                _replaceReceived = null;
                         }
                     }
                     else  {
@@ -281,7 +278,7 @@ namespace NodeNotes {
                             if (books.GetByIGotName(book.NameForPEGI) == null)
                                 books.Add(book);
                             else
-                                replaceRecieved = book;
+                                _replaceReceived = book;
                         }
                     }
                     pegi.nl();

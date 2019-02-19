@@ -25,7 +25,7 @@ namespace NodeNotes_Visual {
             finalResults.Apply();
         }
 
-        public bool CheckConditions(Values vals) => conditions.CheckConditions(vals);
+        public bool CheckConditions(Values values) => conditions.CheckConditions(values);
 
         #region Encode & Decode
 

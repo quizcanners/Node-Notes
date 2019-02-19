@@ -1,33 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using STD_Logic;
-using UnityEngine;
-
 namespace NodeNotes_Visual {
     
-    [TaggedType(tag, "Dialogue Node")]
+    [TaggedType(Tag, "Dialogue Node")]
     public class DialogueNode : GameNodeBase  {
+        private const string Tag = "GN_talk";
 
-        public const string tag = "GN_talk";
-
-        public override string ClassTag => tag;
+        public override string ClassTag => Tag;
 
         public InteractionBranch interactionBranch = new InteractionBranch();
-
-        public int myQuestVersion = -1;
-
-        public void UpdateLogic() => myQuestVersion = LogicMGMT.currentLogicVersion;
-        
-        public void Update() {
-            if (myQuestVersion != LogicMGMT.currentLogicVersion)
-                UpdateLogic();
-        }
 
         #region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
@@ -50,14 +34,14 @@ namespace NodeNotes_Visual {
 
 #if PEGI
 
-
+        protected override string GameNodeTypeName => "Dialogue";
 
         public static DialogueNode inspected;
 
         protected override bool InspectGameNode() {
             inspected = this;
 
-            bool changed = base.Inspect();
+            var changed = Inspect();
 
             "{0} Dialogue".F(name).write();
 
@@ -70,8 +54,8 @@ namespace NodeNotes_Visual {
                 {
                     DistantUpdate();
                     pegi.nl();
-                    for (int i = 0; i < _optText.Count; i++)
-                        if (_optText[i].Click().nl())
+                    for (var i = 0; i < OptText.Count; i++)
+                        if (OptText[i].Click().nl())
                         {
                             SelectOption(i);
                             DistantUpdate();
@@ -91,78 +75,69 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Options MGMT
-        public static string SingleText {
-            get { return _optText.Count > 0 ? _optText[0] : null; }
-            set { _optText.Clear(); _optText.Add(value); } }
 
-        public static List<string> _optText = new List<string>();
-        static List<Interaction> possibleInteractions = new List<Interaction>();
-        static List<DialogueChoice> possibleOptions = new List<DialogueChoice>();
+        private static string SingleText {
+            get { return OptText.Count > 0 ? OptText[0] : null; }
+            set { OptText.Clear(); OptText.Add(value); } }
 
-        public static bool ScrollOptsDirty;
+        private static readonly List<string> OptText = new List<string>();
+        private static readonly List<Interaction> PossibleInteractions = new List<Interaction>();
+        private static readonly List<DialogueChoice> PossibleOptions = new List<DialogueChoice>();
 
-        static bool CheckOptions(Interaction ia)
+        private static bool CheckOptions(Interaction ia)
         {
             ClearTexts();
-            int cnt = 0;
-            foreach (DialogueChoice dio in ia.options)
+            var cnt = 0;
+            foreach (var dio in ia.options)
                 if (dio.conditions.IsTrue) {
-                    _optText.Add(dio.text.ToString());
-                    possibleOptions.Add(dio);
+                    OptText.Add(dio.text.ToString());
+                    PossibleOptions.Add(dio);
                     cnt++;
                 }
 
-            ScrollOptsDirty = true;
 
             QuestVersion = LogicMGMT.currentLogicVersion;
 
-            if (cnt > 0)
-                return true;
-            else
-                return false;
+            return cnt > 0;
         }
-        
-        void CollectInteractions() => CollectInteractions(interactionBranch);
 
-        void CollectInteractions(LogicBranch<Interaction> gr) {
+        private void CollectInteractions() => CollectInteractions(interactionBranch);
 
-            if (gr.IsTrue())  {
-                foreach (Interaction si in gr.elements)  {
-                    if (si.IsTrue()) {
-                        _optText.Add(si.texts[0].ToPEGIstring());
-                        possibleInteractions.Add(si);
-
-                    }
-                }
-
-                foreach (var sgr in gr.subBranches)
-                    CollectInteractions(sgr);
+        private void CollectInteractions(LogicBranch<Interaction> gr) {
+            if (!gr.IsTrue()) return;
+            
+            foreach (var si in gr.elements)  {
+                if (!si.IsTrue()) continue;
+                OptText.Add(si.texts[0].ToPEGIstring());
+                PossibleInteractions.Add(si);
             }
+
+            foreach (var sgr in gr.subBranches)
+                CollectInteractions(sgr);
         }
 
-        public void BackToInitials() {
+        private void BackToInitials() {
             LogicMGMT.AddLogicVersion();
             ClearTexts();
             
             CollectInteractions();
 
-            if (possibleInteractions.Count != 0) {
+            if (PossibleInteractions.Count != 0) {
 
                 QuestVersion = LogicMGMT.currentLogicVersion;
-                ScrollOptsDirty = true;
-
+              
                 InteractionStage = 0;
                 textNo = 0;
 
-                if (!continuationReference.IsNullOrEmpty()) {
-                    foreach (var ie in possibleInteractions)
-                        if (ie.referanceName.SameAs(continuationReference)) {
-                            interaction = ie;
-                            InteractionStage++;
-                            SelectOption(0);
-                            break;
-                        }
-                }
+                if (continuationReference.IsNullOrEmpty()) return;
+                
+                foreach (var ie in PossibleInteractions)
+                    if (ie.referanceName.SameAs(continuationReference)) {
+                        interaction = ie;
+                        InteractionStage++;
+                        SelectOption(0);
+                        break;
+                    }
             }
             else
                 Exit();
@@ -199,34 +174,33 @@ namespace NodeNotes_Visual {
             }
         }
 
-        static void ClearTexts() {
-            _optText.Clear();
-            ScrollOptsDirty = true;
-            possibleInteractions.Clear();
-            possibleOptions.Clear();
+        private static void ClearTexts() {
+            OptText.Clear();
+            PossibleInteractions.Clear();
+            PossibleOptions.Clear();
         }
 
-        static bool GotBigText()
+        private static bool GotBigText()
         {
 
             var txt = interaction.texts.GetNextText(ref textNo);
 
-            if (txt != null) {
-                SingleText = txt.ToString();
-                return true; 
-            }
+            if (txt == null) return false;
+            
+            SingleText = txt.ToString();
+            return true;
 
-            return false;
         }
         
         static string continuationReference;
-        public void SelectOption(int no)
+
+        private void SelectOption(int no)
         {
             LogicMGMT.AddLogicVersion();
             switch (InteractionStage)
             {
                 case 0:
-                    InteractionStage++; interaction = possibleInteractions[no]; goto case 1;
+                    InteractionStage++; interaction = PossibleInteractions[no]; goto case 1;
                 case 1:
                     continuationReference = null;
                     textNo++;
@@ -237,7 +211,7 @@ namespace NodeNotes_Visual {
                     InteractionStage++;
                     if (!CheckOptions(interaction)) goto case 4; break;
                 case 3:
-                    option = possibleOptions[no];
+                    option = PossibleOptions[no];
                     option.results.Apply();
                     continuationReference = option.nextOne;
                     interaction.finalResults.Apply();
@@ -250,9 +224,9 @@ namespace NodeNotes_Visual {
 
                     textNo++;
 
-                    var sntnc = option.texts2.GetNextText(ref textNo);
-                    if (sntnc != null)
-                        SingleText = sntnc.ToString();
+                    var sentence = option.texts2.GetNextText(ref textNo);
+                    if (sentence != null)
+                        SingleText = sentence.ToString();
                     else
                         goto case 6;
 

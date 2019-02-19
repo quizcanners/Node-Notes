@@ -5,6 +5,7 @@ using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using System;
 using NodeNotes;
+using STD_Logic;
 
 namespace NodeNotes_Visual {
 
@@ -142,7 +143,7 @@ namespace NodeNotes_Visual {
                             Shortcuts.CurrentNode = nd;
                     }
 
-                    if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active fconditions to {0}".F(!enabled)) && !source.TryForceEnabledConditions(!enabled))
+                    if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active conditions to {0}".F(!enabled)) && !source.TryForceEnabledConditions(Values.global,!enabled))
                         Debug.Log("No Conditions to force to {0}".F(!enabled));
 
                     if (IsCurrent) {
@@ -162,7 +163,7 @@ namespace NodeNotes_Visual {
                     {
                         if (!onPlayScreen) {
                             if (newText != null)
-                                "Changeing text to {0}".F(newText).nl();
+                                "Changing text to {0}".F(newText).nl();
 
                             if (isFading)
                                 "Fading...{0}".F(fadePortion).nl();
@@ -173,11 +174,8 @@ namespace NodeNotes_Visual {
                         var bg = Mgmt.backgroundControllers.TryGetByTag(background);
                         if (bg != null)
                         {
-                            if (bg.Try_Nested_Inspect().nl(ref changed)) {
-                                var std = bg as ISTD;
-                                if (std != null)
-                                    backgroundConfig = std.Encode().ToString();
-                            }
+                            if (bg.Try_Nested_Inspect().nl(ref changed))
+                                backgroundConfig = bg.Encode().ToString();
                         }
                     }
 
@@ -199,7 +197,7 @@ namespace NodeNotes_Visual {
                     if (!onPlayScreen) {
                         pegi.nl();
 
-                        bool seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
+                        var seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
 
                         if (!textA || seeDeps)
                             "Text A".edit(ref textA).nl();
@@ -208,7 +206,7 @@ namespace NodeNotes_Visual {
                             "Text B".edit(ref textB).nl();
 
                         if (!circleRendy || seeDeps)
-                            "Mesh Rendy".edit(ref circleRendy).nl();
+                            "Mesh Renderer".edit(ref circleRendy).nl();
 
                         if (!colly || seeDeps)
                             "Collider".edit(ref colly).nl();
@@ -228,7 +226,7 @@ namespace NodeNotes_Visual {
                             if (ind > 0)
                                 shortURL = imageURL.Substring(ind);
 
-                            bool reload = false;
+                            var reload = false;
 
                             bool changedURL = "Paste URL".edit(90, ref shortURL).changes(ref changed);
                             if (changedURL && (shortURL.Length > 8 || shortURL.Length == 0)) {

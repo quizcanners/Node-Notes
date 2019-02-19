@@ -17,7 +17,7 @@ namespace NodeNotes
         public bool isADeveloper = false;
 
         #region GameNodes
-        public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
+        public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
         #endregion
 
         #region CurrentState
@@ -94,7 +94,7 @@ namespace NodeNotes
                         bookName = currentBook.NameForPEGI,
                         nodeIndex = _currentNode.IndexForPEGI,
                         values = Values.global.Encode().ToString(),
-                        gameNodesData = gameNodeTypeData.Encode().ToString()
+                        gameNodesData = gameNodesData.Encode().ToString()
 
                     });
                 }
@@ -126,7 +126,7 @@ namespace NodeNotes
                     Debug.LogError("No book {0} found".F(bm.bookName));
                 else {
                     if (TrySetCurrentNode(book, bm.nodeIndex)) {
-                        bm.gameNodesData.Decode_Dictionary(out gameNodeTypeData);
+                        bm.gameNodesData.Decode_Dictionary(out gameNodesData);
                         bm.values.DecodeInto(out Values.global);
                         bookMarks = bookMarks.GetRange(0, ind);
                     }
@@ -244,7 +244,7 @@ namespace NodeNotes
                 case "dev": isADeveloper = data.ToBool(); break;
                 case "n": userName = data; break;
                 case "start": startingPoint = data; break;
-                case "pgnd": data.Decode_Dictionary(out gameNodeTypeData); break;
+                case "pgnd": data.Decode_Dictionary(out gameNodesData); break;
                 default: return false;
             }
             return true;
@@ -258,7 +258,7 @@ namespace NodeNotes
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", userName)
             .Add_String("start", startingPoint)
-            .Add_IfNotEmpty("pgnd", gameNodeTypeData);
+            .Add_IfNotEmpty("pgnd", gameNodesData);
 
             var cur = Shortcuts.CurrentNode;
             if (cur != null) {

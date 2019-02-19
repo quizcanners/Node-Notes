@@ -12,10 +12,10 @@ namespace NodeNotes
     public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI, IPEGI_Searchable {
 
         #region Values
-        public int firstFree = 0;
-        public CountlessSTD<Base_Node> allBaseNodes = new CountlessSTD<Base_Node>();
+        public int firstFree = 1;
+        public CountlessStd<Base_Node> allBaseNodes = new CountlessStd<Base_Node>();
 
-        Base_Node this[int ind] { get { return allBaseNodes[ind]; } }
+        private Base_Node this[int ind] => allBaseNodes[ind];
 
         public void Register(Base_Node node) {
             if (node != null) {
@@ -37,18 +37,17 @@ namespace NodeNotes
         }
 
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
-        public Dictionary<string, string> gameNodeTypeData = new Dictionary<string, string>();
+        public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
         public Node subNode = new Node();
         #endregion
 
         #region Inspector
 
-        public bool String_SearchMatch(string searchString) =>  subNode.SearchMatch_Obj(searchString);
-        
+
         public override void ResetInspector()
         {
-            inspectedNode = -1;
-            inspectedEntry = -1;
+            _inspectedNode = -1;
+            _inspectedEntry = -1;
 
             subNode.ResetInspector();
 
@@ -58,44 +57,47 @@ namespace NodeNotes
             base.ResetInspector();
         }
 
-        int inspectedNode = -1;
-        int inspectedEntry = -1;
+        private int _inspectedNode = -1;
+        private int _inspectedEntry = -1;
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
 
         #if PEGI
+        public bool String_SearchMatch(string searchString) =>  subNode.SearchMatch_Obj(searchString);
+        
         public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
 
         public static NodeBook inspected;
 
+        private bool _showShareOptions;
+
         public override bool Inspect()  {
-            bool changed = false;
+
             inspected = this;
 
             pegi.nl();
 
-            if (subNode.inspectedStuff == -1 && !subNode.InspectingSubnode) {
+            var changed = false;
+            
+            if (subNode.inspectedStuff == -1 && !subNode.InspectingSubNode) {
 
-                if (inspectedStuff == -1)
-                {
+                if (inspectedStuff == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
                     
                     string data;
                     if (this.SendRecievePegi(subNode.name, "Books", out data)) {
 
-                        NodeBook tmp = new NodeBook();
+                        var tmp = new NodeBook();
                         tmp.Decode(data);
                         if (tmp.NameForPEGI == NameForPEGI) Shortcuts.AddOrReplace(tmp);
                     }
                 }
                 
-
-                "Entry Points".enter_List(ref entryPoints, ref inspectedEntry, ref inspectedStuff, 1).nl();
+                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref inspectedStuff, 1).nl();
 
             }
 
             if (inspectedStuff == -1)
-            changed |= subNode.Nested_Inspect(); //"Root Node".NestedInspect(); // (subNode, ref inspectedStuff, 2);
-      
+                subNode.Nested_Inspect().nl(ref changed); 
             
             inspected = null;
             return changed;
@@ -104,23 +106,22 @@ namespace NodeNotes
         public bool PEGI_inList(IList list, int ind, ref int edited) {
             var changed = false;
 
-            string tmp = NameForPEGI;
-            if (pegi.editDelayed(ref tmp)) 
+            var tmp = NameForPEGI;
+            if (pegi.editDelayed(ref tmp).changes(ref changed)) 
                 TryRename(tmp);
             
-            if (icon.Edit.ClickUnFocus())
+            if (icon.Book.ClickUnFocus("Inspect book").changes(ref changed))
                 edited = ind;
 
-            if (icon.Save.Click())
+            if (icon.Save.Click("Save book (Also offloads RAM)"))
                 Shortcuts.books.Offload(this);
 
             if (icon.Email.Click("Send this Book to somebody via email."))
                 this.EmailData("Book {0} ".F(subNode), "Take a look at my Node Book");
-
-
+            
             return changed;
         }
-        #endif
+#endif
         #endregion
 
         #region Encode_Decode
@@ -128,22 +129,21 @@ namespace NodeNotes
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("f", firstFree)
             .Add("sn", subNode)
-            .Add_IfNotNegative("in", inspectedNode)
-            .Add_IfNotNegative("inE", inspectedEntry)
+            .Add_IfNotNegative("in", _inspectedNode)
+            .Add_IfNotNegative("inE", _inspectedEntry)
             .Add("ep", entryPoints)
             .Add_IfNotNegative("i",inspectedStuff)
-            .Add("gn", gameNodeTypeData);
+            .Add("gn", gameNodesData);
           
         public override bool Decode(string tg, string data) {
             switch (tg) {
-                case "n": subNode.name = data; break;
                 case "f": firstFree = data.ToInt(); break;
                 case "sn": data.DecodeInto(out subNode); break;
-                case "in": inspectedNode = data.ToInt(); break;
-                case "inE": inspectedEntry = data.ToInt(); break;
+                case "in": _inspectedNode = data.ToInt(); break;
+                case "inE": _inspectedEntry = data.ToInt(); break;
                 case "ep": data.Decode_List(out entryPoints); break;
                 case "i": inspectedStuff = data.ToInt(); break;
-                case "gn": data.Decode_Dictionary(out gameNodeTypeData); break;
+                case "gn": data.Decode_Dictionary(out gameNodesData); break;
                 default: return false;
             }
             return true;

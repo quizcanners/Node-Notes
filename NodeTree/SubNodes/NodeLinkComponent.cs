@@ -30,9 +30,9 @@ namespace NodeNotes {
         #region Inspector
         #if PEGI
 
-        public override icon InspectorIcon => icon.Link;
+        protected override icon InspectorIcon => icon.Link;
 
-        public override string inspectHint => "Inspect Node Link";
+        protected override string InspectionHint => "Inspect Node Link";
 
         protected override string ResultsRole => "On Link Usage";
 

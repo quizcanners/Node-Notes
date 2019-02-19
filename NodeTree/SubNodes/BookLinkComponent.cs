@@ -33,13 +33,13 @@ namespace NodeNotes {
             }
         }
         
-        public override bool Conditions_isVisibile() {
+        public override bool Conditions_isVisible() {
             if (type == BookLinkType.BookExit && Shortcuts.user.bookMarks.Count == 0)
                 return false;
 
             if (type == BookLinkType.BookLink && linkToCurrent) return false;
 
-            return base.Conditions_isVisibile();
+            return base.Conditions_isVisible();
         }
         
         bool TryExecuteTransition() {
@@ -113,9 +113,9 @@ namespace NodeNotes {
         #region Inspector
 #if PEGI
 
-        public override icon InspectorIcon => icon.Book;
+        protected override icon InspectorIcon => icon.Book;
 
-        public override string inspectHint => "Inspect Book Link";
+        protected override string InspectionHint => "Inspect Book Link";
 
         protected override string ResultsRole => "On Transition";
 

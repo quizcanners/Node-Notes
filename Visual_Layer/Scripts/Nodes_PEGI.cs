@@ -252,7 +252,7 @@ namespace NodeNotes_Visual
             if (node == null) return;
 
             var shouldBeVisible = (Base_Node.editingNodes || 
-                ((node.parentNode != null && node.Conditions_isVisibile()) || !Application.isPlaying))
+                ((node.parentNode != null && node.Conditions_isVisible()) || !Application.isPlaying))
                 && (Shortcuts.CurrentNode != null 
                 && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
 
@@ -410,7 +410,8 @@ namespace NodeNotes_Visual
         readonly LerpData _lerpData = new LerpData();
 
         private int _logicVersion = -1;
-        public override void DerivedUpdate() {
+
+        protected override void DerivedUpdate() {
             if (Input.GetKey(KeyCode.Escape)) {
                 OnDisable();
                 Application.Quit();
