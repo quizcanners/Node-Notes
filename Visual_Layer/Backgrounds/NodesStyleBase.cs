@@ -6,15 +6,15 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes_Visual {
 
-    public class NodeStylesAttribute : Abstract_WithTaggedTypes { public override TaggedTypes_STD TaggedTypes => NodesStyleBase.all; }
+    public class NodeStylesAttribute : AbstractWithTaggedTypes { public override TaggedTypesStd TaggedTypes => NodesStyleBase.all; }
 
     [NodeStyles]
-    public abstract class NodesStyleBase : ComponentSTD, IManageFading, IPEGI, IGotClassTag {
+    public abstract class NodesStyleBase : ComponentStd, IManageFading, IPEGI, IGotClassTag {
 
         #region Tagged Types MGMT
         public virtual string ClassTag => StdEncoder.NullTag;
-        public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(NodesStyleBase));
-        public TaggedTypes_STD AllTypes => all;
+        public static TaggedTypesStd all = new TaggedTypesStd(typeof(NodesStyleBase));
+        public TaggedTypesStd AllTypes => all;
         #endregion
 
         public Color fallbackColor = Color.black;

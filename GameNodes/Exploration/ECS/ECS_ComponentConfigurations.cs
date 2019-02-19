@@ -13,7 +13,7 @@ namespace NodeNotes_Visual.ECS {
     #region Phisics Array
     
     [Serializable]
-    public struct PhisicsArrayDynamic_Component : IComponentData, IGotDisplayName, IPEGI_ListInspect, ISTD {
+    public struct PhisicsArrayDynamic_Component : IComponentData, IGotDisplayName, IPEGI_ListInspect, IStd {
         public uint phisixIndex;
 
         public float testValue;

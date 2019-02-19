@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class CurrentUser: AbstractKeepUnrecognized_STD, IGotName, IPEGI, IGotDisplayName {
+    public class CurrentUser: AbstractKeepUnrecognizedStd, IGotName, IPEGI, IGotDisplayName {
 
         public string startingPoint = "";
         public string userName = "Unknown";

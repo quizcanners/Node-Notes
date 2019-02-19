@@ -9,7 +9,7 @@ using STD_Logic;
 namespace NodeNotes
 {
 
-    public class BookEntryPoint : AbstractKeepUnrecognized_STD, IPEGI, IGotName {
+    public class BookEntryPoint : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
 
         public string entryPointName = "Rename Me";
 

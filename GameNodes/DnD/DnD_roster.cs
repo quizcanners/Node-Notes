@@ -53,7 +53,7 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class DnDRosterGroup : AbstractKeepUnrecognized_STD, IPEGI, IGotName {
+    public class DnDRosterGroup : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
 
         public string name;
         public string NameForPEGI { get { return name; } set { name = value; } }
@@ -95,7 +95,7 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class DnDrosterElement : AbstractKeepUnrecognized_STD, IPEGI, IGotName {
+    public class DnDrosterElement : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
 
         public string name;
         public string description;

@@ -84,7 +84,7 @@ namespace NodeNotes_Visual {
     }
 
     [DerivedList(typeof(Exploration_MonoInstance), typeof(Exploration_ECSinstance))]
-    public class Exploration_Element : AbstractKeepUnrecognized_STD  {
+    public class Exploration_Element : AbstractKeepUnrecognizedStd  {
 
         public virtual void OnExit() { }
 
@@ -279,7 +279,7 @@ namespace NodeNotes_Visual {
 
             if (instance) {
 
-                var std = instance as ISTD;
+                var std = instance as IStd;
                 if (std != null)
                     instanceConfig = std.Encode().ToString(); 
 
@@ -319,7 +319,7 @@ namespace NodeNotes_Visual {
             }
 
             if (fadedIn) {
-                var std = instance as ISTD;
+                var std = instance as IStd;
                 if (std != null)
                     std.Decode(instanceConfig);
             }

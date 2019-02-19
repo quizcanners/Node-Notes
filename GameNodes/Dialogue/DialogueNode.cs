@@ -96,7 +96,7 @@ namespace NodeNotes_Visual {
                 }
 
 
-            QuestVersion = LogicMGMT.currentLogicVersion;
+            _questVersion = LogicMGMT.currentLogicVersion;
 
             return cnt > 0;
         }
@@ -124,17 +124,17 @@ namespace NodeNotes_Visual {
 
             if (PossibleInteractions.Count != 0) {
 
-                QuestVersion = LogicMGMT.currentLogicVersion;
+                _questVersion = LogicMGMT.currentLogicVersion;
               
-                InteractionStage = 0;
-                textNo = 0;
+                _interactionStage = 0;
+                _textNo = 0;
 
                 if (continuationReference.IsNullOrEmpty()) return;
                 
                 foreach (var ie in PossibleInteractions)
                     if (ie.referanceName.SameAs(continuationReference)) {
-                        interaction = ie;
-                        InteractionStage++;
+                        _interaction = ie;
+                        _interactionStage++;
                         SelectOption(0);
                         break;
                     }
@@ -144,34 +144,33 @@ namespace NodeNotes_Visual {
         }
 
         protected override void AfterEnter() => BackToInitials();
-        
-        public static int textNo;
-        public static int InteractionStage;
 
-        static Interaction interaction;
-        static DialogueChoice option;
+        private static int _textNo;
+        private static int _interactionStage;
 
-        static int QuestVersion;
-        public void DistantUpdate()  {
+        static Interaction _interaction;
+        static DialogueChoice _option;
 
-            if (QuestVersion != LogicMGMT.currentLogicVersion) {
+        static int _questVersion;
 
-                switch (InteractionStage) {
+        private void DistantUpdate()  {
+            if (_questVersion == LogicMGMT.currentLogicVersion) return;
+            
+            switch (_interactionStage) {
 
-                    case 0: BackToInitials(); break;
-                    case 1: GotBigText(); break;
-                    case 3: CheckOptions(interaction); break;
-                    case 5:
-                        var sntx = option.texts2.GetNextText(ref textNo);
+                case 0: BackToInitials(); break;
+                case 1: GotBigText(); break;
+                case 3: CheckOptions(_interaction); break;
+                case 5:
+                    var sntx = _option.texts2.GetNextText(ref _textNo);
 
-                        if (sntx != null)
-                            SingleText = sntx.ToString();
+                    if (sntx != null)
+                        SingleText = sntx.ToString();
                         
-                        break;
-                }
-
-                QuestVersion = LogicMGMT.currentLogicVersion;
+                    break;
             }
+
+            _questVersion = LogicMGMT.currentLogicVersion;
         }
 
         private static void ClearTexts() {
@@ -183,7 +182,7 @@ namespace NodeNotes_Visual {
         private static bool GotBigText()
         {
 
-            var txt = interaction.texts.GetNextText(ref textNo);
+            var txt = _interaction.texts.GetNextText(ref _textNo);
 
             if (txt == null) return false;
             
@@ -197,34 +196,34 @@ namespace NodeNotes_Visual {
         private void SelectOption(int no)
         {
             LogicMGMT.AddLogicVersion();
-            switch (InteractionStage)
+            switch (_interactionStage)
             {
                 case 0:
-                    InteractionStage++; interaction = PossibleInteractions[no]; goto case 1;
+                    _interactionStage++; _interaction = PossibleInteractions[no]; goto case 1;
                 case 1:
                     continuationReference = null;
-                    textNo++;
+                    _textNo++;
                     if (GotBigText()) break;
-                    InteractionStage++;
+                    _interactionStage++;
                     goto case 2;
                 case 2:
-                    InteractionStage++;
-                    if (!CheckOptions(interaction)) goto case 4; break;
+                    _interactionStage++;
+                    if (!CheckOptions(_interaction)) goto case 4; break;
                 case 3:
-                    option = PossibleOptions[no];
-                    option.results.Apply();
-                    continuationReference = option.nextOne;
-                    interaction.finalResults.Apply();
-                    textNo = -1;
+                    _option = PossibleOptions[no];
+                    _option.results.Apply();
+                    continuationReference = _option.nextOne;
+                    _interaction.finalResults.Apply();
+                    _textNo = -1;
                     goto case 5;
 
                 case 4:
-                    interaction.finalResults.Apply(); BackToInitials(); break;
+                    _interaction.finalResults.Apply(); BackToInitials(); break;
                 case 5:
 
-                    textNo++;
+                    _textNo++;
 
-                    var sentence = option.texts2.GetNextText(ref textNo);
+                    var sentence = _option.texts2.GetNextText(ref _textNo);
                     if (sentence != null)
                         SingleText = sentence.ToString();
                     else

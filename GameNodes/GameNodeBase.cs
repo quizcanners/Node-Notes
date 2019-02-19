@@ -11,9 +11,9 @@ using UnityEngine;
 
 namespace NodeNotes {
 
-    public class GameNodeAttribute : Abstract_WithTaggedTypes
+    public class GameNodeAttribute : AbstractWithTaggedTypes
     {
-        public override TaggedTypes_STD TaggedTypes => GameNodeBase.all;
+        public override TaggedTypesStd TaggedTypes => GameNodeBase.all;
     }
 
     [GameNode]
@@ -25,8 +25,8 @@ namespace NodeNotes {
         #region Tagged Types MGMT
         public override GameNodeBase AsGameNode => this;
         public abstract string ClassTag { get;  } 
-        public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(GameNodeBase));
-        public TaggedTypes_STD AllTypes => all;
+        public static TaggedTypesStd all = new TaggedTypesStd(typeof(GameNodeBase));
+        public TaggedTypesStd AllTypes => all;
         #endregion
 
         #region Enter & Exit

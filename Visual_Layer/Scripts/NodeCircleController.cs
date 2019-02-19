@@ -10,7 +10,7 @@ using STD_Logic;
 namespace NodeNotes_Visual {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentSTD, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, ILinkedLerping {
+    public class NodeCircleController : ComponentStd, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, ILinkedLerping {
 
         static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
 
@@ -730,7 +730,7 @@ namespace NodeNotes_Visual {
         #endregion
     }
 
-    public class NodeVisualConfig : AbstractKeepUnrecognized_STD, IPEGI, IPEGI_ListInspect, ICanBeDefault_STD {
+    public class NodeVisualConfig : AbstractKeepUnrecognizedStd, IPEGI, IPEGI_ListInspect, ICanBeDefaultStd {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;

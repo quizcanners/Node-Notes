@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class BookMark : AbstractKeepUnrecognized_STD, IPEGI_ListInspect, IGotName {
+    public class BookMark : AbstractKeepUnrecognizedStd, IPEGI_ListInspect, IGotName {
 
         public string bookName;
         public int nodeIndex;

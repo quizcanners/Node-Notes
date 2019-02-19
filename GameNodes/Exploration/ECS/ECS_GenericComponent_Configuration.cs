@@ -8,17 +8,17 @@ using UnityEngine;
 namespace NodeNotes_Visual.ECS {
 
     #region Generic Entity Config
-    public class ComponentSTDAttributeAttribute : Abstract_WithTaggedTypes {
-        public override TaggedTypes_STD TaggedTypes => Component_STD_Abstract.all;
+    public class ComponentSTDAttributeAttribute : AbstractWithTaggedTypes {
+        public override TaggedTypesStd TaggedTypes => Component_STD_Abstract.all;
     }
 
     [ComponentSTDAttribute]
-    public abstract class Component_STD_Abstract : AbstractKeepUnrecognized_STD, IGotClassTag, IPEGI_ListInspect
+    public abstract class Component_STD_Abstract : AbstractKeepUnrecognizedStd, IGotClassTag, IPEGI_ListInspect
     {
         #region Tagged Types
         public abstract string ClassTag { get; }
-        public static TaggedTypes_STD all = new TaggedTypes_STD(typeof(Component_STD_Abstract));
-        public TaggedTypes_STD AllTypes => all;
+        public static TaggedTypesStd all = new TaggedTypesStd(typeof(Component_STD_Abstract));
+        public TaggedTypesStd AllTypes => all;
         #endregion
 
         #region Component MGMT

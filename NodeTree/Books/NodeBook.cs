@@ -84,7 +84,7 @@ namespace NodeNotes
                 if (inspectedStuff == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
                     
                     string data;
-                    if (this.SendRecievePegi(subNode.name, "Books", out data)) {
+                    if (this.SendReceivePegi(subNode.name, "Books", out data)) {
 
                         var tmp = new NodeBook();
                         tmp.Decode(data);

@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
 
     [DerivedList(typeof(NodeBook), typeof(NodeBook_OffLoaded))]
-    public class NodeBook_Base : AbstractKeepUnrecognized_STD, IGotDisplayName, IGotName {
+    public class NodeBook_Base : AbstractKeepUnrecognizedStd, IGotDisplayName, IGotName {
 
         public const string BooksFolder = "Books";
 

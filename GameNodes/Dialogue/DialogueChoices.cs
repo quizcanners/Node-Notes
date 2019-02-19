@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognized_STD, IGotName, IPEGI, IAmConditional, INeedAttention {
+    public class Interaction : AbstractKeepUnrecognizedStd, IGotName, IPEGI, IAmConditional, INeedAttention {
 
         public string referanceName = "";
         public ConditionBranch conditions = new ConditionBranch();
@@ -159,7 +159,7 @@ namespace NodeNotes_Visual {
         }
     }
     
-    public class DialogueChoice : AbstractKeepUnrecognized_STD, IPEGI, IGotName, INeedAttention
+    public class DialogueChoice : AbstractKeepUnrecognizedStd, IPEGI, IGotName, INeedAttention
     {
         public ConditionBranch conditions = new ConditionBranch();
         public Sentance text = new Sentance();

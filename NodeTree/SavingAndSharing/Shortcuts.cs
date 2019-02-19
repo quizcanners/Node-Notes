@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
 
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
-    public class Shortcuts : STD_ReferencesHolder {
+    public class Shortcuts : StdReferencesHolder {
 
         #region Progress
      
@@ -272,7 +272,7 @@ namespace NodeNotes {
                     else  {
 
                         string tmp = "";
-                        if ("Paste Messaged Book".edit(140, ref tmp) || STDExtensions.LoadOnDrop(out tmp)) {
+                        if ("Paste Messaged Book".edit(140, ref tmp) || StdExtensions.LoadOnDrop(out tmp)) {
                             var book = new NodeBook();
                             book.DecodeFromExternal(tmp);
                             if (books.GetByIGotName(book.NameForPEGI) == null)
