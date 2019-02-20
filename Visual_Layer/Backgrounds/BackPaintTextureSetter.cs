@@ -10,7 +10,7 @@ namespace NodeNotes_Visual {
     public class BackPaintTextureSetter : MonoBehaviour
     {
 
-        //public Renderer rendy;
+        //public Renderer skeRenderer;
 
         public Texture backPaintTexture;
 

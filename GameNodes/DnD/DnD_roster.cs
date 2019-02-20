@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using STD_Logic;
-using UnityEngine;
 
 namespace NodeNotes_Visual {
 
-    [TaggedType(tag, "DnD roster")]
-    public class DnD_roster : GameNodeBase {
-        public const string tag = "DnD_rost";
-        public override string ClassTag => tag;
+    [TaggedType(Tag, "D&D roster")]
+    public class DnDRoster : GameNodeBase {
+        public const string Tag = "DnD_rost";
+        public override string ClassTag => Tag;
 
-        static List<DnDRosterGroup> perBookGroups = new List<DnDRosterGroup>();
+        private static List<DnDRosterGroup> _perBookGroups = new List<DnDRosterGroup>();
 
-        static int inspectedGroup = -1;
+        private static int _inspectedGroup = -1;
 
         #region Encode & Decode
 
@@ -30,22 +24,22 @@ namespace NodeNotes_Visual {
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break;
-                case "el": data.Decode_List(out perBookGroups); break;
-                case "i": inspectedGroup = data.ToInt(); break;
+                case "el": data.Decode_List(out _perBookGroups); break;
+                case "i": _inspectedGroup = data.ToInt(); break;
                 default: return false;
             }
             return true;           
         }
 
         public override StdEncoder Encode_PerBookStaticData() => this.EncodeUnrecognized()
-            .Add_IfNotEmpty("el", perBookGroups)
-            .Add_IfNotNegative("i", inspectedGroup);
+            .Add_IfNotEmpty("el", _perBookGroups)
+            .Add_IfNotNegative("i", _inspectedGroup);
         #endregion
 
         #region Inspector
         #if PEGI
         protected override bool InspectGameNode() {
-            bool changed = "Roster Groups".edit_List(ref perBookGroups, ref inspectedGroup);
+            bool changed = "Roster Groups".edit_List(ref _perBookGroups, ref _inspectedGroup);
             return changed;
         }
         #endif
@@ -58,8 +52,8 @@ namespace NodeNotes_Visual {
         public string name;
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-        List<DnDrosterElement> elements = new List<DnDrosterElement>();
-        int inspectedElement = -1;
+        private List<DndRosterElement> _elements = new List<DndRosterElement>();
+        private int _inspectedElement = -1;
 
         #region Encode & Decode
         public override bool Decode(string tg, string data)
@@ -67,8 +61,8 @@ namespace NodeNotes_Visual {
             switch (tg)
             {
                 case "n": name = data; break;
-                case "el": data.Decode_List(out elements); break;
-                case "i": inspectedElement = data.ToInt(); break;
+                case "el": data.Decode_List(out _elements); break;
+                case "i": _inspectedElement = data.ToInt(); break;
                 default: return false;
             }
             return true;
@@ -76,8 +70,8 @@ namespace NodeNotes_Visual {
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
-            .Add_IfNotEmpty("el", elements)
-            .Add_IfNotNegative("i", inspectedElement);
+            .Add_IfNotEmpty("el", _elements)
+            .Add_IfNotNegative("i", _inspectedElement);
         #endregion
 
         #region Inspector
@@ -86,7 +80,7 @@ namespace NodeNotes_Visual {
         {
             bool changed = base.Inspect();
             
-            changed |= "Roster".edit_List(ref elements, ref inspectedElement);
+            changed |= "Roster".edit_List(ref _elements, ref _inspectedElement);
 
             return changed;
         }
@@ -95,7 +89,7 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class DnDrosterElement : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
+    public class DndRosterElement : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
 
         public string name;
         public string description;
