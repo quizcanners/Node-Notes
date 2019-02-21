@@ -6,7 +6,7 @@ namespace NodeNotes_Visual {
     [TaggedType(Tag, "D&D Campfire")]
     public class DndCampfire : GameNodeBase {
 
-        public const string Tag = "DnD_rost";
+        public const string Tag = "DnD_Stats";
         public override string ClassTag => Tag;
 
 
