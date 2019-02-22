@@ -149,7 +149,7 @@ namespace NodeNotes_Visual
                     nnp = tmp;
                     if (tmp.gameObject.activeSelf) {
                         reusing = true;
-                        Debug.Log("Reusing previous for {0}".F(node.ToPEGIstring()));
+                        Debug.Log("Reusing previous for {0}".F(node.ToPegiString()));
                     }
                 }
             }
@@ -174,7 +174,7 @@ namespace NodeNotes_Visual
                 nnp.IndexForPEGI = NodesPool.Count;
                 NodesPool.Add(nnp);
 
-                Debug.Log("Creating new for {0}".F(node.ToPEGIstring()));
+                Debug.Log("Creating new for {0}".F(node.ToPegiString()));
             }
 
             nnp.LinkTo(node);
@@ -220,7 +220,7 @@ namespace NodeNotes_Visual
                     if (Application.isPlaying && Shortcuts.CurrentNode != value) {
 
                         if ((value as Node) == null)
-                            Debug.LogError("{0} is not a Node Type: {1}".F(value.ToPEGIstring(), value == null ? "Null" : value.GetType().ToPEGIstring_Type()));
+                            Debug.LogError("{0} is not a Node Type: {1}".F(value.ToPegiString(), value == null ? "Null" : value.GetType().ToPegiStringType()));
 
                         SetSelected(null);
                         
@@ -322,7 +322,7 @@ namespace NodeNotes_Visual
 
             if (cn != null) {
                 icon.Active.toggle("{0} -> [{1}] Current: {2} - {3}"
-                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPEGIstring(), cn.ToPEGIstring())
+                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPegiString(), cn.ToPegiString())
                     , ref inspectedStuff, 2);
             }
             else icon.InActive.write("No Active Node");
@@ -341,7 +341,7 @@ namespace NodeNotes_Visual
                     return true;
                 }
 
-                "GN: {0}".F(gameNode.ToPEGIstring()).write();
+                "GN: {0}".F(gameNode.ToPegiString()).write();
 
                 if (icon.Close.Click("Exit Game Node in Fail").nl())
                     FromGameToNode(true);

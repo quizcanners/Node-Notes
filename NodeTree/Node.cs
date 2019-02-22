@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using QuizCannersUtilities;
-using System;
 using PlayerAndEditorGUI;
 using STD_Logic;
 
@@ -85,7 +83,7 @@ namespace NodeNotes {
                 SetInspectedUpTheHierarchy(null);
         }
 
-        readonly LoopLock _loopLock = new LoopLock();
+        private readonly LoopLock _loopLock = new LoopLock();
         
         public override void Init (NodeBook nRoot, Node parent){
             base.Init(nRoot, parent);
@@ -238,7 +236,7 @@ namespace NodeNotes {
                         Shortcuts.Cut_Paste = null;
                     else
                     {
-                        (cp.ToPEGIstring() + (canPaste ? "" : " can't paste parent to child")).write();
+                        (cp.ToPegiString() + (canPaste ? "" : " can't paste parent to child")).write();
                         if (canPaste && icon.Paste.Click(ref changed))
                         {
                             cp.MoveTo(this);

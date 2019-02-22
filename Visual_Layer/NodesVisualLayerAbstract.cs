@@ -36,7 +36,7 @@ namespace NodeNotes
                         if (CurrentNode as Node != null)
                             preGameNode = CurrentNode;
                         else {
-                            Debug.LogError("Current Node {0}: {1} is not a Node".F(CurrentNode.ToPEGIstring(), CurrentNode.GetType().ToPEGIstring_Type()));
+                            Debug.LogError("Current Node {0}: {1} is not a Node".F(CurrentNode.ToPegiString(), CurrentNode.GetType().ToPegiStringType()));
                             preGameNode = gn.parentNode;
                         } 
                     }

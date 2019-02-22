@@ -145,7 +145,10 @@ namespace NodeNotes {
         private int _inspectedResult = -1;
         public bool InspectingTriggerStuff => _inspectedResult != -1;
 
-        #if PEGI
+        protected bool showLogic;
+
+
+#if PEGI
         
         public virtual bool PEGI_inList(IList list, int ind, ref int edited)
         {
@@ -191,24 +194,19 @@ namespace NodeNotes {
             return null;
         }
 
-        private readonly LoopLock _inspectionLock = new LoopLock();
+        public readonly LoopLock inspectionLock = new LoopLock();
 
         protected virtual bool Inspect_AfterNamePart() => false;
 
-        protected bool showLogic;
-
         public override bool Inspect() {
       
-            if (!_inspectionLock.Unlocked) return false;
+            if (!inspectionLock.Unlocked) return false;
 
             var changed = false;
             
-            using (_inspectionLock.Lock()) {
+            using (inspectionLock.Lock()) {
 
                 var onPlayScreen = pegi.paintingPlayAreaGui;
-
-                //if (!onPlayScreen)
-                //  changed |= base.Inspect();
 
                 if (inspectedStuff == -1)
                 {
@@ -225,10 +223,10 @@ namespace NodeNotes {
 
                 pegi.nl();
 
-                Inspect_AfterNamePart().changes(ref changed);
+                Inspect_AfterNamePart().nl(ref changed);
 
-                "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedStuff, 4).nl_ifFolded(ref changed);
-
+                "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedStuff, 21).nl_ifFolded(ref changed);
+                
                 if ( inspectedStuff != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
                     
                     _visCondition.enter_Inspect(ref inspectedStuff, 1).nl_ifFolded(ref changed);
@@ -245,10 +243,12 @@ namespace NodeNotes {
                     _logicVersion = -1;
             }
 
+         
+
             return changed;
         }
 #endif
-#endregion
+        #endregion
 
         #region MGMT
         public virtual void MoveTo(Node node) {

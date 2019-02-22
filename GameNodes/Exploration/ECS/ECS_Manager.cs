@@ -172,7 +172,7 @@ namespace NodeNotes_Visual.ECS {
                 {
                     var e = all[i];
 
-                    if (e.ToPEGIstring().foldout(ref exploredEntity, i).nl())
+                    if (e.ToPegiString().foldout(ref exploredEntity, i).nl())
                         e.Inspect().nl(ref changed);
                     
                 }

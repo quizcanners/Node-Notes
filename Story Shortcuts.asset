@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d40f5094fecce70499a817ce4c7f0c65, type: 3}
   m_Name: Story Shortcuts
   m_EditorClassIdentifier: 
-  _nestedReferences: []
+  nestedReferences: []
   explorer:
     states: []
     fileFolderHolder: STDEncodes

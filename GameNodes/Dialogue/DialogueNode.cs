@@ -29,10 +29,8 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-
-      
-
-#if PEGI
+        
+        #if PEGI
 
         protected override string GameNodeTypeName => "Dialogue";
 
@@ -55,7 +53,7 @@ namespace NodeNotes_Visual {
                     DistantUpdate();
                     pegi.nl();
                     for (var i = 0; i < OptText.Count; i++)
-                        if (OptText[i].Click().nl())
+                        if (OptText[i].Click(13).nl())
                         {
                             SelectOption(i);
                             DistantUpdate();
@@ -108,7 +106,7 @@ namespace NodeNotes_Visual {
             
             foreach (var si in gr.elements)  {
                 if (!si.IsTrue()) continue;
-                OptText.Add(si.texts[0].ToPEGIstring());
+                OptText.Add(si.texts[0].ToPegiString());
                 PossibleInteractions.Add(si);
             }
 
@@ -132,7 +130,7 @@ namespace NodeNotes_Visual {
                 if (continuationReference.IsNullOrEmpty()) return;
                 
                 foreach (var ie in PossibleInteractions)
-                    if (ie.referanceName.SameAs(continuationReference)) {
+                    if (ie.referenceName.SameAs(continuationReference)) {
                         _interaction = ie;
                         _interactionStage++;
                         SelectOption(0);

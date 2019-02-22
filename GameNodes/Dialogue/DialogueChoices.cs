@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,9 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognizedStd, IGotName, IPEGI, IAmConditional, INeedAttention {
+    public class Interaction : AbstractKeepUnrecognizedStd, IPEGI, IGotName, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
 
-        public string referanceName = "";
+        public string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
         public List<Sentance> texts = new List<Sentance>();
         public List<DialogueChoice> options = new List<DialogueChoice>();
@@ -34,27 +35,27 @@ namespace NodeNotes_Visual {
         }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
-            .Add_IfNotEmpty("ref", referanceName)
+            .Add_IfNotEmpty("ref", referenceName)
             .Add_IfNotDefault("Conds", conditions)
             .Add_IfNotEmpty("txt", texts)
             .Add_IfNotEmpty("opt", options)
             .Add_IfNotEmpty("fin", finalResults)
             .Add_IfNotNegative("is", inspectedStuff)
-            .Add_IfNotNegative("it", inspectedText)
-            .Add_IfNotNegative("bc", inspectedChoice)
-            .Add_IfNotNegative("ir", inspectedResult);
+            .Add_IfNotNegative("it", _inspectedText)
+            .Add_IfNotNegative("bc", _inspectedChoice)
+            .Add_IfNotNegative("ir", _inspectedResult);
         
         public override bool Decode(string tg, string data) {
             switch (tg)  {
-                case "ref": referanceName = data; break;
+                case "ref": referenceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
                 case "txt": data.Decode_List(out texts); break;
                 case "opt": data.Decode_List(out options); break;
                 case "fin": data.Decode_List(out finalResults); break;
                 case "is": inspectedStuff = data.ToInt(); break;
-                case "it": inspectedText = data.ToInt(); break;
-                case "bc": inspectedChoice = data.ToInt(); break;
-                case "ir": inspectedResult = data.ToInt(); break;
+                case "it": _inspectedText = data.ToInt(); break;
+                case "bc": _inspectedChoice = data.ToInt(); break;
+                case "ir": _inspectedResult = data.ToInt(); break;
                 default: return false;
             }
             return true;
@@ -70,53 +71,77 @@ namespace NodeNotes_Visual {
                 o.RenameReference(oldName, newName);
         }
 
-        int inspectedText = -1;
-        int inspectedChoice = -1;
-        int inspectedResult = -1;
-        public static bool renameLinkedReferances = true; 
+        private int _inspectedText = -1;
+        private int _inspectedChoice = -1;
+        private int _inspectedResult = -1;
+        public static bool renameLinkedReferences = true; 
 
         public override void ResetInspector() {
-            inspectedText = -1;
-            inspectedChoice = -1;
-            inspectedResult = -1;
+            _inspectedText = -1;
+            _inspectedChoice = -1;
+            _inspectedResult = -1;
             base.ResetInspector();
         }
 
+        public string NameForPEGI
+        {
+            get { return referenceName; }
+            set
+            {
+                if (renameLinkedReferences && DialogueNode.inspected != null)
+                    DialogueNode.inspected.interactionBranch.RenameReferance(referenceName, value);
+                referenceName = value;
+            }
+        }
+
 #if PEGI
+        public string NameForDisplayPEGI => texts[0].NameForPEGI;
+
         public string NeedAttention() {
 
             var na = options.NeedAttentionMessage();
-            if (na != null)
-                return na;
-
-            return texts.NeedAttentionMessage("texts", false);
+            return na ?? texts.NeedAttentionMessage("texts", false);
         }
         
-        public string NameForPEGI { get { return referanceName; }
-            set { 
-                if (renameLinkedReferances && DialogueNode.inspected != null)
-                    DialogueNode.inspected.interactionBranch.RenameReferance(referanceName, value);
-                referanceName = value;
-            } }
-
         public override bool Inspect() {
-            bool changed = false;
+            var changed = false;
 
-            if (inspectedStuff == -1) {
-                this.inspect_Name("Reanme Reference", "Other choices can set this interaction as a next one").changes(ref changed);
-                pegi.toggle(ref renameLinkedReferances, icon.Link, icon.UnLinked, "Will all the references to this Interaction be renamed as well.").nl(ref changed);
+            if (inspectedStuff == -1)
+            {
+
+                var n = NameForPEGI;
+
+                if (renameLinkedReferences)
+                {
+                    if ("Ref".editDelayed(50, ref n))
+                        NameForPEGI = n;
+                } else
+                if ("Ref".edit(50, ref n))
+                    NameForPEGI = n;
+
+                //this.inspect_Name("Rename Reference", "Other choices can set this interaction as a next one").changes(ref changed);
+
+                pegi.toggle(ref renameLinkedReferences, icon.Link, icon.UnLinked, "Will all the references to this Interaction be renamed as well.").changes(ref changed);
+
+                ("You can use reference to link end of one interaction with the start of another. But the first text of it will be skipped. First sentence is the option user picks to start an interaction. Like 'Lets talk about ...' " +
+                 "which is not needed if the subject is currently being discussed from interaction that came to an end.")
+                    .fullWindowDocumentationClick().nl();
+
             }
 
-            if (inspectedStuff == 1 && inspectedText == -1)
+            if (inspectedStuff == 1 && _inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedStuff, 4).nl(ref changed);
             
-            "Texts".enter_List(ref texts, ref inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
+            "Texts".enter_List(ref texts, ref _inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
 
-            "Choices".enter_List(ref options, ref inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
+            "Choices".enter_List(ref options, ref _inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
 
-            "Final Results".enter_List(ref finalResults, ref inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+            "Final Results".enter_List(ref finalResults, ref _inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+
+            if (inspectedStuff == -1)
+                "Results that will be set after any choice is selected".fullWindowDocumentationClick();
 
             pegi.nl_ifNotEntered();
 
@@ -124,12 +149,24 @@ namespace NodeNotes_Visual {
 
         }
 
-      
+        public bool PEGI_inList(IList list, int ind, ref int edited)
+        {
+            var changed = false;
+            texts[0].inspect_Name().changes(ref changed);
+
+            if (icon.Enter.Click())
+                edited = ind;
+
+            return changed;
+
+        }
 
 
 #endif
         #endregion
 
+
+      
     }
 
     public class InteractionBranch : LogicBranch<Interaction>  {
@@ -221,7 +258,7 @@ namespace NodeNotes_Visual {
 
             bool changed = false;
 
-            if (icon.Hint.enter(text.ToPEGIstring() ,ref inspectedStuff, 1))
+            if (icon.Hint.enter(text.ToPegiString() ,ref inspectedStuff, 1))
                 text.Nested_Inspect();
             else if (inspectedStuff == -1) Sentance.LanguageSelector_PEGI().nl();
 

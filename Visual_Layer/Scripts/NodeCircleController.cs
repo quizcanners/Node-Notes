@@ -110,7 +110,7 @@ namespace NodeNotes_Visual {
 
             bool changed = false;
      
-            if (loopLock.Unlocked && source != null) {
+            if (loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
                 using (loopLock.Lock()) {
                     if (source.Try_Nested_Inspect().changes(ref changed)) {
                         if (name != source.name)
@@ -121,14 +121,14 @@ namespace NodeNotes_Visual {
                 }
             } else {
                 
-                bool onPlayScreen = pegi.paintingPlayAreaGui;
+                var onPlayScreen = pegi.paintingPlayAreaGui;
 
                 if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
                     Shortcuts.CurrentNode = null;
 
                 if (source != null)
                 {
-                    bool enabled = source.Conditions_isEnabled();
+                    var enabled = source.Conditions_isEnabled();
 
                     var nd = source.AsNode;
 
@@ -136,9 +136,7 @@ namespace NodeNotes_Visual {
                     {
                         if (IsCurrent && nd.parentNode != null && icon.StateMachine.Click("Exit this Node"))
                             Shortcuts.CurrentNode = nd.parentNode;
-
-
-
+                        
                         if (!IsCurrent && icon.Enter.Click("Enter this Node"))
                             Shortcuts.CurrentNode = nd;
                     }
@@ -157,105 +155,102 @@ namespace NodeNotes_Visual {
                         source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
                 }
 
+                pegi.nl();
+
+                if (circleRendy)
+                {
+                    if (!onPlayScreen) {
+                        if (newText != null)
+                            "Changing text to {0}".F(newText).nl();
+
+                        if (isFading)
+                            "Fading...{0}".F(fadePortion).nl();
+                    }
+                    
+                    var bg = Mgmt.backgroundControllers.TryGetByTag(background);
+                    if (bg != null)
+                    {
+                        if (bg.Try_Nested_Inspect().nl(ref changed))
+                            backgroundConfig = bg.Encode().ToString();
+                    }
+                }
+
+                if (source == null || (!source.InspectingTriggerStuff)) {
+
+                    var altVis = PossibleOverrideVisualConfig;
+                    var act = ActiveConfig;
+
+                    if (altVis != nodeActive_Default_Visuals) {
+                        if ("Override visuals for {0}".F(altVis == nodeInactiveVisuals ? "Disabled" : "Entered")
+                            .toggleIcon(ref altVis.enabled).nl()) {
+                            if (altVis.enabled)
+                                altVis.Decode(act.Encode().ToString());
+                        }
+                    }
+
+                    ActiveConfig.Nested_Inspect().changes(ref changed);
+                }
+
+                if (!onPlayScreen) {
                     pegi.nl();
 
-                    if (circleRendy)
-                    {
-                        if (!onPlayScreen) {
-                            if (newText != null)
-                                "Changing text to {0}".F(newText).nl();
+                    var seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
 
-                            if (isFading)
-                                "Fading...{0}".F(fadePortion).nl();
+                    if (!textA || seeDeps)
+                        "Text A".edit(ref textA).nl();
+
+                    if (!textB || seeDeps)
+                        "Text B".edit(ref textB).nl();
+
+                    if (!circleRendy || seeDeps)
+                        "Mesh Renderer".edit(ref circleRendy).nl();
+
+                    if (!colly || seeDeps)
+                        "Collider".edit(ref colly).nl();
+                }
+
+                if (inspectedStuff == -1) {
+
+                    if (imageIndex != -1) {
+                        if (!pegi.paintingPlayAreaGui)
+                            "Downloading {0} [1]".F(imageURL, imageIndex).write();
+                    }  else  {
+                        if ("Image".edit("Will not be saved", 40, ref coverImage).nl())
+                            SetImage();
+                        
+                        var shortUrl = imageURL.SimplifyDirectory(); 
+
+                        var reload = false;
+
+                        var changedUrl = "Paste URL".edit(90, ref shortUrl).changes(ref changed);
+                        if (changedUrl && (shortUrl.Length > 8 || shortUrl.Length == 0)) {
+                                reload = true;
+                                imageURL = shortUrl;
                         }
 
+                        reload |= (imageURL.Length > 8 && icon.Refresh.Click().changes(ref changed));
 
+                        if (reload)
+                            LoadCoverImage();
 
-                        var bg = Mgmt.backgroundControllers.TryGetByTag(background);
-                        if (bg != null)
-                        {
-                            if (bg.Try_Nested_Inspect().nl(ref changed))
-                                backgroundConfig = bg.Encode().ToString();
-                        }
-                    }
-
-                    if (source == null || (!source.InspectingTriggerStuff)) {
-
-                        var altVis = PossibleOverrideVisualConfig;
-                        var act = ActiveConfig;
-
-                        if (altVis != nodeActive_Default_Visuals) {
-                            if ("Override visuals for {0}".F(altVis == nodeInactiveVisuals ? "Disabled" : "Entered")
-                                .toggleIcon(ref altVis.enabled).nl()) {
-                                if (altVis.enabled)
-                                    altVis.Decode(act.Encode().ToString());
-                            }
-                        }
-                        changed |= ActiveConfig.Nested_Inspect();
-                    }
-
-                    if (!onPlayScreen) {
                         pegi.nl();
+                    
+                        if (coverImage) {
 
-                        var seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
-
-                        if (!textA || seeDeps)
-                            "Text A".edit(ref textA).nl();
-
-                        if (!textB || seeDeps)
-                            "Text B".edit(ref textB).nl();
-
-                        if (!circleRendy || seeDeps)
-                            "Mesh Renderer".edit(ref circleRendy).nl();
-
-                        if (!colly || seeDeps)
-                            "Collider".edit(ref colly).nl();
-                    }
-
-                    if (inspectedStuff == -1) {
-
-                        if (imageIndex != -1) {
-                            if (!pegi.paintingPlayAreaGui)
-                                "Downloading {0} [1]".F(imageURL, imageIndex).write();
-                        }  else  {
-                            if ("Image".edit("Will not be saved", 40, ref coverImage).nl())
+                            if ("Img Mode".editEnum(50, ref mode).nl())
                                 SetImage();
 
-                            var shortURL = imageURL;
-                            var ind = imageURL.LastIndexOf("/");
-                            if (ind > 0)
-                                shortURL = imageURL.Substring(ind);
+                        if (mode == ImageMode.tile)
+                            "Image Scale".edit(70, ref imageScaling, 1, 10).nl(ref changed);
+                        else
+                            "Hide Label".toggleIcon(ref hideLabel).nl(ref changed);
 
-                            var reload = false;
+                            if (!pegi.paintingPlayAreaGui)
+                                coverImage.write(200); pegi.nl();
 
-                            bool changedURL = "Paste URL".edit(90, ref shortURL).changes(ref changed);
-                            if (changedURL && (shortURL.Length > 8 || shortURL.Length == 0)) {
-                                    reload = true;
-                                    imageURL = shortURL;
-                            }
-
-                            reload |= (imageURL.Length > 8 && icon.Refresh.Click().changes(ref changed));
-
-                            if (reload)
-                                LoadCoverImage();
-                            pegi.nl();
-                        
-                            if (coverImage) {
-
-                                if ("Img Mode".editEnum(50, ref mode).nl())
-                                    SetImage();
-
-                            if (mode == ImageMode.tile)
-                                changed |= "Image Scale".edit(70, ref imageScaling, 1, 10).nl();
-                            else
-                                changed |= "Hide Label".toggleIcon(ref hideLabel).nl();
-
-                                if (!pegi.paintingPlayAreaGui)
-                                    pegi.write(coverImage, 200); pegi.nl();
-
-                            }
                         }
                     }
+                }
                 
             }
             
