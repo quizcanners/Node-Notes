@@ -219,8 +219,13 @@ namespace NodeNotes_Visual
 
                     if (Application.isPlaying && Shortcuts.CurrentNode != value) {
 
-                        if ((value as Node) == null)
-                            Debug.LogError("{0} is not a Node Type: {1}".F(value.ToPegiString(), value == null ? "Null" : value.GetType().ToPegiStringType()));
+                        if (value == null)
+                        {
+                           // Debug.LogError("{0} is not a Node Type: {1}".F(value.ToPegiString(),
+                             //   value == null ? "Null" : value.GetType().ToPegiStringType()));
+
+                            return;
+                        }
 
                         SetSelected(null);
                         

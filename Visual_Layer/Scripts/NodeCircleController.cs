@@ -10,13 +10,12 @@ using STD_Logic;
 namespace NodeNotes_Visual {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentStd, IPEGI, IGotName, IPEGI_ListInspect, IGotIndex, ILinkedLerping {
+    public class NodeCircleController : ComponentStd, IGotIndex, ILinkedLerping {
+        private static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
 
-        static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
+        public Renderer circleRenderer;
 
-        public Renderer circleRendy;
-
-        public MeshCollider colly;
+        public MeshCollider circleCollider;
 
         public Base_Node source;
 
@@ -24,22 +23,25 @@ namespace NodeNotes_Visual {
 
         public string backgroundConfig = "";
 
-        bool IsCurrent => source == Shortcuts.CurrentNode;
+        private bool IsCurrent => source == Shortcuts.CurrentNode;
 
-        Node CurrentNode => Shortcuts.CurrentNode;
+        static Node CurrentNode => Shortcuts.CurrentNode;
 
         #region Node Image
-        Texture coverImage = null;
-        public string imageURL = "";
-        bool hideLabel = false;
-        int imageIndex = -1;
-        float imageScaling = 1f;
-        enum ImageMode { fit, tile }
-        ImageMode mode;
+
+        private Texture _coverImage;
+        public string imageUrl = "";
+        private bool _hideLabel;
+        private int _imageIndex = -1;
+        private float _imageScaling = 1f;
+
+        private enum ImageMode { Fit, Tile }
+
+        private ImageMode _mode;
 
         void LoadCoverImage() {
-            if (imageURL.Length > 8)
-                imageIndex = Mgmt.textureDownloader.StartDownload(imageURL);
+            if (imageUrl.Length > 8)
+                _imageIndex = Mgmt.textureDownloader.StartDownload(imageUrl);
         }
 
         #endregion
@@ -49,33 +51,33 @@ namespace NodeNotes_Visual {
 
         public TextMeshPro textB;
 
-        bool activeTextIsA = false;
+        private bool _activeTextIsA;
 
-        TextMeshPro ActiveText => activeTextIsA ? textA : textB;
+        private TextMeshPro ActiveText => _activeTextIsA ? textA : textB;
 
-        TextMeshPro PassiveText => activeTextIsA ? textB : textA;
+        private TextMeshPro PassiveText => _activeTextIsA ? textB : textA;
 
-        public string newText = null;
+        public string newText;
 
-        float activeTextAlpha = 0;
+        private float _activeTextAlpha;
 
         #endregion
 
         #region Inspector
-        public Base_Node myLastLinkedNode = null;
-       
-        int indexInPool = 0;
-        public int IndexForPEGI { get { return indexInPool;  } set { indexInPool = value; } }
+        public Base_Node myLastLinkedNode;
+
+        private int _indexInPool;
+        public int IndexForPEGI { get { return _indexInPool;  } set { _indexInPool = value; } }
 
 
         #if PEGI
 
         public override bool PEGI_inList(IList list, int ind, ref int edited) {
 
-            bool changed = ActiveConfig.PEGI_inList(list, ind, ref edited);
+            var changed = ActiveConfig.PEGI_inList(list, ind, ref edited);
 
-            if (coverImage)
-                this.ClickHighlight(coverImage);
+            if (_coverImage)
+                this.ClickHighlight(_coverImage);
             else
                 this.ClickHighlight();
 
@@ -92,7 +94,7 @@ namespace NodeNotes_Visual {
                 if (fadePortion < 0.1f)
                 {
                     newText = null;
-                    activeTextAlpha = 1;
+                    _activeTextAlpha = 1;
                     ActiveText.text = value;
                     gameObject.name = value;
                     PassiveText.text = "";
@@ -103,15 +105,15 @@ namespace NodeNotes_Visual {
             }
         }
 
-        LoopLock loopLock = new LoopLock();
+        readonly LoopLock _loopLock = new LoopLock();
 
         //int showDependencies = false;
         public override bool Inspect() {
 
-            bool changed = false;
+            var changed = false;
      
-            if (loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
-                using (loopLock.Lock()) {
+            if (_loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
+                using (_loopLock.Lock()) {
                     if (source.Try_Nested_Inspect().changes(ref changed)) {
                         if (name != source.name)
                             NameForPEGI = source.name;
@@ -128,7 +130,7 @@ namespace NodeNotes_Visual {
 
                 if (source != null)
                 {
-                    var enabled = source.Conditions_isEnabled();
+                    var conditionPassed = source.Conditions_isEnabled();
 
                     var nd = source.AsNode;
 
@@ -141,8 +143,8 @@ namespace NodeNotes_Visual {
                             Shortcuts.CurrentNode = nd;
                     }
 
-                    if ((enabled ? icon.Active : icon.InActive).Click("Try Force Active conditions to {0}".F(!enabled)) && !source.TryForceEnabledConditions(Values.global,!enabled))
-                        Debug.Log("No Conditions to force to {0}".F(!enabled));
+                    if ((conditionPassed ? icon.Active : icon.InActive).Click("Try Force Active conditions to {0}".F(!conditionPassed)) && !source.TryForceEnabledConditions(Values.global,!conditionPassed))
+                        Debug.Log("No Conditions to force to {0}".F(!conditionPassed));
 
                     if (IsCurrent) {
                         source.name.write(PEGI_Styles.ListLabel);
@@ -152,12 +154,12 @@ namespace NodeNotes_Visual {
                         
                     }
                     else
-                        source.name.write("Lerp parameter {0}".F(dominantParameter), enabled ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
+                        source.name.write("Lerp parameter {0}".F(dominantParameter), conditionPassed ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
                 }
 
                 pegi.nl();
 
-                if (circleRendy)
+                if (circleRenderer)
                 {
                     if (!onPlayScreen) {
                         if (newText != null)
@@ -180,8 +182,8 @@ namespace NodeNotes_Visual {
                     var altVis = PossibleOverrideVisualConfig;
                     var act = ActiveConfig;
 
-                    if (altVis != nodeActive_Default_Visuals) {
-                        if ("Override visuals for {0}".F(altVis == nodeInactiveVisuals ? "Disabled" : "Entered")
+                    if (altVis != _nodeActiveDefaultVisuals) {
+                        if ("Override visuals for {0}".F(altVis == _nodeInactiveVisuals ? "Disabled" : "Entered")
                             .toggleIcon(ref altVis.enabled).nl()) {
                             if (altVis.enabled)
                                 altVis.Decode(act.Encode().ToString());
@@ -194,59 +196,59 @@ namespace NodeNotes_Visual {
                 if (!onPlayScreen) {
                     pegi.nl();
 
-                    var seeDeps = "Dependencies".enter(ref inspectedStuff, 3).nl();
+                    var seeDependencies = "Dependencies".enter(ref inspectedStuff, 3).nl();
 
-                    if (!textA || seeDeps)
+                    if (!textA || seeDependencies)
                         "Text A".edit(ref textA).nl();
 
-                    if (!textB || seeDeps)
+                    if (!textB || seeDependencies)
                         "Text B".edit(ref textB).nl();
 
-                    if (!circleRendy || seeDeps)
-                        "Mesh Renderer".edit(ref circleRendy).nl();
+                    if (!circleRenderer || seeDependencies)
+                        "Mesh Renderer".edit(ref circleRenderer).nl();
 
-                    if (!colly || seeDeps)
-                        "Collider".edit(ref colly).nl();
+                    if (!circleCollider || seeDependencies)
+                        "Collider".edit(ref circleCollider).nl();
                 }
 
                 if (inspectedStuff == -1) {
 
-                    if (imageIndex != -1) {
+                    if (_imageIndex != -1) {
                         if (!pegi.paintingPlayAreaGui)
-                            "Downloading {0} [1]".F(imageURL, imageIndex).write();
+                            "Downloading {0} [1]".F(imageUrl, _imageIndex).write();
                     }  else  {
-                        if ("Image".edit("Will not be saved", 40, ref coverImage).nl())
+                        if ("Image".edit("Will not be saved", 40, ref _coverImage).nl())
                             SetImage();
                         
-                        var shortUrl = imageURL.SimplifyDirectory(); 
+                        var shortUrl = imageUrl.SimplifyDirectory(); 
 
                         var reload = false;
 
                         var changedUrl = "Paste URL".edit(90, ref shortUrl).changes(ref changed);
                         if (changedUrl && (shortUrl.Length > 8 || shortUrl.Length == 0)) {
                                 reload = true;
-                                imageURL = shortUrl;
+                                imageUrl = shortUrl;
                         }
 
-                        reload |= (imageURL.Length > 8 && icon.Refresh.Click().changes(ref changed));
+                        reload |= (imageUrl.Length > 8 && icon.Refresh.Click().changes(ref changed));
 
                         if (reload)
                             LoadCoverImage();
 
                         pegi.nl();
                     
-                        if (coverImage) {
+                        if (_coverImage) {
 
-                            if ("Img Mode".editEnum(50, ref mode).nl())
+                            if ("Img Mode".editEnum(50, ref _mode).nl())
                                 SetImage();
 
-                        if (mode == ImageMode.tile)
-                            "Image Scale".edit(70, ref imageScaling, 1, 10).nl(ref changed);
+                        if (_mode == ImageMode.Tile)
+                            "Image Scale".edit(70, ref _imageScaling, 1, 10).nl(ref changed);
                         else
-                            "Hide Label".toggleIcon(ref hideLabel).nl(ref changed);
+                            "Hide Label".toggleIcon(ref _hideLabel).nl(ref changed);
 
                             if (!pegi.paintingPlayAreaGui)
-                                coverImage.write(200); pegi.nl();
+                                _coverImage.write(200); pegi.nl();
 
                         }
                     }
@@ -257,7 +259,7 @@ namespace NodeNotes_Visual {
             if (changed)
             {
                 SetDirty();
-                sh_currentColor = ActiveConfig.targetColor;
+                _shCurrentColor = ActiveConfig.targetColor;
                 UpdateShaders();
             }
 
@@ -268,15 +270,15 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Visual Configuration
-        
-        NodeVisualConfig nodeActive_Default_Visuals = new NodeVisualConfig();
-        NodeVisualConfig nodeEnteredVisuals = new NodeVisualConfig();
-        NodeVisualConfig nodeInactiveVisuals = new NodeVisualConfig();
+
+        private NodeVisualConfig _nodeActiveDefaultVisuals = new NodeVisualConfig();
+        private NodeVisualConfig _nodeEnteredVisuals = new NodeVisualConfig();
+        private NodeVisualConfig _nodeInactiveVisuals = new NodeVisualConfig();
 
         NodeVisualConfig PossibleOverrideVisualConfig => 
-            (source == null ? nodeActive_Default_Visuals : (source.Conditions_isEnabled()
-               ? (IsCurrent ? nodeEnteredVisuals : nodeActive_Default_Visuals)
-                : nodeInactiveVisuals));
+            (source == null ? _nodeActiveDefaultVisuals : (source.Conditions_isEnabled()
+               ? (IsCurrent ? _nodeEnteredVisuals : _nodeActiveDefaultVisuals)
+                : _nodeInactiveVisuals));
 
         NodeVisualConfig ActiveConfig
         {
@@ -285,7 +287,7 @@ namespace NodeNotes_Visual {
                var vc = PossibleOverrideVisualConfig;
 
                 if (vc.IsDefault)
-                    vc = nodeActive_Default_Visuals;
+                    vc = _nodeActiveDefaultVisuals;
 
                 return vc;
             }
@@ -295,157 +297,141 @@ namespace NodeNotes_Visual {
         #endregion
         
         #region Lerping
-        
-        Color sh_currentColor;
-        Vector4 sh_square = Vector4.zero;
-        float sh_blur = 0;
 
-        LinkedLerp.MaterialFloat shadeCourners;
-        LinkedLerp.MaterialFloat shadeSelected;
-        LinkedLerp.MaterialFloat textureFadeIn;
-        LinkedLerp.Transform_LocalPosition localPos;
-        LinkedLerp.Transform_LocalScale localScale;
-        LinkedLerp.RendererMaterialTextureTransition texTrns;
+        private Color _shCurrentColor;
+        private Vector4 _shSquare = Vector4.zero;
+        private float _shBlur;
 
-        public void Portion(LerpData ld)  {
+        private LinkedLerp.MaterialFloat _shadeCorners;
+        private LinkedLerp.MaterialFloat _shadeSelected;
+        private LinkedLerp.MaterialFloat _textureFadeIn;
+        private LinkedLerp.TransformLocalPosition _localPos;
+        private LinkedLerp.TransformLocalScale _localScale;
+        private LinkedLerp.RendererMaterialTextureTransition _texTransition;
 
-                if (gameObject.activeSelf && !lerpsFinished && (this != dragging)) {
-                    var ac = ActiveConfig;
+        private bool includedInLerp;
 
-                    if (!isFading || !fadingRelation)
-                        localPos.targetValue = ac.targetLocalPosition;
-                    else if (!fadingIntoParent)
-                            localPos.targetValue = fadingRelation.transform.localPosition
-                                + (transform.localPosition - fadingRelation.transform.localPosition).normalized * 50;
-                    else
-                            localPos.targetValue = fadingRelation.transform.localPosition;
-                    
-                    localPos.Portion(ld);
+        public void Portion(LerpData ld) {
 
-                    localScale.targetValue = ac.targetSize;
+            includedInLerp = (gameObject.activeSelf && !lerpsFinished && this != _dragging);
 
-                    localScale.Portion(ld);
+            if  (!includedInLerp) return;
+            
+            var ac = ActiveConfig;
 
-                    if (12f.SpeedToMinPortion(ac.targetColor.DistanceRGB(sh_currentColor), ref ld.linkedPortion))
-                        dominantParameter = "color";
-
-                    if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref ld.linkedPortion))
-                        dominantParameter = "fade";
-
-                    if (8f.SpeedToMinPortion(1 - activeTextAlpha, ref ld.linkedPortion))
-                        dominantParameter = "text Alpha";
-
-                    textureFadeIn.targetValue = coverImage ? 1 : 0;
-                    textureFadeIn.Portion(ld);
-
-                    shadeCourners.targetValue = (this == dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
-                    shadeCourners.Portion(ld);
-
-                    shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
-                    shadeSelected.Portion(ld);
-
-                    texTrns.Portion(ld);
-                }
+            if (!isFading || !_fadingRelation)
+                _localPos.targetValue = ac.targetLocalPosition;
+            else if (!_fadingIntoParent)
+                _localPos.targetValue = _fadingRelation.transform.localPosition
+                                        + (transform.localPosition - _fadingRelation.transform.localPosition).normalized * 50;
+            else
+                _localPos.targetValue = _fadingRelation.transform.localPosition;
                 
+            _localPos.Portion(ld);
+
+            _localScale.targetValue = ac.targetSize;
+
+            _localScale.Portion(ld);
+
+            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRGB(_shCurrentColor), ref ld.linkedPortion))
+                dominantParameter = "color";
+
+            if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref ld.linkedPortion))
+                dominantParameter = "fade";
+
+            if (8f.SpeedToMinPortion(1 - _activeTextAlpha, ref ld.linkedPortion))
+                dominantParameter = "text Alpha";
+
+            _textureFadeIn.targetValue = _coverImage ? 1 : 0;
+            _textureFadeIn.Portion(ld);
+
+            _shadeCorners.targetValue = (this == _dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
+            _shadeCorners.Portion(ld);
+
+            _shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
+            _shadeSelected.Portion(ld);
+
+            _texTransition.Portion(ld);
+
         }
 
         public void Lerp(LerpData ld, bool canTeleport = false) {
 
-            if (gameObject.activeSelf) {
+            if (!includedInLerp) return;
 
-                var ac = ActiveConfig;
+            var ac = ActiveConfig;
 
-                bool needShaderUpdate = false;
+            var needShaderUpdate = false;
 
-                if (!lerpsFinished && (this != dragging)) {
+            if (!lerpsFinished && (this != _dragging)) {
 
-                    needShaderUpdate = true;
+                needShaderUpdate = true;
 
-                    sh_blur = Mathf.Lerp(sh_blur, Mathf.Clamp01((transform.localPosition - localPos.targetValue).magnitude * 5), Time.deltaTime * 10);
+                _shBlur = Mathf.Lerp(_shBlur, Mathf.Clamp01((transform.localPosition - _localPos.targetValue).magnitude * 5), Time.deltaTime * 10);
 
-                    fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, ld.linkedPortion);
+                fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, ld.linkedPortion);
                     
-                    if (ld.linkedPortion == 1) {
+                if (ld.linkedPortion == 1) {
 
-                        if (!isFading) {
-                            ActiveConfig.targetSize = circleRendy.transform.localScale;
-                            ActiveConfig.targetLocalPosition = transform.localPosition;
-                        }
-
-                        lerpsFinished = true;
+                    if (!isFading) {
+                        ActiveConfig.targetSize = circleRenderer.transform.localScale;
+                        ActiveConfig.targetLocalPosition = transform.localPosition;
                     }
 
-                    var scale = localScale.Value;
-
-                    if (scale.x > 0)
-                        sh_square.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
-                    else sh_square.x = 0;
-                    if (scale.y > 0)
-                        sh_square.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
-                    else sh_square.y = 0;
-
-                    var textSize = new Vector2(17 + scale.x * 3, 5f + Mathf.Max(0, (scale.y - 1f) * 3f));
-
-                    textA.rectTransform.sizeDelta = textSize;
-                    textB.rectTransform.sizeDelta = textSize;
+                    lerpsFinished = true;
                 }
 
-                if (newText != null || activeTextAlpha < 1)
-                {
-                    if (newText == null)
-                        activeTextAlpha = Mathf.Lerp(activeTextAlpha, 1, ld.Portion(false));
-                    else
-                        activeTextAlpha = MyMath.Lerp_bySpeed(activeTextAlpha, 1, 4);
+                var scale = _localScale.Value;
 
-                    if (activeTextAlpha == 1 && newText != null)
-                    {
-                        activeTextIsA = !activeTextIsA;
-                        ActiveText.text = newText;
-                        gameObject.name = newText;
-                        activeTextAlpha = 0;
-                        newText = null;
-                    }
+                if (scale.x > 0)
+                    _shSquare.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
+                else _shSquare.x = 0;
+                if (scale.y > 0)
+                    _shSquare.y = scale.y > scale.x ? ((scale.y - scale.x) / scale.y) : 0;
+                else _shSquare.y = 0;
 
-                    needShaderUpdate = true;
-                }
+                var textSize = new Vector2(17 + scale.x * 3, 5f + Mathf.Max(0, (scale.y - 1f) * 3f));
 
-                ld.teleportPortion = (canJumpToPosition && fadePortion < 0.1f && !isFading) ? 1 : ld.linkedPortion;
-
-                sh_currentColor = Color.Lerp(sh_currentColor, ac.targetColor, ld.Portion(true));
-                localPos.Lerp(ld, true);
-                localScale.Lerp(ld, true);
-                shadeCourners.Lerp(ld, true);
-                shadeSelected.Lerp(ld, true);
-                textureFadeIn.Lerp(ld, true);
-                texTrns.Lerp(ld, true);
-
-                if (needShaderUpdate)
-                    UpdateShaders();
-
-                if (fadePortion == 0 && isFading && Application.isPlaying)
-                    Nodes_PEGI.Deactivate(this);
+                textA.rectTransform.sizeDelta = textSize;
+                textB.rectTransform.sizeDelta = textSize;
             }
+
+            if (newText != null || _activeTextAlpha < 1)
+            {
+                _activeTextAlpha = newText == null 
+                    ? Mathf.Lerp(_activeTextAlpha, 1, ld.Portion()) 
+                    : MyMath.Lerp_bySpeed(_activeTextAlpha, 1, 4);
+
+                if (_activeTextAlpha == 1 && newText != null)
+                {
+                    _activeTextIsA = !_activeTextIsA;
+                    ActiveText.text = newText;
+                    gameObject.name = newText;
+                    _activeTextAlpha = 0;
+                    newText = null;
+                }
+
+                needShaderUpdate = true;
+            }
+
+            ld.teleportPortion = (_canJumpToPosition && fadePortion < 0.1f && !isFading) ? 1 : ld.linkedPortion;
+
+            _shCurrentColor = Color.Lerp(_shCurrentColor, ac.targetColor, ld.Portion(true));
+            _localPos.Lerp(ld, false);
+            _localScale.Lerp(ld, true);
+            _shadeCorners.Lerp(ld, true);
+            _shadeSelected.Lerp(ld, true);
+            _textureFadeIn.Lerp(ld, true);
+            _texTransition.Lerp(ld, true);
+
+            if (needShaderUpdate)
+                UpdateShaders();
+
+            if (fadePortion == 0 && isFading && Application.isPlaying)
+                Nodes_PEGI.Deactivate(this);
         }
         
         public string dominantParameter;
-
-        void Update() {
-
-            UpdateCoverImage();
-
-            if (this == dragging) {
-                if (isFading || !Base_Node.editingNodes || !Input.GetMouseButton(0))
-                    dragging = null;
-                else  {
-                        Vector3 pos;
-                        if (upPlane.MouseToPlane(out pos)) {
-                            transform.localPosition = pos + dragOffset;
-                            ActiveConfig.targetLocalPosition = transform.localPosition;
-                        }
-                }
-                SetDirty();
-            }
-        }
 
         #endregion
 
@@ -453,7 +439,7 @@ namespace NodeNotes_Visual {
 
         public void SetStartPositionOn(NodeCircleController previous) {
 
-            canJumpToPosition = false;
+            _canJumpToPosition = false;
 
             if (previous && previous != this)
             {
@@ -462,45 +448,45 @@ namespace NodeNotes_Visual {
                     var vis = CurrentNode.visualRepresentation as NodeCircleController;
                     if (vis)
                     transform.localPosition = vis.transform.localPosition;
-                    circleRendy.transform.localScale = Vector3.one;
+                    circleRenderer.transform.localScale = Vector3.one;
                 }
                 else
                 {
                     transform.localPosition = ActiveConfig.targetLocalPosition + (ActiveConfig.targetLocalPosition - previous.transform.localPosition).normalized * 10f;
                    
-                    circleRendy.transform.localScale = ActiveConfig.targetSize * 2f;
+                    circleRenderer.transform.localScale = ActiveConfig.targetSize * 2f;
                 }
             }
-            else canJumpToPosition = true;
+            else _canJumpToPosition = true;
 
             SetDirty();
         }
-        
-        bool canJumpToPosition = false;
-        bool fadingIntoParent = false;
-        NodeCircleController fadingRelation;
+
+        private bool _canJumpToPosition;
+        private bool _fadingIntoParent;
+        private NodeCircleController _fadingRelation;
 
         public void SetFadeAwayRelation(NodeCircleController previous) {
             if (previous) {
 
                 if (previous != this) {
-                    fadingIntoParent = (CurrentNode != null ? CurrentNode.Contains(previous.myLastLinkedNode) : false)
+                    _fadingIntoParent = (CurrentNode?.Contains(previous.myLastLinkedNode) ?? false)
                        && myLastLinkedNode.parentNode == previous.myLastLinkedNode;  
 
-                    if (fadingIntoParent)
-                        fadingRelation = previous;
+                    if (_fadingIntoParent)
+                        _fadingRelation = previous;
                     else 
-                        fadingRelation = CurrentNode?.visualRepresentation as NodeCircleController;
+                        _fadingRelation = CurrentNode?.visualRepresentation as NodeCircleController;
 
                 } else
                 {
-                    fadingIntoParent = false;
-                    fadingRelation = CurrentNode?.visualRepresentation as NodeCircleController;
+                    _fadingIntoParent = false;
+                    _fadingRelation = CurrentNode?.visualRepresentation as NodeCircleController;
                 }
 
 
             }
-            else fadingRelation = null;
+            else _fadingRelation = null;
 
             SetDirty();
         }
@@ -510,14 +496,14 @@ namespace NodeNotes_Visual {
 
         public bool SetDirty() => lerpsFinished = false;
 
-        float fadePortion = 0;
+        float fadePortion;
 
-        void SetImage() {
-            var mat = circleRendy.MaterialWhatever();
+        private void SetImage() {
+            var mat = circleRenderer.MaterialWhatever();
 
-            texTrns.TargetTexture = coverImage;
+            _texTransition.TargetTexture = _coverImage;
 
-            if (mode == ImageMode.fit)
+            if (_mode == ImageMode.Fit)
                 mat.EnableKeyword("_CLAMP");
             else
                 mat.DisableKeyword("_CLAMP");
@@ -525,101 +511,125 @@ namespace NodeNotes_Visual {
             SetDirty();
         }
 
-        void UpdateCoverImage() {
+        private void UpdateCoverImage() {
 
-            if (imageIndex != -1) {
-                if (Mgmt.textureDownloader.TryGetTexture(imageIndex, out coverImage)) {
+            if (_imageIndex != -1 && Mgmt.textureDownloader.TryGetTexture(_imageIndex, out _coverImage)) {
                     SetImage();
-                    imageIndex = -1;
+                    _imageIndex = -1;
                     SetDirty();
-                }
+                
             } 
         }
 
-        void UpdateShaders() {
+        private void UpdateShaders() {
             if (textB && textA) {
 
-                float textFadePortion = (hideLabel ? (1 - textureFadeIn.Value) : 1f) * fadePortion;
+                var textFadePortion = (_hideLabel ? (1 - _textureFadeIn.Value) : 1f) * fadePortion;
 
-                ActiveText.color = new Color(0, 0, 0, activeTextAlpha * textFadePortion);
-                PassiveText.color = new Color(0, 0, 0, (1 - activeTextAlpha) * textFadePortion);
+                ActiveText.color = new Color(0, 0, 0, _activeTextAlpha * textFadePortion);
+                PassiveText.color = new Color(0, 0, 0, (1 - _activeTextAlpha) * textFadePortion);
             }
 
-            if (circleRendy) {
-                sh_currentColor.a = fadePortion;
+            if (circleRenderer) {
+                _shCurrentColor.a = fadePortion;
 
                 var pos = Camera.main.WorldToScreenPoint(transform.position).ToVector2();
                 pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
 
-                var mat = circleRendy.MaterialWhatever();
+                var mat = circleRenderer.MaterialWhatever();
 
-                mat.Set(projPos, pos.ToVector4(imageScaling));
-                mat.Set(mcolor, sh_currentColor);
-                mat.Set(stretch, sh_square);
-                mat.Set(blur, sh_blur);
+                mat.Set(_projPos, pos.ToVector4(_imageScaling));
+                mat.Set(_color, _shCurrentColor);
+                mat.Set(_stretch, _shSquare);
+                mat.Set(_blur, _shBlur);
 
             }
         }
 
-        ShaderProperty.ColorValue mcolor = new ShaderProperty.ColorValue("_Color");
-        ShaderProperty.VectorValue projPos = new ShaderProperty.VectorValue("_ProjTexPos");
-        ShaderProperty.VectorValue stretch = new ShaderProperty.VectorValue("_Stretch");
-        ShaderProperty.FloatValue blur = new ShaderProperty.FloatValue("_Blur");
+        private readonly ShaderProperty.ColorValue _color = new ShaderProperty.ColorValue("_Color");
+        private readonly ShaderProperty.VectorValue _projPos = new ShaderProperty.VectorValue("_ProjTexPos");
+        private readonly ShaderProperty.VectorValue _stretch = new ShaderProperty.VectorValue("_Stretch");
+        private readonly ShaderProperty.FloatValue _blur = new ShaderProperty.FloatValue("_Blur");
 
-        static NodeCircleController dragging = null;
-        Vector3 dragOffset = Vector3.zero;
-        static Plane upPlane = new Plane(Vector3.up, Vector3.zero);
+        static NodeCircleController _dragging;
+        Vector3 _dragOffset = Vector3.zero;
+        private static readonly Plane UpPlane = new Plane(Vector3.up, Vector3.zero);
         public void TryDragAndDrop()
         {
-            if (dragging == null && Input.GetMouseButtonDown(0)) {
+            if (_dragging) return;
 
+            if (Input.GetMouseButtonDown(0))
+            {
                 var gn = source.AsGameNode;
 
                 if (gn != null)
                     Shortcuts.visualLayer.FromNodeToGame(gn);
-                else 
+                else
                     Nodes_PEGI.nodeMgmtInstPegi.SetSelected(this);
 
                 Vector3 pos;
-                if (upPlane.MouseToPlane(out pos))  {
-                    dragging = this;
-                    dragOffset =  transform.position - pos;
+                if (UpPlane.MouseToPlane(out pos))
+                {
+                    _dragging = this;
+                    _dragOffset = transform.position - pos;
                 }
             }
         }
 
-        public void OnMouseOver() {
-            if (!isFading) {
-                if (Base_Node.editingNodes)
-                    TryDragAndDrop();
-                else
-                      if (source != null)
-                    source.OnMouseOver();
+        private void Update()
+        {
+
+            UpdateCoverImage();
+
+            if (this != _dragging) return;
+
+            if (isFading || !Base_Node.editingNodes || !Input.GetMouseButton(0))
+                _dragging = null;
+            else
+            {
+                Vector3 pos;
+                if (UpPlane.MouseToPlane(out pos))
+                {
+                    transform.localPosition = pos + _dragOffset;
+                    ActiveConfig.targetLocalPosition = transform.localPosition;
+                }
             }
+            SetDirty();
+        }
+
+
+        public void OnMouseOver()
+        {
+            if (isFading) return;
+
+            if (Base_Node.editingNodes)
+                TryDragAndDrop();
+            else
+                source?.OnMouseOver();
         }
 
         #endregion
         
         #region Encode & Decode
         public override void Decode(string data)   {
-            if (this == dragging)
-                dragging = null;
+            if (this == _dragging)
+                _dragging = null;
 
             SetDirty();
 
             background = "";
             backgroundConfig = "";
-            imageURL = "";
-            imageIndex -= 1;
-            coverImage = null;
-            hideLabel = false;
+            imageUrl = "";
+            _imageIndex -= 1;
+            _coverImage = null;
+            _hideLabel = false;
 
-            nodeEnteredVisuals = new NodeVisualConfig();
-            nodeActive_Default_Visuals = new NodeVisualConfig
+            _nodeEnteredVisuals = new NodeVisualConfig();
+            _nodeActiveDefaultVisuals = new NodeVisualConfig
             {
                 enabled = true
             };
-            nodeInactiveVisuals = new NodeVisualConfig();
+            _nodeInactiveVisuals = new NodeVisualConfig();
 
             base.Decode(data);
 
@@ -629,15 +639,15 @@ namespace NodeNotes_Visual {
 
         public override bool Decode(string tg, string data)   {
             switch (tg)   {
-                case "expVis": data.DecodeInto(out nodeEnteredVisuals); break;
-                case "subVis": data.DecodeInto(out nodeActive_Default_Visuals); break;
-                case "disVis": data.DecodeInto(out nodeInactiveVisuals); break;
+                case "expVis": data.DecodeInto(out _nodeEnteredVisuals); break;
+                case "subVis": data.DecodeInto(out _nodeActiveDefaultVisuals); break;
+                case "disVis": data.DecodeInto(out _nodeInactiveVisuals); break;
                 case "bg": background = data; break;
                 case "bg_cfg": backgroundConfig = data; break;
-                case "URL": imageURL = data; break;
-                case "imgScl": imageScaling = data.ToFloat(); break;
-                case "imgMd": mode = (ImageMode)data.ToInt(); break;
-                case "hidTxt": hideLabel = data.ToBool(); break; 
+                case "URL": imageUrl = data; break;
+                case "imgScl": _imageScaling = data.ToFloat(); break;
+                case "imgMd": _mode = (ImageMode)data.ToInt(); break;
+                case "hidTxt": _hideLabel = data.ToBool(); break; 
                 default: return false;
             }
 
@@ -647,22 +657,22 @@ namespace NodeNotes_Visual {
         public override StdEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
-                .Add("subVis", nodeActive_Default_Visuals)
-                .Add_IfNotDefault("disVis", nodeInactiveVisuals)
+                .Add("subVis", _nodeActiveDefaultVisuals)
+                .Add_IfNotDefault("disVis", _nodeInactiveVisuals)
                 .Add_IfNotEmpty("bg", background)
                 .Add_IfNotEmpty("bg_cfg", backgroundConfig)
-                .Add_IfNotEmpty("URL", imageURL);
+                .Add_IfNotEmpty("URL", imageUrl);
 
-            if (imageURL.Length > 0) {
-                cody.Add("imgMd", (int)mode);
-                if (mode == ImageMode.tile) 
-                    cody.Add("imgScl", imageScaling);
+            if (imageUrl.Length > 0) {
+                cody.Add("imgMd", (int)_mode);
+                if (_mode == ImageMode.Tile) 
+                    cody.Add("imgScl", _imageScaling);
                         else
-                    cody.Add_IfTrue("hidTxt", hideLabel);
+                    cody.Add_IfTrue("hidTxt", _hideLabel);
             }
 
             if (source.AsNode != null)
-                cody.Add_IfNotDefault("expVis", nodeEnteredVisuals); 
+                cody.Add_IfNotDefault("expVis", _nodeEnteredVisuals); 
 
             return cody;
         }
@@ -682,8 +692,8 @@ namespace NodeNotes_Visual {
             NameForPEGI = source.name;
             isFading = false;
             gameObject.SetActive(true);
-            if (colly)
-                colly.enabled = true;
+            if (circleCollider)
+                circleCollider.enabled = true;
         }
 
         public void Unlink()
@@ -696,23 +706,23 @@ namespace NodeNotes_Visual {
        
                 isFading = true;
 
-            if (colly)
-                colly.enabled = false;
+            if (circleCollider)
+                circleCollider.enabled = false;
         }
 
         private void OnEnable() {
 
             if (Application.isEditor) {
-                if (!circleRendy)
-                    circleRendy = GetComponent<MeshRenderer>();
+                if (!circleRenderer)
+                    circleRenderer = GetComponent<MeshRenderer>();
             }
 
-            shadeCourners = new LinkedLerp.MaterialFloat("_Courners", 0, 4, circleRendy);
-            shadeSelected = new LinkedLerp.MaterialFloat("_Selected", 0, 4, circleRendy);
-            textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10, circleRendy);
-            localPos = new LinkedLerp.Transform_LocalPosition(transform, 50);
-            localScale = new LinkedLerp.Transform_LocalScale(circleRendy.transform, 40);
-            texTrns = new LinkedLerp.RendererMaterialTextureTransition(circleRendy, 1);
+            _shadeCorners = new LinkedLerp.MaterialFloat("_Courners", 0, 4, circleRenderer);
+            _shadeSelected = new LinkedLerp.MaterialFloat("_Selected", 0, 4, circleRenderer);
+            _textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10, circleRenderer);
+            _localPos = new LinkedLerp.TransformLocalPosition(transform, 50);
+            _localScale = new LinkedLerp.TransformLocalScale(circleRenderer.transform, 40);
+            _texTransition = new LinkedLerp.RendererMaterialTextureTransition(circleRenderer, 1);
 
         }
 
@@ -729,7 +739,7 @@ namespace NodeNotes_Visual {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
-        public bool enabled = false;
+        public bool enabled;
 
         #region Encode & Decode
         public override bool IsDefault => !enabled;
@@ -769,13 +779,13 @@ namespace NodeNotes_Visual {
 
         public override bool Inspect() {
 
-            bool changed = false;
+            var changed = false;
 
-            float x = targetSize.x;
+            var x = targetSize.x;
             if ("Width".edit(50, ref x, 1f, 15f).nl(ref changed))  
                 targetSize.x = x;
             
-            float y = targetSize.y;
+            var y = targetSize.y;
             if ("Height".edit(50, ref y, 1f, 15f).nl(ref changed)) 
                 targetSize.y = y;
             
