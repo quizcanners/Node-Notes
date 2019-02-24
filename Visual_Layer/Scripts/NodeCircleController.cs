@@ -292,8 +292,7 @@ namespace NodeNotes_Visual {
                 return vc;
             }
         }
-
-
+        
         #endregion
         
         #region Lerping
