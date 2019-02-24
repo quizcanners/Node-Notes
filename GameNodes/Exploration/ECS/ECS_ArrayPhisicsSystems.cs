@@ -10,6 +10,7 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace NodeNotes_Visual.ECS {
 
+    /*
     [ExecuteInEditMode]
     public class ECS_WeightlessObjects : JobComponentSystem {
 
@@ -53,9 +54,7 @@ namespace NodeNotes_Visual.ECS {
             return inputDeps;
         }
     }
-
-
- 
+    
     [ExecuteInEditMode]
     public class ECS_ObjectsToArray : JobComponentSystem {
 
@@ -107,7 +106,7 @@ namespace NodeNotes_Visual.ECS {
             previousPositions = new NativeArray<int>(size, Allocator.Persistent);
             currentPositions = new NativeArray<int>(size, Allocator.Persistent);
             staticPositions = new NativeArray<int>(size, Allocator.Persistent);
-            Debug.Log("Creating phisics array: {0}".F(size));
+          //  Debug.Log("Creating phisics array: {0}".F(size));
 
             base.OnCreateManager();
         }
@@ -118,5 +117,5 @@ namespace NodeNotes_Visual.ECS {
             staticPositions.Dispose();
         }
     }
-
+    */
 }
