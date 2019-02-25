@@ -13,6 +13,8 @@ namespace NodeNotes_Visual {
 
         public InteractionBranch interactionBranch = new InteractionBranch();
 
+        public static DialogueNode inspected;
+        
         #region Encode & Decode
         public override StdEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
@@ -34,7 +36,6 @@ namespace NodeNotes_Visual {
 
         protected override string GameNodeTypeName => "Dialogue";
 
-        public static DialogueNode inspected;
 
         protected override bool InspectGameNode() {
             inspected = this;

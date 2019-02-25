@@ -86,8 +86,7 @@ namespace NodeNotes_Visual {
         public string NameForPEGI
         {
             get { return referenceName; }
-            set
-            {
+            set {
                 if (renameLinkedReferences && DialogueNode.inspected != null)
                     DialogueNode.inspected.interactionBranch.RenameReferance(referenceName, value);
                 referenceName = value;
