@@ -520,6 +520,18 @@ namespace NodeNotes_Visual {
             } 
         }
 
+        private static Camera _mainCam;
+
+        private static Camera MainCam {
+            get
+            {
+                if (!_mainCam)
+                    _mainCam = Camera.main;
+                return _mainCam;
+            }
+        }
+
+
         private void UpdateShaders() {
             if (textB && textA) {
 
@@ -531,8 +543,8 @@ namespace NodeNotes_Visual {
 
             if (circleRenderer) {
                 _shCurrentColor.a = fadePortion;
-
-                var pos = Camera.main.WorldToScreenPoint(transform.position).ToVector2();
+                
+                var pos = MainCam.WorldToScreenPoint(transform.position).ToVector2();
                 pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
 
                 var mat = circleRenderer.MaterialWhatever();
@@ -567,7 +579,7 @@ namespace NodeNotes_Visual {
                     Nodes_PEGI.nodeMgmtInstPegi.SetSelected(this);
 
                 Vector3 pos;
-                if (UpPlane.MouseToPlane(out pos))
+                if (UpPlane.MouseToPlane(out pos, MainCam))
                 {
                     _dragging = this;
                     _dragOffset = transform.position - pos;
@@ -587,7 +599,7 @@ namespace NodeNotes_Visual {
             else
             {
                 Vector3 pos;
-                if (UpPlane.MouseToPlane(out pos))
+                if (UpPlane.MouseToPlane(out pos, MainCam))
                 {
                     transform.localPosition = pos + _dragOffset;
                     ActiveConfig.targetLocalPosition = transform.localPosition;

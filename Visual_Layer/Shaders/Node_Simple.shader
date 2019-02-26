@@ -50,14 +50,6 @@
 				float4 _ProjTexPos;
 				float4 _Color;
 
-				float4 l0pos;
-				float4 l0col;
-				float4 l1pos;
-				float4 l1col;
-				float4 l2pos;
-				float4 l2col;
-				float4 l3pos;
-				float4 l3col;
 				float _Courners;
 				float4 _Stretch;
 				float _Blur;
@@ -96,20 +88,6 @@
 					#endif
 
 					return o;
-				}
-
-
-				inline void PointLightTransparent(inout float3 directLight, float3 vec, float3 viewDir, float4 lcol, float alpha){
-
-					float len = length(vec);
-					vec /= len;
-
-					float dott = abs(dot(viewDir, vec));
-
-					float power = pow(dott, 8 * (1 + alpha));
-
-					directLight += lcol.rgb*power;
-
 				}
 
 				float4 frag(v2f i) : COLOR{

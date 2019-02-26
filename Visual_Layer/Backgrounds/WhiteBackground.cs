@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PlayerAndEditorGUI;
@@ -53,16 +54,28 @@ namespace NodeNotes_Visual {
 
         public override bool TryFadeIn() => isFading = false;
 
+        [NonSerialized] private Camera _mainCam;
+
+        private Camera MainCam
+        {
+            get
+            {
+                if (!_mainCam)
+                    _mainCam = Camera.main;
+                return _mainCam;
+            }
+        }
+
         // Update is called once per frame
         void Update()
         {
+            if (isFading) return;
 
-            if (!isFading && Camera.main) {
+            if (!MainCam) return;
 
-                var col = Camera.main.backgroundColor;
+            var col = _mainCam.backgroundColor;
 
-                Camera.main.backgroundColor = MyMath.Lerp_bySpeed(col, Color.white, 3);
-            }
+            _mainCam.backgroundColor = col.Lerp_bySpeed(Color.white, 3);
 
         }
     }
