@@ -75,7 +75,7 @@ namespace NodeNotes_Visual {
 
             var col = _mainCam.backgroundColor;
 
-            _mainCam.backgroundColor = col.Lerp_bySpeed(Color.white, 3);
+            _mainCam.backgroundColor = col.LerpBySpeed(Color.white, 3);
 
         }
     }

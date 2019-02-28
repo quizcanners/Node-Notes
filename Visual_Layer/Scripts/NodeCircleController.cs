@@ -332,7 +332,7 @@ namespace NodeNotes_Visual {
 
             _localScale.Portion(ld);
 
-            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRGB(_shCurrentColor), ref ld.linkedPortion))
+            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(_shCurrentColor), ref ld.linkedPortion))
                 dominantParameter = "color";
 
             if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref ld.linkedPortion))
@@ -399,7 +399,7 @@ namespace NodeNotes_Visual {
             {
                 _activeTextAlpha = newText == null 
                     ? Mathf.Lerp(_activeTextAlpha, 1, ld.Portion()) 
-                    : MyMath.Lerp_bySpeed(_activeTextAlpha, 1, 4);
+                    : MyMath.LerpBySpeed(_activeTextAlpha, 1, 4);
 
                 if (_activeTextAlpha == 1 && newText != null)
                 {
