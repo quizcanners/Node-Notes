@@ -68,11 +68,11 @@ namespace NodeNotes_Visual {
         protected override bool InspectGameNode() {
             var changed = false;
 
-            "Prefabs".enter_List_UObj(ref monoBehaviourPrefabs,ref inspectedPrefab , ref inspectedGameNodeStuff, 0).nl(ref changed);
+            "Prefabs".enter_List_UObj(ref monoBehaviourPrefabs,ref inspectedPrefab , ref inspectedGameNodeItems, 0).nl(ref changed);
 
-            instancesMeta.enter_List(ref instances, ref inspectedGameNodeStuff, 1).nl(ref changed);
+            instancesMeta.enter_List(ref instances, ref inspectedGameNodeItems, 1).nl(ref changed);
 
-            if ("Entity Manager".enter(ref inspectedGameNodeStuff, 2).nl())
+            if ("Entity Manager".enter(ref inspectedGameNodeItems, 2).nl())
                 NodeNotesECSManager.Inspect();
 
             return changed;
@@ -185,7 +185,7 @@ namespace NodeNotes_Visual {
 
             Component_STD_Abstract.inspectedEntity = instance;
 
-            if (componentsMeta.enter_List(ref entityComponents, ref inspectedStuff, 1).nl(ref changed)) {
+            if (componentsMeta.enter_List(ref entityComponents, ref inspectedItems, 1).nl(ref changed)) {
 
                 var narch = entityComponents.ToArchetype();
 

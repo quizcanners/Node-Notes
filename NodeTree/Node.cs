@@ -153,7 +153,7 @@ namespace NodeNotes {
             if (Application.isPlaying)
                 return false;
 
-            if (inspectedStuff == -1 && !InspectingTriggerStuff) {
+            if (inspectedItems == -1 && !InspectingTriggerItems) {
 
                 if (InspectingSubNode){
                     var n = coreNodes.TryGet(_coreNodesMeta);
@@ -195,7 +195,7 @@ namespace NodeNotes {
 
                 _gamesNodesMeta.Inspecting = false;
 
-                var ngn = _gamesNodesMeta.enter_List(ref gameNodes, ref inspectedStuff, 7, GameNodeBase.all, ref changed);
+                var ngn = _gamesNodesMeta.enter_List(ref gameNodes, ref inspectedItems, 7, GameNodeBase.all, ref changed);
                 
                 pegi.nl_ifFoldedOut();
 
@@ -211,9 +211,9 @@ namespace NodeNotes {
             var changed = false;
             
             if (InspectingSubNode)
-                inspectedStuff = -1;
+                inspectedItems = -1;
             
-            if (!InspectingSubNode && inspectedStuff ==-1)  {
+            if (!InspectingSubNode && inspectedItems ==-1)  {
                 if (this != CurrentNode) {
                     if (icon.Play.Click("Enter Node"))
                         CurrentNode = this;

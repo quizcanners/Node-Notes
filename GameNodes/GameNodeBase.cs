@@ -98,13 +98,13 @@ namespace NodeNotes {
         protected virtual string ExitResultRole => "On Exit";
 
         public override void ResetInspector() {
-            inspectedGameNodeStuff = -1;
+            inspectedGameNodeItems = -1;
             _editedExitResult = -1;
 
             base.ResetInspector();
         }
 
-        protected int inspectedGameNodeStuff = -1;
+        protected int inspectedGameNodeItems = -1;
         private int _editedExitResult = -1;
 
         private readonly LoopLock _inspectLoopLock = new LoopLock();
@@ -127,11 +127,11 @@ namespace NodeNotes {
                 changed |= base.Inspect();
 
                 if (showLogic)
-                    ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref inspectedStuff, 7, ref changed).SetLastUsedTrigger();
+                    ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref inspectedItems, 7, ref changed).SetLastUsedTrigger();
                         
                 pegi.nl_ifNotEntered();
 
-                if (GameNodeTypeName.enter(ref inspectedStuff, 8).nl_ifNotEntered())
+                if (GameNodeTypeName.enter(ref inspectedItems, 8).nl_ifNotEntered())
                     InspectGameNode();
 
             }
@@ -161,13 +161,13 @@ namespace NodeNotes {
             .Add("b", base.Encode)
             .Add_String("unrecGN", "test")
             .Add_IfNotEmpty("exit", _onExitResults)
-            .Add_IfNotNegative("ign", inspectedGameNodeStuff);
+            .Add_IfNotNegative("ign", inspectedGameNodeItems);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "exit": data.Decode_List(out _onExitResults); break;
-                case "ign": inspectedGameNodeStuff = data.ToInt(); break;
+                case "ign": inspectedGameNodeItems = data.ToInt(); break;
                 default: return false;
             }
             return true;

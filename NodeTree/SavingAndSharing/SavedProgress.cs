@@ -205,9 +205,9 @@ namespace NodeNotes
             else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
             
-            marksMeta.enter_List(ref bookMarks, ref inspectedStuff, 0).nl_ifNotEntered(ref changed);
+            marksMeta.enter_List(ref bookMarks, ref inspectedItems, 0).nl_ifNotEntered(ref changed);
 
-            "Values ".enter_Inspect(Values.global, ref inspectedStuff, 1).changes(ref changed);
+            "Values ".enter_Inspect(Values.global, ref inspectedItems, 1).changes(ref changed);
 
             if (pegi.IsFoldedOut && Values.global.CountForInspector>0 &&  icon.Delete.Click("Reset all triggers"))
                 Values.global.Clear();

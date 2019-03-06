@@ -45,7 +45,7 @@ namespace NodeNotes_Visual
 
             bool changed = false;
 
-            if (inspectedStuff == -1 && !Application.isPlaying)
+            if (inspectedItems == -1 && !Application.isPlaying)
                 "Back Plane".edit(ref backPlane).nl();
 
             if ("Speed".edit(60, ref lerpSpeed).nl(ref changed)) {

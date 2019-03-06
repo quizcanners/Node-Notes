@@ -58,7 +58,7 @@ namespace NodeNotes {
         static readonly string _usersFolder = "Users";
 
         void LoadUser(string uname) {
-            StuffLoader.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
+            FileLoaderUtils.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
             _tmpUserName = uname;
         }
 
@@ -75,7 +75,7 @@ namespace NodeNotes {
         }
         
         void DeleteUser_File(string uname) {
-            StuffDeleter.DeleteFile_PersistentFolder(_usersFolder, uname);
+            FileDeleterUtils.DeleteFile_PersistentFolder(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -120,16 +120,16 @@ namespace NodeNotes {
             return book as NodeBook;
         }
 
-        static readonly string _generalStuffFolder = "General";
+        static readonly string _generalItemsFolder = "General";
 
-        static readonly string _generalStuffFile = "config";
+        static readonly string _generalItemsFile = "config";
 
-        public bool LoadAll() => this.LoadFromPersistentPath(_generalStuffFolder, _generalStuffFile);
+        public bool LoadAll() => this.LoadFromPersistentPath(_generalItemsFolder, _generalItemsFile);
 
         public void SaveAll()
         {
             SaveUser();
-            StuffSaver.SaveToPersistentPath(_generalStuffFolder, _generalStuffFile, Encode().ToString());
+            FileSaverUtils.SaveToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
         public static void AddOrReplace(NodeBook nb) {
@@ -178,7 +178,7 @@ namespace NodeNotes {
 
               //  changed |= base.Inspect();
 
-                if (inspectedStuff == -1)
+                if (inspectedItems == -1)
                 {
                     if (users.Count > 1 && icon.Delete.Click("Delete User"))
                         DeleteUser();
@@ -191,10 +191,10 @@ namespace NodeNotes {
                     }
                 }
 
-                if (icon.Enter.enter(ref inspectedStuff, 4, "Inspect user"))
+                if (icon.Enter.enter(ref inspectedItems, 4, "Inspect user"))
                     changed |= user.Nested_Inspect();
 
-                if (icon.Edit.enter(ref inspectedStuff, 6, "Edit or Add user")) {
+                if (icon.Edit.enter(ref inspectedItems, 6, "Edit or Add user")) {
 
                     "Name:".edit(60, ref _tmpUserName);
 
@@ -211,17 +211,17 @@ namespace NodeNotes {
                     }
                 }
 
-                if (inspectedStuff == -1)
+                if (inspectedItems == -1)
                 {
 
                     pegi.nl();
 
                     if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
-                        StuffExplorer.OpenPersistentFolder(NodeBook_Base.BooksFolder);
+                        FileExplorerUtils.OpenPersistentFolder(NodeBook_Base.BooksFolder);
 
                     if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
 
-                        var lst = StuffLoader.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
+                        var lst = FileLoaderUtils.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
 
                         foreach (var e in lst)
                         {
@@ -238,9 +238,9 @@ namespace NodeNotes {
                     }
                 }
             }
-            else inspectedStuff = -1;
+            else inspectedItems = -1;
 
-            if (inspectedStuff == -1) {
+            if (inspectedItems == -1) {
 
                 "Books ".edit_List(ref books, ref _inspectedBook);
 

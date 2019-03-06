@@ -221,7 +221,7 @@ namespace NodeNotes_Visual
 
                         if (value == null)
                         {
-                           // Debug.LogError("{0} is not a Node Type: {1}".F(value.ToPegiString(),
+                           // Debug.LogError("{0} is not a Node GetBrushType: {1}".F(value.ToPegiString(),
                              //   value == null ? "Null" : value.GetType().ToPegiStringType()));
 
                             return;
@@ -328,11 +328,11 @@ namespace NodeNotes_Visual
             if (cn != null) {
                 icon.Active.toggle("{0} -> [{1}] Current: {2} - {3}"
                     .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPegiString(), cn.ToPegiString())
-                    , ref inspectedStuff, 2);
+                    , ref inspectedItems, 2);
             }
             else icon.InActive.write("No Active Node");
 
-            icon.Book.toggle("Node Books", ref inspectedStuff, 4);
+            icon.Book.toggle("Node Books", ref inspectedItems, 4);
 
             base.InspectionTabs();
         }
@@ -365,7 +365,7 @@ namespace NodeNotes_Visual
 
             var cn = Shortcuts.CurrentNode;
 
-            if (cn!= null && inspectedStuff ==2)
+            if (cn!= null && inspectedItems ==2)
                 changed |= cn.Nested_Inspect();
 
             pegi.nl();
@@ -373,12 +373,12 @@ namespace NodeNotes_Visual
                 if (!shortcuts)
                     "Shortcuts".edit(ref shortcuts).nl();
                 else
-                   if (inspectedStuff == 4)
+                   if (inspectedItems == 4)
                     shortcuts.Nested_Inspect();
                 else
                     pegi.nl();
 
-            if (icon.Create.enter("Dependencies", ref inspectedStuff, 5)) {
+            if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                 pegi.nl();
                 changed |= "Edit Button".edit(90, ref editButton).nl();
                 changed |= "Add Button".edit(90, ref addButton).nl();
@@ -391,9 +391,9 @@ namespace NodeNotes_Visual
 
             pegi.nl();
 
-            changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedStuff, 6).nl_ifNotEntered();
+            changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedItems, 6).nl_ifNotEntered();
 
-            if (inspectedStuff == -1 && "Encode / Decode Test".Click()) {
+            if (inspectedItems == -1 && "Encode / Decode Test".Click()) {
                 OnDisable();
                 OnEnable();
             }

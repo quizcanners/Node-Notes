@@ -177,7 +177,7 @@ namespace NodeNotes_Visual {
                     }
                 }
 
-                if (source == null || (!source.InspectingTriggerStuff)) {
+                if (source == null || (!source.InspectingTriggerItems)) {
 
                     var altVis = PossibleOverrideVisualConfig;
                     var act = ActiveConfig;
@@ -196,7 +196,7 @@ namespace NodeNotes_Visual {
                 if (!onPlayScreen) {
                     pegi.nl();
 
-                    var seeDependencies = "Dependencies".enter(ref inspectedStuff, 3).nl();
+                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 3).nl();
 
                     if (!textA || seeDependencies)
                         "Text A".edit(ref textA).nl();
@@ -211,7 +211,7 @@ namespace NodeNotes_Visual {
                         "Collider".edit(ref circleCollider).nl();
                 }
 
-                if (inspectedStuff == -1) {
+                if (inspectedItems == -1) {
 
                     if (_imageIndex != -1) {
                         if (!pegi.paintingPlayAreaGui)

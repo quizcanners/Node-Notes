@@ -40,7 +40,7 @@ namespace NodeNotes_Visual {
             .Add_IfNotEmpty("txt", texts)
             .Add_IfNotEmpty("opt", options)
             .Add_IfNotEmpty("fin", finalResults)
-            .Add_IfNotNegative("is", inspectedStuff)
+            .Add_IfNotNegative("is", inspectedItems)
             .Add_IfNotNegative("it", _inspectedText)
             .Add_IfNotNegative("bc", _inspectedChoice)
             .Add_IfNotNegative("ir", _inspectedResult);
@@ -52,7 +52,7 @@ namespace NodeNotes_Visual {
                 case "txt": data.Decode_List(out texts); break;
                 case "opt": data.Decode_List(out options); break;
                 case "fin": data.Decode_List(out finalResults); break;
-                case "is": inspectedStuff = data.ToInt(); break;
+                case "is": inspectedItems = data.ToInt(); break;
                 case "it": _inspectedText = data.ToInt(); break;
                 case "bc": _inspectedChoice = data.ToInt(); break;
                 case "ir": _inspectedResult = data.ToInt(); break;
@@ -105,7 +105,7 @@ namespace NodeNotes_Visual {
         public override bool Inspect() {
             var changed = false;
 
-            if (inspectedStuff == -1)
+            if (inspectedItems == -1)
             {
 
                 var n = NameForPEGI;
@@ -128,18 +128,18 @@ namespace NodeNotes_Visual {
 
             }
 
-            if (inspectedStuff == 1 && _inspectedText == -1)
+            if (inspectedItems == 1 && _inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
 
-            conditions.enter_Inspect_AsList(ref inspectedStuff, 4).nl(ref changed);
+            conditions.enter_Inspect_AsList(ref inspectedItems, 4).nl(ref changed);
             
-            "Texts".enter_List(ref texts, ref _inspectedText, ref inspectedStuff, 1).nl_ifNotEntered(ref changed);
+            "Texts".enter_List(ref texts, ref _inspectedText, ref inspectedItems, 1).nl_ifNotEntered(ref changed);
 
-            "Choices".enter_List(ref options, ref _inspectedChoice, ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
+            "Choices".enter_List(ref options, ref _inspectedChoice, ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
-            "Final Results".enter_List(ref finalResults, ref _inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+            "Final Results".enter_List(ref finalResults, ref _inspectedResult, ref inspectedItems, 3, ref changed).SetLastUsedTrigger();
 
-            if (inspectedStuff == -1)
+            if (inspectedItems == -1)
                 "Results that will be set after any choice is selected".fullWindowDocumentationClick();
 
             pegi.nl_ifNotEntered();
@@ -210,7 +210,7 @@ namespace NodeNotes_Visual {
          .Add("t", text)
          .Add_IfNotEmpty("t2", texts2)
          .Add_IfNotEmpty("res", results)
-         .Add_IfNotNegative("ins", inspectedStuff);
+         .Add_IfNotNegative("ins", inspectedItems);
 
         public override bool Decode(string tg, string data)
         {
@@ -222,7 +222,7 @@ namespace NodeNotes_Visual {
                 case "t": text.Decode(data); break;
                 case "t2": data.Decode_List(out texts2); break;
                 case "res": data.Decode_List(out results); break;
-                case "ins": inspectedStuff = data.ToInt(); break;
+                case "ins": inspectedItems = data.ToInt(); break;
                 default: return false;
             }
             return true;
@@ -257,25 +257,25 @@ namespace NodeNotes_Visual {
 
             bool changed = false;
 
-            if (icon.Hint.enter(text.ToPegiString() ,ref inspectedStuff, 1))
+            if (icon.Hint.enter(text.ToPegiString() ,ref inspectedItems, 1))
                 text.Nested_Inspect();
-            else if (inspectedStuff == -1) Sentance.LanguageSelector_PEGI().nl();
+            else if (inspectedItems == -1) Sentance.LanguageSelector_PEGI().nl();
 
-            conditions.enter_Inspect_AsList(ref inspectedStuff, 2).nl_ifNotEntered(ref changed);
+            conditions.enter_Inspect_AsList(ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
-            "Results".enter_List(ref results, ref inspectedResult, ref inspectedStuff, 3, ref changed).SetLastUsedTrigger();
+            "Results".enter_List(ref results, ref inspectedResult, ref inspectedItems, 3, ref changed).SetLastUsedTrigger();
                 
             pegi.nl_ifNotEntered();
 
-            if (inspectedStuff == 4 && inspectedText == -1)
+            if (inspectedItems == 4 && inspectedText == -1)
                 Sentance.LanguageSelector_PEGI().nl();
 
-            "After choice texts".enter_List(ref texts2, ref inspectedText, ref inspectedStuff, 4).nl_ifNotEntered(ref changed);
+            "After choice texts".enter_List(ref texts2, ref inspectedText, ref inspectedItems, 4).nl_ifNotEntered(ref changed);
 
             if (!nextOne.IsNullOrEmpty() && icon.Delete.Click("Remove any followups"))
                 nextOne = "";
 
-            if (inspectedStuff == -1)
+            if (inspectedItems == -1)
                 "Go To".select_iGotName(60, ref nextOne, Interaction.inspectedList).nl();
 
             return changed;

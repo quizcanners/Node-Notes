@@ -44,7 +44,7 @@ namespace NodeNotes_Visual {
 
             "{0} Dialogue".F(name).write();
 
-            if (icon.Play.enter(ref inspectedGameNodeStuff, 13).nl_ifNotEntered())
+            if (icon.Play.enter(ref inspectedGameNodeItems, 13).nl_ifNotEntered())
             {
 
                 if (icon.Refresh.Click("Restart dialogue", 20))

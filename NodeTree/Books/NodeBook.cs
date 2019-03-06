@@ -79,9 +79,9 @@ namespace NodeNotes
 
             var changed = false;
             
-            if (subNode.inspectedStuff == -1 && !subNode.InspectingSubNode) {
+            if (subNode.inspectedItems == -1 && !subNode.InspectingSubNode) {
 
-                if (inspectedStuff == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
+                if (inspectedItems == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
                     
                     string data;
                     if (this.SendReceivePegi(subNode.name, "Books", out data)) {
@@ -92,11 +92,11 @@ namespace NodeNotes
                     }
                 }
                 
-                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref inspectedStuff, 1).nl();
+                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref inspectedItems, 1).nl();
 
             }
 
-            if (inspectedStuff == -1)
+            if (inspectedItems == -1)
                 subNode.Nested_Inspect().nl(ref changed); 
             
             inspected = null;
@@ -132,7 +132,7 @@ namespace NodeNotes
             .Add_IfNotNegative("in", _inspectedNode)
             .Add_IfNotNegative("inE", _inspectedEntry)
             .Add("ep", entryPoints)
-            .Add_IfNotNegative("i",inspectedStuff)
+            .Add_IfNotNegative("i",inspectedItems)
             .Add("gn", gameNodesData);
           
         public override bool Decode(string tg, string data) {
@@ -142,7 +142,7 @@ namespace NodeNotes
                 case "in": _inspectedNode = data.ToInt(); break;
                 case "inE": _inspectedEntry = data.ToInt(); break;
                 case "ep": data.Decode_List(out entryPoints); break;
-                case "i": inspectedStuff = data.ToInt(); break;
+                case "i": inspectedItems = data.ToInt(); break;
                 case "gn": data.Decode_Dictionary(out gameNodesData); break;
                 default: return false;
             }
@@ -165,7 +165,7 @@ namespace NodeNotes
         #region Saving_Loading
         public void SaveToFile() => this.SaveToPersistentPath(BooksFolder, NameForPEGI);
 
-        public void DeleteFile(string bookName) => StuffDeleter.DeleteFile_PersistentFolder(BooksFolder, bookName);
+        public void DeleteFile(string bookName) => FileDeleterUtils.DeleteFile_PersistentFolder(BooksFolder, bookName);
 
         public void TryRename(string newName)
         {

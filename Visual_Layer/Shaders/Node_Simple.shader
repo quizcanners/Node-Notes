@@ -132,7 +132,6 @@
 					angle = saturate((min(angle, 0.5 - above) - 0.25) * 4);
 
 		
-					// Other stuff
 					uv = abs(uv) * 2;
 
 					//_Stretch

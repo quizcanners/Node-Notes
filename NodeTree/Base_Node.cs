@@ -110,7 +110,7 @@ namespace NodeNotes {
         .Add_String(        "n", name)
         .Add(               "i", index)
         .Add_IfTrue("visL", showLogic)
-        .Add_IfNotNegative( "is", inspectedStuff)
+        .Add_IfNotNegative( "is", inspectedItems)
         .Add_IfNotNegative( "icr", _inspectedResult)
         .Add_IfNotDefault(  "cnds", _eblCondition)
         .Add_IfNotDefault(  "vcnds", _visCondition)
@@ -122,7 +122,7 @@ namespace NodeNotes {
                 case "n":       name = data; break;
                 case "i":       index = data.ToInt(); break;
                 case "visL":    showLogic = data.ToBool(); break;
-                case "is":      inspectedStuff = data.ToInt(); break;
+                case "is":      inspectedItems = data.ToInt(); break;
                 case "icr":     _inspectedResult = data.ToInt(); break;
                 case "cnds":    _eblCondition.Decode(data); break;
                 case "vcnds":   _visCondition.Decode(data); break;
@@ -143,7 +143,7 @@ namespace NodeNotes {
         public static bool editingNodes = false;
 
         private int _inspectedResult = -1;
-        public bool InspectingTriggerStuff => _inspectedResult != -1;
+        public bool InspectingTriggerItems => _inspectedResult != -1;
 
         protected bool showLogic;
 
@@ -208,7 +208,7 @@ namespace NodeNotes {
 
                 var onPlayScreen = pegi.paintingPlayAreaGui;
 
-                if (inspectedStuff == -1)
+                if (inspectedItems == -1)
                 {
                     if (GetType() == typeof(Node) || onPlayScreen)
                         changed |= this.inspect_Name();
@@ -225,15 +225,15 @@ namespace NodeNotes {
 
                 Inspect_AfterNamePart().nl(ref changed);
 
-                "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedStuff, 21).nl_ifFolded(ref changed);
+                "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedItems, 21).nl_ifFolded(ref changed);
                 
-                if ( inspectedStuff != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
+                if ( inspectedItems != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
                     
-                    _visCondition.enter_Inspect(ref inspectedStuff, 1).nl_ifFolded(ref changed);
+                    _visCondition.enter_Inspect(ref inspectedItems, 1).nl_ifFolded(ref changed);
 
-                    _eblCondition.enter_Inspect(ref inspectedStuff, 2).nl_ifFolded(ref changed);
+                    _eblCondition.enter_Inspect(ref inspectedItems, 2).nl_ifFolded(ref changed);
 
-                    ResultsRole.enter_List(ref results, ref _inspectedResult, ref inspectedStuff, 3, ref changed)
+                    ResultsRole.enter_List(ref results, ref _inspectedResult, ref inspectedItems, 3, ref changed)
                         .SetLastUsedTrigger();
                 }
 
