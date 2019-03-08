@@ -165,7 +165,7 @@ namespace NodeNotes
         #region Saving_Loading
         public void SaveToFile() => this.SaveToPersistentPath(BooksFolder, NameForPEGI);
 
-        public void DeleteFile(string bookName) => FileDeleterUtils.DeleteFile_PersistentFolder(BooksFolder, bookName);
+        public void DeleteFile(string bookName) => FileDeleteUtils.DeleteFile_PersistentFolder(BooksFolder, bookName);
 
         public void TryRename(string newName)
         {

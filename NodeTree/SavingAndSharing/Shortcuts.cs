@@ -58,7 +58,7 @@ namespace NodeNotes {
         static readonly string _usersFolder = "Users";
 
         void LoadUser(string uname) {
-            FileLoaderUtils.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
+            FileLoadUtils.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
             _tmpUserName = uname;
         }
 
@@ -75,7 +75,7 @@ namespace NodeNotes {
         }
         
         void DeleteUser_File(string uname) {
-            FileDeleterUtils.DeleteFile_PersistentFolder(_usersFolder, uname);
+            FileDeleteUtils.DeleteFile_PersistentFolder(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -129,7 +129,7 @@ namespace NodeNotes {
         public void SaveAll()
         {
             SaveUser();
-            FileSaverUtils.SaveToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+            FileSaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
         public static void AddOrReplace(NodeBook nb) {
@@ -221,7 +221,7 @@ namespace NodeNotes {
 
                     if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
 
-                        var lst = FileLoaderUtils.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
+                        var lst = FileLoadUtils.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
 
                         foreach (var e in lst)
                         {
