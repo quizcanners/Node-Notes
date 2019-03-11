@@ -19,7 +19,7 @@ namespace NodeNotes_Visual
 
         public GameObject backPlane;
 
-        bool isSHowing = false;
+        bool _isShowing;
 
         float lerpSpeed = 0.5f;
 
@@ -43,7 +43,7 @@ namespace NodeNotes_Visual
         public override bool Inspect()
         {
 
-            bool changed = false;
+            var changed = false;
 
             if (inspectedItems == -1 && !Application.isPlaying)
                 "Back Plane".edit(ref backPlane).nl();
@@ -83,11 +83,11 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Updates
-        public override void FadeAway() => isSHowing = false;
+        public override void FadeAway() => _isShowing = false;
 
         public override bool TryFadeIn()
         {
-            isSHowing = true;
+            _isShowing = true;
             if (backPlane)
                 backPlane.SetActive(true);
 
@@ -111,7 +111,7 @@ namespace NodeNotes_Visual
                     
                 }
 
-                if (!isSHowing && lastPortion == 1)
+                if (!_isShowing && lastPortion == 1)
                     backPlane.SetActive(false);
 
             }

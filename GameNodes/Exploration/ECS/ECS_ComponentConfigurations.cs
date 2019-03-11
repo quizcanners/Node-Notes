@@ -19,7 +19,7 @@ namespace NodeNotes_Visual.ECS {
         public float testValue;
 
         #region Inspector
-#if PEGI
+        #if PEGI
         public string NameForDisplayPEGI => "Phisics Array index";
 
         public bool PEGI_inList(IList list, int ind, ref int edited) {
@@ -36,7 +36,7 @@ namespace NodeNotes_Visual.ECS {
 
 #endregion
 
-#region Encode & Decode
+        #region Encode & Decode
         public StdEncoder Encode() => new StdEncoder()
             .Add("i", phisixIndex)
             .Add("tv", testValue);
@@ -51,7 +51,7 @@ namespace NodeNotes_Visual.ECS {
         }
 
         public void Decode(string data) => data.DecodeTagsFor(this);
-#endregion
+        #endregion
 
     }
 

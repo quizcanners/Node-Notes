@@ -16,5 +16,5 @@ MonoBehaviour:
   explorer:
     states: []
     fileFolderHolder: STDEncodes
-  inspectedStuff: -1
+  inspectedItems: -1
   inspectedReference: -1
