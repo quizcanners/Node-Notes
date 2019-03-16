@@ -15,7 +15,7 @@ namespace NodeNotes_Visual {
 
         public string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
-        public List<Sentance> texts = new List<Sentance>();
+        public List<Sentence> texts = new List<Sentence>();
         public List<DialogueChoice> options = new List<DialogueChoice>();
         public List<Result> finalResults = new List<Result>();
 
@@ -31,7 +31,7 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
 
         public Interaction() {
-            texts.Add(new Sentance());
+            texts.Add(new Sentence());
         }
 
         public override StdEncoder Encode() => this.EncodeUnrecognized()
@@ -129,7 +129,7 @@ namespace NodeNotes_Visual {
             }
 
             if (inspectedItems == 1 && _inspectedText == -1)
-                Sentance.LanguageSelector_PEGI().nl();
+                Sentence.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedItems, 4).nl(ref changed);
             
@@ -198,8 +198,8 @@ namespace NodeNotes_Visual {
     public class DialogueChoice : AbstractKeepUnrecognizedStd, IPEGI, IGotName, INeedAttention
     {
         public ConditionBranch conditions = new ConditionBranch();
-        public Sentance text = new Sentance();
-        public List<Sentance> texts2 = new List<Sentance>();
+        public Sentence text = new Sentence();
+        public List<Sentence> texts2 = new List<Sentence>();
         public List<Result> results = new List<Result>();
         public string nextOne = "";
 
@@ -259,7 +259,7 @@ namespace NodeNotes_Visual {
 
             if (icon.Hint.enter(text.ToPegiString() ,ref inspectedItems, 1))
                 text.Nested_Inspect();
-            else if (inspectedItems == -1) Sentance.LanguageSelector_PEGI().nl();
+            else if (inspectedItems == -1) Sentence.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
@@ -268,7 +268,7 @@ namespace NodeNotes_Visual {
             pegi.nl_ifNotEntered();
 
             if (inspectedItems == 4 && inspectedText == -1)
-                Sentance.LanguageSelector_PEGI().nl();
+                Sentence.LanguageSelector_PEGI().nl();
 
             "After choice texts".enter_List(ref texts2, ref inspectedText, ref inspectedItems, 4).nl_ifNotEntered(ref changed);
 

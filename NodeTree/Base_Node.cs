@@ -15,9 +15,9 @@ namespace NodeNotes {
         public Node parentNode;
         public NodeBook root;
 
-        public void Copy_NonStdData_From_PreviousInstance(object previous) {
+        public void OnClassTypeChange(object previousInstance) {
             
-            if (!(previous is Base_Node other)) return;
+            if (!(previousInstance is Base_Node other)) return;
             
             parentNode = other.parentNode;
             root = other.root;
