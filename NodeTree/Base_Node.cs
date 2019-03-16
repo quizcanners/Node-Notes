@@ -8,7 +8,7 @@ using UnityEngine;
 namespace NodeNotes {
 
     [DerivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
-    public class Base_Node : AbstractKeepUnrecognizedStd, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect
+    public class Base_Node : AbstractKeepUnrecognizedCfg, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect
     {
 
         #region Values
@@ -35,8 +35,8 @@ namespace NodeNotes {
 
         protected static NodesVisualLayerAbstract VisualLayer => Shortcuts.visualLayer;
 
-        public IStd visualRepresentation;
-        public IStd previousVisualRepresentation;
+        public ICfg visualRepresentation;
+        public ICfg previousVisualRepresentation;
         public string configForVisualRepresentation;
 
         public virtual GameNodeBase AsGameNode => null;
@@ -106,7 +106,7 @@ namespace NodeNotes {
         
         #region Encode_Decode
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
         .Add_String(        "n", name)
         .Add(               "i", index)
         .Add_IfTrue("visL", showLogic)

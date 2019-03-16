@@ -62,7 +62,7 @@ namespace NodeNotes {
         
         #region Encode_Decode
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add("lnk", linkedNodeIndex);
 

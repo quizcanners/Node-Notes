@@ -17,7 +17,7 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public override StdEncoder Encode() => 
+        public override CfgEncoder Encode() => 
             this.EncodeUnrecognized()
             .Add("b", base.Encode);
 
@@ -31,7 +31,7 @@ namespace NodeNotes_Visual {
             return true;           
         }
 
-        public override StdEncoder Encode_PerBookStaticData() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode_PerBookStaticData() => this.EncodeUnrecognized()
             .Add_IfNotEmpty("el", _perBookGroups)
             .Add_IfNotNegative("i", _inspectedGroup);
         #endregion
@@ -47,7 +47,7 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class DnDRosterGroup : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
+    public class DnDRosterGroup : AbstractKeepUnrecognizedCfg, IPEGI, IGotName {
 
         public string name;
         public string NameForPEGI { get { return name; } set { name = value; } }
@@ -68,7 +68,7 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("el", _elements)
             .Add_IfNotNegative("i", _inspectedElement);
@@ -89,7 +89,7 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class DndRosterElement : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
+    public class DndRosterElement : AbstractKeepUnrecognizedCfg, IPEGI, IGotName {
 
         public string name;
         public string description;
@@ -99,7 +99,7 @@ namespace NodeNotes_Visual {
         public string NameForPEGI { get { return name; } set { name = value; } }
 
         #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("d", description)
             .Add("vc", visibilityConditions);

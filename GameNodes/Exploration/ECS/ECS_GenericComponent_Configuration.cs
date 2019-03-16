@@ -9,16 +9,16 @@ namespace NodeNotes_Visual.ECS {
 
     #region Generic Entity Config
     public class ComponentSTDAttributeAttribute : AbstractWithTaggedTypes {
-        public override TaggedTypesStd TaggedTypes => Component_STD_Abstract.all;
+        public override TaggedTypesCfg TaggedTypes => ComponentCfgAbstract.all;
     }
 
     [ComponentSTDAttribute]
-    public abstract class Component_STD_Abstract : AbstractKeepUnrecognizedStd, IGotClassTag, IPEGI_ListInspect
+    public abstract class ComponentCfgAbstract : AbstractKeepUnrecognizedCfg, IGotClassTag, IPEGI_ListInspect
     {
         #region Tagged Types
         public abstract string ClassTag { get; }
-        public static TaggedTypesStd all = new TaggedTypesStd(typeof(Component_STD_Abstract));
-        public TaggedTypesStd AllTypes => all;
+        public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(ComponentCfgAbstract));
+        public TaggedTypesCfg AllTypes => all;
         #endregion
 
         #region Component MGMT
@@ -65,7 +65,7 @@ namespace NodeNotes_Visual.ECS {
 #endregion
     }
 
-    public abstract class Component_STD_Generic<T> : Component_STD_Abstract where T : struct, IComponentData {
+    public abstract class ComponentCfgGeneric<T> : ComponentCfgAbstract where T : struct, IComponentData {
 
         public static EntityManager Manager => NodeNotesECSManager.manager;
 

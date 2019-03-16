@@ -13,7 +13,7 @@ namespace NodeNotes_Visual {
         private static DndCharacterStats MainCharacterStats = new DndCharacterStats();
 
 
-        public override StdEncoder Encode_PerUserData() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode_PerUserData() => this.EncodeUnrecognized()
             .Add("hero", MainCharacterStats);
 
         public override bool Decode(string tg, string data) {
@@ -27,7 +27,7 @@ namespace NodeNotes_Visual {
         }
     }
 
-    public class DndCharacterStats : AbstractKeepUnrecognizedStd {
+    public class DndCharacterStats : AbstractKeepUnrecognizedCfg {
 
 
 

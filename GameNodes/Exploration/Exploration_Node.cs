@@ -49,14 +49,14 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode);
         
-        public override StdEncoder Encode_PerUserData() 
-            => new StdEncoder().Add("pos", playerPosition);
+        public override CfgEncoder Encode_PerUserData() 
+            => new CfgEncoder().Add("pos", playerPosition);
 
-        public override StdEncoder Encode_PerBookStaticData() 
-            => new StdEncoder()
+        public override CfgEncoder Encode_PerBookStaticData() 
+            => new CfgEncoder()
             .Add_References("expl", monoBehaviourPrefabs)
             .Add("els", instances, instancesMeta);
         #endregion
@@ -84,7 +84,7 @@ namespace NodeNotes_Visual {
     }
 
     [DerivedList(typeof(Exploration_MonoInstance), typeof(Exploration_ECSinstance))]
-    public class Exploration_Element : AbstractKeepUnrecognizedStd  {
+    public class Exploration_Element : AbstractKeepUnrecognizedCfg  {
 
         public virtual void OnExit() { }
 
@@ -95,7 +95,7 @@ namespace NodeNotes_Visual {
         string instanceConfig;
         bool instanciated = false;
 
-        List<Component_STD_Abstract> entityComponents = new List<Component_STD_Abstract>();
+        List<ComponentCfgAbstract> entityComponents = new List<ComponentCfgAbstract>();
         ListMetaData componentsMeta = new ListMetaData("Components");
         EntityArchetype archetype;
 
@@ -127,16 +127,16 @@ namespace NodeNotes_Visual {
             base.Decode(data);
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("cfg", instanceConfig)
-            .Add("ent", entityComponents, componentsMeta, Component_STD_Abstract.all);
+            .Add("ent", entityComponents, componentsMeta, ComponentCfgAbstract.all);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "n": name = data; break;
                 case "cfg": instanceConfig = data; break;
-                case "ent": data.Decode_List(out entityComponents, ref componentsMeta, Component_STD_Abstract.all); break;
+                case "ent": data.Decode_List(out entityComponents, ref componentsMeta, ComponentCfgAbstract.all); break;
                 default: return false;
             }
             return true;
@@ -183,7 +183,7 @@ namespace NodeNotes_Visual {
 
             pegi.nl();
 
-            Component_STD_Abstract.inspectedEntity = instance;
+            ComponentCfgAbstract.inspectedEntity = instance;
 
             if (componentsMeta.enter_List(ref entityComponents, ref inspectedItems, 1).nl(ref changed)) {
 
@@ -218,7 +218,7 @@ namespace NodeNotes_Visual {
 
 #region Encode & Decode
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add("ind", prefabIndex)
             .Add_IfNotEmpty("cfg", instanceConfig);
@@ -279,7 +279,7 @@ namespace NodeNotes_Visual {
 
             if (instance) {
 
-                var std = instance as IStd;
+                var std = instance as ICfg;
                 if (std != null)
                     instanceConfig = std.Encode().ToString(); 
 
@@ -319,7 +319,7 @@ namespace NodeNotes_Visual {
             }
 
             if (fadedIn) {
-                var std = instance as IStd;
+                var std = instance as ICfg;
                 if (std != null)
                     std.Decode(instanceConfig);
             }

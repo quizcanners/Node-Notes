@@ -9,7 +9,7 @@ using STD_Logic;
 namespace NodeNotes
 {
 
-    public class BookEntryPoint : AbstractKeepUnrecognizedStd, IPEGI, IGotName {
+    public class BookEntryPoint : AbstractKeepUnrecognizedCfg, IPEGI, IGotName {
 
         public string entryPointName = "Rename Me";
 
@@ -33,7 +33,7 @@ namespace NodeNotes
             return true;
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_Bool("s", startPoint)
             .Add("ind", nodeIndex)
             .Add_String("Name", entryPointName);

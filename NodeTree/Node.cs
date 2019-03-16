@@ -258,7 +258,7 @@ namespace NodeNotes {
 
         #region Encode_Decode
 
-        public override StdEncoder Encode()  {
+        public override CfgEncoder Encode()  {
 
             if (_loopLock.Unlocked)  {
                 using (_loopLock.Lock()){
@@ -276,7 +276,7 @@ namespace NodeNotes {
             else
                 Debug.LogError("Infinite loop detected at {0}. Node is probably became a child of itself. ".F(NameForPEGI));
 
-            return new StdEncoder();
+            return new CfgEncoder();
         }
 
         public override bool Decode(string tg, string data) {

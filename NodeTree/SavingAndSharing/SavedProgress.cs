@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class CurrentUser: AbstractKeepUnrecognizedStd, IGotName, IPEGI, IGotDisplayName {
+    public class CurrentUser: AbstractKeepUnrecognizedCfg, IGotName, IPEGI, IGotDisplayName {
 
         public string startingPoint = "";
         public string userName = "Unknown";
@@ -250,7 +250,7 @@ namespace NodeNotes
             return true;
         }
 
-        public override StdEncoder Encode() {
+        public override CfgEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
             .Add_IfNotEmpty("bm", bookMarks)

@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class BookMark : AbstractKeepUnrecognizedStd, IPEGI_ListInspect, IGotName {
+    public class BookMark : AbstractKeepUnrecognizedCfg, IPEGI_ListInspect, IGotName {
 
         public string bookName;
         public int nodeIndex;
@@ -29,7 +29,7 @@ namespace NodeNotes
         #endregion
 
         #region Encode_Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("vals", values)
             .Add("ind", nodeIndex)
             .Add_String("n", bookName)

@@ -16,7 +16,7 @@ namespace NodeNotes_Visual {
         public static DialogueNode inspected;
         
         #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add("inBr", interactionBranch);
         

@@ -13,7 +13,7 @@ namespace NodeNotes_Visual.ECS {
     #region Phisics Array
     
     [Serializable]
-    public struct PhisicsArrayDynamic_Component : IComponentData, IGotDisplayName, IPEGI_ListInspect, IStd {
+    public struct PhisicsArrayDynamic_Component : IComponentData, IGotDisplayName, IPEGI_ListInspect, ICfg {
         public uint phisixIndex;
 
         public float testValue;
@@ -37,7 +37,7 @@ namespace NodeNotes_Visual.ECS {
 #endregion
 
         #region Encode & Decode
-        public StdEncoder Encode() => new StdEncoder()
+        public CfgEncoder Encode() => new CfgEncoder()
             .Add("i", phisixIndex)
             .Add("tv", testValue);
 
@@ -56,7 +56,7 @@ namespace NodeNotes_Visual.ECS {
     }
 
     [TaggedType(classTag, "Phisics Array Index")]
-    public class PhisicsArrayDynamic_STD : Component_STD_Generic<PhisicsArrayDynamic_Component>
+    public class PhisicsArrayDynamicCfg : ComponentCfgGeneric<PhisicsArrayDynamic_Component>
     {
 
 #region Tagged Class
@@ -76,7 +76,7 @@ namespace NodeNotes_Visual.ECS {
     
 #region Unity Native Components
     [TaggedType(classTag, "Position")]
-    public class Position_STD : Component_STD_Generic<Position>, IPEGI_ListInspect
+    public class PositionCfg : ComponentCfgGeneric<Position>, IPEGI_ListInspect
     {
 #region Tagged Class
         const string classTag = "pos";
@@ -94,7 +94,7 @@ namespace NodeNotes_Visual.ECS {
 #endregion
 
 #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotZero("pos", startPosition);
 
         public override bool Decode(string tg, string data)
@@ -111,7 +111,7 @@ namespace NodeNotes_Visual.ECS {
     }
 
     [TaggedType(classTag, "Rotation")]
-    public class Rotation_STD : Component_STD_Generic<Rotation>, IPEGI_ListInspect {
+    public class RotationCfg : ComponentCfgGeneric<Rotation>, IPEGI_ListInspect {
 
 #region Tagged class
         const string classTag = "rot";
@@ -129,7 +129,7 @@ namespace NodeNotes_Visual.ECS {
 #endregion
 
 #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add(classTag, qt);
 
         public override bool Decode(string tg, string data)

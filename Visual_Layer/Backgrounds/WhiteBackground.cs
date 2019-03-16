@@ -45,7 +45,7 @@ namespace NodeNotes_Visual {
             return false;
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("col", color);
 
         #endregion

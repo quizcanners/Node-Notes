@@ -174,7 +174,7 @@ namespace NodeNotes {
 
         #region Encode_Decode
 
-        public override StdEncoder Encode() {
+        public override CfgEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
             .Add("b", base.Encode)

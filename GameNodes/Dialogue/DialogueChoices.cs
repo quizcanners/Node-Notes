@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognizedStd, IPEGI, IGotName, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
+    public class Interaction : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
 
         public string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
@@ -34,7 +34,7 @@ namespace NodeNotes_Visual {
             texts.Add(new Sentence());
         }
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotEmpty("ref", referenceName)
             .Add_IfNotDefault("Conds", conditions)
             .Add_IfNotEmpty("txt", texts)
@@ -195,7 +195,7 @@ namespace NodeNotes_Visual {
         }
     }
     
-    public class DialogueChoice : AbstractKeepUnrecognizedStd, IPEGI, IGotName, INeedAttention
+    public class DialogueChoice : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, INeedAttention
     {
         public ConditionBranch conditions = new ConditionBranch();
         public Sentence text = new Sentence();
@@ -204,7 +204,7 @@ namespace NodeNotes_Visual {
         public string nextOne = "";
 
 #region Encode & Decode
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
          .Add_IfNotEmpty("goto", nextOne)
          .Add("cnd", conditions)
          .Add("t", text)

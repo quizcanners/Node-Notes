@@ -8,7 +8,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
 
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
-    public class Shortcuts : StdReferencesHolder {
+    public class Shortcuts : CfgReferencesHolder {
 
         #region Progress
      
@@ -295,7 +295,7 @@ namespace NodeNotes {
 
         #region Encode_Decode
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
             .Add("us", users)

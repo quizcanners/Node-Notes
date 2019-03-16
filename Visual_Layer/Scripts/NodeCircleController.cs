@@ -10,7 +10,7 @@ using STD_Logic;
 namespace NodeNotes_Visual {
 
     [ExecuteInEditMode]
-    public class NodeCircleController : ComponentStd, IGotIndex, ILinkedLerping {
+    public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
         private static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
 
         public Renderer circleRenderer;
@@ -665,7 +665,7 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override StdEncoder Encode() {
+        public override CfgEncoder Encode() {
 
             var cody = this.EncodeUnrecognized()
                 .Add("subVis", _nodeActiveDefaultVisuals)
@@ -746,7 +746,7 @@ namespace NodeNotes_Visual {
         #endregion
     }
 
-    public class NodeVisualConfig : AbstractKeepUnrecognizedStd, IPEGI, IPEGI_ListInspect, ICanBeDefaultStd {
+    public class NodeVisualConfig : AbstractKeepUnrecognizedCfg, IPEGI, IPEGI_ListInspect, ICanBeDefaultCfg {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
@@ -772,7 +772,7 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override StdEncoder Encode()  {
+        public override CfgEncoder Encode()  {
             targetSize.z = Mathf.Max(targetSize.z, 1);
 
             var cody = this.EncodeUnrecognized()

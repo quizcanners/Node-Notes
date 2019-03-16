@@ -16,7 +16,7 @@ namespace NodeNotes
                 results.Apply(Values.global);
         }
         
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode);
 
         public override bool Decode(string tg, string data)

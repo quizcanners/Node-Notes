@@ -9,7 +9,7 @@ namespace NodeNotes {
 
     public class GameNodeAttribute : AbstractWithTaggedTypes
     {
-        public override TaggedTypesStd TaggedTypes => GameNodeBase.all;
+        public override TaggedTypesCfg TaggedTypes => GameNodeBase.all;
     }
 
     [GameNode]
@@ -21,8 +21,8 @@ namespace NodeNotes {
         #region Tagged Types MGMT
         public override GameNodeBase AsGameNode => this;
         public abstract string ClassTag { get;  } 
-        public static TaggedTypesStd all = new TaggedTypesStd(typeof(GameNodeBase));
-        public TaggedTypesStd AllTypes => all;
+        public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(GameNodeBase));
+        public TaggedTypesCfg AllTypes => all;
         #endregion
 
         #region Enter & Exit
@@ -157,7 +157,7 @@ namespace NodeNotes {
 
         #region Encode & Decode
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add_String("unrecGN", "test")
             .Add_IfNotEmpty("exit", _onExitResults)
@@ -174,10 +174,10 @@ namespace NodeNotes {
         }
 
         // Per User data will be Encoded/Decoded each time the node is Entered during play
-        public virtual StdEncoder Encode_PerUserData() => new StdEncoder();
+        public virtual CfgEncoder Encode_PerUserData() => new CfgEncoder();
 
         // Per Node Book Data: Data will be encoded each time Node Book is Saved
-        public virtual StdEncoder Encode_PerBookStaticData() => new StdEncoder();
+        public virtual CfgEncoder Encode_PerBookStaticData() => new CfgEncoder();
         #endregion
     }
 

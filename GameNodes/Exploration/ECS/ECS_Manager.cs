@@ -69,7 +69,7 @@ namespace NodeNotes_Visual.ECS {
         #endregion
 
         #region Entity Config 
-        public static List<ComponentType> GetComponentTypes (this List<Component_STD_Abstract> cmps) {
+        public static List<ComponentType> GetComponentTypes (this List<ComponentCfgAbstract> cmps) {
             var lst = new List<ComponentType>();
 
             foreach (var c in cmps)
@@ -79,9 +79,9 @@ namespace NodeNotes_Visual.ECS {
 
         }
 
-        public static EntityArchetype ToArchetype(this List<Component_STD_Abstract> cmps) => manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) => manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
 
-        public static Entity Instantiate(this List<Component_STD_Abstract> cmps)
+        public static Entity Instantiate(this List<ComponentCfgAbstract> cmps)
         {
 
             Entity e = manager.CreateEntity();
@@ -97,12 +97,12 @@ namespace NodeNotes_Visual.ECS {
         #endregion
 
         #region Encode & Decode
-        public static StdEncoder Encode(this float3 v3) => new StdEncoder()
+        public static CfgEncoder Encode(this float3 v3) => new CfgEncoder()
             .Add_IfNotEpsilon("x", v3.x)
             .Add_IfNotEpsilon("y", v3.y)
             .Add_IfNotEpsilon("z", v3.z);
 
-        public static StdEncoder Encode(this quaternion q) => new StdEncoder()
+        public static CfgEncoder Encode(this quaternion q) => new CfgEncoder()
           .Add_IfNotEpsilon("x", q.value.x)
           .Add_IfNotEpsilon("y", q.value.y)
           .Add_IfNotEpsilon("z", q.value.z)
@@ -112,7 +112,7 @@ namespace NodeNotes_Visual.ECS {
         {
             float3 tmp = new float3();
 
-            var cody = new StdDecoder(data);
+            var cody = new CfgDecoder(data);
 
             foreach (var t in cody)
             {
@@ -132,7 +132,7 @@ namespace NodeNotes_Visual.ECS {
         {
             quaternion tmp = new quaternion();
 
-            var cody = new StdDecoder(data);
+            var cody = new CfgDecoder(data);
 
             foreach (var t in cody)
             {

@@ -13,7 +13,7 @@ namespace NodeNotes
 
         #region Values
         public int firstFree = 1;
-        public CountlessStd<Base_Node> allBaseNodes = new CountlessStd<Base_Node>();
+        public CountlessCfg<Base_Node> allBaseNodes = new CountlessCfg<Base_Node>();
 
         private Base_Node this[int ind] => allBaseNodes[ind];
 
@@ -126,7 +126,7 @@ namespace NodeNotes
 
         #region Encode_Decode
 
-        public override StdEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("f", firstFree)
             .Add("sn", subNode)
             .Add_IfNotNegative("in", _inspectedNode)
