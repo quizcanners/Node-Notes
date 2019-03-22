@@ -39,7 +39,7 @@
 				#pragma multi_compile_fwdbase
 				#pragma multi_compile_instancing
 				#pragma target 3.0
-				#pragma multi_compile ____    _CLAMP
+				#pragma multi_compile ____  _CLAMP
 
 				sampler2D _MainTex_Current;
 				float4 _MainTex_Current_TexelSize;
