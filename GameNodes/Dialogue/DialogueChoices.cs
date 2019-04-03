@@ -122,9 +122,11 @@ namespace NodeNotes_Visual {
 
                 pegi.toggle(ref renameLinkedReferences, icon.Link, icon.UnLinked, "Will all the references to this Interaction be renamed as well.").changes(ref changed);
 
-                ("You can use reference to link end of one interaction with the start of another. But the first text of it will be skipped. First sentence is the option user picks to start an interaction. Like 'Lets talk about ...' " +
-                 "which is not needed if the subject is currently being discussed from interaction that came to an end.")
-                    .fullWindowDocumentationClick("About option referance").nl();
+                if (pegi.DocumentationClick("About option referance"))
+                    pegi.FullWindwDocumentationOpen(
+                        "You can use reference to link end of one interaction with the start of another. But the first text of it will be skipped. First sentence is the option user picks to start an interaction. Like 'Lets talk about ...' " +
+                         "which is not needed if the subject is currently being discussed from interaction that came to an end."
+                        );
 
             }
 
