@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using STD_Logic;
-using UnityEngine;
 
 namespace NodeNotes_Visual {
  
@@ -15,7 +10,7 @@ namespace NodeNotes_Visual {
 
         public string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
-        public List<Sentence> texts = new List<Sentence>();
+        public List<SentenceBase> texts = new List<SentenceBase>();
         public List<DialogueChoice> options = new List<DialogueChoice>();
         public List<Result> finalResults = new List<Result>();
 
@@ -37,7 +32,7 @@ namespace NodeNotes_Visual {
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotEmpty("ref", referenceName)
             .Add_IfNotDefault("Conds", conditions)
-            .Add_IfNotEmpty("txt", texts)
+            .Add_IfNotEmpty("txtb", texts, SentenceBase.all)
             .Add_IfNotEmpty("opt", options)
             .Add_IfNotEmpty("fin", finalResults)
             .Add_IfNotNegative("is", inspectedItems)
@@ -49,7 +44,7 @@ namespace NodeNotes_Visual {
             switch (tg)  {
                 case "ref": referenceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
-                case "txt": data.Decode_List(out texts); break;
+                case "txtb": data.Decode_List(out texts, SentenceBase.all); break;
                 case "opt": data.Decode_List(out options); break;
                 case "fin": data.Decode_List(out finalResults); break;
                 case "is": inspectedItems = data.ToInt(); break;
@@ -93,7 +88,7 @@ namespace NodeNotes_Visual {
             }
         }
 
-#if PEGI
+        #if PEGI
         public string NameForDisplayPEGI => texts[0].NameForPEGI;
 
         public string NeedAttention() {
@@ -131,7 +126,7 @@ namespace NodeNotes_Visual {
             }
 
             if (inspectedItems == 1 && _inspectedText == -1)
-                Sentence.LanguageSelector_PEGI().nl();
+                SentenceBase.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedItems, 4).nl(ref changed);
             
@@ -161,13 +156,10 @@ namespace NodeNotes_Visual {
             return changed;
 
         }
-
-
-#endif
+        
+        #endif
         #endregion
 
-
-      
     }
 
     public class InteractionBranch : LogicBranch<Interaction>  {
@@ -181,14 +173,14 @@ namespace NodeNotes_Visual {
                 RenameReferenceLoop(sb, oldName, newName);
         }
 
-#if PEGI
+        #if PEGI
         public override bool Inspect()
         {
             CollectAll(ref Interaction.inspectedList);
 
             return base.Inspect();
         }
-#endif
+        #endif
 
         public void RenameReferance (string oldName, string newName) => RenameReferenceLoop(this, oldName, newName);
         
@@ -201,7 +193,7 @@ namespace NodeNotes_Visual {
     {
         public ConditionBranch conditions = new ConditionBranch();
         public Sentence text = new Sentence();
-        public List<Sentence> texts2 = new List<Sentence>();
+        public List<SentenceBase> texts2 = new List<SentenceBase>();
         public List<Result> results = new List<Result>();
         public string nextOne = "";
 
@@ -210,7 +202,7 @@ namespace NodeNotes_Visual {
          .Add_IfNotEmpty("goto", nextOne)
          .Add("cnd", conditions)
          .Add("t", text)
-         .Add_IfNotEmpty("t2", texts2)
+         .Add_IfNotEmpty("t2b", texts2, SentenceBase.all)
          .Add_IfNotEmpty("res", results)
          .Add_IfNotNegative("ins", inspectedItems);
 
@@ -222,7 +214,7 @@ namespace NodeNotes_Visual {
                 case "goto": nextOne = data; break;
                 case "cnd": data.DecodeInto(out conditions); break;
                 case "t": text.Decode(data); break;
-                case "t2": data.Decode_List(out texts2); break;
+                case "t2b": data.Decode_List(out texts2, SentenceBase.all); break;
                 case "res": data.Decode_List(out results); break;
                 case "ins": inspectedItems = data.ToInt(); break;
                 default: return false;
@@ -261,7 +253,7 @@ namespace NodeNotes_Visual {
 
             if (icon.Hint.enter(text.ToPegiString() ,ref inspectedItems, 1))
                 text.Nested_Inspect();
-            else if (inspectedItems == -1) Sentence.LanguageSelector_PEGI().nl();
+            else if (inspectedItems == -1) SentenceBase.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
@@ -270,7 +262,7 @@ namespace NodeNotes_Visual {
             pegi.nl_ifNotEntered();
 
             if (inspectedItems == 4 && inspectedText == -1)
-                Sentence.LanguageSelector_PEGI().nl();
+                SentenceBase.LanguageSelector_PEGI().nl();
 
             "After choice texts".enter_List(ref texts2, ref inspectedText, ref inspectedItems, 4).nl_ifNotEntered(ref changed);
 

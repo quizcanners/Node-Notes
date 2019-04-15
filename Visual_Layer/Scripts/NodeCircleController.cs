@@ -586,7 +586,7 @@ namespace NodeNotes_Visual {
                 }
             }
         }
-
+        
         private void Update()
         {
 
