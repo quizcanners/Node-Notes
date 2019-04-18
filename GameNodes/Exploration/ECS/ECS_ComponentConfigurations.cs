@@ -76,7 +76,7 @@ namespace NodeNotes_Visual.ECS {
     
 #region Unity Native Components
     [TaggedType(classTag, "Position")]
-    public class PositionCfg : ComponentCfgGeneric<Position>, IPEGI_ListInspect
+    public class PositionCfg : ComponentCfgGeneric<Translation>, IPEGI_ListInspect
     {
 #region Tagged Class
         const string classTag = "pos";
@@ -151,7 +151,7 @@ namespace NodeNotes_Visual.ECS {
 
     public static class ECS_STD_Extensions {
 
-        public static Entity Set_Position (this Entity e, Vector3 pos) => e.Set(new Position() { Value = new float3(pos.x, pos.y, pos.z) });
+        public static Entity Set_Position (this Entity e, Vector3 pos) => e.Set(new Translation() { Value = new float3(pos.x, pos.y, pos.z) });
 
         public static Entity Set_Rotation (this Entity e, Quaternion qt) => e.Set(new Rotation() { Value = new quaternion() { value = new float4(qt.x, qt.y, qt.z, qt.w) } });
     }

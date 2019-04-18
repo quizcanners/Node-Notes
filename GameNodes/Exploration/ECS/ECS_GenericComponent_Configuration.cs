@@ -69,7 +69,7 @@ namespace NodeNotes_Visual.ECS {
 
         public static EntityManager Manager => NodeNotesECSManager.manager;
 
-        static ComponentType type = ComponentType.Create<T>();
+        static ComponentType type = ComponentType.ReadWrite<T>();
         
         public override ComponentType ComponentType => type;
         

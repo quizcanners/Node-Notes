@@ -16,7 +16,7 @@ namespace NodeNotes_Visual.ECS {
 
         public static void Init() {
             Debug.Log("Getting manager");
-            manager = World.Active.GetOrCreateManager<EntityManager>();
+            manager = World.Active.EntityManager; //<EntityManager>();
         }
 
         #region Entity MGMT
@@ -192,8 +192,8 @@ namespace NodeNotes_Visual.ECS {
                 cmps.Inspect_AsInList();
             }
 
-            if (e.Has<Position>()) {
-                var pos = e.Get<Position>();
+            if (e.Has<Translation>()) {
+                var pos = e.Get<Translation>();
                 "Position".write(60);
                 "X".edit(20,ref pos.Value.x).changes(ref changed);
                 "Y".edit(20, ref pos.Value.y).changes(ref changed);
