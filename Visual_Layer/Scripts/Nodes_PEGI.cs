@@ -380,20 +380,20 @@ namespace NodeNotes_Visual
 
             if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                 pegi.nl();
-                changed |= "Edit Button".edit(90, ref editButton).nl();
-                changed |= "Add Button".edit(90, ref addButton).nl();
-                changed |= "Delete Button".edit(90, ref deleteButton).nl();
-                changed |= "Backgrounds".edit_Property(() => backgroundControllers, this).nl();
-                changed |= "Circles Prefab".edit(90, ref circlePrefab).nl();
+                "Edit Button".edit(90, ref editButton).nl(ref changed);
+                "Add Button".edit(90, ref addButton).nl(ref changed);
+                "Delete Button".edit(90, ref deleteButton).nl(ref changed);
+                "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
+                "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
 
                 "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
             }
 
             pegi.nl();
 
-            changed |= icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedItems, 6).nl_ifNotEntered();
+            icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedItems, 6).nl_ifNotEntered(ref changed);
 
-            if (inspectedItems == -1 && "Encode / Decode Test".Click()) {
+            if (inspectedItems == -1 && "Encode / Decode Test".Click(ref changed)) {
                 OnDisable();
                 OnEnable();
             }

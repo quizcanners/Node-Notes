@@ -87,8 +87,6 @@ namespace NodeNotes
 
                 if (currentBook != null) {
 
-                    Debug.Log("Saving {0} to bookmark ".F(currentBook));
-
                     bookMarks.Add(new BookMark()
                     {
                         bookName = currentBook.NameForPEGI,

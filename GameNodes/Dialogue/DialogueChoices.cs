@@ -10,7 +10,7 @@ namespace NodeNotes_Visual {
 
         public string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
-        public List<SentenceBase> texts = new List<SentenceBase>();
+        public List<Sentence> texts = new List<Sentence>();
         public List<DialogueChoice> options = new List<DialogueChoice>();
         public List<Result> finalResults = new List<Result>();
 
@@ -26,13 +26,13 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
 
         public Interaction() {
-            texts.Add(new Sentence());
+            texts.Add(new MultilanguageSentence());
         }
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_IfNotEmpty("ref", referenceName)
             .Add_IfNotDefault("Conds", conditions)
-            .Add_IfNotEmpty("txtb", texts, SentenceBase.all)
+            .Add_IfNotEmpty("txtb", texts, Sentence.all)
             .Add_IfNotEmpty("opt", options)
             .Add_IfNotEmpty("fin", finalResults)
             .Add_IfNotNegative("is", inspectedItems)
@@ -44,7 +44,7 @@ namespace NodeNotes_Visual {
             switch (tg)  {
                 case "ref": referenceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
-                case "txtb": data.Decode_List(out texts, SentenceBase.all); break;
+                case "txtb": data.Decode_List(out texts, Sentence.all); break;
                 case "opt": data.Decode_List(out options); break;
                 case "fin": data.Decode_List(out finalResults); break;
                 case "is": inspectedItems = data.ToInt(); break;
@@ -126,7 +126,7 @@ namespace NodeNotes_Visual {
             }
 
             if (inspectedItems == 1 && _inspectedText == -1)
-                SentenceBase.LanguageSelector_PEGI().nl();
+                MultilanguageSentence.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedItems, 4).nl(ref changed);
             
@@ -192,8 +192,8 @@ namespace NodeNotes_Visual {
     public class DialogueChoice : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, INeedAttention
     {
         public ConditionBranch conditions = new ConditionBranch();
-        public Sentence text = new Sentence();
-        public List<SentenceBase> texts2 = new List<SentenceBase>();
+        public MultilanguageSentence text = new MultilanguageSentence();
+        public List<Sentence> texts2 = new List<Sentence>();
         public List<Result> results = new List<Result>();
         public string nextOne = "";
 
@@ -202,7 +202,7 @@ namespace NodeNotes_Visual {
          .Add_IfNotEmpty("goto", nextOne)
          .Add("cnd", conditions)
          .Add("t", text)
-         .Add_IfNotEmpty("t2b", texts2, SentenceBase.all)
+         .Add_IfNotEmpty("t2b", texts2, Sentence.all)
          .Add_IfNotEmpty("res", results)
          .Add_IfNotNegative("ins", inspectedItems);
 
@@ -214,7 +214,7 @@ namespace NodeNotes_Visual {
                 case "goto": nextOne = data; break;
                 case "cnd": data.DecodeInto(out conditions); break;
                 case "t": text.Decode(data); break;
-                case "t2b": data.Decode_List(out texts2, SentenceBase.all); break;
+                case "t2b": data.Decode_List(out texts2, Sentence.all); break;
                 case "res": data.Decode_List(out results); break;
                 case "ins": inspectedItems = data.ToInt(); break;
                 default: return false;
@@ -253,7 +253,7 @@ namespace NodeNotes_Visual {
 
             if (icon.Hint.enter(text.ToPegiString() ,ref inspectedItems, 1))
                 text.Nested_Inspect();
-            else if (inspectedItems == -1) SentenceBase.LanguageSelector_PEGI().nl();
+            else if (inspectedItems == -1) MultilanguageSentence.LanguageSelector_PEGI().nl();
 
             conditions.enter_Inspect_AsList(ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
@@ -262,7 +262,7 @@ namespace NodeNotes_Visual {
             pegi.nl_ifNotEntered();
 
             if (inspectedItems == 4 && inspectedText == -1)
-                SentenceBase.LanguageSelector_PEGI().nl();
+                MultilanguageSentence.LanguageSelector_PEGI().nl();
 
             "After choice texts".enter_List(ref texts2, ref inspectedText, ref inspectedItems, 4).nl_ifNotEntered(ref changed);
 

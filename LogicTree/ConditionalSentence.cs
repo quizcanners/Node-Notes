@@ -7,7 +7,7 @@ namespace PlayerAndEditorGUI
 {
 
     [TaggedType(classTag)]
-    public class ConditionalSentence : Sentence, IAmConditional
+    public class ConditionalSentence : MultilanguageSentence, IAmConditional
     {
 
         const string classTag = "cndSnt";
@@ -70,7 +70,7 @@ namespace PlayerAndEditorGUI
     public static class MultiLanguageSentenceExtensions
     {
 
-        public static SentenceBase GetNextText(this List<SentenceBase> list, ref int startIndex)
+        public static Sentence GetNextText(this List<Sentence> list, ref int startIndex)
         {
 
             while (list.Count > startIndex)
