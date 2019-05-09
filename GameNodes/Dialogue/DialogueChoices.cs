@@ -137,7 +137,7 @@ namespace NodeNotes_Visual {
             "Final Results".enter_List(ref finalResults, ref _inspectedResult, ref inspectedItems, 3, ref changed).SetLastUsedTrigger();
 
             if (inspectedItems == -1)
-                "Results that will be set the moment any choice is picked, before the text that goes after it".fullWindowDocumentationClick("About Final Results");
+                "Results that will be set the moment any choice is picked, before the text that goes after it".fullWindowDocumentationClickOpen("About Final Results");
 
             pegi.nl_ifNotEntered();
 
