@@ -259,7 +259,7 @@ namespace NodeNotes_Visual.ECS {
                 if (inspected == -1)
                 {
                     for (int i = 0; i < array.Length; i++)
-                        changed |= array[i].Name_ClickInspect_PEGI<T>(null, i, ref inspected, metaDatas).nl();
+                        changed |= array[i].Name_ClickInspectObj<T>(null, i, ref inspected, metaDatas).nl();
                 }
             }
 
