@@ -75,7 +75,7 @@ namespace STD_Logic
 
         public virtual bool PEGI_inList_Sub(IList list, int ind, ref int inspecte) => false;
         
-        public virtual bool PEGI_inList(IList list, int ind, ref int inspected)
+        public virtual bool InspectInList(IList list, int ind, ref int inspected)
         {
 
             var changed = false;

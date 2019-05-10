@@ -231,7 +231,7 @@ namespace STD_Logic
 
         #region Inspector
         #if PEGI
-        public override bool PEGI_inList(IList list, int ind, ref int edited)
+        public override bool InspectInList(IList list, int ind, ref int edited)
         {
             bool changed = FocusedField_PEGI(ind, "Cond");
 

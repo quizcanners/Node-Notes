@@ -103,7 +103,7 @@ namespace NodeNotes
             return changed;
         }
         
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
+        public bool InspectInList(IList list, int ind, ref int edited) {
             var changed = false;
 
             var tmp = NameForPEGI;

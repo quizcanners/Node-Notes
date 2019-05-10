@@ -150,7 +150,7 @@ namespace NodeNotes {
 
 #if PEGI
         
-        public virtual bool PEGI_inList(IList list, int ind, ref int edited)
+        public virtual bool InspectInList(IList list, int ind, ref int edited)
         {
 
             index.ToString().write(20);

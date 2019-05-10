@@ -21,7 +21,7 @@ namespace PlayerAndEditorGUI
         #region Inspector
 
 #if PEGI
-        public override bool PEGI_inList(IList list, int ind, ref int edited)
+        public override bool InspectInList(IList list, int ind, ref int edited)
         {
             var changed = this.inspect_Name();
             if (this.Click_Enter_Attention(_condition.IsTrue() ? icon.Active : icon.InActive,

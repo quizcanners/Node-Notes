@@ -72,9 +72,9 @@ namespace NodeNotes_Visual {
 
         #if PEGI
 
-        public override bool PEGI_inList(IList list, int ind, ref int edited) {
+        public override bool InspectInList(IList list, int ind, ref int edited) {
 
-            var changed = ActiveConfig.PEGI_inList(list, ind, ref edited);
+            var changed = ActiveConfig.InspectInList(list, ind, ref edited);
 
             if (_coverImage)
                 this.ClickHighlight(_coverImage);
@@ -805,7 +805,7 @@ namespace NodeNotes_Visual {
             return changed;
         }
 
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
+        public bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = "col".edit(40, ref targetColor);
 

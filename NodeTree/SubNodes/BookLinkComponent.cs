@@ -150,7 +150,7 @@ namespace NodeNotes {
             return changed;
         }
 
-        public override bool PEGI_inList(IList list, int ind, ref int edited)
+        public override bool InspectInList(IList list, int ind, ref int edited)
         {
             bool changed = list_PEGI();
 

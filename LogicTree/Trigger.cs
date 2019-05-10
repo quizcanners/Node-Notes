@@ -73,7 +73,7 @@ namespace STD_Logic
 
         public override string NameForDisplayPEGI => name;
 
-        public override bool PEGI_inList(IList list, int ind, ref int edited) {
+        public override bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = false;
 

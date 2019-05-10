@@ -145,7 +145,7 @@ namespace NodeNotes_Visual {
 
         }
 
-        public bool PEGI_inList(IList list, int ind, ref int edited)
+        public bool InspectInList(IList list, int ind, ref int edited)
         {
             var changed = false;
             texts[0].inspect_Name().changes(ref changed);

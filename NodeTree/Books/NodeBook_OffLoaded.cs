@@ -31,7 +31,7 @@ namespace NodeNotes {
         #endregion
 
 #if PEGI
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
+        public bool InspectInList(IList list, int ind, ref int edited) {
             this.ToPegiString().write();
 
             if (icon.Load.Click())

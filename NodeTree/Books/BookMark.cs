@@ -18,7 +18,7 @@ namespace NodeNotes
 
         #region Inspector
         #if PEGI
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
+        public bool InspectInList(IList list, int ind, ref int edited) {
             "Node {0} in {1}".F(nodeIndex, bookName).write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
                 Shortcuts.user.ReturnToMark(this);

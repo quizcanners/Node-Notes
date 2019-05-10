@@ -22,7 +22,7 @@ namespace NodeNotes_Visual.ECS {
         #if PEGI
         public string NameForDisplayPEGI => "Phisics Array index";
 
-        public bool PEGI_inList(IList list, int ind, ref int edited) {
+        public bool InspectInList(IList list, int ind, ref int edited) {
             var changed = "PhisX Index".edit(80, ref phisixIndex);
 
             "Test value".edit(60, ref testValue).changes(ref changed);
@@ -89,7 +89,7 @@ namespace NodeNotes_Visual.ECS {
 
         #region Inspector
 #if PEGI
-        public override bool PEGI_inList(IList list, int ind, ref int edited) => "pos".edit(30, ref startPosition);
+        public override bool InspectInList(IList list, int ind, ref int edited) => "pos".edit(30, ref startPosition);
 #endif
 #endregion
 
@@ -124,7 +124,7 @@ namespace NodeNotes_Visual.ECS {
 
         #region Inspector
 #if PEGI
-        public override bool PEGI_inList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
+        public override bool InspectInList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
 #endif
 #endregion
 

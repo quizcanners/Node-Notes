@@ -38,7 +38,7 @@ namespace NodeNotes_Visual.ECS {
 #region Inspector
 #if PEGI
         public static Entity inspectedEntity;
-        public virtual bool PEGI_inList(IList list, int ind, ref int edited)
+        public virtual bool InspectInList(IList list, int ind, ref int edited)
         {
 
             if (inspectedEntity != null && HasComponent(inspectedEntity))
@@ -50,7 +50,7 @@ namespace NodeNotes_Visual.ECS {
                 {
 
                     var changed = false;
-                    if (ipl.PEGI_inList(list, ind, ref edited).changes(ref changed))
+                    if (ipl.InspectInList(list, ind, ref edited).changes(ref changed))
                         SetData(inspectedEntity, cmp);
 
                     return changed;
