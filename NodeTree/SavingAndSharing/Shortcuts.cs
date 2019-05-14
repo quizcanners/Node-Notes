@@ -58,7 +58,7 @@ namespace NodeNotes {
         static readonly string _usersFolder = "Users";
 
         void LoadUser(string uname) {
-            FileLoadUtils.LoadFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
+            FileLoadUtils.LoadJsonFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
             _tmpUserName = uname;
         }
 
@@ -221,7 +221,7 @@ namespace NodeNotes {
 
                     if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
 
-                        var lst = FileLoadUtils.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
+                        var lst = FileExplorerUtils.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
 
                         foreach (var e in lst)
                         {
