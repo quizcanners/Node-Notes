@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using STD_Logic;
 
-namespace PlayerAndEditorGUI
+namespace NodeNotes
 {
 
     [TaggedType(classTag)]

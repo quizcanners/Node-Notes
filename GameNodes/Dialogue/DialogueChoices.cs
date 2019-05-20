@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using STD_Logic;
+using NodeNotes;
 
 namespace NodeNotes_Visual {
  
