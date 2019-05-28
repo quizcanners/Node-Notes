@@ -270,7 +270,7 @@ namespace NodeNotes_Visual.ECS {
         {
             label.write_Search_ListLabel(ref inspected, null);
             bool changed = false;
-            edit_Array(ref array, ref inspected, ref changed).listLabel_Used();
+            edit_Array(ref array, ref inspected, ref changed);
 
             return changed;
         }
