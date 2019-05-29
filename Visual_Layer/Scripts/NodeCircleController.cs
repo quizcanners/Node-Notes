@@ -169,7 +169,7 @@ namespace NodeNotes_Visual {
                             "Fading...{0}".F(fadePortion).nl();
                     }
                     
-                    var bg = Mgmt.backgroundControllers.TryGetByTag(background);
+                    var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, background);
                     if (bg != null)
                     {
                         if (bg.Try_Nested_Inspect().nl(ref changed))

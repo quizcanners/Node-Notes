@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
+  m_IndirectSpecularColor: {r: 0.1273174, g: 0.13414761, b: 0.12107885, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -288,7 +288,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40.6
+  m_fontSize: 50.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -445,7 +445,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 49.15
+  m_fontSize: 61.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -822,7 +822,6 @@ MonoBehaviour:
   - 0.711
   _showModules: 0
   _inspectedModule: 0
-  _modulesStd: 
   OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -841,6 +840,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
 --- !u!222 &737095459
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1030,7 +1030,6 @@ MonoBehaviour:
   - 0.737
   _showModules: 0
   _inspectedModule: 0
-  _modulesStd: 
   OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -1049,6 +1048,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
 --- !u!222 &808421428
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1139,7 +1139,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.599609, y: 0}
+  m_AnchoredPosition: {x: -13.599548, y: 0}
   m_SizeDelta: {x: -13.6, y: 0.00022125}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -1204,7 +1204,6 @@ MonoBehaviour:
   - 0.701
   _showModules: 0
   _inspectedModule: 0
-  _modulesStd: 
   OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -1223,6 +1222,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
 --- !u!222 &1235906093
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1362,7 +1362,6 @@ MonoBehaviour:
   - 0.7
   _showModules: 0
   _inspectedModule: 0
-  _modulesStd: 
   OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -1381,6 +1380,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
 --- !u!114 &1417408137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1511,7 +1511,6 @@ MonoBehaviour:
   - 0.682
   _showModules: 0
   _inspectedModule: 0
-  _modulesStd: 
   OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -1530,6 +1529,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
 --- !u!222 &1419288881
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1623,7 +1623,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 28.3
+  m_fontSize: 43.7
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1846,7 +1846,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 49.15
+  m_fontSize: 61.2
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2107,7 +2107,7 @@ MonoBehaviour:
   explorer:
     states: []
     fileFolderHolder: STDEncodes
-  inspectedItems: 2
+  inspectedItems: 4
   nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: -1
@@ -2370,7 +2370,6 @@ MonoBehaviour:
   - 0.535
   _showModules: 0
   _inspectedModule: 0
-  _modulesStd: 
   OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -2389,6 +2388,7 @@ MonoBehaviour:
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
 --- !u!222 &2133683277
 CanvasRenderer:
   m_ObjectHideFlags: 0
