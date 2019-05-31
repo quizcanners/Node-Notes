@@ -3,7 +3,7 @@ using System.Linq;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace STD_Logic
+namespace QcTriggerLogic
 {
 
     // Trigger usage is only used for PEGI. Logic engine will not need this to process triggers

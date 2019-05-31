@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace STD_Logic {
+namespace QcTriggerLogic {
 
 
     public class Values : AbstractKeepUnrecognizedCfg, IPEGI, IGotCount

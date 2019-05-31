@@ -4,7 +4,7 @@ using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
 
-namespace STD_Logic
+namespace QcTriggerLogic
 {
     public class LogicMGMT : ComponentCfg   {
 

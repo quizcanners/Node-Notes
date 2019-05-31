@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
-using STD_Logic;
+using QcTriggerLogic;
 using NodeNotes;
 
 namespace NodeNotes_Visual {

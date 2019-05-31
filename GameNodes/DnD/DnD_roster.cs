@@ -2,7 +2,7 @@
 using NodeNotes;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using STD_Logic;
+using QcTriggerLogic;
 
 namespace NodeNotes_Visual {
 

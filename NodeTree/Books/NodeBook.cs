@@ -4,7 +4,7 @@ using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using System;
-using STD_Logic;
+using QcTriggerLogic;
 
 namespace NodeNotes
 {

@@ -5,7 +5,7 @@ using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using System;
 using NodeNotes;
-using STD_Logic;
+using QcTriggerLogic;
 
 namespace NodeNotes_Visual {
 

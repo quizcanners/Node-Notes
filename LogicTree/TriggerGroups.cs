@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace STD_Logic {
+namespace QcTriggerLogic {
 
     public sealed class TriggerGroup : AbstractKeepUnrecognizedCfg, IGotName, IGotIndex, IPEGI, IPEGI_ListInspect {
 

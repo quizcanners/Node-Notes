@@ -4,7 +4,7 @@ using System.Linq;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace STD_Logic
+namespace QcTriggerLogic
 {
     
     public class Trigger : ValueIndex , IGotDisplayName , IPEGI_ListInspect, IGotName, ICategorized {

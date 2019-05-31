@@ -3,7 +3,7 @@ using System.Collections;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace STD_Logic
+namespace QcTriggerLogic
 {
 
     public abstract class ValueIndex : ICfg, IGotDisplayName {

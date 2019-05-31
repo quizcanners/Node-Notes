@@ -4,7 +4,7 @@ using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 
-namespace STD_Logic {
+namespace QcTriggerLogic {
 
     public class ConditionBranch : AbstractKeepUnrecognizedCfg, IPEGI, 
         IAmConditional, ICanBeDefaultCfg, IPEGI_ListInspect, IGotCount, IPEGI_Searchable, IGotName, INeedAttention {

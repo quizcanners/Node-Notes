@@ -4,7 +4,7 @@ using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using System.Collections;
 
-namespace STD_Logic  {
+namespace QcTriggerLogic  {
 
     public enum ResultType
     {

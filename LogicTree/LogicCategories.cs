@@ -2,7 +2,7 @@
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace STD_Logic {
+namespace QcTriggerLogic {
 
     public interface ICategorized  {
         List<PickedCategory> MyCategories { get; set; }

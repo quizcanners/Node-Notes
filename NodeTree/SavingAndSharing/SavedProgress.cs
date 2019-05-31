@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using QuizCannersUtilities;
-using STD_Logic;
+using QcTriggerLogic;
 using System;
 using PlayerAndEditorGUI;
 

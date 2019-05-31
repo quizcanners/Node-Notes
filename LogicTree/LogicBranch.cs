@@ -2,7 +2,7 @@
 using QuizCannersUtilities;
 using System.Collections.Generic;
 
-namespace STD_Logic
+namespace QcTriggerLogic
 {
 
     public class LogicBranch<T> : AbstractKeepUnrecognizedCfg  , IGotName , IPEGI, IAmConditional, ICanBeDefaultCfg, IPEGI_Searchable  where T: ICfg, new() {
