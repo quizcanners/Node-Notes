@@ -21,7 +21,7 @@ namespace STD_Logic {
  
         private int inspected = -1;
 
-#if PEGI
+#if !NO_PEGI
                public bool SelectCategory(PickedCategory pc)
         {
             var changed = false;
@@ -127,7 +127,7 @@ namespace STD_Logic {
 
         private int _inspected = -1;
 
-#if PEGI
+#if !NO_PEGI
         public bool Select(ref T val) => pegi.select(ref val, elements);
         
         public override bool Inspect() {
@@ -221,7 +221,7 @@ namespace STD_Logic {
 
         public List<int> path = new List<int>();
 
-#if PEGI
+#if !NO_PEGI
         public bool Inspect<T>() where T: ICategorized => CategoryRoot<T>.current.SelectCategory(this);
 #endif        
 

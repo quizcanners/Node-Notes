@@ -131,7 +131,7 @@ namespace STD_Logic {
 
         public int CountForInspector => booleans.CountForInspector + ints.CountForInspector;// + enumTags.CountForInspector + boolTags.CountForInspector; 
 
-#if PEGI
+#if !NO_PEGI
 
 
         public override bool Inspect() {

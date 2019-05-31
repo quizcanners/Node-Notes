@@ -70,7 +70,7 @@ namespace NodeNotes_Visual {
         public int IndexForPEGI { get { return _indexInPool;  } set { _indexInPool = value; } }
 
 
-        #if PEGI
+        #if !NO_PEGI
 
         public override bool InspectInList(IList list, int ind, ref int edited) {
 
@@ -786,7 +786,7 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspect
-        #if PEGI
+        #if !NO_PEGI
 
         public override bool Inspect() {
 

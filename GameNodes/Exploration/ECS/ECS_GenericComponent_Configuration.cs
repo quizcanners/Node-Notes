@@ -36,7 +36,7 @@ namespace NodeNotes_Visual.ECS {
         #endregion
 
 #region Inspector
-#if PEGI
+#if !NO_PEGI
         public static Entity inspectedEntity;
         public virtual bool InspectInList(IList list, int ind, ref int edited)
         {

@@ -39,7 +39,7 @@ namespace NodeNotes_Visual
         }
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect()
         {
 
@@ -93,8 +93,7 @@ namespace NodeNotes_Visual
 
             return true;
         }
-
-        float lastPortion = 1;
+        
         LerpData ld = new LerpData();
 
         void Update()
@@ -108,10 +107,9 @@ namespace NodeNotes_Visual
                 if (Application.isPlaying) {
                     cols.Portion(ld);
                     cols.Lerp(ld);
-                    
                 }
 
-                if (!_isShowing && lastPortion == 1)
+                if (!_isShowing && ld.linkedPortion == 1)
                     backPlane.SetActive(false);
 
             }

@@ -37,7 +37,7 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         protected override bool InspectGameNode() {
             bool changed = "Roster Groups".edit_List(ref _perBookGroups, ref _inspectedGroup);
             return changed;
@@ -75,7 +75,7 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect()
         {
             bool changed = base.Inspect();
@@ -116,7 +116,7 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect() {
             bool changed = false;
             

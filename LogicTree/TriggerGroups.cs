@@ -34,7 +34,7 @@ namespace STD_Logic {
                     ready = _triggers[index];
                     ready.groupIndex = IndexForPEGI;
                     ready.triggerIndex = index;
-#if PEGI
+#if !NO_PEGI
                     _listDirty = true;
 #endif
                     return ready;
@@ -67,7 +67,7 @@ namespace STD_Logic {
 
             _lastUsedTrigger = ind;
 
-#if PEGI
+#if !NO_PEGI
             _listDirty = true;
 #endif
         }
@@ -105,7 +105,7 @@ namespace STD_Logic {
 
         public override void Decode(string data)
         {
-#if PEGI
+#if !NO_PEGI
             _listDirty = true;
 #endif
             base.Decode(data);
@@ -133,7 +133,7 @@ namespace STD_Logic {
             set { _browsedGroup = value?.IndexForPEGI ?? -1; }
         }
 
-        #if PEGI
+        #if !NO_PEGI
         private bool _listDirty;
 
         private string _lastFilteredString = "";
@@ -166,7 +166,7 @@ namespace STD_Logic {
                     }
 
                 _lastFilteredString = Trigger.searchField;
-#if PEGI
+#if !NO_PEGI
                 _listDirty = false;
 #endif
             }

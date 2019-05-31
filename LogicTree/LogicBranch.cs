@@ -78,7 +78,7 @@ namespace STD_Logic
         private int _inspectedElement = -1;
         private int _inspectedBranch = -1;
 
-#if PEGI
+#if !NO_PEGI
 
         
         LoopLock searchLoopLock = new LoopLock();

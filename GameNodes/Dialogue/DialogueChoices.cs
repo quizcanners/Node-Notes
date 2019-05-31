@@ -89,7 +89,7 @@ namespace NodeNotes_Visual {
             }
         }
 
-        #if PEGI
+        #if !NO_PEGI
         public string NameForDisplayPEGI => texts[0].NameForPEGI;
 
         public string NeedAttention() {
@@ -174,7 +174,7 @@ namespace NodeNotes_Visual {
                 RenameReferenceLoop(sb, oldName, newName);
         }
 
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect()
         {
             CollectAll(ref Interaction.inspectedList);
@@ -231,7 +231,7 @@ namespace NodeNotes_Visual {
             
         int inspectedResult = -1;
         int inspectedText = -1;
-#if PEGI
+#if !NO_PEGI
 
         public string NeedAttention() {
 

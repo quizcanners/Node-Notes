@@ -31,7 +31,7 @@ namespace NodeNotes
 
 
 
-#if PEGI
+#if !NO_PEGI
 
         protected override icon InspectorIcon => icon.Done;
 

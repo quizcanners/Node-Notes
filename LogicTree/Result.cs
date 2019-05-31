@@ -90,7 +90,7 @@ namespace STD_Logic  {
         }
         
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override string NameForDisplayPEGI => base.NameForDisplayPEGI + type.GetText() + " " + 
             (IsBoolean ? (updateValue != 0).ToString() : updateValue.ToString());
 

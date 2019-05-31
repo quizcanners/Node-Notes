@@ -67,7 +67,7 @@ namespace NodeNotes {
 
         #region Inspector
 
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect()
         {
             var changed = pegi.edit(ref text).nl();
@@ -143,7 +143,7 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         public bool InspectInList(IList list, int ind, ref int edited)
         {
@@ -256,7 +256,7 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         public static bool LanguageSelector_PEGI() => pegi.editEnum(ref currentLanguage, 30);
         
@@ -318,7 +318,7 @@ namespace NodeNotes {
         }
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         public override bool Inspect()
         {
@@ -394,7 +394,7 @@ namespace NodeNotes {
         #region Inspector
         private int inspectedSentence = -1;
         
-        #if PEGI
+        #if !NO_PEGI
         
         public override bool Inspect()
         {

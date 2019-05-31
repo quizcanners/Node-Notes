@@ -34,7 +34,7 @@ namespace STD_Logic {
         private int _browsedBranch = -1;
         private int _browsedCondition = -1;
 
-        #if PEGI
+        #if !NO_PEGI
         
         public string NeedAttention() {
 

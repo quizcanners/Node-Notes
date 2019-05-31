@@ -30,7 +30,7 @@ namespace NodeNotes {
 
         #endregion
 
-#if PEGI
+#if !NO_PEGI
         public bool InspectInList(IList list, int ind, ref int edited) {
             this.ToPegiString().write();
 

@@ -19,7 +19,7 @@ namespace NodeNotes_Visual {
         public Color color = Color.white;
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
         public string NameForPEGIdisplay => "White Background";
 
         public override bool Inspect() {

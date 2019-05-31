@@ -133,7 +133,7 @@ namespace NodeNotes {
             parentNode?.SetInspectedUpTheHierarchy(this);
         }
 
-        #if PEGI
+        #if !NO_PEGI
         public override string NeedAttention()
         {
             if (!_loopLock.Unlocked) return "Infinite Loop Detected";

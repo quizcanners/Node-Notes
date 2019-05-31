@@ -109,7 +109,7 @@ namespace NodeNotes {
 
         private readonly LoopLock _inspectLoopLock = new LoopLock();
 
-#if PEGI
+#if !NO_PEGI
 
         protected virtual string GameNodeTypeName => ClassTag; 
         

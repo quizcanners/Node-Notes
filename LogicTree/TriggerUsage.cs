@@ -17,7 +17,7 @@ namespace STD_Logic
         public static TriggerUsage Get(int ind) => Usages[ind];
         
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public static bool SelectUsage(ref int ind) => pegi.select_Index(ref ind, Usages, 45);
 
         public virtual void Inspect(ConditionLogic c) { }
@@ -106,7 +106,7 @@ namespace STD_Logic
         public override string NameForDisplayPEGI => "YesNo";
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
         public override void Inspect(ConditionLogic c) {
             if (!c.IsBoolean) {
                 icon.Warning.write("Wrong Type: " + c.IsBoolean);
@@ -164,7 +164,7 @@ namespace STD_Logic
         };
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicInt;
@@ -202,7 +202,7 @@ namespace STD_Logic
         public override string NameForDisplayPEGI => "Enums";
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
         public override void Inspect(ConditionLogic c) {
 
 
@@ -258,7 +258,7 @@ namespace STD_Logic
         };
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicInt;
@@ -306,7 +306,7 @@ namespace STD_Logic
         };
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicInt;
@@ -352,7 +352,7 @@ namespace STD_Logic
         public override string NameForDisplayPEGI => "TagGroup";
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect(Trigger t) {
             var changed = base.Inspect(t);
 
@@ -411,7 +411,7 @@ namespace STD_Logic
         public override string NameForDisplayPEGI => "Tag";
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicBool;

@@ -148,7 +148,7 @@ namespace NodeNotes {
         protected bool showLogic;
 
 
-#if PEGI
+#if !NO_PEGI
         
         public virtual bool InspectInList(IList list, int ind, ref int edited)
         {

@@ -42,7 +42,7 @@ namespace NodeNotes
 
         #region Inspector
 
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect()
         {
             bool changed = false;

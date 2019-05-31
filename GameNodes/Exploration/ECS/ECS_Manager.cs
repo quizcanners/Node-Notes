@@ -151,7 +151,7 @@ namespace NodeNotes_Visual.ECS {
         #endregion
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
 
         
         static int exploredEntity = -1;
@@ -213,11 +213,15 @@ namespace NodeNotes_Visual.ECS {
 
                 "Rotation".edit(60, ref eul).nl(ref changed);
 
-                if (changed) {
-                    var qt = new Quaternion();
-                    qt.eulerAngles = eul;
+                if (changed)
+                {
+                    var qt = Quaternion.Euler(eul);
+                    /*new Quaternion
+                    {
+                        eulerAngles = eul
+                    };*/
 
-                    rot.Value.value = new Unity.Mathematics.float4(qt.x, qt.y, qt.z, qt.w);
+                    rot.Value.value = new float4(qt.x, qt.y, qt.z, qt.w);
                     e.Set(rot);
                 }
 
@@ -242,7 +246,7 @@ namespace NodeNotes_Visual.ECS {
             return changed;
         }
 
-        public static T edit_Array<T>(ref NativeArray<T> array, ref int inspected, ref bool changed, ListMetaData metaDatas = null) where T : struct
+        public static T Edit_Array<T>(ref NativeArray<T> array, ref int inspected, ref bool changed, ListMetaData metaDatas = null) where T : struct
         {
             T added = default(T);
 
@@ -266,11 +270,11 @@ namespace NodeNotes_Visual.ECS {
             return added;
         }
 
-        public static bool edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected) where T : struct
+        public static bool Edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected) where T : struct
         {
             label.write_Search_ListLabel(ref inspected, null);
             bool changed = false;
-            edit_Array(ref array, ref inspected, ref changed);
+            Edit_Array(ref array, ref inspected, ref changed);
 
             return changed;
         }

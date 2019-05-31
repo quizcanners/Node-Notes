@@ -191,7 +191,7 @@ namespace NodeNotes
         public string NameForDisplayPEGI =>
             "{0} FROM {1}".F(userName, startingPoint);
 
-        #if PEGI
+        #if !NO_PEGI
         public override bool Inspect() {
 
             bool changed = false; 

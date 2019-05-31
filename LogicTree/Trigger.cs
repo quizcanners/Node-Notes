@@ -69,7 +69,7 @@ namespace STD_Logic
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-#if PEGI
+#if !NO_PEGI
 
         public override string NameForDisplayPEGI => name;
 

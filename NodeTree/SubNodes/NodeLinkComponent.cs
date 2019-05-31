@@ -28,7 +28,7 @@ namespace NodeNotes {
         }
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         protected override icon InspectorIcon => icon.Link;
 
@@ -36,7 +36,7 @@ namespace NodeNotes {
 
         protected override string ResultsRole => "On Link Usage";
 
-        bool sharedPEGI() {
+        bool SharedPEGI() {
 
             var changed = "Node Link ".select_iGotIndex_SameClass<Base_Node, Node>(65, ref linkedNodeIndex, root.allBaseNodes.GetAllObjsNoOrder());
 
@@ -46,13 +46,13 @@ namespace NodeNotes {
             return changed;
         }
 
-        public override bool InspectInList(IList list, int ind, ref int edited) => sharedPEGI();
+        public override bool InspectInList(IList list, int ind, ref int edited) => SharedPEGI();
 
         public override bool Inspect()
         {
             bool changed = base.Inspect();
 
-            changed |= sharedPEGI();
+            changed |= SharedPEGI();
 
             return changed;
         }

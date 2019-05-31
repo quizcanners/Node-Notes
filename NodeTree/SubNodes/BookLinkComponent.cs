@@ -37,7 +37,7 @@ namespace NodeNotes {
             if (type == BookLinkType.BookExit && Shortcuts.user.bookMarks.Count == 0)
                 return false;
 
-            if (type == BookLinkType.BookLink && linkToCurrent) return false;
+            if (type == BookLinkType.BookLink && LinkToCurrent) return false;
 
             return base.Conditions_isVisible();
         }
@@ -99,7 +99,7 @@ namespace NodeNotes {
                 TryExecuteTransition();
         }
 
-        bool linkToCurrent
+        bool LinkToCurrent
         {
             get
             {
@@ -111,7 +111,7 @@ namespace NodeNotes {
         }
 
         #region Inspector
-#if PEGI
+#if !NO_PEGI
 
         protected override icon InspectorIcon => icon.Book;
 
@@ -119,7 +119,7 @@ namespace NodeNotes {
 
         protected override string ResultsRole => "On Transition";
 
-        bool list_PEGI()
+        bool List_PEGI()
         {
             var changed = pegi.editEnum(ref type);
 
@@ -139,7 +139,7 @@ namespace NodeNotes {
                         var ep = book.GetEntryPoint(bookEntryPoint);
 
                         if (ep != null) {
-                            if (!linkToCurrent && icon.Play.Click("Transition Condition: {0}".F(Conditions_isEnabled())))
+                            if (!LinkToCurrent && icon.Play.Click("Transition Condition: {0}".F(Conditions_isEnabled())))
                                 TryExecuteTransition();
                         }
                     }
@@ -152,7 +152,7 @@ namespace NodeNotes {
 
         public override bool InspectInList(IList list, int ind, ref int edited)
         {
-            bool changed = list_PEGI();
+            bool changed = List_PEGI();
 
             if (icon.Enter.Click())
                 edited = ind;
@@ -165,7 +165,7 @@ namespace NodeNotes {
 
             bool changed = base.Inspect();
 
-            changed |= list_PEGI().nl();
+            changed |= List_PEGI().nl();
             
             return changed;
         }

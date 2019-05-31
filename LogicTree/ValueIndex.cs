@@ -59,7 +59,7 @@ namespace STD_Logic
         protected virtual bool SearchTriggerSameType => false;
         
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         public static Trigger selectedTrig;
         public static ValueIndex selected;
@@ -209,7 +209,7 @@ namespace STD_Logic
         public static void Set(this UnNullableCfg<CountlessInt> uc, ValueIndex ind, int value) => uc[ind.groupIndex][ind.triggerIndex] = value;
 
 
-#if PEGI
+#if !NO_PEGI
         public static bool Toggle(this UnNullableCfg<CountlessBool> uc, ValueIndex ind)
         {
             var tmp = uc.Get(ind);//[ind.groupIndex][ind.triggerIndex];

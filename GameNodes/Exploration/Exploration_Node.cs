@@ -64,7 +64,7 @@ namespace NodeNotes_Visual {
         #region Inspector
         int inspectedPrefab = -1;
 
-#if PEGI
+#if !NO_PEGI
         protected override bool InspectGameNode() {
             var changed = false;
 
@@ -147,7 +147,7 @@ namespace NodeNotes_Visual {
 #region Inspector
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-#if PEGI
+#if !NO_PEGI
         public bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = this.inspect_Name();
@@ -238,7 +238,7 @@ namespace NodeNotes_Visual {
 #region Inspector
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-#if PEGI
+#if !NO_PEGI
         public bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = this.inspect_Name();

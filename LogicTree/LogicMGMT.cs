@@ -58,7 +58,7 @@ namespace STD_Logic
         public void Awake() => RealTimeNow();
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         protected override void ResetInspector() {
             inspectedTriggerGroup = -1;

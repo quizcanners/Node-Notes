@@ -152,7 +152,7 @@ namespace NodeNotes {
         private int _inspectedBook = -1;
         private string _tmpUserName;
 
-#if PEGI
+#if !NO_PEGI
         public override void ResetInspector() {
             _inspectReplacementOption = false;
             _tmpUserName = "";

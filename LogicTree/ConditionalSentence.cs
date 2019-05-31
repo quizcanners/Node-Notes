@@ -21,7 +21,7 @@ namespace NodeNotes
 
         #region Inspector
 
-#if PEGI
+#if !NO_PEGI
         public override bool InspectInList(IList list, int ind, ref int edited)
         {
             var changed = this.inspect_Name();

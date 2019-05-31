@@ -32,7 +32,7 @@ namespace NodeNotes_Visual {
 
         #region Inspector
         
-        #if PEGI
+        #if !NO_PEGI
 
         protected override string GameNodeTypeName => "Dialogue";
 

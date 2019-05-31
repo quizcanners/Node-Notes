@@ -34,7 +34,7 @@ namespace STD_Logic
         protected override bool SearchTriggerSameType => false;
         
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
 
         public static Values inspectedTarget = null;
 
@@ -80,7 +80,7 @@ namespace STD_Logic
         #endregion
 
         #region Inspect
-        #if PEGI
+        #if !NO_PEGI
 
         public override string NameForDisplayPEGI => "if {0}{1}".F(compareValue ? "" : "NOT ",base.NameForDisplayPEGI);
 
@@ -128,7 +128,7 @@ namespace STD_Logic
         #endregion
 
         #region Inspect
-#if PEGI
+#if !NO_PEGI
 
         public override string NameForDisplayPEGI {
             get  {
@@ -230,7 +230,7 @@ namespace STD_Logic
     {
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         public override bool InspectInList(IList list, int ind, ref int edited)
         {
             bool changed = FocusedField_PEGI(ind, "Cond");

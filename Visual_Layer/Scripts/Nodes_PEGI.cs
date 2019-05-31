@@ -312,7 +312,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-        #if PEGI
+        #if !NO_PEGI
         pegi.WindowPositionData_PEGI_GUI window = new pegi.WindowPositionData_PEGI_GUI();
 
         protected override void ResetInspector()
