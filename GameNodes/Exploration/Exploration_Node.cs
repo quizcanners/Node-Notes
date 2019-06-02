@@ -12,6 +12,11 @@ using NodeNotes_Visual.ECS;
 
 namespace NodeNotes_Visual {
 
+#pragma warning disable IDE0034 // Simplify 'default' expression
+#pragma warning disable IDE0019 // Use pattern matching
+#pragma warning disable IDE0018 // Inline variable declaration
+
+
     [TaggedType(tag, "Exploration Node")]
     public class Exploration_Node : GameNodeBase {
 
@@ -62,9 +67,11 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
+
+        #if !NO_PEGI
+        
         int inspectedPrefab = -1;
 
-#if !NO_PEGI
         protected override bool InspectGameNode() {
             var changed = false;
 
@@ -77,9 +84,10 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-#endif
 
-#endregion
+        #endif
+
+        #endregion
 
     }
 

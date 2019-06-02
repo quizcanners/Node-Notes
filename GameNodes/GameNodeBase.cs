@@ -92,7 +92,14 @@ namespace NodeNotes {
         #region Inspector
       
         protected virtual bool InspectGameNode() => false;
+        
+        protected int inspectedGameNodeItems = -1;
 
+
+        #if !NO_PEGI
+
+        private readonly LoopLock _inspectLoopLock = new LoopLock();
+        
         protected override string ResultsRole => "On Enter";
 
         protected virtual string ExitResultRole => "On Exit";
@@ -104,12 +111,7 @@ namespace NodeNotes {
             base.ResetInspector();
         }
 
-        protected int inspectedGameNodeItems = -1;
         private int _editedExitResult = -1;
-
-        private readonly LoopLock _inspectLoopLock = new LoopLock();
-
-#if !NO_PEGI
 
         protected virtual string GameNodeTypeName => ClassTag; 
         
@@ -151,7 +153,7 @@ namespace NodeNotes {
             return changed;
         }
 
-#endif
+        #endif
 
         #endregion
 

@@ -149,10 +149,13 @@ namespace NodeNotes {
 
         #region Inspector
 
-        private int _inspectedBook = -1;
+
         private string _tmpUserName;
 
 #if !NO_PEGI
+        
+        private int _inspectedBook = -1;
+
         public override void ResetInspector() {
             _inspectReplacementOption = false;
             _tmpUserName = "";

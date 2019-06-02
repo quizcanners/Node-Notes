@@ -223,15 +223,17 @@ namespace NodeNotes_Visual {
             return true;
 
         }
-#endregion
+        #endregion
 
-#region Inspector
+        #region Inspector
 
         public void RenameReference(string oldName, string newName) => nextOne = nextOne.SameAs(oldName) ? newName : nextOne;
-            
+
+
+        #if !NO_PEGI
+
         int inspectedResult = -1;
         int inspectedText = -1;
-#if !NO_PEGI
 
         public string NeedAttention() {
 
@@ -277,8 +279,8 @@ namespace NodeNotes_Visual {
         }
 
     
-#endif
-#endregion
+        #endif
+        #endregion
     }
 
 
