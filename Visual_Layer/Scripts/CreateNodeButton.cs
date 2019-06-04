@@ -67,7 +67,7 @@ namespace NodeNotes
                     if (graphicElements[0].enabled) {
                         
                         float portion;
-                        rectTranform.anchoredPosition = QcMath.LerpBySpeed(rectTranform.anchoredPosition, Dest, Screen.width, out portion);
+                        rectTranform.anchoredPosition = LerpUtils.LerpBySpeed(rectTranform.anchoredPosition, Dest, Screen.width, out portion);
 
                         if (portion == 1) {
                             if (!showCreateButtons)

@@ -399,7 +399,7 @@ namespace NodeNotes_Visual {
             {
                 _activeTextAlpha = newText == null 
                     ? Mathf.Lerp(_activeTextAlpha, 1, ld.Portion()) 
-                    : QcMath.LerpBySpeed(_activeTextAlpha, 1, 4);
+                    : LerpUtils.LerpBySpeed(_activeTextAlpha, 1, 4);
 
                 if (_activeTextAlpha == 1 && newText != null)
                 {
