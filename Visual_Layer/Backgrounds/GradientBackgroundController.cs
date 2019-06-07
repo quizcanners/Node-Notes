@@ -109,7 +109,7 @@ namespace NodeNotes_Visual
                     cols.Lerp(ld);
                 }
 
-                if (!_isShowing && ld.linkedPortion == 1)
+                if (!_isShowing && ld.MinPortion == 1)
                     backPlane.SetActive(false);
 
             }

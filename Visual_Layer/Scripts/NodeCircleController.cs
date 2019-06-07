@@ -332,13 +332,13 @@ namespace NodeNotes_Visual {
 
             _localScale.Portion(ld);
 
-            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(_shCurrentColor), ref ld.linkedPortion))
+            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(_shCurrentColor), ld))
                 dominantParameter = "color";
 
-            if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f), ref ld.linkedPortion))
+            if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f),  ld))
                 dominantParameter = "fade";
 
-            if (8f.SpeedToMinPortion(1 - _activeTextAlpha, ref ld.linkedPortion))
+            if (8f.SpeedToMinPortion(1 - _activeTextAlpha,  ld))
                 dominantParameter = "text Alpha";
 
             _textureFadeIn.targetValue = _coverImage ? 1 : 0;
@@ -354,7 +354,7 @@ namespace NodeNotes_Visual {
 
         }
 
-        public void Lerp(LerpData ld, bool canTeleport = false) {
+        public void Lerp(LerpData ld, bool canSkipLerpIfPossible = false) {
 
             if (!includedInLerp) return;
 
@@ -368,9 +368,9 @@ namespace NodeNotes_Visual {
 
                 _shBlur = Mathf.Lerp(_shBlur, Mathf.Clamp01((transform.localPosition - _localPos.targetValue).magnitude * 5), Time.deltaTime * 10);
 
-                fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, ld.linkedPortion);
+                fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, ld.MinPortion);
                     
-                if (ld.linkedPortion == 1) {
+                if (ld.MinPortion == 1) {
 
                     if (!isFading) {
                         ActiveConfig.targetSize = circleRenderer.transform.localScale;
@@ -413,7 +413,7 @@ namespace NodeNotes_Visual {
                 needShaderUpdate = true;
             }
 
-            ld.teleportPortion = (_canJumpToPosition && fadePortion < 0.1f && !isFading) ? 1 : ld.linkedPortion;
+            ld.skipLerpPossible = (_canJumpToPosition && fadePortion < 0.1f && !isFading);
 
             _shCurrentColor = Color.Lerp(_shCurrentColor, ac.targetColor, ld.Portion(true));
             _localPos.Lerp(ld, false);
