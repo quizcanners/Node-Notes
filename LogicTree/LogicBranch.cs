@@ -88,15 +88,15 @@ namespace QcTriggerLogic
             if (searchLoopLock.Unlocked)
                 using(searchLoopLock.Lock()){
 
-                    if (conditions.SearchMatch_Obj(searchString))
+                    if (pegi.Try_SearchMatch_Obj(conditions, searchString))
                         return true;
 
                     foreach (var e in elements)
-                        if (e.SearchMatch_Obj(searchString))
+                        if (pegi.Try_SearchMatch_Obj(e, searchString))
                             return true;
 
                     foreach (var sb in subBranches)
-                        if (sb.SearchMatch_Obj(searchString))
+                        if (pegi.Try_SearchMatch_Obj(sb, searchString))
                             return true;
                 }
 

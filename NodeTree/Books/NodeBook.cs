@@ -63,7 +63,7 @@ namespace NodeNotes
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
 
         #if !NO_PEGI
-        public bool String_SearchMatch(string searchString) =>  subNode.SearchMatch_Obj(searchString);
+        public bool String_SearchMatch(string searchString) => pegi.Try_SearchMatch_Obj(subNode, searchString);
         
         public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
 

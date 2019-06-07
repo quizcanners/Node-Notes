@@ -26,7 +26,7 @@ namespace NodeNotes
         {
             var changed = this.inspect_Name();
             if (this.Click_Enter_Attention(_condition.IsTrue() ? icon.Active : icon.InActive,
-                currentLanguage.ToPegiString()))
+                currentLanguage.GetNameForInspector()))
                 edited = ind;
             return changed;
         }

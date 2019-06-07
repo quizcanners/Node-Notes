@@ -149,7 +149,7 @@ namespace NodeNotes_Visual
                     nnp = tmp;
                     if (tmp.gameObject.activeSelf) {
                         reusing = true;
-                        Debug.Log("Reusing previous for {0}".F(node.ToPegiString()));
+                        Debug.Log("Reusing previous for {0}".F(node.GetNameForInspector()));
                     }
                 }
             }
@@ -174,7 +174,7 @@ namespace NodeNotes_Visual
                 nnp.IndexForPEGI = NodesPool.Count;
                 NodesPool.Add(nnp);
 
-                Debug.Log("Creating new for {0}".F(node.ToPegiString()));
+                Debug.Log("Creating new for {0}".F(node.GetNameForInspector()));
             }
 
             nnp.LinkTo(node);
@@ -221,7 +221,7 @@ namespace NodeNotes_Visual
 
                         if (value == null)
                         {
-                           // Debug.LogError("{0} is not a Node GetBrushType: {1}".F(value.ToPegiString(),
+                           // Debug.LogError("{0} is not a Node GetBrushType: {1}".F(value.GetNameForInspector(),
                              //   value == null ? "Null" : value.GetType().ToPegiStringType()));
 
                             return;
@@ -327,7 +327,7 @@ namespace NodeNotes_Visual
 
             if (cn != null) {
                 icon.Active.toggle("{0} -> [{1}] Current: {2} - {3}"
-                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.ToPegiString(), cn.ToPegiString())
+                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.GetNameForInspector(), cn.GetNameForInspector())
                     , ref inspectedItems, 2);
             }
             else icon.InActive.write("No Active Node");
@@ -346,7 +346,7 @@ namespace NodeNotes_Visual
                     return true;
                 }
 
-                "GN: {0}".F(gameNode.ToPegiString()).write();
+                "GN: {0}".F(gameNode.GetNameForInspector()).write();
 
                 if (icon.Close.Click("Exit Game Node in Fail").nl())
                     FromGameToNode(true);

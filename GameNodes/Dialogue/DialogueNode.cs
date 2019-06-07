@@ -107,7 +107,7 @@ namespace NodeNotes_Visual {
             
             foreach (var si in gr.elements)  {
                 if (!si.IsTrue()) continue;
-                OptText.Add(si.texts[0].ToPegiString());
+                OptText.Add(si.texts[0].GetNameForInspector());
                 PossibleInteractions.Add(si);
             }
 

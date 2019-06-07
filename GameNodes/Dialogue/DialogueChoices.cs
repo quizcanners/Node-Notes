@@ -254,7 +254,7 @@ namespace NodeNotes_Visual {
 
             bool changed = false;
 
-            if (icon.Hint.enter(text.ToPegiString() ,ref inspectedItems, 1))
+            if (icon.Hint.enter(text.GetNameForInspector() ,ref inspectedItems, 1))
                 text.Nested_Inspect();
             else if (inspectedItems == -1) MultilanguageSentence.LanguageSelector_PEGI().nl();
 

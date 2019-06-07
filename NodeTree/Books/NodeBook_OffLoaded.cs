@@ -32,7 +32,7 @@ namespace NodeNotes {
 
 #if !NO_PEGI
         public bool InspectInList(IList list, int ind, ref int edited) {
-            this.ToPegiString().write();
+            this.GetNameForInspector().write();
 
             if (icon.Load.Click())
                 Shortcuts.books.LoadBook(this);

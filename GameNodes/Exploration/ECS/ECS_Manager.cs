@@ -172,7 +172,7 @@ namespace NodeNotes_Visual.ECS {
                 {
                     var e = all[i];
 
-                    if (e.ToPegiString().foldout(ref exploredEntity, i).nl())
+                    if (e.GetNameForInspector().foldout(ref exploredEntity, i).nl())
                         e.Inspect().nl(ref changed);
                     
                 }
@@ -240,7 +240,7 @@ namespace NodeNotes_Visual.ECS {
                 if (array == null || index >= array.Length || icon.List.ClickUnFocus("Return to {0} array".F(pegi.GetCurrentListLabel<T>(ld))).nl())
                     index = -1;
                 else
-                    changed |= array[index].Try_Nested_Inspect();
+                    pegi.Try_Nested_Inspect(array[index]).changes(ref changed);
             }
 
             return changed;
@@ -263,7 +263,7 @@ namespace NodeNotes_Visual.ECS {
                 if (inspected == -1)
                 {
                     for (int i = 0; i < array.Length; i++)
-                        changed |= array[i].InspectValueInList<T>(null, i, ref inspected, metaDatas).nl();
+                        pegi.InspectValueInList(array[i], null, i, ref inspected, metaDatas).nl(ref changed);
                 }
             }
 

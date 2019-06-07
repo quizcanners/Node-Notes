@@ -114,7 +114,7 @@ namespace NodeNotes_Visual {
      
             if (_loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
                 using (_loopLock.Lock()) {
-                    if (source.Try_Nested_Inspect().changes(ref changed)) {
+                    if (pegi.Try_Nested_Inspect(source).changes(ref changed)) {
                         if (name != source.name)
                             NameForPEGI = source.name;
                         

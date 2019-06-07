@@ -165,13 +165,13 @@ namespace NodeNotes {
 
         public virtual bool String_SearchMatch(string searchString)
         {
-            if (_visCondition.SearchMatch_Obj(searchString))
+            if (pegi.Try_SearchMatch_Obj(_visCondition, searchString))
                 return true;
 
-            if (_eblCondition.SearchMatch_Obj(searchString))
+            if (pegi.Try_SearchMatch_Obj(_eblCondition, searchString))
                 return true;
 
-            if (visualRepresentation.SearchMatch_Obj(searchString))
+            if (pegi.Try_SearchMatch_Obj(visualRepresentation, searchString))
                 return true;
 
             if (results.SearchMatch(searchString))

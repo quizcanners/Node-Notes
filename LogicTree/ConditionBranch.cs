@@ -54,11 +54,11 @@ namespace QcTriggerLogic {
             using (_searchLoopLock.Lock())
             {
                 foreach (var c in _conditions)
-                    if (c.SearchMatch_Obj(searchString))
+                    if (pegi.Try_SearchMatch_Obj(c, searchString))
                         return true;
 
                 foreach (var b in _branches)
-                    if (b.SearchMatch_Obj(searchString))
+                    if (pegi.Try_SearchMatch_Obj(b,searchString))
                         return true;
             }
 
@@ -115,7 +115,7 @@ namespace QcTriggerLogic {
                     break;
                 case 1:
                     if (_conditions.Count == 1)
-                        "{0}: {1}".F(_name, _conditions[0].ToPegiString()).write();
+                        "{0}: {1}".F(_name, _conditions[0].GetNameForInspector()).write();
                     else goto default;
                     break;
                 default:

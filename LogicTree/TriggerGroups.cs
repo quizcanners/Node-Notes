@@ -254,13 +254,13 @@ namespace QcTriggerLogic {
                 pegi.nl();
 
                 if (goodLength && icon.Replace.ClickUnFocus(
-                    "Rename {0} if group {1} to {2}".F(selectedTrig.name, selectedTrig.Group.ToPegiString(), Trigger.searchField)
+                    "Rename {0} if group {1} to {2}".F(selectedTrig.name, selectedTrig.Group.GetNameForInspector(), Trigger.searchField)
                     ).changes(ref changed)) selectedTrig.Using().name = Trigger.searchField;
                 
                 var differentGroup = selectedTrig.Group != Browsed && Browsed != null;
 
                 if (goodLength && differentGroup)
-                    icon.Warning.write("Trigger {0} is of group {1} not {2}".F(selectedTrig.ToPegiString(), selectedTrig.Group.ToPegiString(), Browsed.ToPegiString()));
+                    icon.Warning.write("Trigger {0} is of group {1} not {2}".F(selectedTrig.GetNameForInspector(), selectedTrig.Group.GetNameForInspector(), Browsed.GetNameForInspector()));
 
                 var groupLost = all.GetAllObjsNoOrder();
                 if (groupLost.Count > 0) {

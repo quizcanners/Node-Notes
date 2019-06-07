@@ -196,7 +196,7 @@ namespace NodeNotes
 
             bool changed = false; 
 
-            this.ToPegiString().nl();
+            this.GetNameForInspector().nl();
 
             if (Application.isEditor) 
                 "Is A Developer ".toggleIcon(ref isADeveloper).nl();

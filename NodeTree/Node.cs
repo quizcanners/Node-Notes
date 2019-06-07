@@ -178,7 +178,7 @@ namespace NodeNotes {
                     }
 
                     if (InspectingSubNode)
-                        n.Try_Nested_Inspect();
+                        pegi.Try_Nested_Inspect(n);
                 }
 
                 if (!InspectingSubNode)  {
@@ -236,7 +236,7 @@ namespace NodeNotes {
                         Shortcuts.Cut_Paste = null;
                     else
                     {
-                        (cp.ToPegiString() + (canPaste ? "" : " can't paste parent to child")).write();
+                        (cp.GetNameForInspector() + (canPaste ? "" : " can't paste parent to child")).write();
                         if (canPaste && icon.Paste.Click(ref changed))
                         {
                             cp.MoveTo(this);

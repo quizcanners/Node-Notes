@@ -139,7 +139,7 @@ namespace QcTriggerLogic
                 "Trigger Groups".write(PEGI_Styles.ListLabel); 
                 pegi.nl();
 
-                changed |= TriggerGroup.all.Inspect<UnNullableCfg<TriggerGroup>, TriggerGroup>(ref inspectedTriggerGroup);
+                changed |= ExtensionsForGenericCountless.Inspect<UnNullableCfg<TriggerGroup>, TriggerGroup>(TriggerGroup.all, ref inspectedTriggerGroup);
 
                 if (inspectedTriggerGroup == -1) {
                     "At Index: ".edit(60, ref tmpIndex);

@@ -152,7 +152,7 @@ namespace NodeNotes {
             "Time".write(35);
             pegi.edit(ref timeToShow, 35).changes(ref changed);
             
-            text.Try_enter_Inspect(ref edited, ind).changes(ref changed);
+            pegi.Try_enter_Inspect(text, ref edited, ind).changes(ref changed);
             
             return changed;
         }
@@ -269,7 +269,7 @@ namespace NodeNotes {
         public virtual bool InspectInList(IList list, int ind, ref int edited) {
             var changed = this.inspect_Name();
 
-            if (this.Click_Enter_Attention(icon.Hint, currentLanguage.ToPegiString()))
+            if (this.Click_Enter_Attention(icon.Hint, currentLanguage.GetNameForInspector()))
                 edited = ind;
             return changed;
         }
@@ -289,7 +289,7 @@ namespace NodeNotes {
                 "Translations".edit_Dictionary_Values(ref texts, LanguageCodes);
 
                 LanguageSelector_PEGI();
-                if (!Contains() && icon.Add.Click("Add {0}".F(currentLanguage.ToPegiString())))
+                if (!Contains() && icon.Add.Click("Add {0}".F(currentLanguage.GetNameForInspector())))
                     NameForPEGI = this[currentLanguage];
 
                 pegi.nl();

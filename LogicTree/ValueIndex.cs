@@ -166,7 +166,7 @@ namespace QcTriggerLogic
 
             int searchMax = 20;
 
-            current.ToPegiString().write();
+            current.GetNameForInspector().write();
 
             if (icon.Done.Click().nl(ref changed))
                 pegi.FocusControl("none");
@@ -181,14 +181,14 @@ namespace QcTriggerLogic
                             if (icon.Done.ClickUnFocus(20).changes(ref changed)) 
                                 Trigger = t;
                             
-                            t.ToPegiString().nl();
+                            t.GetNameForInspector().nl();
                         }
 
             }
             return changed;
         }
 
-        public virtual string NameForDisplayPEGI => Trigger.ToPegiString();
+        public virtual string NameForDisplayPEGI => Trigger.GetNameForInspector();
 #endif
         #endregion
     }

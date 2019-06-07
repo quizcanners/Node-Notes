@@ -98,7 +98,7 @@ namespace QcTriggerLogic
             }
             else
             {
-                this.Try_NameInspect(Group.ToPegiString(), "g:{0}t:{1}".F(groupIndex,triggerIndex)).changes(ref changed);
+                pegi.Try_NameInspect(this,Group.GetNameForInspector(), "g:{0}t:{1}".F(groupIndex,triggerIndex)).changes(ref changed);
 
                 if (icon.Edit.ClickUnFocus())
                     inspected = this;

@@ -68,7 +68,7 @@ namespace NodeNotes {
                                     Shortcuts.CurrentNode = node;
                                     executed = true;
                                 }
-                                else Debug.LogError(" Entry {0} was not referancing Node. {1} had type {2} ".F(ep.ToPegiString(), n.ToPegiString(), n.GetType()));
+                                else Debug.LogError(" Entry {0} was not referancing Node. {1} had type {2} ".F(ep.GetNameForInspector(), n.GetNameForInspector(), n.GetType()));
                             }
                             else
                                 Debug.LogError(" Entry {0} was referancing a non-existing node.");
