@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using PlayerAndEditorGUI;
+﻿using PlayerAndEditorGUI;
 
-#if UNITY_EDITOR  && PEGI
+#if !NO_PEGI && UNITY_EDITOR
 using UnityEditor;
 
 namespace NodeNotes_Visual

@@ -80,9 +80,7 @@ namespace NodeNotes
         void SaveCurrentBook() {
 
             if (_currentNode != null) {
-
-            
-
+                
                 var currentBook = _currentNode.root;
 
                 if (currentBook != null) {
