@@ -11,10 +11,15 @@ namespace NodeNotes
     public class CurrentUser: AbstractKeepUnrecognizedCfg, IGotName, IPEGI, IGotDisplayName {
 
         public string startingPoint = "";
-        public string userName = "Unknown";
+        public string Name = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
         ListMetaData marksMeta = new ListMetaData("Book Marks", true, false, false, false);
         public bool isADeveloper = false;
+
+        private static int tmpNode;
+        private string tmpBookName;
+        private string tmpAuthorName;
+
 
         #region GameNodes
         public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
@@ -57,7 +62,7 @@ namespace NodeNotes
             }
         }
 
-        public string NameForPEGI { get => userName;  set => userName = value; }
+        public string NameForPEGI { get => Name;  set => Name = value; }
 
         public void ExitCurrentBook() {
             if (bookMarks.Count == 0) {
@@ -65,9 +70,9 @@ namespace NodeNotes
                 return;
             }
 
-            var lastB = bookMarks.Last().bookName;
+            var lastB = bookMarks.Last();
 
-            var b = Shortcuts.TryGetBook(lastB);
+            var b = Shortcuts.TryGetLoadedBook(lastB);
 
             if (b == null) {
                 Debug.LogError("No {0} book found".F(lastB));
@@ -87,7 +92,8 @@ namespace NodeNotes
 
                     bookMarks.Add(new BookMark()
                     {
-                        bookName = currentBook.NameForPEGI,
+                        BookName = currentBook.NameForPEGI,
+                        AuthorName = currentBook.authorName,
                         nodeIndex = _currentNode.IndexForPEGI,
                         values = Values.global.Encode().ToString(),
                         gameNodesData = gameNodesData.Encode().ToString()
@@ -116,10 +122,10 @@ namespace NodeNotes
 
                 BookMark bm = bookMarks[ind];
 
-                var book = Shortcuts.TryGetBook(bm.bookName);
+                var book = Shortcuts.TryGetLoadedBook(bm);
 
                 if (book == null)
-                    Debug.LogError("No book {0} found".F(bm.bookName));
+                    Debug.LogError("No book {0} found".F(bm));
                 else {
                     if (TrySetCurrentNode(book, bm.nodeIndex)) {
                         bm.gameNodesData.Decode_Dictionary(out gameNodesData);
@@ -187,9 +193,10 @@ namespace NodeNotes
         #region Inspector
 
         public string NameForDisplayPEGI =>
-            "{0} FROM {1}".F(userName, startingPoint);
+            "{0} FROM {1}".F(Name, startingPoint);
 
-        #if !NO_PEGI
+      
+#if !NO_PEGI
         public override bool Inspect() {
 
             bool changed = false; 
@@ -197,7 +204,7 @@ namespace NodeNotes
             this.GetNameForInspector().nl();
 
             if (Application.isEditor) 
-                "Is A Developer ".toggleIcon(ref isADeveloper).nl();
+                "Developer Mode".toggleIcon(ref isADeveloper).nl();
             else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
             
@@ -221,24 +228,24 @@ namespace NodeNotes
   
             base.Decode(data);
 
-            var b = Shortcuts.TryGetBook(tmpBook);
+            var b = Shortcuts.TryGetLoadedBook(tmpBookName, tmpAuthorName);
 
             if (b != null)
                 Shortcuts.CurrentNode = b.allBaseNodes[tmpNode] as Node;
             
         }
 
-        static string tmpBook;
-        static int tmpNode;
+
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "bm": data.Decode_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
                 case "cur": tmpNode = data.ToInt(); break;
-                case "curB": tmpBook = data; break;
+                case "curB": tmpBookName = data; break;
+                case "curA": tmpAuthorName = data; break;;
                 case "dev": isADeveloper = data.ToBool(); break;
-                case "n": userName = data; break;
+                case "n": Name = data; break;
                 case "start": startingPoint = data; break;
                 case "pgnd": data.Decode_Dictionary(out gameNodesData); break;
                 default: return false;
@@ -252,13 +259,14 @@ namespace NodeNotes
             .Add_IfNotEmpty("bm", bookMarks)
             .Add("vals", Values.global)
             .Add_Bool("dev", isADeveloper)
-            .Add_String("n", userName)
+            .Add_String("n", Name)
             .Add_String("start", startingPoint)
             .Add_IfNotEmpty("pgnd", gameNodesData);
 
             var cur = Shortcuts.CurrentNode;
             if (cur != null) {
                 cody.Add_String("curB", cur.root.NameForPEGI)
+                    .Add_String("curA", cur.root.AuthorName)
                 .Add("cur", cur.IndexForPEGI);
             }
 

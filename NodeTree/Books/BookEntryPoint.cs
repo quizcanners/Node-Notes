@@ -9,7 +9,7 @@ using QcTriggerLogic;
 namespace NodeNotes
 {
 
-    public class BookEntryPoint : AbstractKeepUnrecognizedCfg, IPEGI, IGotName {
+    public class BookEntryPoint : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, IGotIndex, IPEGI_ListInspect {
 
         public string entryPointName = "Rename Me";
 
@@ -18,6 +18,8 @@ namespace NodeNotes
         public bool startPoint;
 
         public string NameForPEGI { get => entryPointName; set => entryPointName = value; }
+
+        public int IndexForPEGI { get => nodeIndex; set => nodeIndex = value; }
 
         #region Encode/Decode
 
@@ -43,17 +45,37 @@ namespace NodeNotes
         #region Inspector
 
         #if !NO_PEGI
-        public override bool Inspect()
-        {
+        public override bool Inspect() {
+
             bool changed = false;
 
-            "{0} is a key. Don't change it after using".writeHint();
+            this.inspect_Name().nl(ref changed);
 
-            //"Tag should not change after it was used by other book to link to this one".writeOneTimeHint("KeepTags");
+            "{0} is a reference Key to this Entry Point. Name & Target node can be changed".F(nodeIndex).writeHint();
 
             "On Node".select_iGotIndex_SameClass<Base_Node, Node>(60, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
             
             "Can Be A Game Start".toggle(ref startPoint).nl();
+
+            return changed;
+        }
+
+        public bool InspectInList(IList list, int ind, ref int edited)
+        {
+            var changed = this.inspect_Name();
+
+            var b = NodeBook.inspected;
+
+            var edtd = b.EditedByCurrentUser();
+
+            if (startPoint && !edtd && Shortcuts.CurrentNode == null 
+                && icon.Play.ClickConfirm("EnPoSt",
+                    "This will set book {0} as your Starting Point HUB. It's a big deal.".F(b)))
+                Shortcuts.CurrentNode = b.allBaseNodes[nodeIndex] as Node;
+
+
+            if (edtd && icon.Enter.Click("Inspect Entry Point"))
+                edited = ind;
 
             return changed;
         }

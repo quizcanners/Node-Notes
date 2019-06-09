@@ -69,7 +69,7 @@ namespace QcTriggerLogic
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-#if !NO_PEGI
+        #if !NO_PEGI
 
         public override string NameForDisplayPEGI => name;
 

@@ -11,48 +11,54 @@ namespace NodeNotes {
     public class NodeLinkComponent : Base_Node, IPEGI_ListInspect {
 
         public int linkedNodeIndex = 0;
-        
-        public override void OnMouseOver() {
-            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
-                TryExecuteLink();
-        }
 
-        void TryExecuteLink() {
+        public override bool ExecuteInteraction() {
 
             var node = root.allBaseNodes[linkedNodeIndex] as Node;
 
-            if (node != null)
+            if (node != null) {
                 Shortcuts.CurrentNode = node;
 
-            results.Apply(Values.global);
+                results.Apply(Values.global);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void OnMouseOver()
+        {
+            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
+                ExecuteInteraction();
         }
 
         #region Inspector
         #if !NO_PEGI
 
-        protected override icon InspectorIcon => icon.Link;
-
         protected override string InspectionHint => "Inspect Node Link";
 
         protected override string ResultsRole => "On Link Usage";
 
-        bool SharedPEGI() {
+        protected override icon ExecuteIcon => icon.Link;
+        protected override string ExecuteHint => "Execute Transition";
 
-            var changed = "Node Link ".select_iGotIndex_SameClass<Base_Node, Node>(65, ref linkedNodeIndex, root.allBaseNodes.GetAllObjsNoOrder());
+        bool SharedPEGI() => "Node Link ".select_iGotIndex_SameClass<Base_Node, Node>(65, ref linkedNodeIndex, root.allBaseNodes.GetAllObjsNoOrder());
 
-            if (icon.Play.Click("Execute Transition"))
-                TryExecuteLink();
+        public override bool InspectInList(IList list, int ind, ref int edited)
+        {
+            var changes = SharedPEGI();
 
-            return changed;
+            base.InspectInList(list, ind, ref edited).changes(ref changes);
+
+            return changes;
         }
-
-        public override bool InspectInList(IList list, int ind, ref int edited) => SharedPEGI();
 
         public override bool Inspect()
         {
             bool changed = base.Inspect();
 
-            changed |= SharedPEGI();
+            SharedPEGI().changes(ref changed);
 
             return changed;
         }

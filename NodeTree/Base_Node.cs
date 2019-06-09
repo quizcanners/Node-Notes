@@ -8,8 +8,7 @@ using UnityEngine;
 namespace NodeNotes {
 
     [DerivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
-    public class Base_Node : AbstractKeepUnrecognizedCfg, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect
-    {
+    public class Base_Node : AbstractKeepUnrecognizedCfg, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect {
 
         #region Values
         public Node parentNode;
@@ -43,6 +42,13 @@ namespace NodeNotes {
         public virtual Node AsNode => null;
         #endregion
 
+        public virtual bool ExecuteInteraction() {
+
+            results.Apply(Values.global);
+
+            return true;
+        }
+        
         public virtual void OnMouseOver() {
             if (Input.GetMouseButtonDown(0))
                parentNode?.SetInspectedUpTheHierarchy(this);
@@ -92,6 +98,8 @@ namespace NodeNotes {
 
         }
 
+        protected bool IsOneOfChildrenOf(Base_Node other) => IsOneOfChildrenOf(other as Node);
+        
         public virtual bool Conditions_isVisible() {
             UpdateLogic();
             return _visConditionsResult;
@@ -107,13 +115,13 @@ namespace NodeNotes {
         #region Encode_Decode
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
-        .Add_String(        "n", name)
-        .Add(               "i", index)
-        .Add_IfTrue("visL", showLogic)
-        .Add_IfNotNegative( "is", inspectedItems)
-        .Add_IfNotNegative( "icr", _inspectedResult)
+        .Add_String(        "n",    name)
+        .Add(               "i",    index)
+        .Add_IfTrue(        "visL", showLogic)
+        .Add_IfNotNegative( "is",   inspectedItems)
+        .Add_IfNotNegative( "icr",  _inspectedResult)
         .Add_IfNotDefault(  "cnds", _eblCondition)
-        .Add_IfNotDefault(  "vcnds", _visCondition)
+        .Add_IfNotDefault(  "vcnds",_visCondition)
         .Add_IfNotEmpty(    "res",  results)
         .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
@@ -136,7 +144,8 @@ namespace NodeNotes {
 
         #region Inspector
 
-        protected virtual icon InspectorIcon => icon.State;
+        protected virtual icon ExecuteIcon => icon.Play;
+        protected virtual string ExecuteHint => "Execute Node";
 
         protected virtual string InspectionHint => "Inspect Node";
         
@@ -157,8 +166,28 @@ namespace NodeNotes {
 
             var changed = this.inspect_Name();
 
-            if (this.Click_Enter_Attention(InspectorIcon, InspectionHint, false))
-                edited = ind;
+            if (NodeBook.inspected != null && (NodeBook.inspected.EditedByCurrentUser() || (CurrentNode != null && (CurrentNode == this || CurrentNode.IsOneOfChildrenOf(this)))))
+            {
+                if (this.Click_Enter_Attention(icon.Enter, InspectionHint, false))
+                    edited = ind;
+            }
+            else
+            {
+                var na = NeedAttention();
+                if (!na.IsNullOrEmpty())
+                    icon.Warning.write(na);
+            }
+
+            if (CurrentNode != null && CurrentNode == parentNode)
+            {
+                if (Conditions_isEnabled())
+                {
+                    if (ExecuteIcon.Click(ExecuteHint))
+                        ExecuteInteraction();
+                }
+                else (Conditions_isVisible() ? icon.Share : icon.Hide).write(Conditions_isVisible() ? "Visible" : "Hidden Node");
+            }
+
 
             return changed;
         }

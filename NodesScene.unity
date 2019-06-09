@@ -288,7 +288,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40.9
+  m_fontSize: 45.25
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -445,7 +445,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 49.5
+  m_fontSize: 54.75
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1333,7 +1333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c84c7d03e087744afb2d04bc76b094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 07bb1f54bd3353d40b3660b63081787e, type: 2}
+  m_Material: {fileID: 2100000, guid: 22a0fab4a2118104c9a16ad121b88692, type: 2}
   m_Color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -1623,7 +1623,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 29.2
+  m_fontSize: 42.55
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1846,7 +1846,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 49.5
+  m_fontSize: 54.75
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2105,9 +2105,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explorer:
-    states: []
+    states:
+    - comment: 06/09/2019 20:00:08
+      dataExplorer:
+        tag: Nodes_PEGI
+        data: b|20|auth|11|quizcanners||f|2|13|sn|1048|sub|1006|_lstMeta|95|pi|1|3|ed|81|inds|12|e|1|3|e|1|4||vals|26|e|8|sel|1|y||e|8|sel|1|y|||last|1|0|add|1|n|del|1|n|||_lst|888|0|24|b|18|n|7|Station|i|1|2|||0|32|b|26|n|14|Appartment
+          170|i|1|3|||0|124|sub|81|_lstMeta|7|pi|1|0||_lst|53|1|47|b|33|n|20|Home
+          Bathromm Window|i|2|11||lnk|1|6||||b|29|n|16|Home Fire Excape|i|2|10|||0|682|sub|632|_lstMeta|16|insp|1|0|pi|1|0||_lst|593|0|586|sub|553|_lstMeta|16|insp|1|2|pi|1|2||_lst|514|0|24|b|18|n|7|Kitchen|i|1|4|||0|24|b|18|n|7|Bedroom|i|1|5|||0|112|sub|79|_lstMeta|7|pi|1|0||_lst|51|1|45|b|30|n|18|Window
+          to A street|i|1|9||lnk|2|10||||b|19|n|8|Bathroom|i|1|6|||2|185|b|178|n|14|Turn
+          Light Off|i|1|8|visL|1|y|vcnds|46|v|34|0|28|b|1|y|ind|14|gi|1|0|ti|1|5||||t|1|1||res|28|e|22|ind|14|gi|1|0|ti|1|5||||vis|43|subVis|32|sc|18|x|1|5|y|1|3|z|1|1||pos|0||||||2|136|b|129|n|14|Turn
+          Lights On|i|1|7|visL|1|y|vcnds|40|v|28|0|22|ind|14|gi|1|0|ti|1|5||||t|1|1||res|36|e|30|val|1|1|ind|14|gi|1|0|ti|1|5||||||||b|18|n|7|My
+          Home|i|1|1|||||b|35|n|22|My Appartment Building|i|2|12|||||b|26|n|14|First
+          Advnture|i|1|0|||ep|32|e|26|s|1|y|ind|1|1|Name|4|Home|||
+        dirty: 1
+        inspectedTag: 2
     fileFolderHolder: STDEncodes
-  inspectedItems: 4
+  inspectedItems: 0
   nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: -1

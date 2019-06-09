@@ -2,6 +2,7 @@
 using UnityEngine;
 using QuizCannersUtilities;
 using System;
+using System.IO;
 using QcTriggerLogic;
 using PlayerAndEditorGUI;
 
@@ -10,8 +11,10 @@ namespace NodeNotes {
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
     public class Shortcuts : CfgReferencesHolder {
 
+        public const string ProjectName = "Node Notes";
+
         #region Progress
-     
+
         static LoopLock loopLock = new LoopLock();
 
         public static Node CurrentNode
@@ -63,19 +66,19 @@ namespace NodeNotes {
         }
 
         void SaveUser() {
-            if (!users.Contains(user.userName))
-                users.Add(user.userName);
-            user.SaveToPersistentPath(_usersFolder, user.userName);
+            if (!users.Contains(user.Name))
+                users.Add(user.Name);
+            user.SaveToPersistentPath_Json(_usersFolder, user.Name);
         }
 
         void DeleteUser() {
-            DeleteUser_File(user.userName);
+            DeleteUser_File(user.Name);
             if (users.Count > 0)
                 LoadUser(users[0]);
         }
         
         void DeleteUser_File(string uname) {
-            FileDeleteUtils.DeleteFile_PersistentFolder(_usersFolder, uname);
+            FileDeleteUtils.Delete_PersistentFolder_Json(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -88,7 +91,7 @@ namespace NodeNotes {
 
                 user = new CurrentUser
                 {
-                    userName = uname
+                    Name = uname
                 };
 
                 users.Add(uname);
@@ -100,7 +103,7 @@ namespace NodeNotes {
 
             DeleteUser();
 
-            user.userName = uname;
+            user.Name = uname;
 
             SaveUser();
         }
@@ -110,10 +113,24 @@ namespace NodeNotes {
         #region Books
         [NonSerialized] public static List<NodeBook_Base> books = new List<NodeBook_Base>();
 
-        public static NodeBook TryGetBook(string name)
-        {
-            var book = books.GetByIGotName(name);
+        public static NodeBook_Base TryGetBook(IBookReference reff) => TryGetBook(reff.BookName, reff.AuthorName);
 
+        public static NodeBook_Base TryGetBook(string bookName, string authorName)
+        {
+ 
+            foreach (var b in books)
+                if (b.NameForPEGI.Equals(bookName) && b.authorName.Equals(authorName))
+                    return b;
+
+            return null;
+        }
+
+        public static NodeBook TryGetLoadedBook(IBookReference reff) => TryGetLoadedBook(reff.BookName , reff.AuthorName);
+
+        public static NodeBook TryGetLoadedBook(string bookName, string authorName) {
+
+            var book = TryGetBook(bookName, authorName);
+            
             if (book != null && book.GetType() == typeof(NodeBook_OffLoaded))
                 book = books.LoadBook(book as NodeBook_OffLoaded);
 
@@ -124,7 +141,7 @@ namespace NodeNotes {
 
         static readonly string _generalItemsFile = "config";
 
-        public bool LoadAll() => this.LoadFromPersistentPath(_generalItemsFolder, _generalItemsFile);
+        public bool LoadAll() => this.LoadFromPersistentPath_Json(_generalItemsFolder, _generalItemsFile);
 
         public void SaveAll()
         {
@@ -148,11 +165,10 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-
-
+        
         private string _tmpUserName;
 
-#if !NO_PEGI
+        #if !NO_PEGI
         
         private int _inspectedBook = -1;
 
@@ -176,17 +192,13 @@ namespace NodeNotes {
 
             var changed = false;
 
-            if (_inspectedBook == -1)
-            {
+            if (_inspectedBook == -1) {
 
-              //  changed |= base.Inspect();
-
-                if (inspectedItems == -1)
-                {
+                if (inspectedItems == -1) {
                     if (users.Count > 1 && icon.Delete.Click("Delete User"))
                         DeleteUser();
 
-                    string usr = user.userName;
+                    string usr = user.Name;
                     if (pegi.select(ref usr, users))
                     {
                         SaveUser();
@@ -209,7 +221,7 @@ namespace NodeNotes {
                         if (icon.Add.Click("Add new user"))
                             CreateUser(_tmpUserName);
 
-                        if (icon.Replace.Click("Rename {0}".F(user.userName)))
+                        if (icon.Replace.Click("Rename {0}".F(user.Name)))
                             RenameUser(_tmpUserName);
                     }
                 }
@@ -219,33 +231,63 @@ namespace NodeNotes {
 
                     pegi.nl();
 
-                    if (Application.isEditor && icon.Folder.Click("Open Save files folder"))
-                        FileExplorerUtils.OpenPersistentFolder(NodeBook_Base.BooksFolder);
+                    if (Application.isEditor) {
 
-                    if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
+                        if (icon.Folder.Click("Open Save files folder").nl())
+                            FileExplorerUtils.OpenPersistentFolder(NodeBook_Base.BooksRootFolder);
+                        
+                        var authorFolders = FileExplorerUtils.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
 
-                        var lst = FileExplorerUtils.ListFileNamesFromPersistentFolder(NodeBook_Base.BooksFolder);
+                        foreach (var authorFolder in authorFolders) {
 
-                        foreach (var e in lst)
-                        {
-                            var contains = false;
-                            foreach (var b in books)
-                                if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
+                            var fls = FileExplorerUtils.GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
 
-                            if (contains) continue;
-                            
-                            var off = new NodeBook_OffLoaded { name = e };
-                            books.Add(off);
-                            
+                            foreach (var bookFile in fls) {
+
+                                var loaded = TryGetBook(bookFile, authorFolder);
+
+                                if (loaded == null) {
+                                    "{0} by {1}".F(bookFile, authorFolder).write();
+
+                                    if (icon.Insert.Click("Add current book to list"))
+                                            books.Add(new NodeBook_OffLoaded(bookFile, authorFolder));
+
+                                    pegi.nl();
+                                }
+
+                            }
                         }
                     }
+
+                /*
+                if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
+                    
+                    var lst = FileExplorerUtils.GetFileNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
+
+                    foreach (var e in lst)
+                    {
+                        var contains = false;
+                        foreach (var b in books)
+                            if (b.NameForPEGI.SameAs(e)) { contains = true; break; }
+
+                        if (contains) continue;
+                        
+                        var off = new NodeBook_OffLoaded { name = e };
+                        books.Add(off);
+                        
+                    }
+                }*/
                 }
             }
             else inspectedItems = -1;
 
             if (inspectedItems == -1) {
 
-                "Books ".edit_List(ref books, ref _inspectedBook);
+                var newBook = "Books ".edit_List(ref books, ref _inspectedBook, ref changed);
+
+                if (newBook != null)
+                    newBook.authorName = user.Name;
+                
 
                 if (_inspectedBook == -1)
                 {
@@ -293,7 +335,7 @@ namespace NodeNotes {
             }
             return changed;
             }
-#endif
+        #endif
         #endregion
 
         #region Encode_Decode
@@ -302,7 +344,7 @@ namespace NodeNotes {
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
             .Add("us", users)
-            .Add_String("curUser", user.userName);
+            .Add_String("curUser", user.Name);
         
         public override bool Decode(string tg, string data)
         {

@@ -1,25 +1,32 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using QuizCannersUtilities;
-using QcTriggerLogic;
 using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public class BookMark : AbstractKeepUnrecognizedCfg, IPEGI_ListInspect, IGotName {
+    public class BookMark : AbstractKeepUnrecognizedCfg, IPEGI_ListInspect, IGotName, IGotDisplayName, IBookReference
+    {
 
-        public string bookName;
+        //public string bookName;
+        //public string authorName;
+
+        public string BookName { get; set ; }
+        public string AuthorName { get; set; }
+
+
         public int nodeIndex;
         public string values;
         public string gameNodesData;
 
-        public string NameForPEGI { get => bookName; set => bookName = value; }
+        public string NameForPEGI { get => BookName; set => BookName = value; }
+
+        public string NameForDisplayPEGI => "Node {0} in {1} by {2}".F(nodeIndex, BookName, AuthorName);
+
 
         #region Inspector
-        #if !NO_PEGI
+#if !NO_PEGI
         public bool InspectInList(IList list, int ind, ref int edited) {
-            "Node {0} in {1}".F(nodeIndex, bookName).write();   
+            NameForDisplayPEGI.write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
                 Shortcuts.user.ReturnToMark(this);
             
@@ -32,14 +39,16 @@ namespace NodeNotes
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("vals", values)
             .Add("ind", nodeIndex)
-            .Add_String("n", bookName)
+            .Add_String("n", BookName)
+            .Add_String("auth", AuthorName)
             .Add_String("gnd", gameNodesData);
         
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "vals": values = data; break;
                 case "ind": nodeIndex = data.ToInt(); break;
-                case "n": bookName = data; break;
+                case "n": BookName = data; break;
+                case "auth": AuthorName = data; break;
                 case "gnd": gameNodesData = data; break;
                 default: return false;
             }

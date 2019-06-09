@@ -14,15 +14,18 @@ namespace NodeNotes {
 
         BookLinkType type = BookLinkType.BookLink;
 
+        private string linkedBookAuthor;
         string linkedBookName;
         string bookEntryPoint;
 
-        NodeBook LinkedBook => Shortcuts.TryGetBook(linkedBookName);
+        NodeBook LoadLinkedBook => Shortcuts.TryGetLoadedBook(linkedBookName, linkedBookAuthor);
 
+        NodeBook_Base LinkedBook => Shortcuts.TryGetBook(linkedBookName, linkedBookAuthor);
+        
         Node LinkedNode  {
             get
             {
-                var book = LinkedBook;
+                var book = LoadLinkedBook;
                 if (book != null)   {
                     var ep = book.entryPoints.GetByIGotName(bookEntryPoint);
 
@@ -41,8 +44,9 @@ namespace NodeNotes {
 
             return base.Conditions_isVisible();
         }
-        
-        bool TryExecuteTransition() {
+
+        public override bool ExecuteInteraction()
+        {
 
             bool executed = false;
 
@@ -50,7 +54,7 @@ namespace NodeNotes {
             {
                 case BookLinkType.BookLink:
 
-                    var book = LinkedBook;
+                    var book = LoadLinkedBook;
                     if (book != null)
                     {
 
@@ -75,28 +79,32 @@ namespace NodeNotes {
                         }
                     }
 
-                    if (executed)
-                        results.Apply(Values.global);
+                 
 
                     return executed;
                 case BookLinkType.BookExit:
 
-                    if (Shortcuts.user.bookMarks.Count == 0)
-                        return false;
-
+                    if (Shortcuts.user.bookMarks.Count != 0)
+                    {
                         Shortcuts.user.ExitCurrentBook();
+                        executed = true;
+                    }
 
                     break;
 
                     
             }
 
-            return false;
+
+            if (executed)
+                base.ExecuteInteraction();
+
+            return executed;
         }
 
         public override void OnMouseOver() {
             if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
-                TryExecuteTransition();
+                ExecuteInteraction();
         }
 
         bool LinkToCurrent
@@ -113,7 +121,7 @@ namespace NodeNotes {
         #region Inspector
 #if !NO_PEGI
 
-        protected override icon InspectorIcon => icon.Book;
+        //protected override icon InspectorIcon => icon.Book;
 
         protected override string InspectionHint => "Inspect Book Link";
 
@@ -128,11 +136,16 @@ namespace NodeNotes {
 
                 case BookLinkType.BookLink:
 
-                    changed |= pegi.select_iGotName(ref linkedBookName, Shortcuts.books);
+                    var linkedBook = Shortcuts.TryGetBook(linkedBookName, linkedBookAuthor);
 
-                    var book = LinkedBook;
+                    if (pegi.select(ref linkedBook, Shortcuts.books).changes(ref changed)) {
+                        linkedBookName = linkedBook.NameForPEGI;
+                        linkedBookAuthor = linkedBook.authorName;
+                    }
 
-                    if (book != null)   {
+                    var book = LoadLinkedBook;
+
+                    if (book != null) {
 
                         pegi.select_iGotName(ref bookEntryPoint, book.entryPoints);
 
@@ -140,7 +153,7 @@ namespace NodeNotes {
 
                         if (ep != null) {
                             if (!LinkToCurrent && icon.Play.Click("Transition Condition: {0}".F(Conditions_isEnabled())))
-                                TryExecuteTransition();
+                                ExecuteInteraction();
                         }
                     }
                     break;

@@ -10,7 +10,7 @@ namespace NodeNotes {
 
         #region SubNodes
 
-        private ListMetaData _coreNodesMeta = new ListMetaData("Sub Nodes", keepTypeData: true, enterIcon: icon.StateMachine);
+        private ListMetaData _coreNodesMeta = new ListMetaData("Sub Nodes", keepTypeData: true);
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
@@ -68,15 +68,22 @@ namespace NodeNotes {
 
         public override Node AsNode => this;
 
-        public override void OnMouseOver()
-        {
+        public override bool ExecuteInteraction() {
+            Shortcuts.CurrentNode = this;
+            base.ExecuteInteraction();
+
+            if (parentNode != null)
+                parentNode.InspectedCoreNode = this;
+            return true;
+        }
+
+        public override void OnMouseOver() {
+
             if (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {
                 if (this != Shortcuts.CurrentNode)
-                    Shortcuts.CurrentNode = this;
+                    ExecuteInteraction();
                 else if (parentNode != null)
                     Shortcuts.CurrentNode = parentNode;
-
-                results.Apply(Values.global);
             }
 
             if (Input.GetMouseButtonDown(1))
@@ -115,6 +122,17 @@ namespace NodeNotes {
         
         protected override string ResultsRole => "On Enter Results";
 
+        private Base_Node InspectedCoreNode {
+            set
+            {
+                if (value == null)
+                    _coreNodesMeta.inspected = -1;
+                else if (coreNodes.Contains(value))
+                    _coreNodesMeta.inspected = coreNodes.IndexOf(value);
+            }
+            get { return coreNodes.TryGet(_coreNodesMeta.inspected); }
+        } 
+
         public void SetInspectedUpTheHierarchy(Base_Node node)
         {
 
@@ -134,6 +152,9 @@ namespace NodeNotes {
         }
 
         #if !NO_PEGI
+        protected override icon ExecuteIcon => icon.Next;
+        protected override string ExecuteHint => "Enter Node";
+
         public override string NeedAttention()
         {
             if (!_loopLock.Unlocked) return "Infinite Loop Detected";
@@ -215,11 +236,22 @@ namespace NodeNotes {
             
             if (!InspectingSubNode && inspectedItems ==-1)  {
                 if (this != CurrentNode) {
-                    if (icon.Play.Click("Enter Node"))
-                        CurrentNode = this;
+                    if (root.EditedByCurrentUser()) {
+                        if (icon.State.Click("Enter Node"))
+                            CurrentNode = this;
+                    } else if (CurrentNode != null && CurrentNode == parentNode) {
+                        if (Conditions_isEnabled()) {
+                            if (icon.State.Click("Enter node"))
+                                ExecuteInteraction();
+                        } else (Conditions_isVisible() ? icon.Share : icon.Hide).write(Conditions_isVisible() ? "Visible" : "Hidden Node");
+                    }
+
                 }
-                else if (parentNode != null && icon.Close.Click())
+                else if (parentNode != null && icon.Back.Click("Exit Node"))
+                {
                     CurrentNode = parentNode;
+                    parentNode.InspectedCoreNode = null;
+                }
             }
 
             if (!InspectingSubNode)  {
@@ -246,7 +278,7 @@ namespace NodeNotes {
                     }
                     pegi.nl();
                 }
-                changed |= base.Inspect();
+                base.Inspect().changes(ref changed);
             }
             else
                 Inspect_AfterNamePart();
@@ -264,11 +296,11 @@ namespace NodeNotes {
                 using (_loopLock.Lock()){
 
                     var cody = this.EncodeUnrecognized()
-                        .Add("sub", coreNodes, _coreNodesMeta)
+                        .Add_IfNotEmpty("sub", coreNodes, _coreNodesMeta)
                         .Add("b", base.Encode);
 
                     if (gameNodes.Count > 0)
-                        cody.Add("gn", gameNodes, _gamesNodesMeta, GameNodeBase.all);
+                        cody.Add_IfNotEmpty("gn", gameNodes, _gamesNodesMeta, GameNodeBase.all);
                    
                     return cody;
                 }

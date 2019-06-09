@@ -5,15 +5,13 @@ using QcTriggerLogic;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 
-namespace NodeNotes
-{
+namespace NodeNotes {
 
-    public class NodeButtonComponent : Base_Node
-    {
+    public class NodeButtonComponent : Base_Node {
 
         public override void OnMouseOver() {
             if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
-                results.Apply(Values.global);
+                ExecuteInteraction();
         }
         
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
@@ -29,11 +27,7 @@ namespace NodeNotes
             return true;
         }
 
-
-
-#if !NO_PEGI
-
-        protected override icon InspectorIcon => icon.Done;
+        #if !NO_PEGI
 
         protected override string InspectionHint => "Inspect Button";
 
@@ -41,12 +35,13 @@ namespace NodeNotes
 
         public override bool Inspect()
         {
-            "BUTTON".nl();
+            "BUTTON: {0}".F(NameForPEGI).nl();
 
             bool changed = base.Inspect();
 
             return changed;
         }
-#endif
+        #endif
+
     }
 }

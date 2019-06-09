@@ -366,15 +366,15 @@ namespace NodeNotes_Visual
             var cn = Shortcuts.CurrentNode;
 
             if (cn!= null && inspectedItems ==2)
-                changed |= cn.Nested_Inspect();
+                cn.Nested_Inspect(ref changed);
 
             pegi.nl();
 
                 if (!shortcuts)
-                    "Shortcuts".edit(ref shortcuts).nl();
+                    "Shortcuts".edit(ref shortcuts).nl(ref changed);
                 else
                    if (inspectedItems == 4)
-                    shortcuts.Nested_Inspect();
+                    shortcuts.Nested_Inspect().changes(ref changed);
                 else
                     pegi.nl();
 
@@ -409,7 +409,7 @@ namespace NodeNotes_Visual
                 window.Render(this);
         }
 
-#endif
+        #endif
         #endregion
 
         readonly LerpData _lerpData = new LerpData();

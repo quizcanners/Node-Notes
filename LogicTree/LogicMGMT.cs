@@ -3,7 +3,6 @@ using System;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-
 namespace QcTriggerLogic
 {
     public class LogicMGMT : ComponentCfg   {
@@ -81,7 +80,7 @@ namespace QcTriggerLogic
 
             InspectionTabs();
 
-            changed |= base.Inspect().nl();
+            base.Inspect().nl(ref changed);
 
             if (inspectedItems == 1) {
 
@@ -136,16 +135,15 @@ namespace QcTriggerLogic
 
                 }
 
-                "Trigger Groups".write(PEGI_Styles.ListLabel); 
-                pegi.nl();
+                "Trigger Groups".nl(PEGI_Styles.ListLabel); 
 
-                changed |= ExtensionsForGenericCountless.Inspect<UnNullableCfg<TriggerGroup>, TriggerGroup>(TriggerGroup.all, ref inspectedTriggerGroup);
+                ExtensionsForGenericCountless.Inspect<UnNullableCfg<TriggerGroup>, TriggerGroup>(TriggerGroup.all, ref inspectedTriggerGroup).changes(ref changed);
 
                 if (inspectedTriggerGroup == -1) {
                     "At Index: ".edit(60, ref tmpIndex);
                     if (tmpIndex >= 0 && ExtensionsForGenericCountless.TryGet(TriggerGroup.all, tmpIndex) == null && icon.Add.ClickUnFocus("Create New Group"))
                     {
-                        TriggerGroup.all[tmpIndex].NameForPEGI = "Group " + tmpIndex.ToString();//.GetIndex();
+                        TriggerGroup.all[tmpIndex].NameForPEGI = "Group " + tmpIndex.ToString();
                         tmpIndex++;
                     }
                     pegi.nl();

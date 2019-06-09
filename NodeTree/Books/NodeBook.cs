@@ -5,13 +5,16 @@ using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using System;
 using QcTriggerLogic;
+using System.IO;
 
 namespace NodeNotes
 {
     
-    public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI, IPEGI_Searchable {
+    public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI, IPEGI_Searchable
+    {
 
         #region Values
+
         public int firstFree = 1;
         public CountlessCfg<Base_Node> allBaseNodes = new CountlessCfg<Base_Node>();
 
@@ -42,8 +45,7 @@ namespace NodeNotes
         #endregion
 
         #region Inspector
-
-
+        
         public override void ResetInspector()
         {
             _inspectedNode = -1;
@@ -61,7 +63,7 @@ namespace NodeNotes
         private int _inspectedEntry = -1;
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
-
+       
         #if !NO_PEGI
         public bool String_SearchMatch(string searchString) => pegi.Try_SearchMatch_Obj(subNode, searchString);
         
@@ -96,9 +98,11 @@ namespace NodeNotes
 
             }
 
-            if (inspectedItems == -1)
-                subNode.Nested_Inspect().nl(ref changed); 
-            
+            if (inspectedItems == -1) {
+                "Author: {0} {1}".F(authorName, this.EditedByCurrentUser() ? "(ME)" : "").nl();
+                subNode.Nested_Inspect().nl(ref changed);
+            }
+
             inspected = null;
             return changed;
         }
@@ -107,9 +111,14 @@ namespace NodeNotes
             var changed = false;
 
             var tmp = NameForPEGI;
-            if (pegi.editDelayed(ref tmp).changes(ref changed)) 
-                TryRename(tmp);
-            
+
+            if (this.EditedByCurrentUser())
+            {
+                if (pegi.editDelayed(ref tmp).changes(ref changed))
+                    TryRename(tmp);
+            }
+            else NameForDisplayPEGI.write();
+
             if (icon.Book.ClickUnFocus("Inspect book").changes(ref changed))
                 edited = ind;
 
@@ -121,22 +130,24 @@ namespace NodeNotes
             
             return changed;
         }
-#endif
+        #endif
         #endregion
 
         #region Encode_Decode
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
+            .Add("b", base.Encode)
             .Add("f", firstFree)
             .Add("sn", subNode)
             .Add_IfNotNegative("in", _inspectedNode)
             .Add_IfNotNegative("inE", _inspectedEntry)
-            .Add("ep", entryPoints)
+            .Add_IfNotEmpty("ep", entryPoints)
             .Add_IfNotNegative("i",inspectedItems)
-            .Add("gn", gameNodesData);
+            .Add_IfNotEmpty("gn", gameNodesData);
           
         public override bool Decode(string tg, string data) {
             switch (tg) {
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "f": firstFree = data.ToInt(); break;
                 case "sn": data.DecodeInto(out subNode); break;
                 case "in": _inspectedNode = data.ToInt(); break;
@@ -163,23 +174,49 @@ namespace NodeNotes
         #endregion
 
         #region Saving_Loading
-        public void SaveToFile() => this.SaveToPersistentPath(BooksFolder, NameForPEGI);
 
-        public void DeleteFile(string bookName) => FileDeleteUtils.DeleteFile_PersistentFolder(BooksFolder, bookName);
+        private bool AuthoringAStory => this.EditedByCurrentUser() && Application.isEditor;
 
-        public void TryRename(string newName)
-        {
+        public void SaveToFile() {
+
+            if (AuthoringAStory) {
+                this.SaveToResources_Bytes(Shortcuts.ProjectName, this.BookFolder(), BookName);
+                UnityUtils.RefreshAssetDatabase();
+            }
+            else
+                this.SaveToPersistentPath_Json(this.BookFolder(), NameForPEGI);
+        }
+
+        public bool TryLoad(IBookReference reff) {
+
+            if (reff.EditedByCurrentUser() && Application.isEditor)
+                return this.TryLoadFromResources_Bytes(reff.BookFolder(), reff.BookName);
+            else
+                return this.LoadFromPersistentPath_Json(reff.BookFolder(), reff.BookName);
+
+        }
+
+        public void DeleteFile(string bookName) {
+
+            if (AuthoringAStory) {
+                FileDeleteUtils.DeleteResource_Bytes(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
+                UnityUtils.RefreshAssetDatabase();
+            }
+            else 
+                FileDeleteUtils.Delete_PersistentFolder_Json(this.BookFolder(), bookName);
+        }
+
+        public void TryRename(string newName) {
 
             if (subNode.name.SameAs(newName))
                 return;
 
-            if (newName.Length < 3)
-            {
+            if (newName.Length < 3) {
                 Debug.LogError("Name is too short");
                 return;
             }
-            if (Shortcuts.books.GetByIGotName(newName) != null)
-            {
+
+            if (Shortcuts.books.GetByIGotName(newName) != null) {
                 Debug.LogError("Book with this name already exists");
                 return;
             }
@@ -188,8 +225,10 @@ namespace NodeNotes
             NameForPEGI = newName;
             SaveToFile();
         }
-
         #endregion
 
     }
+
+   
+
 }
