@@ -9,6 +9,9 @@ using QcTriggerLogic;
 
 namespace NodeNotes_Visual {
 
+
+#pragma warning disable IDE0018 // Inline variable declaration
+
     [ExecuteInEditMode]
     public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
         private static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
@@ -413,15 +416,15 @@ namespace NodeNotes_Visual {
                 needShaderUpdate = true;
             }
 
-            ld.skipLerpPossible = (_canJumpToPosition && fadePortion < 0.1f && !isFading);
+            bool skipLerpPossible = (_canJumpToPosition && fadePortion < 0.1f && !isFading);
 
-            _shCurrentColor = Color.Lerp(_shCurrentColor, ac.targetColor, ld.Portion(true));
-            _localPos.Lerp(ld, false);
-            _localScale.Lerp(ld, true);
-            _shadeCorners.Lerp(ld, true);
-            _shadeSelected.Lerp(ld, true);
-            _textureFadeIn.Lerp(ld, true);
-            _texTransition.Lerp(ld, true);
+            _shCurrentColor = Color.Lerp(_shCurrentColor, ac.targetColor, ld.Portion(skipLerpPossible));
+            _localPos.Lerp(ld);
+            _localScale.Lerp(ld, skipLerpPossible);
+            _shadeCorners.Lerp(ld, skipLerpPossible);
+            _shadeSelected.Lerp(ld, skipLerpPossible);
+            _textureFadeIn.Lerp(ld, skipLerpPossible);
+            _texTransition.Lerp(ld, skipLerpPossible);
 
             if (needShaderUpdate)
                 UpdateShaders();

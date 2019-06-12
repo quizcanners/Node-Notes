@@ -272,7 +272,7 @@ namespace NodeNotes_Visual.ECS {
 
         public static bool Edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected) where T : struct
         {
-            label.write_Search_ListLabel(ref inspected, null);
+            //pegi.write_Search_ListLabel(label, ref inspected, null);
             bool changed = false;
             Edit_Array(ref array, ref inspected, ref changed);
 

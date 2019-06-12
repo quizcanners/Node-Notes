@@ -11,7 +11,7 @@ namespace NodeNotes {
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
     public class Shortcuts : CfgReferencesHolder {
 
-        public const string ProjectName = "Node Notes";
+        public const string ProjectName = "NodeNotes";
 
         #region Progress
 
@@ -188,9 +188,14 @@ namespace NodeNotes {
         private NodeBook _replaceReceived;
         private bool _inspectReplacementOption;
 
+        private EncodedJson json = new EncodedJson();
+
         public override bool Inspect() {
 
             var changed = false;
+
+
+            json.Nested_Inspect().nl();
 
             if (_inspectedBook == -1) {
 
