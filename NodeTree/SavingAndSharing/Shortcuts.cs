@@ -188,14 +188,14 @@ namespace NodeNotes {
         private NodeBook _replaceReceived;
         private bool _inspectReplacementOption;
 
-        private EncodedJson json = new EncodedJson();
+        private EncodedJsonInspector _jsonInspector = new EncodedJsonInspector();
 
         public override bool Inspect() {
 
             var changed = false;
 
 
-            json.Nested_Inspect().nl();
+            _jsonInspector.Nested_Inspect().nl();
 
             if (_inspectedBook == -1) {
 
