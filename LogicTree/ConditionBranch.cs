@@ -17,7 +17,7 @@ namespace QcTriggerLogic {
 
         private ConditionBranchType _type = ConditionBranchType.And;
 
-        public int CountForInspector => CountRecursive();
+        public int CountForInspector() => CountRecursive();
 
         private int CountRecursive() {
             var count = _conditions.Count;
@@ -106,7 +106,7 @@ namespace QcTriggerLogic {
             if ((IsTrue ? icon.Active : icon.InActive).Click(ref changed) && !TryForceTo(Values.global, !IsTrue))
                 Debug.Log("No Conditions to force to {0}".F(!IsTrue));
 
-            var cnt = CountForInspector;
+            var cnt = CountForInspector();
 
             switch (cnt)
             {

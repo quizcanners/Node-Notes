@@ -20,13 +20,13 @@ namespace NodeNotes
 
         public string NameForPEGI { get => BookName; set => BookName = value; }
 
-        public string NameForDisplayPEGI => "Node {0} in {1} by {2}".F(nodeIndex, BookName, AuthorName);
+        public string NameForDisplayPEGI()=> "Node {0} in {1} by {2}".F(nodeIndex, BookName, AuthorName);
 
 
         #region Inspector
 #if !NO_PEGI
         public bool InspectInList(IList list, int ind, ref int edited) {
-            NameForDisplayPEGI.write();   
+            NameForDisplayPEGI().write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
                 Shortcuts.user.ReturnToMark(this);
             

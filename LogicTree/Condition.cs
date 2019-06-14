@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
 namespace QcTriggerLogic
 {
+
+
+#pragma warning disable IDE0019 // Use pattern matching
 
     public interface IAmConditional {
         bool CheckConditions(Values values);
@@ -82,7 +84,7 @@ namespace QcTriggerLogic
         #region Inspect
         #if !NO_PEGI
 
-        public override string NameForDisplayPEGI => "if {0}{1}".F(compareValue ? "" : "NOT ",base.NameForDisplayPEGI);
+        public override string NameForDisplayPEGI() => "if {0}{1}".F(compareValue ? "" : "NOT ",base.NameForDisplayPEGI());
 
         #endif
         #endregion
@@ -130,11 +132,10 @@ namespace QcTriggerLogic
         #region Inspect
 #if !NO_PEGI
 
-        public override string NameForDisplayPEGI {
-            get  {
-                var name = "If {0} {1} {2}".F(base.NameForDisplayPEGI, type.GetName(), compareValue);
+        public override string NameForDisplayPEGI() {
+                var name = "If {0} {1} {2}".F(base.NameForDisplayPEGI(), type.GetName(), compareValue);
                 return name;
-            }
+            
         }
 
 #endif
@@ -276,7 +277,7 @@ namespace QcTriggerLogic
 
         public static bool TryTestCondition(this object obj)
         {
-            var cnd = obj as IAmConditional;
+            IAmConditional cnd = obj as IAmConditional;
             if (cnd == null) return true;
             return cnd.IsTrue();
         }

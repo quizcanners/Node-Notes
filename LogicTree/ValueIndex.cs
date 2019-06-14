@@ -188,7 +188,7 @@ namespace QcTriggerLogic
             return changed;
         }
 
-        public virtual string NameForDisplayPEGI => Trigger.GetNameForInspector();
+        public virtual string NameForDisplayPEGI() => Trigger.GetNameForInspector();
 
         #endif
         #endregion

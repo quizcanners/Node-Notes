@@ -8,6 +8,8 @@ namespace QcTriggerLogic
 
     // Trigger usage is only used for PEGI. Logic engine will not need this to process triggers
 
+#pragma warning disable IDE0019 // Use pattern matching
+
     public abstract class TriggerUsage : IGotDisplayName  {
         
         private static readonly List<string> Names = new List<string>();
@@ -75,7 +77,7 @@ namespace QcTriggerLogic
         
         public virtual bool IsBoolean => false;
 
-        public abstract string NameForDisplayPEGI { get;  }
+        public abstract string NameForDisplayPEGI(); 
 
         public virtual bool UsingEnum() => false;
         
@@ -103,7 +105,7 @@ namespace QcTriggerLogic
 
     public class UsageBoolean : TriggerUsage {
 
-        public override string NameForDisplayPEGI => "YesNo";
+        public override string NameForDisplayPEGI()=> "YesNo";
 
         #region Inspector
 #if !NO_PEGI
@@ -148,7 +150,7 @@ namespace QcTriggerLogic
 
     public class UsageNumber : TriggerUsage {
 
-        public override string NameForDisplayPEGI => "Number";
+        public override string NameForDisplayPEGI()=> "Number";
 
         public static readonly Dictionary<int,string> ConditionUsages = new Dictionary<int, string> { 
             { ((int)ConditionType.Equals), "==" },
@@ -199,7 +201,7 @@ namespace QcTriggerLogic
     public class UsageStringEnum : TriggerUsage
     {
 
-        public override string NameForDisplayPEGI => "Enums";
+        public override string NameForDisplayPEGI()=> "Enums";
 
         #region Inspector
 #if !NO_PEGI
@@ -250,7 +252,7 @@ namespace QcTriggerLogic
 
     public class UsageGameTimeStamp : TriggerUsage {
 
-        public override string NameForDisplayPEGI => "Game Time";
+        public override string NameForDisplayPEGI()=> "Game Time";
 
         private static readonly Dictionary<int, string> ConditionUsages = new Dictionary<int, string> {
             { ((int)ConditionType.VirtualTimePassedAbove), "Game_Time passed > " },
@@ -298,7 +300,7 @@ namespace QcTriggerLogic
 
     public class UsageRealTimeStamp : TriggerUsage {
 
-        public override string NameForDisplayPEGI => "Real Time";
+        public override string NameForDisplayPEGI()=> "Real Time";
 
         private static readonly Dictionary<int, string> ConditionUsages = new Dictionary<int, string> {
             { ((int)ConditionType.RealTimePassedAbove), "Real_Time passed > " },
@@ -349,7 +351,7 @@ namespace QcTriggerLogic
     /*
     public class Usage_IntTag : TriggerUsage {
 
-        public override string NameForDisplayPEGI => "TagGroup";
+        public override string NameForDisplayPEGI()=> "TagGroup";
 
         #region Inspector
         #if !NO_PEGI
@@ -408,7 +410,7 @@ namespace QcTriggerLogic
 
     public class Usage_BoolTag : TriggerUsage {
 
-        public override string NameForDisplayPEGI => "Tag";
+        public override string NameForDisplayPEGI()=> "Tag";
 
         #region Inspector
         #if !NO_PEGI

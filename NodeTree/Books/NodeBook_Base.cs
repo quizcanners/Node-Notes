@@ -11,7 +11,7 @@ namespace NodeNotes {
 
         public string authorName = "Author Name";
     
-        public virtual string NameForDisplayPEGI => this.EditedByCurrentUser() ? NameForPEGI : "{0} by {1}".F(NameForPEGI, authorName);
+        public virtual string NameForDisplayPEGI()=> this.EditedByCurrentUser() ? NameForPEGI : "{0} by {1}".F(NameForPEGI, authorName);
 
         #region Encode & Decode
 

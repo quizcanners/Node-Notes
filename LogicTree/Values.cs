@@ -129,7 +129,7 @@ namespace QcTriggerLogic {
 
         #region Inspector
 
-        public int CountForInspector => booleans.CountForInspector + ints.CountForInspector;// + enumTags.CountForInspector + boolTags.CountForInspector; 
+        public int CountForInspector() => booleans.CountForInspector() + ints.CountForInspector();// + enumTags.CountForInspector + boolTags.CountForInspector; 
 
 #if !NO_PEGI
 

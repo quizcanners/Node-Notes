@@ -20,7 +20,7 @@ namespace NodeNotes_Visual.ECS {
 
         #region Inspector
         #if !NO_PEGI
-        public string NameForDisplayPEGI => "Phisics Array index";
+        public string NameForDisplayPEGI() => "Phisics Array index";
 
         public bool InspectInList(IList list, int ind, ref int edited) {
             var changed = "PhisX Index".edit(80, ref phisixIndex);

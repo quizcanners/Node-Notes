@@ -71,7 +71,7 @@ namespace QcTriggerLogic
 
         #if !NO_PEGI
 
-        public override string NameForDisplayPEGI => name;
+        public override string NameForDisplayPEGI() => name;
 
         public override bool InspectInList(IList list, int ind, ref int edited) {
 

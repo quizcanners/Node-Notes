@@ -91,8 +91,8 @@ namespace QcTriggerLogic  {
         
         #region Inspector
         #if !NO_PEGI
-        public override string NameForDisplayPEGI =>
-            "{0} : {1} {2} ".F(base.NameForDisplayPEGI, type.GetText(), 
+        public override string NameForDisplayPEGI() =>
+            "{0} : {1} {2} ".F(base.NameForDisplayPEGI(), type.GetText(), 
             (IsBoolean ? (updateValue != 0).ToString() : updateValue.ToString()));
 
         public override bool PEGI_inList_Sub(IList list, int ind, ref int inspecte) {

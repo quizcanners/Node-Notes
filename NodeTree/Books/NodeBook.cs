@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
-using System;
-using QcTriggerLogic;
 using System.IO;
 
 namespace NodeNotes
 {
     
+    #pragma warning disable IDE0018 // Inline variable declaration
+
     public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI, IPEGI_Searchable
     {
 
@@ -84,8 +84,8 @@ namespace NodeNotes
             if (subNode.inspectedItems == -1 && !subNode.InspectingSubNode) {
 
                 if (inspectedItems == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
-                    
-                    string data;
+
+                    string data = null;
                     if (this.SendReceivePegi(subNode.name, "Books", out data)) {
 
                         var tmp = new NodeBook();
@@ -117,7 +117,7 @@ namespace NodeNotes
                 if (pegi.editDelayed(ref tmp).changes(ref changed))
                     TryRename(tmp);
             }
-            else NameForDisplayPEGI.write();
+            else NameForDisplayPEGI().write();
 
             if (icon.Book.ClickUnFocus("Inspect book").changes(ref changed))
                 edited = ind;

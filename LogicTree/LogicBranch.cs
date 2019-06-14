@@ -112,7 +112,7 @@ namespace QcTriggerLogic
          
             pegi.nl();
 
-            if (parent != null || conditions.CountForInspector>0)
+            if (parent != null || conditions.CountForInspector()>0)
                 conditions.enter_Inspect_AsList(ref inspectedItems, 1).nl(ref changed);
             
             parent = this;

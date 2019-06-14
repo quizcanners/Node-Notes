@@ -8,6 +8,10 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
+
+
+#pragma warning disable IDE0019 // Use pattern matching
+
     public class CurrentUser: AbstractKeepUnrecognizedCfg, IGotName, IPEGI, IGotDisplayName {
 
         public string startingPoint = "";
@@ -192,7 +196,7 @@ namespace NodeNotes
 
         #region Inspector
 
-        public string NameForDisplayPEGI =>
+        public string NameForDisplayPEGI()=>
             "{0} FROM {1}".F(Name, startingPoint);
 
       
@@ -212,7 +216,7 @@ namespace NodeNotes
 
             "Values ".enter_Inspect(Values.global, ref inspectedItems, 1).changes(ref changed);
 
-            if (pegi.IsFoldedOut && Values.global.CountForInspector>0 &&  icon.Delete.Click("Reset all triggers"))
+            if (pegi.IsFoldedOut && Values.global.CountForInspector()>0 &&  icon.Delete.Click("Reset all triggers"))
                 Values.global.Clear();
 
 

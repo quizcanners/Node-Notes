@@ -90,7 +90,7 @@ namespace NodeNotes_Visual {
         }
 
         #if !NO_PEGI
-        public string NameForDisplayPEGI => texts[0].NameForPEGI;
+        public string NameForDisplayPEGI() => texts[0].NameForPEGI;
 
         public string NeedAttention() {
 

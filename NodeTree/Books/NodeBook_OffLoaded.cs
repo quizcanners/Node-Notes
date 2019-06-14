@@ -7,7 +7,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
     public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
 
-        public override string NameForDisplayPEGI => "{0} by {1}".F(name, authorName);
+        public override string NameForDisplayPEGI() => "{0} by {1}".F(name, authorName);
         
         public string name;
 
