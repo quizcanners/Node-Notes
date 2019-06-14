@@ -181,7 +181,7 @@ namespace NodeNotes
 
             if (AuthoringAStory) {
                 this.SaveToResources_Bytes(Shortcuts.ProjectName, this.BookFolder(), BookName);
-                UnityUtils.RefreshAssetDatabase();
+                QcUnity.RefreshAssetDatabase();
             }
             else
                 this.SaveToPersistentPath_Json(this.BookFolder(), NameForPEGI);
@@ -199,11 +199,11 @@ namespace NodeNotes
         public void DeleteFile(string bookName) {
 
             if (AuthoringAStory) {
-                FileDeleteUtils.DeleteResource_Bytes(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
-                UnityUtils.RefreshAssetDatabase();
+                QcFileDeleteUtils.DeleteResource_Bytes(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
+                QcUnity.RefreshAssetDatabase();
             }
             else 
-                FileDeleteUtils.Delete_PersistentFolder_Json(this.BookFolder(), bookName);
+                QcFileDeleteUtils.Delete_PersistentFolder_Json(this.BookFolder(), bookName);
         }
 
         public void TryRename(string newName) {

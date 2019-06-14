@@ -17,7 +17,7 @@ namespace NodeNotes_Visual
         
         public Shortcuts shortcuts;
 
-        public TextureDownloadManager textureDownloader = new TextureDownloadManager();
+        public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
 
         #region UI_Buttons 
         public TextMeshProUGUI editButton;

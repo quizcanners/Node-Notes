@@ -61,7 +61,7 @@ namespace NodeNotes {
         static readonly string _usersFolder = "Users";
 
         void LoadUser(string uname) {
-            FileLoadUtils.LoadJsonFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
+            QcFileLoadUtils.LoadJsonFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
             _tmpUserName = uname;
         }
 
@@ -78,7 +78,7 @@ namespace NodeNotes {
         }
         
         void DeleteUser_File(string uname) {
-            FileDeleteUtils.Delete_PersistentFolder_Json(_usersFolder, uname);
+            QcFileDeleteUtils.Delete_PersistentFolder_Json(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -146,7 +146,7 @@ namespace NodeNotes {
         public void SaveAll()
         {
             SaveUser();
-            FileSaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+            QcFileSaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
         public static void AddOrReplace(NodeBook nb) {
@@ -235,13 +235,13 @@ namespace NodeNotes {
                     if (Application.isEditor) {
 
                         if (icon.Folder.Click("Open Save files folder").nl())
-                            FileExplorerUtils.OpenPersistentFolder(NodeBook_Base.BooksRootFolder);
+                            QcFileExplorerUtils.OpenPersistentFolder(NodeBook_Base.BooksRootFolder);
                         
-                        var authorFolders = FileExplorerUtils.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
+                        var authorFolders = QcFileExplorerUtils.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
 
                         foreach (var authorFolder in authorFolders) {
 
-                            var fls = FileExplorerUtils.GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
+                            var fls = QcFileExplorerUtils.GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
 
                             foreach (var bookFile in fls) {
 
@@ -263,7 +263,7 @@ namespace NodeNotes {
                 /*
                 if (icon.Refresh.Click("Will populate list with mentions with books in Data folder without loading them")) {
                     
-                    var lst = FileExplorerUtils.GetFileNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
+                    var lst = QcFileExplorerUtils.GetFileNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
 
                     foreach (var e in lst)
                     {
