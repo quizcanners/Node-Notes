@@ -199,11 +199,11 @@ namespace NodeNotes
         public void DeleteFile(string bookName) {
 
             if (AuthoringAStory) {
-                QcFileDeleteUtils.DeleteResource_Bytes(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
+                QcFile.DeleteUtils.DeleteResource_Bytes(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
                 QcUnity.RefreshAssetDatabase();
             }
             else 
-                QcFileDeleteUtils.Delete_PersistentFolder_Json(this.BookFolder(), bookName);
+                QcFile.DeleteUtils.Delete_PersistentFolder_Json(this.BookFolder(), bookName);
         }
 
         public void TryRename(string newName) {
