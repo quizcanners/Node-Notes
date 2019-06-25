@@ -91,6 +91,7 @@ namespace NodeNotes_Visual
         #region BG
 
         public List<NodesStyleBase> backgroundControllers = new List<NodesStyleBase>();
+
         public static void SetBackground (NodeCircleController circle) {
 
             var data = circle ? circle.backgroundConfig : "";
@@ -100,7 +101,6 @@ namespace NodeNotes_Visual
 
             if (tag.Length == 0 && bgc.Count > 0)
                 tag = bgc[0].ClassTag;
-
             
             foreach (var bc in bgc)
                 if (bc != null) {
@@ -216,16 +216,11 @@ namespace NodeNotes_Visual
 
         private readonly LoopLock _loopLock = new LoopLock();
 
-        public override Node CurrentNode
-        {
+        public override Node CurrentNode {
 
-            get
-            {
-                return Shortcuts.CurrentNode;
-            }
+            get {  return Shortcuts.CurrentNode; }
 
-            set
-            {
+            set {
 
                 if (!_loopLock.Unlocked) return;
                 
@@ -234,13 +229,8 @@ namespace NodeNotes_Visual
                     if (Application.isPlaying && Shortcuts.CurrentNode != value) {
 
                         if (value == null)
-                        {
-                           // Debug.LogError("{0} is not a Node GetBrushType: {1}".F(value.GetNameForInspector(),
-                             //   value == null ? "Null" : value.GetType().ToPegiStringType()));
-
                             return;
-                        }
-
+                        
                         SetSelected(null);
                         
                         var previous = Shortcuts.CurrentNode?.visualRepresentation as NodeCircleController;
@@ -260,13 +250,10 @@ namespace NodeNotes_Visual
                     else
                         Shortcuts.CurrentNode = value;
                 }
-                
-
             }
         }
 
-        private static void UpdateVisibility(Base_Node node, NodeCircleController previous = null)
-        {
+        private static void UpdateVisibility(Base_Node node, NodeCircleController previous = null) {
 
             if (node == null) return;
 
@@ -284,8 +271,6 @@ namespace NodeNotes_Visual
 
             if (node.visualRepresentation != null)
                 (node.visualRepresentation as NodeCircleController).SetDirty();
-
-            
         }
 
         private static void UpdateCurrentNodeGroupVisibilityAround(NodeCircleController centerNode = null) {

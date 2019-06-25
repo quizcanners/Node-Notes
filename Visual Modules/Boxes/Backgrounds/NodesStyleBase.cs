@@ -17,8 +17,6 @@ namespace NodeNotes_Visual {
         public TaggedTypesCfg AllTypes => all;
         #endregion
 
-        public Color fallbackColor = Color.black;
-
         public abstract void FadeAway();
 
         public abstract bool TryFadeIn();

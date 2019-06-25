@@ -14,6 +14,7 @@ namespace NodeNotes_Visual {
 
     [ExecuteInEditMode]
     public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
+
         private static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
 
         public Renderer circleRenderer;

@@ -20,7 +20,7 @@ namespace NodeNotes
 
         private void OnEnable() {
 
-            position = new LinkedLerp.RectangleTransformAnchoredPositionValue(rectTranform, 200);
+          
 
             if (!rectTranform)
                 rectTranform = GetComponent<RectTransform>();
@@ -37,7 +37,10 @@ namespace NodeNotes
 
         public void Portion(LerpData ld)
         {
-            if (showCreateButtons && position != null && !gameObject.activeSelf)
+            if (position == null)
+                position = new LinkedLerp.RectangleTransformAnchoredPositionValue(rectTranform, 200);
+            
+            if (showCreateButtons && !gameObject.activeSelf)
                    gameObject.SetActive(true);
             
             position.targetValue = Destination;
