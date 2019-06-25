@@ -955,6 +955,7 @@ RectTransform:
   - {fileID: 617632653}
   - {fileID: 2133683274}
   - {fileID: 1235906089}
+  - {fileID: 1274019442}
   - {fileID: 1699581653}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -1230,6 +1231,15 @@ MonoBehaviour:
   nestedReferences: []
   isFading: 0
   color: {r: 0.9339623, g: 0.9339623, b: 0.9339623, a: 1}
+  slidingButtons:
+  - {fileID: 1417408137}
+  - {fileID: 1419288878}
+  - {fileID: 737095456}
+  editButton: {fileID: 1742041633}
+  addButton: {fileID: 2133683276}
+  circlePrefab: {fileID: 114439652449945980, guid: f2ffb0611be89e447a5d6d79448036f7,
+    type: 3}
+  deleteButton: {fileID: 1235906092}
 --- !u!4 &1274019442
 Transform:
   m_ObjectHideFlags: 0
@@ -1237,11 +1247,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1274019440}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 333.39566, y: 442.90305, z: 11}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -382.75974, y: 263.01233, z: 13.983049}
+  m_LocalScale: {x: 1.2711864, y: 1.2711864, z: 1.2711864}
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 806629723}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1417408134
@@ -1257,7 +1267,7 @@ GameObject:
   - component: {fileID: 1417408137}
   - component: {fileID: 1417408136}
   m_Layer: 5
-  m_Name: AddNode
+  m_Name: Add_Node
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1577,7 +1587,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 43.7
+  m_fontSize: 34.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1746,7 +1756,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 806629723}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2099,15 +2109,6 @@ MonoBehaviour:
   inspectedTriggerGroup: -1
   tmpIndex: -1
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
-  slidingButtons:
-  - {fileID: 737095456}
-  - {fileID: 1419288878}
-  - {fileID: 1417408137}
-  editButton: {fileID: 1742041633}
-  addButton: {fileID: 2133683276}
-  circlePrefab: {fileID: 114439652449945980, guid: f2ffb0611be89e447a5d6d79448036f7,
-    type: 3}
-  deleteButton: {fileID: 1235906092}
   backgroundControllers:
   - {fileID: 1274019441}
   - {fileID: 1699581656}

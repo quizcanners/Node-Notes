@@ -347,7 +347,7 @@ namespace NodeNotes_Visual {
             _shadeCorners.targetValue = (this == _dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
             _shadeCorners.Portion(ld);
 
-            _shadeSelected.targetValue = (this == Mgmt.selectedNode ? 1f : 0f);
+            _shadeSelected.targetValue = (this == WhiteBackground.inst.selectedNode ? 1f : 0f);
             _shadeSelected.Portion(ld);
 
             _texTransition.Portion(ld);
@@ -427,7 +427,7 @@ namespace NodeNotes_Visual {
                 UpdateShaders();
 
             if (fadePortion == 0 && isFading && Application.isPlaying)
-                Nodes_PEGI.Deactivate(this);
+                WhiteBackground.inst.Deactivate(this);
         }
         
         public string dominantParameter;
@@ -576,7 +576,7 @@ namespace NodeNotes_Visual {
                 if (gn != null)
                     Shortcuts.visualLayer.FromNodeToGame(gn);
                 else
-                    Nodes_PEGI.Instance.SetSelected(this);
+                    WhiteBackground.inst.SetSelected(this);
 
                 Vector3 pos;
                 if (UpPlane.MouseToPlane(out pos, MainCam))

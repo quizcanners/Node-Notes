@@ -195,6 +195,8 @@ namespace NodeNotes {
                         else
                             name.write();
 
+                        NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this);
+                        
                         pegi.nl();
                     }
 

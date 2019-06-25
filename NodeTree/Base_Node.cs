@@ -263,9 +263,7 @@ namespace NodeNotes {
                 pegi.nl();
 
                 Inspect_AfterNamePart().nl(ref changed);
-
-                NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this);
-
+                
               //  if (BackgroundBase.all.selectTypeTag(ref visualStyleTag).nl(ref changed))
                  //   Nodes_PEGI.SetBackground(this);
 

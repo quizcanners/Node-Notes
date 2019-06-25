@@ -1,4 +1,5 @@
-﻿using QuizCannersUtilities;
+﻿using NodeNotes;
+using QuizCannersUtilities;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,6 +14,8 @@ namespace NodeNotes_Visual {
         const string classTag = "textRead";
 
         public TextMeshProUGUI pTextMeshPro;
+
+        public override Node CurrentNode { set => throw new System.NotImplementedException(); }
 
         public override bool TryFadeIn() {
 
@@ -40,5 +43,28 @@ namespace NodeNotes_Visual {
             }
         }
 
+        public override void MakeVisible(Base_Node node)
+        {
+        }
+
+        public override void UpdateCurrentNodeGroupVisibilityAround(Node node)
+        {
+        }
+
+        public override void MakeHidden(Base_Node node)
+        {
+        }
+
+        public override void ManagedOnEnable()
+        {
+        }
+
+        public override void OnLogicVersionChange()
+        {
+        }
+
+        public override void ManagedOnDisable()
+        {
+        }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using QuizCannersUtilities;
 
-namespace NodeNotes
+namespace NodeNotes_Visual
 {
 
     [ExecuteInEditMode]

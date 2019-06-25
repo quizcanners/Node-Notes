@@ -21,267 +21,34 @@ namespace NodeNotes_Visual
         public static Nodes_PEGI Instance => inst as Nodes_PEGI;
 
         public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
-
-        #region UI_Buttons 
-
-        public List<CreateNodeButton> slidingButtons = new List<CreateNodeButton>();
-
-        public TextMeshProUGUI editButton;
-
-        public RoundedGraphic addButton;
-
-        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 4);
-
-        public NodeCircleController circlePrefab;
-
-        public RoundedGraphic deleteButton;
-        #endregion
-        
-        #region Click Events
-        
-        public void RightTopButton()
-        {
-            selectedNode = null;
-
-            Base_Node.editingNodes = !Base_Node.editingNodes;
-
-            if (editButton)
-                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
-
-            if (addButton)
-                addButton.gameObject.SetActive(Base_Node.editingNodes);
-
-            if (deleteButton)
-                deleteButton.gameObject.SetActive(false);
-
-            SetShowAddButtons(false);
-        }
-
-        public void ToggleShowAddButtons() => SetShowAddButtons(!CreateNodeButton.showCreateButtons);
-        
-        private void SetShowAddButtons(bool val)
-        {
-            CreateNodeButton.showCreateButtons = val;
-
-            addButtonCourner.targetValue = CreateNodeButton.showCreateButtons ? 1 : 0;
-
-            AddLogicVersion();
-        }
-
-        public void AddNode() => MakeVisible(Shortcuts.CurrentNode.Add<Node>());
-
-        public void AddLink() => MakeVisible(Shortcuts.CurrentNode.Add<NodeLinkComponent>());
-
-        public void AddButton() => MakeVisible(Shortcuts.CurrentNode.Add<NodeButtonComponent>());
-
-        public void DeleteSelected()
-        {
-
-            if (!selectedNode) return;
-
-            var node = selectedNode.source;
-
-            if (node.parentNode == null) return;
-            
-            selectedNode.Unlink();
-            node.Delete();
-            SetSelected(null);
-                
-            
-        }
-        #endregion
         
         #region Node MGMT
-
-        private static readonly List<NodeCircleController> NodesPool = new List<NodeCircleController>();
-        private static int _firstFree = 0;
-
-        public static void Deactivate(NodeCircleController n) {
-            n.gameObject.SetActive(false);
-            _firstFree = Mathf.Min(_firstFree, n.IndexForPEGI);
-       }
-
-        private static void Delete (NodeCircleController ctr) {
-            var ind = NodesPool.IndexOf(ctr);
-            NodesPool.RemoveAt(ind);
-            _firstFree = Mathf.Min(_firstFree, ind);
-            ctr.gameObject.DestroyWhatever();
-        }
-
-        private static void DeleteAllNodes() {
-            foreach (var e in NodesPool)
-                if (e)
-                {
-                    if (Application.isPlaying)
-                        e.isFading = true;
-                    else
-                        e.gameObject.DestroyWhatever();
-
-                }
-
-            NodesPool.Clear();
-        }
         
-        public override void Show(Base_Node node) => MakeVisible(node);
-
-        private static void MakeVisible(Base_Node node, NodeCircleController centerNode = null) {
-
-            NodeCircleController nnp = null;
-
-            if (!centerNode) 
-                centerNode = node.parentNode?.visualRepresentation as NodeCircleController;
-
-            var reusing = false;
-
-            if (node.previousVisualRepresentation != null) {
-                var tmp = node.previousVisualRepresentation as NodeCircleController;
-                if (tmp && tmp.isFading && node == tmp.myLastLinkedNode) {
-                    nnp = tmp;
-                    if (tmp.gameObject.activeSelf) {
-                        reusing = true;
-                        Debug.Log("Reusing previous for {0}".F(node.GetNameForInspector()));
-                    }
-                }
-            }
-
-            if (!nnp) {
-                while (_firstFree < NodesPool.Count) {
-                    var np = NodesPool[_firstFree];
-
-                    if (!np.gameObject.activeSelf) {
-                        nnp = np;
-                        break;
-                    }
-                    else _firstFree++;
-                }
-            }
-
-            if (!nnp) {
-
-                if (!Instance.circlePrefab)
-                    return;
-
-                nnp = Instantiate(Instance.circlePrefab);
-                nnp.IndexForPEGI = NodesPool.Count;
-                NodesPool.Add(nnp);
-
-                Debug.Log("Creating new for {0}".F(node.GetNameForInspector()));
-            }
-
-            nnp.LinkTo(node);
-
-            if (!reusing)
-                nnp.SetStartPositionOn(centerNode);
-            
-        }
-
-        public override void Hide(Base_Node node) => MakeHidden(node);
-
-        private static void MakeHidden(Base_Node node, NodeCircleController previous = null)
-        {
-            var ncc = node.visualRepresentation as NodeCircleController;
-            if (!ncc) return;
-            
-            ncc.Unlink();
+        public override void Show(Base_Node node) => selectedController.MakeVisible(node);
         
-            if (!Application.isPlaying)
-                Delete(ncc);
-            else
-                ncc.SetFadeAwayRelation(previous);
+        public override void Hide(Base_Node node) => selectedController.MakeHidden(node);
 
-        }
-
-        private readonly LoopLock _loopLock = new LoopLock();
+       // private readonly LoopLock _loopLock = new LoopLock();
 
         public override Node CurrentNode {
 
             get {  return Shortcuts.CurrentNode; }
 
-            set {
-
-                if (!_loopLock.Unlocked) return;
-                
-                using (_loopLock.Lock()) {
-
-                    if (Application.isPlaying && Shortcuts.CurrentNode != value) {
-
-                        if (value == null)
-                            return;
-                        
-                        SetSelected(null);
-                        
-                        var previous = Shortcuts.CurrentNode?.visualRepresentation as NodeCircleController;
-
-                        Shortcuts.CurrentNode = value;
-
-                        UpdateVisibility(value, previous);
-
-                        foreach (var n in NodesPool)
-                            UpdateVisibility(n.source, previous);
-                 
-                        UpdateCurrentNodeGroupVisibilityAround(previous);
-
-                        _firstFree = 0;
-
-                    }
-                    else
-                        Shortcuts.CurrentNode = value;
-                }
+            set
+            {
+                SetBackground(value);
+                selectedController.CurrentNode = value;
             }
         }
 
-        private static void UpdateVisibility(Base_Node node, NodeCircleController previous = null) {
-
-            if (node == null) return;
-
-            var shouldBeVisible = (Base_Node.editingNodes || 
-                ((node.parentNode != null && node.Conditions_isVisible()) || !Application.isPlaying))
-                && (Shortcuts.CurrentNode != null 
-                && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
-
-            if (node.visualRepresentation == null)  {
-                if (shouldBeVisible)
-                    MakeVisible(node, previous);
-            } else 
-                if (!shouldBeVisible)
-                    MakeHidden(node, previous);
-
-            if (node.visualRepresentation != null)
-                (node.visualRepresentation as NodeCircleController).SetDirty();
-        }
-
-        private static void UpdateCurrentNodeGroupVisibilityAround(NodeCircleController centerNode = null) {
+        public override void OnLogicVersionChange()
+        {
             var cn = Shortcuts.CurrentNode;
-            
+
             SetBackground(cn);
 
-            if (!Application.isPlaying) return;
+            selectedController.UpdateCurrentNodeGroupVisibilityAround(cn);
 
-            if (cn == null) return;
-                
-            UpdateVisibility(cn, centerNode);
-                foreach (var sub in cn)
-                    UpdateVisibility(sub, centerNode);
-                
-            
-        }
-
-        public override void OnLogicVersionChange() => UpdateCurrentNodeGroupVisibilityAround();
-
-        [NonSerialized] public NodeCircleController selectedNode;
-
-        public void SetSelected(NodeCircleController node)
-        {
-            if (selectedNode)
-                selectedNode.SetDirty();
-
-            selectedNode = node;
-
-            if (node)
-                node.SetDirty();
-
-            if (deleteButton)
-                deleteButton.gameObject.SetActive(selectedNode);
         }
 
         #endregion
@@ -292,7 +59,7 @@ namespace NodeNotes_Visual
 
         public static BackgroundBase selectedController;
 
-        public static void SetBackground(Base_Node source)
+        public static void SetBackground(Node source)
         {
 
             var tag = source.visualStyleTag;
@@ -365,14 +132,8 @@ namespace NodeNotes_Visual
                 else return gameNode.Nested_Inspect();
             }
 
-            if (Application.isPlaying && selectedNode) {
-                if (selectedNode.Nested_Inspect()) {
-                    OnLogicVersionChange();
-                    return true;
-                }
-                return false;
-            }
-
+            selectedController.Nested_Inspect();
+            
             bool changed = base.Inspect();
 
             var cn = Shortcuts.CurrentNode;
@@ -392,13 +153,11 @@ namespace NodeNotes_Visual
 
             if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                 pegi.nl();
-                "Edit Button".edit(90, ref editButton).nl(ref changed);
-                "Add Button".edit(90, ref addButton).nl(ref changed);
-                "Delete Button".edit(90, ref deleteButton).nl(ref changed);
-                "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
-                "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
 
-                "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
+                "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
+    
+
+              
             }
 
             pegi.nl();
@@ -421,10 +180,8 @@ namespace NodeNotes_Visual
                 window.Render(this);
         }
 
-        #endif
+#endif
         #endregion
-
-        private readonly LerpData _ld = new LerpData();
 
         protected override void DerivedUpdate() {
 
@@ -435,24 +192,15 @@ namespace NodeNotes_Visual
                 Application.Quit();
                 Debug.Log("Quit click");
             }
-            
-            _ld.Reset();
-            
-            addButtonCourner.Portion(_ld);
-            NodesPool.Portion(_ld);
-            slidingButtons.Portion(_ld);
-
-            addButtonCourner.Lerp(_ld);
-            NodesPool.Lerp(_ld);
-            slidingButtons.Lerp(_ld);
-
-            addButton.SetCorner(1, addButtonCourner.CurrentValue);
         }
 
         protected override void OnDisable() {
 
             base.OnDisable();
-            DeleteAllNodes();
+
+            foreach (var bg in backgroundControllers)
+                bg.ManagedOnDisable();
+
             textureDownloader.Dispose();
 
         }
@@ -463,18 +211,15 @@ namespace NodeNotes_Visual
 
             base.OnEnable();
             
-            DeleteAllNodes();
-
             shortcuts.LoadAll();
 
-            editButton.text = "Edit";
-            if (addButton)
-                addButton.gameObject.SetActive(false);
-
+          
+            foreach (var bg in backgroundControllers)
+                bg.ManagedOnEnable();
 
         }
 
-        public override bool InspectBackgroundTag(Base_Node node) {
+        public override bool InspectBackgroundTag(Node node) {
 
             var changed = false;
 

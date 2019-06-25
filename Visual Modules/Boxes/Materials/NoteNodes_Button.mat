@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: NoteNodes_Button
   m_Shader: {fileID: 4800000, guid: ddc6862f62e0bef40b8a81c892148cb9, type: 3}
-  m_ShaderKeywords: _GRADS_MIRROR _GRAD_HOR
+  m_ShaderKeywords: _GRADS_MIRROR _GRAD_HOR _UNLINKED
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0

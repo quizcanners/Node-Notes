@@ -13,7 +13,7 @@ namespace NodeNotes {
 
         public static NodesVisualLayerAbstract InstAsNodesVisualLayer => inst as NodesVisualLayerAbstract;
 
-        public abstract bool InspectBackgroundTag(Base_Node node);
+        public abstract bool InspectBackgroundTag(Node node);
 
         public Shortcuts shortcuts;
 
