@@ -273,7 +273,7 @@ namespace NodeNotes {
                         {
                             cp.MoveTo(this);
                             Shortcuts.Cut_Paste = null;
-                            Shortcuts.visualLayer.UpdateVisibility();
+                            Shortcuts.visualLayer.OnLogicVersionChange();
                         }
                     }
                     pegi.nl();

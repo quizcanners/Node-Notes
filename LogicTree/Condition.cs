@@ -92,7 +92,7 @@ namespace QcTriggerLogic
         public override bool TryForceConditionValue(Values values, bool toTrue)
         {
             SetBool(values, toTrue ? compareValue : !compareValue);
-            LogicMGMT.currentLogicVersion++;
+            LogicMGMT.AddLogicVersion();
             return true;
         }
 
@@ -172,7 +172,7 @@ namespace QcTriggerLogic
                 }
             }
 
-            LogicMGMT.currentLogicVersion++;
+            LogicMGMT.AddLogicVersion();
 
             return true;
         }

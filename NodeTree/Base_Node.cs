@@ -78,9 +78,9 @@ namespace NodeNotes {
         protected List<Result> results = new List<Result>();
 
         private void UpdateLogic() {
-            if (_logicVersion == LogicMGMT.currentLogicVersion) return;
+            if (_logicVersion == LogicMGMT.CurrentLogicVersion) return;
 
-            _logicVersion = LogicMGMT.currentLogicVersion;
+            _logicVersion = LogicMGMT.CurrentLogicVersion;
 
             _visConditionsResult = _visCondition.IsTrue;
 

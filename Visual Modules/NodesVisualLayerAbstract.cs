@@ -1,4 +1,5 @@
-﻿using QcTriggerLogic;
+﻿using System;
+using QcTriggerLogic;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,14 +8,14 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes
 {
-    public abstract class NodesVisualLayerAbstract : LogicMGMT {
+    public abstract class NodesVisualLayerAbstract : LogicMGMT
+    {
+
+        public Shortcuts shortcuts;
+
         public abstract Node CurrentNode { get; set; }
 
-        protected GameNodeBase gameNode = null;
-
-        public abstract void Show(Base_Node node);
-
-        public abstract void Hide(Base_Node node);
+        [NonSerialized] protected GameNodeBase gameNode = null;
 
         protected LoopLock loopLockEnt = new LoopLock();
 
@@ -22,23 +23,33 @@ namespace NodeNotes
 
         public static Node preGameNode;
 
-        public virtual void FromNodeToGame(GameNodeBase gn) {
+        public abstract void Show(Base_Node node);
 
-            if (gameNode != null) {
-                 Debug.LogError("Exit previous Game Node");
+        public abstract void Hide(Base_Node node);
+
+        public virtual void FromNodeToGame(GameNodeBase gn)
+        {
+
+            if (gameNode != null)
+            {
+                Debug.LogError("Exit previous Game Node");
                 FromGameToNode();
             }
 
             if (loopLockEnt.Unlocked)
-                using (loopLockEnt.Lock()) {
+                using (loopLockEnt.Lock())
+                {
 
-                    if (CurrentNode != null) {
+                    if (CurrentNode != null)
+                    {
                         if (CurrentNode as Node != null)
                             preGameNode = CurrentNode;
-                        else {
-                            Debug.LogError("Current Node {0}: {1} is not a Node".F(CurrentNode.GetNameForInspector(), CurrentNode.GetType().ToPegiStringType()));
+                        else
+                        {
+                            Debug.LogError("Current Node {0}: {1} is not a Node".F(CurrentNode.GetNameForInspector(),
+                                CurrentNode.GetType().ToPegiStringType()));
                             preGameNode = gn.parentNode;
-                        } 
+                        }
                     }
                     else preGameNode = gn.parentNode;
 
@@ -52,11 +63,14 @@ namespace NodeNotes
 
         protected LoopLock loopLockExit = new LoopLock();
 
-        public virtual void FromGameToNode(bool failed = false)  {
+        public virtual void FromGameToNode(bool failed = false)
+        {
 
             if (loopLockExit.Unlocked)
-                using (loopLockExit.Lock())  {
-                    if (gameNode != null) {
+                using (loopLockExit.Lock())
+                {
+                    if (gameNode != null)
+                    {
                         if (failed)
                             gameNode.FailExit();
                         else
@@ -66,7 +80,7 @@ namespace NodeNotes
                     gameNode = null;
 
                     if (failed)
-                        Shortcuts.user.ReturnToMark(); 
+                        Shortcuts.user.ReturnToMark();
                     else
                     {
                         if (preGameNode != null)
@@ -76,7 +90,14 @@ namespace NodeNotes
                 }
         }
 
-        public abstract void UpdateVisibility();
+        protected virtual void OnDisable()
+        {
+            if (shortcuts)
+                shortcuts.SaveAll();
 
+            Shortcuts.CurrentNode = null;
+        }
+
+      
     }
 }

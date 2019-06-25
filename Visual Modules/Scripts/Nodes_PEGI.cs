@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using UnityEngine.UI;
 using TMPro;
 using NodeNotes;
+using PlaytimePainter;
 
 
 namespace NodeNotes_Visual
@@ -15,41 +17,52 @@ namespace NodeNotes_Visual
 
         public static Nodes_PEGI nodeMgmtInstPegi;
         
-        public Shortcuts shortcuts;
-
         public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
 
         #region UI_Buttons 
+
+        public List<CreateNodeButton> slidingButtons = new List<CreateNodeButton>();
+
         public TextMeshProUGUI editButton;
 
-        public Button addButton;
+        public RoundedGraphic addButton;
+
+        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 4);
 
         public NodeCircleController circlePrefab;
 
-        public Button deleteButton;
+        public RoundedGraphic deleteButton;
         #endregion
         
         #region Click Events
+        
         public void RightTopButton()
         {
             selectedNode = null;
+
             Base_Node.editingNodes = !Base_Node.editingNodes;
+
             if (editButton)
                 editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
 
-            CreateNodeButton.showCreateButtons = false;
-
             if (addButton)
                 addButton.gameObject.SetActive(Base_Node.editingNodes);
+
             if (deleteButton)
                 deleteButton.gameObject.SetActive(false);
 
-            AddLogicVersion();
+            SetShowAddButtons(false);
         }
 
-        public void ToggleShowAddButtons() {
+        public void ToggleShowAddButtons() => SetShowAddButtons(!CreateNodeButton.showCreateButtons);
+        
+        private void SetShowAddButtons(bool val)
+        {
+            CreateNodeButton.showCreateButtons = val;
+
+            addButtonCourner.targetValue = CreateNodeButton.showCreateButtons ? 1 : 0;
+
             AddLogicVersion();
-            CreateNodeButton.showCreateButtons = !CreateNodeButton.showCreateButtons;
         }
 
         public void AddNode() => MakeVisible(Shortcuts.CurrentNode.Add<Node>());
@@ -76,6 +89,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region BG
+
         public List<NodesStyleBase> backgroundControllers = new List<NodesStyleBase>();
         public static void SetBackground (NodeCircleController circle) {
 
@@ -290,9 +304,9 @@ namespace NodeNotes_Visual
             
         }
 
-        public override void UpdateVisibility() => UpdateCurrentNodeGroupVisibilityAround();
+        public override void OnLogicVersionChange() => UpdateCurrentNodeGroupVisibilityAround();
 
-        public NodeCircleController selectedNode;
+        [NonSerialized] public NodeCircleController selectedNode;
 
         public void SetSelected(NodeCircleController node)
         {
@@ -307,7 +321,6 @@ namespace NodeNotes_Visual
             if (deleteButton)
                 deleteButton.gameObject.SetActive(selectedNode);
         }
-
 
         #endregion
 
@@ -355,7 +368,7 @@ namespace NodeNotes_Visual
 
             if (Application.isPlaying && selectedNode) {
                 if (selectedNode.Nested_Inspect()) {
-                    UpdateVisibility();
+                    OnLogicVersionChange();
                     return true;
                 }
                 return false;
@@ -412,34 +425,35 @@ namespace NodeNotes_Visual
         #endif
         #endregion
 
-        readonly LerpData _lerpData = new LerpData();
-
-        private int _logicVersion = -1;
+        private readonly LerpData _ld = new LerpData();
 
         protected override void DerivedUpdate() {
+
+            base.DerivedUpdate();
+
             if (Input.GetKey(KeyCode.Escape)) {
                 OnDisable();
                 Application.Quit();
                 Debug.Log("Quit click");
             }
+            
+            _ld.Reset();
+            
+            addButtonCourner.Portion(_ld);
+            NodesPool.Portion(_ld);
+            slidingButtons.Portion(_ld);
 
-            if (_logicVersion != currentLogicVersion)
-            {
-                UpdateVisibility();
-                _logicVersion = currentLogicVersion;
-            }
+            addButtonCourner.Lerp(_ld);
+            NodesPool.Lerp(_ld);
+            slidingButtons.Lerp(_ld);
 
-            _lerpData.Reset();
-
-            NodesPool.Portion(_lerpData);
-
-            NodesPool.Lerp(_lerpData);
+            addButton.SetCorner(1, addButtonCourner.CurrentValue);
         }
 
-        private void OnDisable() {
-            if (shortcuts)
-                shortcuts.SaveAll();
-            Shortcuts.CurrentNode = null;
+        protected override void OnDisable()
+        {
+
+            base.OnDisable();
             DeleteAllNodes();
             textureDownloader.Dispose();
 

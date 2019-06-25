@@ -95,7 +95,7 @@ namespace NodeNotes_Visual {
                 }
 
 
-            _questVersion = LogicMGMT.currentLogicVersion;
+            _questVersion = LogicMGMT.CurrentLogicVersion;
 
             return cnt > 0;
         }
@@ -123,7 +123,7 @@ namespace NodeNotes_Visual {
 
             if (PossibleInteractions.Count != 0) {
 
-                _questVersion = LogicMGMT.currentLogicVersion;
+                _questVersion = LogicMGMT.CurrentLogicVersion;
               
                 _interactionStage = 0;
                 _textNo = 0;
@@ -153,7 +153,7 @@ namespace NodeNotes_Visual {
         static int _questVersion;
 
         private void DistantUpdate()  {
-            if (_questVersion == LogicMGMT.currentLogicVersion) return;
+            if (_questVersion == LogicMGMT.CurrentLogicVersion) return;
             
             switch (_interactionStage) {
 
@@ -169,7 +169,7 @@ namespace NodeNotes_Visual {
                     break;
             }
 
-            _questVersion = LogicMGMT.currentLogicVersion;
+            _questVersion = LogicMGMT.CurrentLogicVersion;
         }
 
         private static void ClearTexts() {

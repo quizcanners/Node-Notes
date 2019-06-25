@@ -5,14 +5,21 @@ using QuizCannersUtilities;
 
 namespace QcTriggerLogic
 {
-    public class LogicMGMT : ComponentCfg   {
+    public abstract class LogicMGMT : ComponentCfg   {
 
         public static LogicMGMT inst;
 
         private bool _waiting;
         private float _timeToWait = -1;
-        public static int currentLogicVersion;
-        public static void AddLogicVersion() => currentLogicVersion++;
+        private static int _currentLogicVersion;
+
+        public static int CurrentLogicVersion => _currentLogicVersion;
+        
+        public static void AddLogicVersion() {
+            _currentLogicVersion++;
+            if (inst)
+                inst.OnLogicVersionChange();
+        }
 
         private static int _realTimeOnStartUp;
 
@@ -30,14 +37,15 @@ namespace QcTriggerLogic
 
         public virtual void OnEnable()  =>  inst = this;
         
-        public void AddTimeListener(float seconds)
-        {
+        public void AddTimeListener(float seconds) {
             seconds += 0.5f;
             _timeToWait = !_waiting ? seconds : Mathf.Min(_timeToWait, seconds);
             _waiting = true;
         }
 
         protected virtual void DerivedUpdate() { }
+
+        public abstract void OnLogicVersionChange();
 
         public void Update()
         {

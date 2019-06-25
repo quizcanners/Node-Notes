@@ -121,7 +121,7 @@ namespace NodeNotes_Visual {
                         if (name != source.name)
                             NameForPEGI = source.name;
                         
-                        Shortcuts.visualLayer.UpdateVisibility();
+                        Shortcuts.visualLayer.OnLogicVersionChange();
                     }
                 }
             } else {
