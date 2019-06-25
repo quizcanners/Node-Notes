@@ -7,12 +7,18 @@ using UnityEngine;
 
 namespace NodeNotes {
 
+#pragma warning disable IDE0019 // Use pattern matching
+
     [DerivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
     public class Base_Node : AbstractKeepUnrecognizedCfg, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect {
 
         #region Values
         public Node parentNode;
         public NodeBook root;
+
+        public string visualStyleTag = "";
+
+        public Dictionary<string, string> visualStyleConfigs = new Dictionary<string, string>();
 
         public void OnClassTypeChange(object previousInstance) {
             
@@ -123,6 +129,8 @@ namespace NodeNotes {
         .Add_IfNotDefault(  "cnds", _eblCondition)
         .Add_IfNotDefault(  "vcnds",_visCondition)
         .Add_IfNotEmpty(    "res",  results)
+        .Add_IfNotEmpty(    "bg", visualStyleTag)
+        .Add_IfNotEmpty(    "bg_cfgs", visualStyleConfigs)
         .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
         public override bool Decode(string tg, string data) {
@@ -136,6 +144,8 @@ namespace NodeNotes {
                 case "vcnds":   _visCondition.Decode(data); break;
                 case "res":     data.Decode_List(out results); break;
                 case "vis":     configForVisualRepresentation = data; break;
+                case "bg":      visualStyleTag = data; break;
+                case "bg_cfgs": data.Decode_Dictionary(out visualStyleConfigs); break;
             }
             return true;
         }
@@ -157,7 +167,7 @@ namespace NodeNotes {
         protected bool showLogic;
 
 
-#if !NO_PEGI
+        #if !NO_PEGI
         
         public virtual bool InspectInList(IList list, int ind, ref int edited)
         {
@@ -253,6 +263,11 @@ namespace NodeNotes {
                 pegi.nl();
 
                 Inspect_AfterNamePart().nl(ref changed);
+
+                NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this);
+
+              //  if (BackgroundBase.all.selectTypeTag(ref visualStyleTag).nl(ref changed))
+                 //   Nodes_PEGI.SetBackground(this);
 
                 "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedItems, 21).nl_ifFolded(ref changed);
                 

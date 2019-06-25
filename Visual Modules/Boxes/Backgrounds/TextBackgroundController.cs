@@ -8,19 +8,21 @@ using UnityEngine.EventSystems;
 namespace NodeNotes_Visual {
 
     [TaggedType(classTag)]
-    public class TextBackgroundController : NodesStyleBase, IPointerClickHandler
+    public class TextBackgroundController : BackgroundBase, IPointerClickHandler
     {
         const string classTag = "textRead";
 
         public TextMeshProUGUI pTextMeshPro;
 
-        public override bool TryFadeIn()
-        {
+        public override bool TryFadeIn() {
 
+            pTextMeshPro.enabled = true;
             return true;
         }
 
         public override void FadeAway() {
+
+            pTextMeshPro.enabled = false;
 
         }
 
@@ -38,6 +40,5 @@ namespace NodeNotes_Visual {
             }
         }
 
-       
     }
 }

@@ -9,7 +9,7 @@ namespace NodeNotes_Visual
 
     [TaggedType(classTag)]
     [ExecuteInEditMode]
-     public class GradientBackgroundController : NodesStyleBase {
+     public class GradientBackgroundController : BackgroundBase {
 
         const string classTag = "grad";
 

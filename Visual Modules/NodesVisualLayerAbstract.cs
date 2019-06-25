@@ -1,15 +1,19 @@
 ﻿using System;
 using QcTriggerLogic;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
+using System.Collections.Generic;
 
-namespace NodeNotes
-{
-    public abstract class NodesVisualLayerAbstract : LogicMGMT
-    {
+namespace NodeNotes {
+
+
+
+    public abstract class NodesVisualLayerAbstract : LogicMGMT {
+
+        public static NodesVisualLayerAbstract InstAsNodesVisualLayer => inst as NodesVisualLayerAbstract;
+
+        public abstract bool InspectBackgroundTag(Base_Node node);
 
         public Shortcuts shortcuts;
 
@@ -98,6 +102,13 @@ namespace NodeNotes
             Shortcuts.CurrentNode = null;
         }
 
-      
+
+
     }
+
+    public interface INodeNotesVisualStyle
+    {
+
+    }
+
 }

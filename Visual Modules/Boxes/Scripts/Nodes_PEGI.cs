@@ -12,11 +12,14 @@ using PlaytimePainter;
 namespace NodeNotes_Visual
 {
 
+
+#pragma warning disable IDE0018 // Inline variable declaration
+
     [ExecuteInEditMode]
     public class Nodes_PEGI : NodesVisualLayerAbstract {
 
-        public static Nodes_PEGI nodeMgmtInstPegi;
-        
+        public static Nodes_PEGI Instance => inst as Nodes_PEGI;
+
         public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
 
         #region UI_Buttons 
@@ -87,34 +90,7 @@ namespace NodeNotes_Visual
             
         }
         #endregion
-
-        #region BG
-
-        public List<NodesStyleBase> backgroundControllers = new List<NodesStyleBase>();
-
-        public static void SetBackground (NodeCircleController circle) {
-
-            var data = circle ? circle.backgroundConfig : "";
-            var tag = circle ? circle.background : "";
-
-            var bgc = nodeMgmtInstPegi.backgroundControllers;
-
-            if (tag.Length == 0 && bgc.Count > 0)
-                tag = bgc[0].ClassTag;
-            
-            foreach (var bc in bgc)
-                if (bc != null) {
-                    if (bc.ClassTag == tag) {
-                        bc.TryFadeIn();
-                        data.TryDecodeInto(bc);
-                    }
-                    else
-                        bc.FadeAway();
-                }
-        }
         
-        #endregion
-
         #region Node MGMT
 
         private static readonly List<NodeCircleController> NodesPool = new List<NodeCircleController>();
@@ -181,10 +157,11 @@ namespace NodeNotes_Visual
             }
 
             if (!nnp) {
-                if (!nodeMgmtInstPegi.circlePrefab)
+
+                if (!Instance.circlePrefab)
                     return;
 
-                nnp = Instantiate(nodeMgmtInstPegi.circlePrefab);
+                nnp = Instantiate(Instance.circlePrefab);
                 nnp.IndexForPEGI = NodesPool.Count;
                 NodesPool.Add(nnp);
 
@@ -276,7 +253,7 @@ namespace NodeNotes_Visual
         private static void UpdateCurrentNodeGroupVisibilityAround(NodeCircleController centerNode = null) {
             var cn = Shortcuts.CurrentNode;
             
-            SetBackground(cn?.visualRepresentation as NodeCircleController);
+            SetBackground(cn);
 
             if (!Application.isPlaying) return;
 
@@ -309,8 +286,45 @@ namespace NodeNotes_Visual
 
         #endregion
 
+        #region BG
+
+        public List<BackgroundBase> backgroundControllers = new List<BackgroundBase>();
+
+        public static BackgroundBase selectedController;
+
+        public static void SetBackground(Base_Node source)
+        {
+
+            var tag = source.visualStyleTag;
+
+            var bgc = Instance.backgroundControllers;
+
+            if (tag.Length == 0 && bgc.Count > 0)
+                tag = bgc[0].ClassTag;
+
+            string data = "";
+
+            source.visualStyleConfigs.TryGetValue(tag, out data);
+
+            foreach (var bc in bgc)
+                if (bc != null)
+                {
+                    if (bc.ClassTag == tag)
+                    {
+                        selectedController = bc;
+                        bc.TryFadeIn();
+                        data.TryDecodeInto(bc);
+
+                    }
+                    else
+                        bc.FadeAway();
+                }
+        }
+
+        #endregion
+
         #region Inspector
-        #if !NO_PEGI
+#if !NO_PEGI
         pegi.WindowPositionData_PEGI_GUI window = new pegi.WindowPositionData_PEGI_GUI();
 
         protected override void ResetInspector()
@@ -435,13 +449,11 @@ namespace NodeNotes_Visual
             addButton.SetCorner(1, addButtonCourner.CurrentValue);
         }
 
-        protected override void OnDisable()
-        {
+        protected override void OnDisable() {
 
             base.OnDisable();
             DeleteAllNodes();
             textureDownloader.Dispose();
-
 
         }
 
@@ -450,9 +462,7 @@ namespace NodeNotes_Visual
             Shortcuts.visualLayer = this;
 
             base.OnEnable();
-
-            nodeMgmtInstPegi = this;
-
+            
             DeleteAllNodes();
 
             shortcuts.LoadAll();
@@ -462,6 +472,16 @@ namespace NodeNotes_Visual
                 addButton.gameObject.SetActive(false);
 
 
+        }
+
+        public override bool InspectBackgroundTag(Base_Node node) {
+
+            var changed = false;
+
+            if (BackgroundBase.all.selectTypeTag(ref node.visualStyleTag).nl(ref changed))
+                SetBackground(node);
+
+            return changed;
         }
     }
 }

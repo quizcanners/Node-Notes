@@ -4,6 +4,7 @@ using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using System;
+using System.Collections.Generic;
 using NodeNotes;
 using QcTriggerLogic;
 
@@ -15,18 +16,14 @@ namespace NodeNotes_Visual {
     [ExecuteInEditMode]
     public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
 
-        private static Nodes_PEGI Mgmt => Nodes_PEGI.nodeMgmtInstPegi;
+        private static Nodes_PEGI Mgmt => Nodes_PEGI.Instance;
 
         public Renderer circleRenderer;
 
         public MeshCollider circleCollider;
 
         public Base_Node source;
-
-        public string background = "";
-
-        public string backgroundConfig = "";
-
+        
         private bool IsCurrent => source == Shortcuts.CurrentNode;
 
         static Node CurrentNode => Shortcuts.CurrentNode;
@@ -153,8 +150,7 @@ namespace NodeNotes_Visual {
                     if (IsCurrent) {
                         source.name.write(PEGI_Styles.ListLabel);
 
-                        if (source != null && NodesStyleBase.all.selectTypeTag(ref background).nl(ref changed))
-                                Nodes_PEGI.SetBackground(this);
+                       
                         
                     }
                     else
@@ -173,11 +169,11 @@ namespace NodeNotes_Visual {
                             "Fading...{0}".F(fadePortion).nl();
                     }
                     
-                    var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, background);
-                    if (bg != null)
-                    {
+                    var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, source.visualStyleTag);
+                    if (bg != null) {
+
                         if (bg.Try_Nested_Inspect().nl(ref changed))
-                            backgroundConfig = bg.Encode().ToString();
+                            source.visualStyleConfigs[Nodes_PEGI.selectedController.ClassTag] = bg.Encode().ToString();
                     }
                 }
 
@@ -580,7 +576,7 @@ namespace NodeNotes_Visual {
                 if (gn != null)
                     Shortcuts.visualLayer.FromNodeToGame(gn);
                 else
-                    Nodes_PEGI.nodeMgmtInstPegi.SetSelected(this);
+                    Nodes_PEGI.Instance.SetSelected(this);
 
                 Vector3 pos;
                 if (UpPlane.MouseToPlane(out pos, MainCam))
@@ -626,14 +622,13 @@ namespace NodeNotes_Visual {
         #endregion
         
         #region Encode & Decode
-        public override void Decode(string data)   {
+        public override void Decode(string data) {
+
             if (this == _dragging)
                 _dragging = null;
 
             SetDirty();
 
-            background = "";
-            backgroundConfig = "";
             imageUrl = "";
             _imageIndex -= 1;
             _coverImage = null;
@@ -657,8 +652,9 @@ namespace NodeNotes_Visual {
                 case "expVis": data.DecodeInto(out _nodeEnteredVisuals); break;
                 case "subVis": data.DecodeInto(out _nodeActiveDefaultVisuals); break;
                 case "disVis": data.DecodeInto(out _nodeInactiveVisuals); break;
-                case "bg": background = data; break;
-                case "bg_cfg": backgroundConfig = data; break;
+                case "bg": source.visualStyleTag = data; break;
+                case "bg_cfg": source.visualStyleConfigs[WhiteBackground.classTag] = data; break;
+                case "bg_cfgs": data.Decode_Dictionary(out source.visualStyleConfigs); break;
                 case "URL": imageUrl = data; break;
                 case "imgScl": _imageScaling = data.ToFloat(); break;
                 case "imgMd": _mode = (ImageMode)data.ToInt(); break;
@@ -674,8 +670,6 @@ namespace NodeNotes_Visual {
             var cody = this.EncodeUnrecognized()
                 .Add("subVis", _nodeActiveDefaultVisuals)
                 .Add_IfNotDefault("disVis", _nodeInactiveVisuals)
-                .Add_IfNotEmpty("bg", background)
-                .Add_IfNotEmpty("bg_cfg", backgroundConfig)
                 .Add_IfNotEmpty("URL", imageUrl);
 
             if (imageUrl.Length > 0) {

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
@@ -8,9 +6,9 @@ using QuizCannersUtilities;
 namespace NodeNotes_Visual {
 
     [TaggedType(classTag)]
-    public class WhiteBackground : NodesStyleBase {
+    public class WhiteBackground : BackgroundBase {
 
-        const string classTag = "white";
+        public const string classTag = "white";
 
         public override string ClassTag => classTag;
 
