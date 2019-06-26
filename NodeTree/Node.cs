@@ -8,6 +8,8 @@ namespace NodeNotes {
 
     public class Node : Base_Node {
 
+        public string visualStyleTag = "";
+
         #region SubNodes
 
         private ListMetaData _coreNodesMeta = new ListMetaData("Sub Nodes", keepTypeData: true);
@@ -26,9 +28,18 @@ namespace NodeNotes {
             foreach (var g in gameNodes)
                 yield return g;
         }
-        
+
+        public override void SetInspected()
+        {
+            _coreNodesMeta.inspected = -1;
+            _gamesNodesMeta.inspected = -1;
+            parentNode?.SetInspectedUpTheHierarchy(this);
+        }
+
         public bool Contains(Base_Node node) {
-            if (node == null) return false;
+
+            if (node == null)
+                return false;
             
             var gn = node.AsGameNode;
                 
@@ -169,19 +180,19 @@ namespace NodeNotes {
         }
 
         protected override bool Inspect_AfterNamePart() {
+    
             var changed = false;
-
-            if (Application.isPlaying)
-                return false;
-
+            
             if (inspectedItems == -1 && !InspectingTriggerItems) {
 
-                if (InspectingSubNode){
+                if (InspectingSubNode) {
+
                     var n = coreNodes.TryGet(_coreNodesMeta);
+
                     if (n == null)
                         InspectingSubNode = false;
-                    else
-                    {
+                    else if (!Application.isPlaying) {
+
                         if (icon.Exit.Click("Exit {0}".F(name)))
                             InspectingSubNode = false;
 
@@ -194,8 +205,6 @@ namespace NodeNotes {
                         }
                         else
                             name.write();
-
-                        NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this);
                         
                         pegi.nl();
                     }
@@ -205,6 +214,9 @@ namespace NodeNotes {
                 }
 
                 if (!InspectingSubNode)  {
+
+                    NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this);
+                    
                     pegi.nl();
                     var newNode = _coreNodesMeta.edit_List(ref coreNodes, ref changed);
 
@@ -239,7 +251,7 @@ namespace NodeNotes {
             if (!InspectingSubNode && inspectedItems ==-1)  {
                 if (this != CurrentNode) {
                     if (root.EditedByCurrentUser()) {
-                        if (icon.State.Click("Enter Node"))
+                        if (parentNode != null && icon.State.Click("Enter Node"))
                             CurrentNode = this;
                     } else if (CurrentNode != null && CurrentNode == parentNode) {
                         if (Conditions_isEnabled()) {
@@ -280,6 +292,7 @@ namespace NodeNotes {
                     }
                     pegi.nl();
                 }
+
                 base.Inspect().changes(ref changed);
             }
             else
@@ -299,6 +312,7 @@ namespace NodeNotes {
 
                     var cody = this.EncodeUnrecognized()
                         .Add_IfNotEmpty("sub", coreNodes, _coreNodesMeta)
+                        .Add_IfNotEmpty("bg", visualStyleTag)
                         .Add("b", base.Encode);
 
                     if (gameNodes.Count > 0)
@@ -317,6 +331,7 @@ namespace NodeNotes {
 
             switch (tg)  {
                 case "b": data.Decode_Base(base.Decode, this); break;
+                case "bg": visualStyleTag = data; break;
                 case "sub": data.Decode_List(out coreNodes, ref _coreNodesMeta); break;
                 case "gn":  data.Decode_List(out gameNodes, ref _gamesNodesMeta, GameNodeBase.all); break;
                 default:  return false;

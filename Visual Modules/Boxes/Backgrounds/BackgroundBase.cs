@@ -26,19 +26,17 @@ namespace NodeNotes_Visual {
 
         public abstract void MakeVisible(Base_Node node);
 
-        public abstract void UpdateCurrentNodeGroupVisibilityAround(Node node);
-
         public abstract void MakeHidden(Base_Node node);
 
         public abstract void ManagedOnEnable();
 
         public abstract void OnLogicVersionChange();
 
-        public abstract Node CurrentNode { set; }
+        public abstract void SetNode(Node node);
 
         public abstract void ManagedOnDisable();
 
-
+        public abstract void OnLogicUpdate();
 
 
     }

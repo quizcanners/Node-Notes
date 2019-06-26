@@ -24,11 +24,9 @@ namespace NodeNotes_Visual
         
         #region Node MGMT
         
-        public override void Show(Base_Node node) => selectedController.MakeVisible(node);
+        public override void Show(Base_Node node) => SelectedController.MakeVisible(node);
         
-        public override void Hide(Base_Node node) => selectedController.MakeHidden(node);
-
-       // private readonly LoopLock _loopLock = new LoopLock();
+        public override void Hide(Base_Node node) => SelectedController.MakeHidden(node);
 
         public override Node CurrentNode {
 
@@ -37,7 +35,11 @@ namespace NodeNotes_Visual
             set
             {
                 SetBackground(value);
-                selectedController.CurrentNode = value;
+
+                if (Application.isPlaying)
+                    value?.SetInspected();
+
+                SelectedController.SetNode(value);
             }
         }
 
@@ -47,7 +49,7 @@ namespace NodeNotes_Visual
 
             SetBackground(cn);
 
-            selectedController.UpdateCurrentNodeGroupVisibilityAround(cn);
+            SelectedController.OnLogicUpdate();
 
         }
 
@@ -57,28 +59,39 @@ namespace NodeNotes_Visual
 
         public List<BackgroundBase> backgroundControllers = new List<BackgroundBase>();
 
-        public static BackgroundBase selectedController;
+        public static BackgroundBase _selectedController;
+
+        public static BackgroundBase SelectedController {
+            get {
+                if (!_selectedController)
+                    SetBackground(null);
+
+                return _selectedController;
+            }
+
+            set { _selectedController = value; }
+        }
 
         public static void SetBackground(Node source)
         {
 
-            var tag = source.visualStyleTag;
+            var tag = source?.visualStyleTag;
 
             var bgc = Instance.backgroundControllers;
 
-            if (tag.Length == 0 && bgc.Count > 0)
+            if (tag.IsNullOrEmpty() && bgc.Count > 0)
                 tag = bgc[0].ClassTag;
 
             string data = "";
 
+            if (source!= null)
             source.visualStyleConfigs.TryGetValue(tag, out data);
 
             foreach (var bc in bgc)
-                if (bc != null)
-                {
+                if (bc) {
                     if (bc.ClassTag == tag)
                     {
-                        selectedController = bc;
+                        _selectedController = bc;
                         bc.TryFadeIn();
                         data.TryDecodeInto(bc);
 
@@ -131,15 +144,15 @@ namespace NodeNotes_Visual
                     FromGameToNode(true);
                 else return gameNode.Nested_Inspect();
             }
-
-            selectedController.Nested_Inspect();
             
             bool changed = base.Inspect();
 
+      
+            if (inspectedItems == 2)  
+                SelectedController.Nested_Inspect();
+
             var cn = Shortcuts.CurrentNode;
 
-            if (cn!= null && inspectedItems ==2)
-                cn.Nested_Inspect(ref changed);
 
             pegi.nl();
 
@@ -155,15 +168,12 @@ namespace NodeNotes_Visual
                 pegi.nl();
 
                 "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
-    
-
-              
             }
 
             pegi.nl();
 
             icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedItems, 6).nl_ifNotEntered(ref changed);
-
+            
             if (inspectedItems == -1 && "Encode / Decode Test".Click(ref changed)) {
                 OnDisable();
                 OnEnable();
@@ -212,8 +222,7 @@ namespace NodeNotes_Visual
             base.OnEnable();
             
             shortcuts.LoadAll();
-
-          
+            
             foreach (var bg in backgroundControllers)
                 bg.ManagedOnEnable();
 

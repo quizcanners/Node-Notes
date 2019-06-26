@@ -99,19 +99,19 @@ namespace NodeNotes_Visual {
 
         public override bool Inspect() {
             bool changed = false;
+            
+            pegi.nl();
 
-    
             if (Application.isPlaying && selectedNode)
             {
-                if (selectedNode.Nested_Inspect())
+                if (selectedNode.source.Nested_Inspect())
                 {
                     OnLogicVersionChange();
                     return true;
                 }
                 return false;
             }
-
-        
+            
             "Background Color".edit(ref color).nl();
 
             if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
@@ -166,23 +166,18 @@ namespace NodeNotes_Visual {
         }
 
         private readonly LoopLock _loopLock = new LoopLock();
-
-
-        public override Node CurrentNode
-        {
-
-               set
-            {
-
+        
+        public override void SetNode(Node node) {
+        
                 if (!_loopLock.Unlocked) return;
 
                 using (_loopLock.Lock())
                 {
 
-                    if (Application.isPlaying && Shortcuts.CurrentNode != value)
+                    if (Application.isPlaying && Shortcuts.CurrentNode != node)
                     {
 
-                        if (value == null)
+                        if (node == null)
                             return;
 
                         SetSelected(null);
@@ -191,22 +186,34 @@ namespace NodeNotes_Visual {
 
                         var previous = previousN?.visualRepresentation as NodeCircleController;
 
-                        Shortcuts.CurrentNode = value;
+                        Shortcuts.CurrentNode = node;
 
-                        UpdateVisibility(value, previous);
+                        UpdateVisibility(node, previous);
 
                         foreach (var n in NodesPool)
                             UpdateVisibility(n.source, previous);
 
-                        UpdateCurrentNodeGroupVisibilityAround(previousN);
+                        UpdateCurrentNodeGroupVisibilityAround(node, previous);
 
                         _firstFree = 0;
 
                     }
                     else
-                        Shortcuts.CurrentNode = value;
+                        Shortcuts.CurrentNode = node;
                 }
-            }
+            
+        }
+
+        public override void OnLogicUpdate()
+        {
+            var node = Shortcuts.CurrentNode;
+            
+            UpdateVisibility(node);
+
+            foreach (var n in NodesPool)
+                UpdateVisibility(n.source);
+
+            UpdateCurrentNodeGroupVisibilityAround(node);
         }
 
         // Update is called once per frame
@@ -315,8 +322,7 @@ namespace NodeNotes_Visual {
                 nnp = Instantiate(circlePrefab);
                 nnp.IndexForPEGI = NodesPool.Count;
                 NodesPool.Add(nnp);
-
-                Debug.Log("Creating new for {0}".F(node.GetNameForInspector()));
+                
             }
 
             nnp.LinkTo(node);
@@ -346,11 +352,14 @@ namespace NodeNotes_Visual {
         {
 
             if (node == null) return;
+            
+            bool editingOrGotParent = (Base_Node.editingNodes ||
+                                       ((node.parentNode != null && node.Conditions_isVisible()) ||
+                                        !Application.isPlaying));
 
-            var shouldBeVisible = (Base_Node.editingNodes ||
-                                   ((node.parentNode != null && node.Conditions_isVisible()) || !Application.isPlaying))
-                                  && (Shortcuts.CurrentNode != null
-                                      && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
+            bool currentNodeContains = (Shortcuts.CurrentNode != null && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
+
+            var shouldBeVisible = editingOrGotParent && currentNodeContains;
 
             if (node.visualRepresentation == null)
             {
@@ -365,20 +374,22 @@ namespace NodeNotes_Visual {
                 (node.visualRepresentation as NodeCircleController).SetDirty();
         }
 
-        public override void UpdateCurrentNodeGroupVisibilityAround(Node source = null)
+        public void UpdateCurrentNodeGroupVisibilityAround(Node newCenter = null, NodeCircleController previousCenter = null)
         {
         
-            if (!Application.isPlaying) return;
+            if (!Application.isPlaying)
+                return;
 
-            if (source == null) return;
+            if (newCenter == null)
+                return;
 
-            NodeCircleController centerNode = source != null ? source.visualRepresentation as NodeCircleController : null;
+            if (previousCenter == null)
+                previousCenter = newCenter.visualRepresentation as NodeCircleController;
+
+            UpdateVisibility(newCenter, previousCenter);
+            foreach (var sub in newCenter)
+                UpdateVisibility(sub, previousCenter);
             
-            UpdateVisibility(source, centerNode);
-            foreach (var sub in source)
-                UpdateVisibility(sub, centerNode);
-
-
         }
 
         [NonSerialized] public NodeCircleController selectedNode;
@@ -389,7 +400,7 @@ namespace NodeNotes_Visual {
                 selectedNode.SetDirty();
 
             selectedNode = node;
-
+            
             if (node)
                 node.SetDirty();
 

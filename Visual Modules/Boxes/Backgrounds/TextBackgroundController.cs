@@ -15,7 +15,7 @@ namespace NodeNotes_Visual {
 
         public TextMeshProUGUI pTextMeshPro;
 
-        public override Node CurrentNode { set => throw new System.NotImplementedException(); }
+       
 
         public override bool TryFadeIn() {
 
@@ -47,9 +47,6 @@ namespace NodeNotes_Visual {
         {
         }
 
-        public override void UpdateCurrentNodeGroupVisibilityAround(Node node)
-        {
-        }
 
         public override void MakeHidden(Base_Node node)
         {
@@ -65,6 +62,16 @@ namespace NodeNotes_Visual {
 
         public override void ManagedOnDisable()
         {
+        }
+
+        public override void SetNode(Node node)
+        {
+
+        }
+
+        public override void OnLogicUpdate()
+        {
+
         }
     }
 }

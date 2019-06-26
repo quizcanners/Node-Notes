@@ -15,9 +15,7 @@ namespace NodeNotes {
         #region Values
         public Node parentNode;
         public NodeBook root;
-
-        public string visualStyleTag = "";
-
+        
         public Dictionary<string, string> visualStyleConfigs = new Dictionary<string, string>();
 
         public void OnClassTypeChange(object previousInstance) {
@@ -54,10 +52,12 @@ namespace NodeNotes {
 
             return true;
         }
-        
+
+        public virtual void SetInspected() => parentNode?.SetInspectedUpTheHierarchy(this);
+
         public virtual void OnMouseOver() {
             if (Input.GetMouseButtonDown(0))
-               parentNode?.SetInspectedUpTheHierarchy(this);
+                SetInspected();
         }
 
         #region Logic
@@ -129,7 +129,6 @@ namespace NodeNotes {
         .Add_IfNotDefault(  "cnds", _eblCondition)
         .Add_IfNotDefault(  "vcnds",_visCondition)
         .Add_IfNotEmpty(    "res",  results)
-        .Add_IfNotEmpty(    "bg", visualStyleTag)
         .Add_IfNotEmpty(    "bg_cfgs", visualStyleConfigs)
         .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
@@ -144,7 +143,6 @@ namespace NodeNotes {
                 case "vcnds":   _visCondition.Decode(data); break;
                 case "res":     data.Decode_List(out results); break;
                 case "vis":     configForVisualRepresentation = data; break;
-                case "bg":      visualStyleTag = data; break;
                 case "bg_cfgs": data.Decode_Dictionary(out visualStyleConfigs); break;
             }
             return true;
@@ -239,10 +237,10 @@ namespace NodeNotes {
 
         public override bool Inspect() {
       
-            if (!inspectionLock.Unlocked) return false;
 
             var changed = false;
             
+            if (inspectionLock.Unlocked)
             using (inspectionLock.Lock()) {
 
                 var onPlayScreen = pegi.paintingPlayAreaGui;
@@ -263,9 +261,6 @@ namespace NodeNotes {
                 pegi.nl();
 
                 Inspect_AfterNamePart().nl(ref changed);
-                
-              //  if (BackgroundBase.all.selectTypeTag(ref visualStyleTag).nl(ref changed))
-                 //   Nodes_PEGI.SetBackground(this);
 
                 "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedItems, 21).nl_ifFolded(ref changed);
                 

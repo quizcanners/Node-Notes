@@ -122,6 +122,7 @@ namespace NodeNotes_Visual {
                         Shortcuts.visualLayer.OnLogicVersionChange();
                     }
                 }
+
             } else {
                 
                 var onPlayScreen = pegi.paintingPlayAreaGui;
@@ -147,12 +148,8 @@ namespace NodeNotes_Visual {
                     if ((conditionPassed ? icon.Active : icon.InActive).Click("Try Force Active conditions to {0}".F(!conditionPassed)) && !source.TryForceEnabledConditions(Values.global,!conditionPassed))
                         Debug.Log("No Conditions to force to {0}".F(!conditionPassed));
 
-                    if (IsCurrent) {
+                    if (IsCurrent) 
                         source.name.write(PEGI_Styles.ListLabel);
-
-                       
-                        
-                    }
                     else
                         source.name.write("Lerp parameter {0}".F(dominantParameter), conditionPassed ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
                 }
@@ -168,12 +165,18 @@ namespace NodeNotes_Visual {
                         if (isFading)
                             "Fading...{0}".F(fadePortion).nl();
                     }
-                    
-                    var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, source.visualStyleTag);
-                    if (bg != null) {
 
-                        if (bg.Try_Nested_Inspect().nl(ref changed))
-                            source.visualStyleConfigs[Nodes_PEGI.selectedController.ClassTag] = bg.Encode().ToString();
+                    var node = source.AsNode;
+
+                    if (node != null) {
+
+                        var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, node.visualStyleTag);
+
+                        if (bg != null) {
+                            if (bg.Try_Nested_Inspect().nl(ref changed))
+                                source.visualStyleConfigs[Nodes_PEGI.SelectedController.ClassTag] =
+                                    bg.Encode().ToString();
+                        }
                     }
                 }
 
@@ -652,7 +655,6 @@ namespace NodeNotes_Visual {
                 case "expVis": data.DecodeInto(out _nodeEnteredVisuals); break;
                 case "subVis": data.DecodeInto(out _nodeActiveDefaultVisuals); break;
                 case "disVis": data.DecodeInto(out _nodeInactiveVisuals); break;
-                case "bg": source.visualStyleTag = data; break;
                 case "bg_cfg": source.visualStyleConfigs[WhiteBackground.classTag] = data; break;
                 case "bg_cfgs": data.Decode_Dictionary(out source.visualStyleConfigs); break;
                 case "URL": imageUrl = data; break;
