@@ -86,7 +86,7 @@ namespace NodeNotes_Visual {
 
         public RoundedGraphic addButton;
 
-        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 4);
+        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 8);
 
         public NodeCircleController circlePrefab;
 
@@ -94,7 +94,7 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-#if !NO_PEGI
+        #if !NO_PEGI
         public string NameForPEGIdisplay => "White Background";
 
         public override bool Inspect() {
@@ -104,31 +104,32 @@ namespace NodeNotes_Visual {
 
             if (Application.isPlaying && selectedNode)
             {
-                if (selectedNode.source.Nested_Inspect())
-                {
+                if (selectedNode.source.Nested_Inspect()) {
+                    selectedNode.UpdateName();
                     OnLogicVersionChange();
-                    return true;
                 }
-                return false;
             }
-            
-            "Background Color".edit(ref color).nl();
 
-            if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
+            if (selectedNode == null || (selectedNode.source == Shortcuts.CurrentNode && selectedNode.source.inspectedItems == 21))
             {
-                pegi.nl();
-                "Edit Button".edit(90, ref editButton).nl(ref changed);
-                "Add Button".edit(90, ref addButton).nl(ref changed);
-                "Delete Button".edit(90, ref deleteButton).nl(ref changed);
-               
-                "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
+                "Background Color".edit(ref color).nl();
 
-                "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
+                if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
+                {
+                    pegi.nl();
+                    "Edit Button".edit(90, ref editButton).nl(ref changed);
+                    "Add Button".edit(90, ref addButton).nl(ref changed);
+                    "Delete Button".edit(90, ref deleteButton).nl(ref changed);
+
+                    "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
+
+                    "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
+                }
             }
 
             return changed;
         }
-#endif
+        #endif
         #endregion
 
         #region Encode & Decode
@@ -216,7 +217,7 @@ namespace NodeNotes_Visual {
             UpdateCurrentNodeGroupVisibilityAround(node);
         }
 
-        // Update is called once per frame
+        private readonly LerpData _ld = new LerpData();
         void Update() {
 
             _ld.Reset();
@@ -261,6 +262,8 @@ namespace NodeNotes_Visual {
 
         private void DeleteAllNodes()
         {
+            Debug.Log("Destroying nodes");
+
             foreach (var e in NodesPool)
                 if (e)
                 {
@@ -271,7 +274,8 @@ namespace NodeNotes_Visual {
 
                 }
 
-            NodesPool.Clear();
+            if (!Application.isPlaying)
+                NodesPool.Clear();
         }
 
         private void MakeVisible(Base_Node node, NodeCircleController centerNode = null)
@@ -287,14 +291,11 @@ namespace NodeNotes_Visual {
             if (node.previousVisualRepresentation != null)
             {
                 var tmp = node.previousVisualRepresentation as NodeCircleController;
-                if (tmp && tmp.isFading && node == tmp.myLastLinkedNode)
-                {
+                if (tmp && tmp.isFading && node == tmp.myLastLinkedNode) {
                     nnp = tmp;
                     if (tmp.gameObject.activeSelf)
-                    {
                         reusing = true;
-                        Debug.Log("Reusing previous for {0}".F(node.GetNameForInspector()));
-                    }
+                    
                 }
             }
 
@@ -331,8 +332,7 @@ namespace NodeNotes_Visual {
                 nnp.SetStartPositionOn(centerNode);
 
         }
-
-
+        
         private void MakeHidden(Base_Node node, NodeCircleController previous = null)
         {
             var ncc = node.visualRepresentation as NodeCircleController;
@@ -346,8 +346,7 @@ namespace NodeNotes_Visual {
                 ncc.SetFadeAwayRelation(previous);
 
         }
-
-
+        
         private void UpdateVisibility(Base_Node node, NodeCircleController previous = null)
         {
 
@@ -427,8 +426,6 @@ namespace NodeNotes_Visual {
 
 
         #endregion
-
-        private readonly LerpData _ld = new LerpData();
 
         public override void ManagedOnEnable()
         {

@@ -48,6 +48,24 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region TEXT
+
+        public void UpdateName()
+        {
+            if (fadePortion < 0.1f)
+            {
+                newText = null;
+                _activeTextAlpha = 1;
+                ActiveText.text = source.name;
+                gameObject.name = source.name;
+                PassiveText.text = "";
+                UpdateShaders();
+            }
+            else
+                newText = source.name;
+
+            lerpsFinished = false;
+        }
+
         public TextMeshPro textA;
 
         public TextMeshPro textB;
@@ -92,17 +110,7 @@ namespace NodeNotes_Visual {
             {
                 source.name = value;
 
-                if (fadePortion < 0.1f)
-                {
-                    newText = null;
-                    _activeTextAlpha = 1;
-                    ActiveText.text = value;
-                    gameObject.name = value;
-                    PassiveText.text = "";
-                    UpdateShaders();
-                }
-                else
-                    newText = value;
+                UpdateName();
             }
         }
 
@@ -400,6 +408,8 @@ namespace NodeNotes_Visual {
 
             if (newText != null || _activeTextAlpha < 1)
             {
+                lerpsFinished = false;
+
                 _activeTextAlpha = newText == null 
                     ? Mathf.Lerp(_activeTextAlpha, 1, ld.Portion()) 
                     : LerpUtils.LerpBySpeed(_activeTextAlpha, 1, 4);
@@ -590,8 +600,10 @@ namespace NodeNotes_Visual {
             }
         }
         
-        private void Update()
-        {
+        private void Update() {
+
+            if (!isFading && source == null)
+                gameObject.DestroyWhatever();
 
             UpdateCoverImage();
 

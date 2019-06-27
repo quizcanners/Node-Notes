@@ -55,10 +55,7 @@ namespace NodeNotes {
 
         public virtual void SetInspected() => parentNode?.SetInspectedUpTheHierarchy(this);
 
-        public virtual void OnMouseOver() {
-            if (Input.GetMouseButtonDown(0))
-                SetInspected();
-        }
+        public virtual void OnMouseOver() { }
 
         #region Logic
 
@@ -248,7 +245,7 @@ namespace NodeNotes {
                 if (inspectedItems == -1)
                 {
                     if (GetType() == typeof(Node) || onPlayScreen)
-                        changed |= this.inspect_Name();
+                        this.inspect_Name().changes(ref changed);
                     if ((this != Shortcuts.Cut_Paste) && icon.Cut.Click("Cut/Paste"))
                         Shortcuts.Cut_Paste = this;
                     if (visualRepresentation != null && icon.Show.Click("Visible. Click To Hide Visual Representation."))
@@ -284,7 +281,7 @@ namespace NodeNotes {
 
             return changed;
         }
-#endif
+        #endif
         #endregion
 
         #region MGMT

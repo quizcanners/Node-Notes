@@ -38,7 +38,7 @@ namespace NodeNotes_Visual
         public void Portion(LerpData ld)
         {
             if (position == null)
-                position = new LinkedLerp.RectangleTransformAnchoredPositionValue(rectTranform, 200);
+                position = new LinkedLerp.RectangleTransformAnchoredPositionValue(rectTranform, 800);
             
             if (showCreateButtons && !gameObject.activeSelf)
                    gameObject.SetActive(true);

@@ -211,6 +211,8 @@ namespace NodeNotes_Visual
             foreach (var bg in backgroundControllers)
                 bg.ManagedOnDisable();
 
+            Debug.Log("On Disable");
+
             textureDownloader.Dispose();
 
         }
