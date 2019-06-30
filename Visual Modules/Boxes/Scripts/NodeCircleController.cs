@@ -87,8 +87,7 @@ namespace NodeNotes_Visual {
 
         private int _indexInPool;
         public int IndexForPEGI { get { return _indexInPool;  } set { _indexInPool = value; } }
-
-
+        
         #if !NO_PEGI
 
         public override bool InspectInList(IList list, int ind, ref int edited) {
@@ -174,18 +173,23 @@ namespace NodeNotes_Visual {
                             "Fading...{0}".F(fadePortion).nl();
                     }
 
-                    var node = source.AsNode;
+                    if (source != null)
+                    {
+                        var node = source.AsNode;
 
-                    if (node != null) {
+                        if (node != null)
+                        {
 
-                        var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, node.visualStyleTag);
+                            var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, node.visualStyleTag);
 
-                        if (bg != null) {
-                            if (bg.Try_Nested_Inspect().nl(ref changed))
-                                source.visualStyleConfigs[Nodes_PEGI.SelectedController.ClassTag] =
-                                    bg.Encode().ToString();
+                            if (bg != null)
+                            {
+                                if (bg.Try_Nested_Inspect().nl(ref changed))
+                                    source.visualStyleConfigs[Nodes_PEGI.SelectedController.ClassTag] =
+                                        bg.Encode().ToString();
+                            }
                         }
-                    }
+                    } else "No source node is currently linked.".writeHint();
                 }
 
                 if (source == null || (!source.InspectingTriggerItems)) {
@@ -381,16 +385,6 @@ namespace NodeNotes_Visual {
 
                 fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, ld.MinPortion);
                     
-                if (ld.MinPortion == 1) {
-
-                    if (!isFading) {
-                        ActiveConfig.targetSize = circleRenderer.transform.localScale;
-                        ActiveConfig.targetLocalPosition = transform.localPosition;
-                    }
-
-                    lerpsFinished = true;
-                }
-
                 var scale = _localScale.Value;
 
                 if (scale.x > 0)
@@ -406,6 +400,9 @@ namespace NodeNotes_Visual {
                 textB.rectTransform.sizeDelta = textSize;
             }
 
+            if (!lerpsFinished && (this != _dragging) && ld.MinPortion == 1)
+                lerpsFinished = true;
+            
             if (newText != null || _activeTextAlpha < 1)
             {
                 lerpsFinished = false;
@@ -439,6 +436,7 @@ namespace NodeNotes_Visual {
             if (needShaderUpdate)
                 UpdateShaders();
 
+          
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 WhiteBackground.inst.Deactivate(this);
         }
@@ -799,17 +797,16 @@ namespace NodeNotes_Visual {
 
         #region Inspect
         #if !NO_PEGI
-
         public override bool Inspect() {
 
             var changed = false;
 
             var x = targetSize.x;
-            if ("Width".edit(50, ref x, 1f, 15f).nl(ref changed))  
+            if ("Width".edit(50, ref x, 1f, 35f).nl(ref changed))  
                 targetSize.x = x;
             
             var y = targetSize.y;
-            if ("Height".edit(50, ref y, 1f, 15f).nl(ref changed)) 
+            if ("Height".edit(50, ref y, 1f, 35f).nl(ref changed)) 
                 targetSize.y = y;
             
             "Color".edit(50, ref targetColor).nl(ref changed);
@@ -826,7 +823,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-#endif
+        #endif
         #endregion
     }
 

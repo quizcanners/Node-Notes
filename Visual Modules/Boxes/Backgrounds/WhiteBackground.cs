@@ -218,6 +218,7 @@ namespace NodeNotes_Visual {
         }
 
         private readonly LerpData _ld = new LerpData();
+
         void Update() {
 
             _ld.Reset();
@@ -258,24 +259,6 @@ namespace NodeNotes_Visual {
             NodesPool.RemoveAt(ind);
             _firstFree = Mathf.Min(_firstFree, ind);
             ctr.gameObject.DestroyWhatever();
-        }
-
-        private void DeleteAllNodes()
-        {
-            Debug.Log("Destroying nodes");
-
-            foreach (var e in NodesPool)
-                if (e)
-                {
-                    if (Application.isPlaying)
-                        e.isFading = true;
-                    else
-                        e.gameObject.DestroyWhatever();
-
-                }
-
-            if (!Application.isPlaying)
-                NodesPool.Clear();
         }
 
         private void MakeVisible(Base_Node node, NodeCircleController centerNode = null)
@@ -411,9 +394,7 @@ namespace NodeNotes_Visual {
         {
 
         }
-
-
-
+        
         public override void MakeHidden(Base_Node node)
         {
 
@@ -423,8 +404,7 @@ namespace NodeNotes_Visual {
         {
 
         }
-
-
+        
         #endregion
 
         public override void ManagedOnEnable()
@@ -440,7 +420,11 @@ namespace NodeNotes_Visual {
 
         public override void ManagedOnDisable()  {
             
-            DeleteAllNodes();
+            foreach (var e in NodesPool)
+                if (e)
+                    e.gameObject.DestroyWhatever();
+
+            NodesPool.Clear();
 
         }
 
