@@ -421,8 +421,10 @@ namespace NodeNotes_Visual {
         public override void ManagedOnDisable()  {
             
             foreach (var e in NodesPool)
-                if (e)
+                if (e) {
+                    e.Unlink();
                     e.gameObject.DestroyWhatever();
+                }
 
             NodesPool.Clear();
 

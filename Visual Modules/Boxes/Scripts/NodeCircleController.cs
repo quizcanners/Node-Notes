@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using NodeNotes;
 using QcTriggerLogic;
+using UnityEditor.IMGUI.Controls;
 
 namespace NodeNotes_Visual {
 
@@ -31,7 +32,7 @@ namespace NodeNotes_Visual {
         #region Node Image
 
         private Texture _coverImage;
-        public string imageUrl = "";
+        [NonSerialized] public string imageUrl = "";
         private bool _hideLabel;
         private int _imageIndex = -1;
         private float _imageScaling = 1f;
@@ -58,7 +59,7 @@ namespace NodeNotes_Visual {
                 ActiveText.text = source.name;
                 gameObject.name = source.name;
                 PassiveText.text = "";
-                UpdateShaders();
+                UpdateView();
             }
             else
                 newText = source.name;
@@ -76,7 +77,7 @@ namespace NodeNotes_Visual {
 
         private TextMeshPro PassiveText => _activeTextIsA ? textB : textA;
 
-        public string newText;
+        [NonSerialized] public string newText;
 
         private float _activeTextAlpha;
 
@@ -165,14 +166,6 @@ namespace NodeNotes_Visual {
 
                 if (circleRenderer)
                 {
-                    if (!onPlayScreen) {
-                        if (newText != null)
-                            "Changing text to {0}".F(newText).nl();
-
-                        if (isFading)
-                            "Fading...{0}".F(fadePortion).nl();
-                    }
-
                     if (source != null)
                     {
                         var node = source.AsNode;
@@ -274,8 +267,8 @@ namespace NodeNotes_Visual {
             if (changed)
             {
                 SetDirty();
-                _shCurrentColor = ActiveConfig.targetColor;
-                UpdateShaders();
+                bgColor = ActiveConfig.targetColor;
+                UpdateView();
             }
 
             return changed;
@@ -312,7 +305,9 @@ namespace NodeNotes_Visual {
         
         #region Lerping
 
-        private Color _shCurrentColor;
+        private LinkedLerp.ColorValue _textColor = new LinkedLerp.ColorValue("Text Color");
+
+        private Color bgColor;
         private Vector4 _shSquare = Vector4.zero;
         private float _shBlur;
 
@@ -347,7 +342,11 @@ namespace NodeNotes_Visual {
 
             _localScale.Portion(ld);
 
-            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(_shCurrentColor), ld))
+            _textColor.targetValue = ac.targetTextColor;
+
+            _textColor.Portion(ld);
+
+            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(bgColor), ld))
                 dominantParameter = "color";
 
             if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f),  ld))
@@ -369,7 +368,7 @@ namespace NodeNotes_Visual {
 
         }
 
-        public void Lerp(LerpData ld, bool canSkipLerpIfPossible = false) {
+        public void Lerp(LerpData ld, bool canSkipLerp = false) {
 
             if (!includedInLerp) return;
 
@@ -425,7 +424,8 @@ namespace NodeNotes_Visual {
 
             bool skipLerpPossible = (_canJumpToPosition && fadePortion < 0.1f && !isFading);
 
-            _shCurrentColor = Color.Lerp(_shCurrentColor, ac.targetColor, ld.Portion(skipLerpPossible));
+            bgColor = Color.Lerp(bgColor, ac.targetColor, ld.Portion(skipLerpPossible));
+            _textColor.Lerp(ld, skipLerpPossible);
             _localPos.Lerp(ld);
             _localScale.Lerp(ld, skipLerpPossible);
             _shadeCorners.Lerp(ld, skipLerpPossible);
@@ -434,14 +434,14 @@ namespace NodeNotes_Visual {
             _texTransition.Lerp(ld, skipLerpPossible);
 
             if (needShaderUpdate)
-                UpdateShaders();
+                UpdateView();
 
           
             if (fadePortion == 0 && isFading && Application.isPlaying)
                 WhiteBackground.inst.Deactivate(this);
         }
         
-        public string dominantParameter;
+        [NonSerialized] public string dominantParameter;
 
         #endregion
 
@@ -541,19 +541,21 @@ namespace NodeNotes_Visual {
                 return _mainCam;
             }
         }
+        
+        private void UpdateView() {
 
-
-        private void UpdateShaders() {
             if (textB && textA) {
 
                 var textFadePortion = (_hideLabel ? (1 - _textureFadeIn.Value) : 1f) * fadePortion;
 
-                ActiveText.color = new Color(0, 0, 0, _activeTextAlpha * textFadePortion);
-                PassiveText.color = new Color(0, 0, 0, (1 - _activeTextAlpha) * textFadePortion);
+                var col = _textColor.CurrentValue;
+
+                ActiveText.color = col.Alpha(_activeTextAlpha * textFadePortion);
+                PassiveText.color = col.Alpha((1 - _activeTextAlpha) * textFadePortion);
             }
 
             if (circleRenderer) {
-                _shCurrentColor.a = fadePortion;
+                bgColor.a = fadePortion;
                 
                 var pos = MainCam.WorldToScreenPoint(transform.position).ToVector2();
                 pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
@@ -561,7 +563,7 @@ namespace NodeNotes_Visual {
                 var mat = circleRenderer.MaterialWhatever();
 
                 mat.Set(_projPos, pos.ToVector4(_imageScaling));
-                mat.Set(_color, _shCurrentColor);
+                mat.Set(_color, bgColor);
                 mat.Set(_stretch, _shSquare);
                 mat.Set(_blur, _shBlur);
 
@@ -600,9 +602,6 @@ namespace NodeNotes_Visual {
         
         private void Update() {
 
-            if (!isFading && source == null)
-                gameObject.DestroyWhatever();
-
             UpdateCoverImage();
 
             if (this != _dragging) return;
@@ -620,8 +619,7 @@ namespace NodeNotes_Visual {
             }
             SetDirty();
         }
-
-
+        
         public void OnMouseOver()
         {
             if (isFading) return;
@@ -747,12 +745,6 @@ namespace NodeNotes_Visual {
 
         }
 
-        void OnDisable() {
-            if (!isFading)
-                Unlink();
-        }
-
-
         #endregion
     }
 
@@ -760,6 +752,7 @@ namespace NodeNotes_Visual {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
+        public Color targetTextColor = Color.black;
         public bool enabled;
 
         #region Encode & Decode
@@ -776,6 +769,7 @@ namespace NodeNotes_Visual {
                 case "sc": targetSize = data.ToVector3(); break;
                 case "pos": targetLocalPosition = data.ToVector3(); break;
                 case "col": targetColor = data.ToColor(); break;
+                case "tCol": targetTextColor = data.ToColor(); break;
                 default: return false;
             }
 
@@ -787,7 +781,8 @@ namespace NodeNotes_Visual {
 
             var cody = this.EncodeUnrecognized()
                 .Add("sc", targetSize)
-                .Add("pos", targetLocalPosition);
+                .Add("pos", targetLocalPosition)
+                .Add("tCol", targetTextColor);
             if (targetColor != Color.grey)
                 cody.Add("col", targetColor);
 
@@ -809,8 +804,10 @@ namespace NodeNotes_Visual {
             if ("Height".edit(50, ref y, 1f, 35f).nl(ref changed)) 
                 targetSize.y = y;
             
-            "Color".edit(50, ref targetColor).nl(ref changed);
-            
+            "BG Color".edit(60, ref targetColor).nl(ref changed);
+
+            "TXT Color".edit(60, ref targetTextColor).nl(ref changed);
+
             return changed;
         }
 

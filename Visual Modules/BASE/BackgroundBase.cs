@@ -13,11 +13,9 @@ namespace NodeNotes_Visual {
     {
 
         #region Tagged Types MGMT
-
-        public virtual string ClassTag => CfgEncoder.NullTag;
+        public abstract string ClassTag { get;  }
         public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(BackgroundBase));
         public TaggedTypesCfg AllTypes => all;
-
         #endregion
 
         public abstract void FadeAway();
@@ -37,6 +35,8 @@ namespace NodeNotes_Visual {
         public abstract void ManagedOnDisable();
 
         public abstract void OnLogicUpdate();
+
+
 
 
     }

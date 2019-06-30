@@ -48,7 +48,7 @@ namespace NodeNotes_Visual
             position.Portion(ld);
         }
 
-        public void Lerp(LerpData ld, bool canSkipLerpIfPossible)
+        public void Lerp(LerpData ld, bool canSkipLerp)
         {
            position.Lerp(ld);
 
