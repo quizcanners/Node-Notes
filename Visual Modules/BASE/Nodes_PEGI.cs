@@ -55,7 +55,7 @@ namespace NodeNotes_Visual
 
         #endregion
 
-        #region BG
+        #region BG MGMT
 
         public List<BackgroundBase> backgroundControllers = new List<BackgroundBase>();
 

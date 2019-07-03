@@ -338,7 +338,7 @@ namespace NodeNotes_Visual {
                 
             _localPos.Portion(ld);
 
-            _localScale.targetValue = ac.targetSize;
+            _localScale.targetValue = isFading ? Vector3.one : ac.targetSize;
 
             _localScale.Portion(ld);
 

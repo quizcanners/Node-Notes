@@ -150,9 +150,19 @@ namespace NodeNotes_Visual {
 
         #endregion
 
-        public override void FadeAway() => isFading = true;
+        public override void FadeAway() {
 
-        public override bool TryFadeIn() => isFading = false;
+            HideAll();
+
+            isFading = true;
+        }
+
+        public override bool TryFadeIn() {
+
+            isFading = false;
+
+            return true;
+        }
 
         [NonSerialized] private Camera _mainCam;
 
@@ -239,18 +249,25 @@ namespace NodeNotes_Visual {
 
             _mainCam.backgroundColor = col.LerpBySpeed(Color.white, 3);
 
-
-
         }
 
         #region Node MGMT
         [NonSerialized] private readonly List<NodeCircleController> NodesPool = new List<NodeCircleController>();
         [NonSerialized] private int _firstFree = 0;
 
-        public void Deactivate(NodeCircleController n)
-        {
-            n.gameObject.SetActive(false);
-            _firstFree = Mathf.Min(_firstFree, n.IndexForPEGI);
+        public void HideAll() {
+            foreach (var node in NodesPool) 
+                if (!node.isFading)
+                    MakeHidden(node.source);
+        }
+
+        public void Deactivate(NodeCircleController n) {
+            if (isFading)
+                Delete(n);
+            else {
+                n.gameObject.SetActive(false);
+                _firstFree = Mathf.Min(_firstFree, n.IndexForPEGI);
+            }
         }
 
         private void Delete(NodeCircleController ctr)
@@ -319,7 +336,9 @@ namespace NodeNotes_Visual {
         private void MakeHidden(Base_Node node, NodeCircleController previous = null)
         {
             var ncc = node.visualRepresentation as NodeCircleController;
-            if (!ncc) return;
+
+            if (!ncc)
+                return;
 
             ncc.Unlink();
 
@@ -330,8 +349,7 @@ namespace NodeNotes_Visual {
 
         }
         
-        private void UpdateVisibility(Base_Node node, NodeCircleController previous = null)
-        {
+        private void UpdateVisibility(Base_Node node, NodeCircleController previous = null)  {
 
             if (node == null) return;
             
