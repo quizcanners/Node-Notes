@@ -191,7 +191,7 @@ namespace NodeNotes {
 
                     if (n == null)
                         InspectingSubNode = false;
-                    else if (!Application.isPlaying) {
+                    else if (!Application.isPlaying || (Shortcuts.CurrentNode == this || IsChildOrSubChildOf(Shortcuts.CurrentNode))) {
 
                         if (icon.Exit.Click("Exit {0}".F(name)))
                             InspectingSubNode = false;
@@ -210,12 +210,12 @@ namespace NodeNotes {
                     }
 
                     if (InspectingSubNode)
-                        pegi.Try_Nested_Inspect(n);
+                        pegi.Try_Nested_Inspect(n).changes(ref changed);
                 }
 
                 if (!InspectingSubNode)  {
 
-                    NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this);
+                    NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this).changes(ref changed);
                     
                     pegi.nl();
                     var newNode = _coreNodesMeta.edit_List(ref coreNodes, ref changed);
@@ -296,8 +296,10 @@ namespace NodeNotes {
                 base.Inspect().changes(ref changed);
             }
             else
-                Inspect_AfterNamePart();
+                Inspect_AfterNamePart().changes(ref changed);
             
+
+
             return changed;
         }
         #endif

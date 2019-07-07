@@ -207,7 +207,7 @@
 				fadeMask.x = saturate((_Fade - sp.x) *  _FadeWidth);
 				float fadeOut = saturate((_Fade - 1));
 
-				fadeMask.y = saturate((sp.x - fadeOut) *  _FadeWidth);
+				fadeMask.y = saturate((1/_FadeWidth +  sp.x - fadeOut*1.25f) *_FadeWidth);
 
 				fadeMask = saturate(fadeMask + saturate(1 - abs(_Fade - 1) * 4));
 

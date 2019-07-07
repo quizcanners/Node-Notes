@@ -102,13 +102,10 @@ namespace NodeNotes_Visual {
             
             pegi.nl();
 
-            if (Application.isPlaying && selectedNode)
-            {
-                if (selectedNode.source.Nested_Inspect()) {
+            if (Application.isPlaying && selectedNode) {
+                if (selectedNode.source.Nested_Inspect().changes(ref changed)) 
                     selectedNode.UpdateName();
-                    OnLogicVersionChange();
-                }
-            }
+            } else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
 
             if (selectedNode == null || (selectedNode.source == Shortcuts.CurrentNode && selectedNode.source.inspectedItems == 21))
             {
@@ -213,18 +210,6 @@ namespace NodeNotes_Visual {
                         Shortcuts.CurrentNode = node;
                 }
             
-        }
-
-        public override void OnLogicUpdate()
-        {
-            var node = Shortcuts.CurrentNode;
-            
-            UpdateVisibility(node);
-
-            foreach (var n in NodesPool)
-                UpdateVisibility(n.source);
-
-            UpdateCurrentNodeGroupVisibilityAround(node);
         }
 
         private readonly LerpData _ld = new LerpData();
@@ -418,9 +403,16 @@ namespace NodeNotes_Visual {
 
         }
 
-        public override void OnLogicVersionChange()
+        public override void OnLogicUpdate()
         {
+            var node = Shortcuts.CurrentNode;
 
+            UpdateVisibility(node);
+
+            foreach (var n in NodesPool)
+                UpdateVisibility(n.source);
+
+            UpdateCurrentNodeGroupVisibilityAround(node);
         }
         
         #endregion

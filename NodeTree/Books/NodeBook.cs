@@ -94,14 +94,17 @@ namespace NodeNotes
                     }
                 }
                 
-                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref inspectedItems, 1).nl();
+                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref inspectedItems, 1).nl(ref changed);
 
             }
 
             if (inspectedItems == -1) {
                 "Author: {0} {1}".F(authorName, this.EditedByCurrentUser() ? "(ME)" : "").nl();
                 subNode.Nested_Inspect().nl(ref changed);
+
             }
+
+
 
             inspected = null;
             return changed;

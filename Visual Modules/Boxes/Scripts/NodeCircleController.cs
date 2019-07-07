@@ -52,17 +52,21 @@ namespace NodeNotes_Visual {
 
         public void UpdateName()
         {
-            if (fadePortion < 0.1f)
+            if (source != null)
             {
-                newText = null;
-                _activeTextAlpha = 1;
-                ActiveText.text = source.name;
-                gameObject.name = source.name;
-                PassiveText.text = "";
-                UpdateView();
-            }
-            else
-                newText = source.name;
+
+                if (fadePortion < 0.1f)
+                {
+                    newText = null;
+                    _activeTextAlpha = 1;
+                    ActiveText.text = source.name;
+                    gameObject.name = source.name;
+                    PassiveText.text = "";
+                    UpdateView();
+                }
+                else
+                    newText = source.name;
+            } else Debug.LogError("No source on ", this);
 
             lerpsFinished = false;
         }
@@ -147,7 +151,7 @@ namespace NodeNotes_Visual {
                     if (nd != null)
                     {
                         if (IsCurrent && nd.parentNode != null && icon.StateMachine.Click("Exit this Node"))
-                            Shortcuts.CurrentNode = nd.parentNode;
+                            Shortcuts.TryExitCurrentNode(); 
                         
                         if (!IsCurrent && icon.Enter.Click("Enter this Node"))
                             Shortcuts.CurrentNode = nd;
@@ -156,10 +160,13 @@ namespace NodeNotes_Visual {
                     if ((conditionPassed ? icon.Active : icon.InActive).Click("Try Force Active conditions to {0}".F(!conditionPassed)) && !source.TryForceEnabledConditions(Values.global,!conditionPassed))
                         Debug.Log("No Conditions to force to {0}".F(!conditionPassed));
 
+                    pegi.nl();
+
                     if (IsCurrent) 
                         source.name.write(PEGI_Styles.ListLabel);
                     else
                         source.name.write("Lerp parameter {0}".F(dominantParameter), conditionPassed ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
+                        
                 }
 
                 pegi.nl();
@@ -178,7 +185,7 @@ namespace NodeNotes_Visual {
                             if (bg != null)
                             {
                                 if (bg.Try_Nested_Inspect().nl(ref changed))
-                                    source.visualStyleConfigs[Nodes_PEGI.SelectedController.ClassTag] =
+                                    source.visualStyleConfigs[Nodes_PEGI.SelectedVisualLayer.ClassTag] =
                                         bg.Encode().ToString();
                             }
                         }
@@ -703,11 +710,9 @@ namespace NodeNotes_Visual {
 
             myLastLinkedNode = node;
             source = node;
-            if (source.visualRepresentation != null)
-                Debug.LogError("Visual representation is not null",this);
-            source.visualRepresentation = this;
-            source.previousVisualRepresentation = this;
-            Decode(source.configForVisualRepresentation);
+
+            Decode(source.LinkTo(this));
+
             NameForPEGI = source.name;
             isFading = false;
             gameObject.SetActive(true);
@@ -718,12 +723,11 @@ namespace NodeNotes_Visual {
         public void Unlink()
         {
             if (source != null) {
-                source.configForVisualRepresentation = Encode().ToString();
-                source.visualRepresentation = null;
+                source.Unlink(Encode());
                 source = null;
             }
        
-                isFading = true;
+            isFading = true;
 
             if (circleCollider)
                 circleCollider.enabled = false;

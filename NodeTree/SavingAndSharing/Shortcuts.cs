@@ -17,6 +17,18 @@ namespace NodeNotes {
 
         static LoopLock loopLock = new LoopLock();
 
+        public static bool TryExitCurrentNode()
+        {
+            var node = CurrentNode;
+            if (node != null && node.parentNode != null)
+            {
+                CurrentNode = node.parentNode;
+                return true;
+            }
+
+            return false;
+        }
+
         public static Node CurrentNode
         {
 
@@ -28,7 +40,16 @@ namespace NodeNotes {
                 {
                     using (loopLock.Lock()) {
                         expectingLoopCall = true;
-                        visualLayer.CurrentNode = value;
+
+                        try
+                        {
+                            visualLayer.CurrentNode = value;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError(ex);
+                        }
+
                         if (expectingLoopCall) {
                             expectingLoopCall = false;
                             user.CurrentNode = value;

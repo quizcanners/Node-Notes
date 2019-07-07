@@ -3,6 +3,7 @@ using QuizCannersUtilities;
 using QcTriggerLogic;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace NodeNotes {
@@ -15,7 +16,15 @@ namespace NodeNotes {
         #region Values
         public Node parentNode;
         public NodeBook root;
-        
+
+        public bool IsChildOrSubChildOf(Node node) {
+
+            if (parentNode != null)
+                return parentNode == node || parentNode.IsChildOrSubChildOf(node);
+
+            return false;
+        }
+
         public Dictionary<string, string> visualStyleConfigs = new Dictionary<string, string>();
 
         public void OnClassTypeChange(object previousInstance) {
@@ -260,7 +269,9 @@ namespace NodeNotes {
                 Inspect_AfterNamePart().nl(ref changed);
 
                 "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedItems, 21).nl_ifFolded(ref changed);
-                
+
+                pegi.nl();
+
                 if ( inspectedItems != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
                     
                     _visCondition.enter_Inspect(ref inspectedItems, 1).nl_ifFolded(ref changed);
@@ -285,6 +296,23 @@ namespace NodeNotes {
         #endregion
 
         #region MGMT
+
+        public virtual string LinkTo(ICfg visualLayer)
+        {
+            if (visualRepresentation != null)
+                Debug.LogError("Visual representation is not null", visualLayer as Object);
+
+            visualRepresentation = visualLayer;
+            previousVisualRepresentation = visualLayer;
+            return configForVisualRepresentation;
+
+        }
+
+        public virtual void Unlink(CfgEncoder data) {
+                configForVisualRepresentation = data.ToString();
+                visualRepresentation = null;
+        }
+
         public virtual void MoveTo(Node node) {
 
             parentNode.Remove(this);

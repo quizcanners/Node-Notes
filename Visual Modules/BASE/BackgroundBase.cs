@@ -28,13 +28,12 @@ namespace NodeNotes_Visual {
 
         public abstract void ManagedOnEnable();
 
-        public abstract void OnLogicVersionChange();
-
+        public abstract void OnLogicUpdate();
+        
         public abstract void SetNode(Node node);
 
         public abstract void ManagedOnDisable();
 
-        public abstract void OnLogicUpdate();
 
 
 

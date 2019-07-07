@@ -24,9 +24,9 @@ namespace NodeNotes_Visual
         
         #region Node MGMT
         
-        public override void Show(Base_Node node) => SelectedController.MakeVisible(node);
+        public override void Show(Base_Node node) => SelectedVisualLayer.MakeVisible(node);
         
-        public override void Hide(Base_Node node) => SelectedController.MakeHidden(node);
+        public override void Hide(Base_Node node) => SelectedVisualLayer.MakeHidden(node);
 
         public override Node CurrentNode {
 
@@ -34,12 +34,14 @@ namespace NodeNotes_Visual
 
             set
             {
+
+
                 SetBackground(value);
 
                 if (Application.isPlaying)
                     value?.SetInspected();
 
-                SelectedController.SetNode(value);
+                SelectedVisualLayer.SetNode(value);
             }
         }
 
@@ -49,7 +51,7 @@ namespace NodeNotes_Visual
 
             SetBackground(cn);
 
-            SelectedController.OnLogicUpdate();
+            SelectedVisualLayer.OnLogicUpdate();
 
         }
 
@@ -61,7 +63,7 @@ namespace NodeNotes_Visual
 
         public static BackgroundBase _selectedController;
 
-        public static BackgroundBase SelectedController {
+        public static BackgroundBase SelectedVisualLayer {
             get {
                 if (!_selectedController)
                     SetBackground(null);
@@ -85,20 +87,21 @@ namespace NodeNotes_Visual
             string data = "";
 
             if (source!= null)
-            source.visualStyleConfigs.TryGetValue(tag, out data);
+                source.visualStyleConfigs.TryGetValue(tag, out data);
 
             foreach (var bc in bgc)
-                if (bc) {
-                    if (bc.ClassTag == tag)
-                    {
-                        _selectedController = bc;
-                        bc.TryFadeIn();
-                        data.TryDecodeInto(bc);
-
-                    }
-                    else
+                if (bc && bc.ClassTag != tag)
                         bc.FadeAway();
+                
+            foreach (var bc in bgc)
+                if (bc && bc.ClassTag == tag) {
+                    _selectedController = bc;
+                    bc.TryFadeIn();
+                    data.TryDecodeInto(bc);
+                    break;
                 }
+
+                
         }
 
         #endregion
@@ -142,27 +145,26 @@ namespace NodeNotes_Visual
 
                 if (icon.Close.Click("Exit Game Node in Fail").nl())
                     FromGameToNode(true);
-                else return gameNode.Nested_Inspect();
+                else
+                    return gameNode.Nested_Inspect();
             }
             
             bool changed = base.Inspect();
-
-      
-            if (inspectedItems == 2)  
-                SelectedController.Nested_Inspect();
+            
+            if (inspectedItems == 2)
+                SelectedVisualLayer.Nested_Inspect().changes(ref changed);
 
             var cn = Shortcuts.CurrentNode;
-
-
+            
             pegi.nl();
 
-                if (!shortcuts)
-                    "Shortcuts".edit(ref shortcuts).nl(ref changed);
-                else
-                   if (inspectedItems == 4)
-                    shortcuts.Nested_Inspect().changes(ref changed);
-                else
-                    pegi.nl();
+            if (!shortcuts)
+                "Shortcuts".edit(ref shortcuts).nl(ref changed);
+            else
+               if (inspectedItems == 4)
+                shortcuts.Nested_Inspect().changes(ref changed);
+            else
+                pegi.nl();
 
             if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                 pegi.nl();
@@ -178,6 +180,9 @@ namespace NodeNotes_Visual
                 OnDisable();
                 OnEnable();
             }
+
+            if (changed)
+                SelectedVisualLayer.OnLogicUpdate();
 
             return changed;
         }
