@@ -119,10 +119,7 @@ namespace NodeNotes {
         }
 
         #region Inspector
-#if !NO_PEGI
-
-        //protected override icon InspectorIcon => icon.Book;
-
+ 
         protected override string InspectionHint => "Inspect Book Link";
 
         protected override string ResultsRole => "On Transition";
@@ -182,7 +179,7 @@ namespace NodeNotes {
             
             return changed;
         }
-#endif
+
         #endregion
 
         #region Encode_Decode
@@ -193,9 +190,10 @@ namespace NodeNotes {
             .Add("b", base.Encode)
             .Add("t", (int)type);
 
-            if (type == BookLinkType.BookLink) cody
-            .Add_String("lnk", linkedBookName)
-            .Add_String("ep", bookEntryPoint);
+            if (type == BookLinkType.BookLink)
+                cody.Add_String("lnk", linkedBookName)
+                    .Add_String("au", linkedBookAuthor)
+                    .Add_String("ep", bookEntryPoint);
 
             return cody;
         }
@@ -207,6 +205,7 @@ namespace NodeNotes {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "t": type = (BookLinkType)data.ToInt(); break;
                 case "lnk": linkedBookName = data; break;
+                case "au": linkedBookAuthor = data; break;
                 case "ep": bookEntryPoint = data; break;
                 default: return false;
             }

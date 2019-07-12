@@ -19,9 +19,6 @@ namespace QcTriggerLogic
 
         public List<T> CollectAll(ref List<T> lst) {
 
-            if (lst == null)
-                lst = new List<T>();
-
             lst.AddRange(elements);
 
             foreach (var b in subBranches)

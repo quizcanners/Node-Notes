@@ -4,6 +4,8 @@ using System;
 using QuizCannersUtilities;
 using UnityEngine;
 using PlayerAndEditorGUI;
+using UnityEngine.UIElements;
+using QcTriggerLogic;
 
 namespace NodeNotes {
 
@@ -24,14 +26,14 @@ namespace NodeNotes {
         #endregion
 
         public override string ToString() => NameForPEGI;
-        
+
+        public abstract bool GotNextText { get; } // => options.Count > index;
+
         public abstract string NameForPEGI { get; set; }
 
-        public virtual string GetNext() => NameForPEGI; // Will update all the options inside;
+        public abstract string GetNext();// => NameForPEGI; // Will update all the options inside;
 
-        public virtual bool TimeToGetNext() => false; // For timed sentences
-
-        public virtual string GetNextIfTime() => NameForPEGI;
+        public virtual void Reset() { }
 
     }
 
@@ -40,7 +42,13 @@ namespace NodeNotes {
 
         const string classTag = "s";
 
-        protected string text;
+        protected string text = "";
+
+        protected bool sentOne = false;
+
+        public override void Reset() => sentOne = false;
+
+        public override bool GotNextText => !sentOne;
 
         public override string ClassTag => classTag;
 
@@ -49,7 +57,13 @@ namespace NodeNotes {
             get { return text; }
             set { text = value; }
         }
-        
+
+        public override string GetNext()
+        {
+            sentOne = true;
+            return NameForPEGI;
+        }
+
         #region Encode & Decode
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("t", text);
@@ -74,6 +88,8 @@ namespace NodeNotes {
 
             return changed;
         }
+
+    
         #endif
         #endregion
 
@@ -89,97 +105,28 @@ namespace NodeNotes {
 
     }
 
-    [TaggedType(classTag, "Timed")]
-    public class TimedSentence : Sentence, IPEGI, IPEGI_ListInspect {
-
-        const string classTag = "tm";
-
-        public override string ClassTag => classTag;
-
-        protected Sentence text = new StringSentence();
-
-        private float timer;
-
-        private float timeToShow = 5f;
-        
-        public override string NameForPEGI
-        {
-            get { return text.NameForPEGI; }
-            set { text.NameForPEGI = value; }
-        }
-
-        public override bool TimeToGetNext()
-        {
-            timer += Time.deltaTime;
-
-            return timer > timeToShow;
-        }
-
-        public override string GetNextIfTime() => text.GetNextIfTime();
-
-        public override string GetNext()
-        {
-            timer = 0;
-
-            return text.GetNext();
-        }
-
-        #region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
-            .Add("sn", text, all)
-            .Add("delay", timeToShow);
-
-        public override bool Decode(string tg, string data) {
-            switch (tg) {
-                case "t": text.Decode(tg, data); break;
-                case "sn": data.Decode(out text, all); break;
-                case "delay": timeToShow = data.ToFloat(); break;
-                default: return false;
-            }
-            return true;
-        }
-
-
-        #endregion
-
-        #region Inspector
-        #if !NO_PEGI
-
-        public bool InspectInList(IList list, int ind, ref int edited)
-        {
-            var changed = false;
-
-            "Time".write(35);
-            pegi.edit(ref timeToShow, 35).changes(ref changed);
-            
-            pegi.Try_enter_Inspect(text, ref edited, ind).changes(ref changed);
-            
-            return changed;
-        }
-
-        public override bool Inspect()
-        {
-            var changed = pegi.selectType(ref text, all).nl();
-
-            text.Nested_Inspect().nl(ref changed);
-
-            return changed;
-        }
-
-#endif
-        #endregion
-
-    }
 
     [TaggedType(classTag, "Multi Language")]
     public class MultilanguageSentence : Sentence,  IPEGI, IPEGI_ListInspect, INeedAttention {
-
+        
         const string classTag = "ml";
 
         public override string ClassTag => classTag;
 
         public override string NameForPEGI { get { return this[currentLanguage]; } set { this[currentLanguage] = value; } }
-        
+
+        protected bool sentOne = false;
+
+        public override void Reset() => sentOne = false;
+
+        public override bool GotNextText => !sentOne;
+
+        public override string GetNext()
+        {
+            sentOne = true;
+            return NameForPEGI;
+        }
+
         #region Languages MGMT
         public static Languages currentLanguage = Languages.en;
 
@@ -300,8 +247,10 @@ namespace NodeNotes {
 
             return false;
         }
-        
-        #endif
+
+
+
+#endif
         #endregion
     }
 
@@ -312,9 +261,23 @@ namespace NodeNotes {
 
         public override string ClassTag => classTag;
 
+        public bool pickedOne = false;
+
+        public override bool GotNextText => !pickedOne || Current.GotNextText;
+
+        public override void Reset() {
+            base.Reset();
+            pickedOne = false;
+        }
+
         public override string GetNext() {
-            index = UnityEngine.Random.Range(0, options.Count);
-            return Valid ? Current.GetNext() : "null";
+           
+            if (!pickedOne)
+                index = UnityEngine.Random.Range(0, options.Count);
+
+            pickedOne = true;
+
+            return Current.GetNext();
         }
 
         #region Inspector
@@ -327,13 +290,19 @@ namespace NodeNotes {
             return changed;
         }
 
+        public override bool InspectInList(IList list, int ind, ref int edited)
+        {
+            "RND:".write(25);
+            return base.InspectInList(list, ind, ref edited);
+        }
+
         #endif
         #endregion
 
     }
     
     [TaggedType(classTag, "List")]
-    public class ListOfSentences : Sentence, IPEGI
+    public class ListOfSentences : Sentence, IPEGI, IPEGI_ListInspect, IGotCount
     {
 
         const string classTag = "lst";
@@ -346,32 +315,30 @@ namespace NodeNotes {
 
         protected int index = 0;
 
-        protected bool Valid => options.Count > index;
+        public override void Reset() {
+            foreach (var o in options)
+                o.Reset();
+
+            index = 0;
+        }
+
+        public override bool GotNextText => options.Count-1 > index || Current.GotNextText;
 
         public override string NameForPEGI
         {
-            get
-            {
-                return (Valid) ? Current.NameForPEGI : "NULL";
-            }
-            set { if (Valid) Current.NameForPEGI = value; }
+            get { return Current.NameForPEGI; }
+            set { Current.NameForPEGI = value; }
         }
 
         public override string GetNext() {
-            index = (index+1) % options.Count;
-            return Valid ? Current.GetNext() : "null";
+
+            var ret = Current.GetNext();
+
+            if (!Current.GotNextText)
+                index = (index+1) % options.Count;
+
+            return  Current.GetNext();
         }
-
-        public override bool TimeToGetNext() => Valid ? Current.TimeToGetNext() : false;
-
-        public override string GetNextIfTime() {
-
-            if (Valid && Current.TimeToGetNext())
-                GetNext();
-
-            return NameForPEGI;
-        }
-
 
         #region Encode & Decode
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
@@ -392,18 +359,99 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-        private int inspectedSentence = -1;
-        
         #if !NO_PEGI
-        
+
+        private int inspectedSentence = -1;
+
         public override bool Inspect()
         {
+            pegi.nl();
+
             var changed = "Sentences".edit_List(ref options, ref inspectedSentence).nl();
 
             return changed;
         }
 
-        #endif
+        public virtual bool InspectInList(IList list, int ind, ref int edited)
+        {
+            var changed = false;
+
+            options[0].inspect_Name().changes(ref changed);
+
+            if (icon.Enter.Click())
+                edited = ind;
+
+            return changed;
+        }
+
+        public int CountForInspector() => options.Count;
+
+#endif
+
+        #endregion
+
+        public ListOfSentences() {
+            options.Add(new StringSentence());
+        }
+
+    }
+
+    [TaggedType(classTag)]
+    public class ConditionalSentence : MultilanguageSentence, IAmConditional
+    {
+
+        const string classTag = "cndSnt";
+
+        public override string ClassTag => classTag;
+
+        readonly ConditionBranch _condition = new ConditionBranch();
+
+        public bool CheckConditions(Values values) => _condition.CheckConditions(values);
+
+        #region Inspector
+
+#if !NO_PEGI
+        public override bool InspectInList(IList list, int ind, ref int edited)
+        {
+            var changed = this.inspect_Name();
+            if (this.Click_Enter_Attention(_condition.IsTrue() ? icon.Active : icon.InActive,
+                currentLanguage.GetNameForInspector()))
+                edited = ind;
+            return changed;
+        }
+
+        public override bool Inspect()
+        {
+            var changes = _condition.Nested_Inspect().nl();
+            changes |= base.Inspect();
+            return changes;
+        }
+#endif
+
+        #endregion
+
+        #region Encode & Decode
+
+        public override CfgEncoder Encode() => new CfgEncoder()
+            .Add("b", base.Encode)
+            .Add_IfNotDefault("cnd", _condition);
+
+        public override bool Decode(string tg, string data)
+        {
+            switch (tg)
+            {
+                case "b":
+                    data.Decode_Base(base.Decode, this);
+                    break;
+                case "cnd":
+                    _condition.Decode(data);
+                    break;
+                default: return false;
+            }
+
+            return true;
+        }
+
         #endregion
 
     }

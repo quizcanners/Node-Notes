@@ -65,16 +65,13 @@ namespace NodeNotes
             var changed = this.inspect_Name();
 
             var b = NodeBook.inspected;
-
-            var edtd = b.EditedByCurrentUser();
-
-            if (startPoint && !edtd && Shortcuts.CurrentNode == null 
+            
+            if (startPoint && Shortcuts.CurrentNode == null 
                 && icon.Play.ClickConfirm("EnPoSt",
                     "This will set book {0} as your Starting Point HUB. It's a big deal.".F(b)))
                 Shortcuts.CurrentNode = b.allBaseNodes[nodeIndex] as Node;
-
-
-            if (edtd && icon.Enter.Click("Inspect Entry Point"))
+            
+            if (icon.Enter.Click("Inspect Entry Point"))
                 edited = ind;
 
             return changed;

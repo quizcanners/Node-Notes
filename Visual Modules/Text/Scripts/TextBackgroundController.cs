@@ -124,7 +124,9 @@ namespace NodeNotes_Visual {
         public void OnPointerClick(PointerEventData eventData)
         {
 
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(pTextMeshPro, Input.mousePosition, null);
+            var c = pTextMeshPro.canvas;
+
+            int linkIndex = TMP_TextUtilities.FindIntersectingLink(pTextMeshPro, Input.mousePosition, c.renderMode == RenderMode.ScreenSpaceOverlay ? null : c.worldCamera);
             if (linkIndex != -1) {
                 TMP_LinkInfo linkInfo = pTextMeshPro.textInfo.linkInfo[linkIndex];
 
