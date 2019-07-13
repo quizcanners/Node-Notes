@@ -31,8 +31,6 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        
-        #if !NO_PEGI
 
         protected override string GameNodeTypeName => "Dialogue";
         
@@ -69,7 +67,6 @@ namespace NodeNotes_Visual {
             return changed;
         }
 
-        #endif
         #endregion
 
         #region Options MGMT
@@ -176,9 +173,7 @@ namespace NodeNotes_Visual {
             PossibleInteractions.Clear();
             PossibleOptions.Clear();
         }
-
-    
-
+        
         static string continuationReference;
 
         private void SelectOption(int no)

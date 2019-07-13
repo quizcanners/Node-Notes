@@ -74,10 +74,7 @@ namespace QcTriggerLogic
 
         private int _inspectedElement = -1;
         private int _inspectedBranch = -1;
-
-#if !NO_PEGI
-
-        
+   
         LoopLock searchLoopLock = new LoopLock();
 
         public bool String_SearchMatch(string searchString)
@@ -121,8 +118,7 @@ namespace QcTriggerLogic
             parent = null;
             return changed;
         }
-
-#endif
+        
         #endregion
 
     }

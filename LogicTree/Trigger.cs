@@ -69,8 +69,6 @@ namespace QcTriggerLogic
 
         public string NameForPEGI { get { return name; } set { name = value; } }
 
-        #if !NO_PEGI
-
         public override string NameForDisplayPEGI() => name;
 
         public override bool InspectInList(IList list, int ind, ref int edited) {
@@ -105,10 +103,7 @@ namespace QcTriggerLogic
             }
             return changed;
         }
-
-
-#endif
-
+        
         #endregion
 
     }

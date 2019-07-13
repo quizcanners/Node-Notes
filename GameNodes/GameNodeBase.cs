@@ -95,9 +95,6 @@ namespace NodeNotes {
         
         protected int inspectedGameNodeItems = -1;
 
-
-        #if !NO_PEGI
-
         private readonly LoopLock _inspectLoopLock = new LoopLock();
         
         protected override string ResultsRole => "On Enter";
@@ -152,8 +149,6 @@ namespace NodeNotes {
 
             return changed;
         }
-
-        #endif
 
         #endregion
 

@@ -68,8 +68,7 @@ namespace NodeNotes_Visual {
 
         #region Inspector
 
-        #if !NO_PEGI
-        
+
         int inspectedPrefab = -1;
 
         protected override bool InspectGameNode() {
@@ -84,8 +83,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-
-        #endif
+        
 
         #endregion
 
@@ -154,8 +152,7 @@ namespace NodeNotes_Visual {
 
 #region Inspector
         public string NameForPEGI { get { return name; } set { name = value; } }
-
-#if !NO_PEGI
+        
         public bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = this.inspect_Name();
@@ -213,7 +210,7 @@ namespace NodeNotes_Visual {
  
             return changed;
         }
-#endif
+
 #endregion
     }
 
@@ -245,8 +242,7 @@ namespace NodeNotes_Visual {
         
 #region Inspector
         public string NameForPEGI { get { return name; } set { name = value; } }
-
-#if !NO_PEGI
+        
         public bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = this.inspect_Name();
@@ -279,8 +275,6 @@ namespace NodeNotes_Visual {
             return changed;
         }
 
-
-#endif
 #endregion
         
         public void FadeAway() {

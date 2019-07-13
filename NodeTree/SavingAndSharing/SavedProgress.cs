@@ -198,9 +198,7 @@ namespace NodeNotes
 
         public string NameForDisplayPEGI()=>
             "{0} FROM {1}".F(Name, startingPoint);
-
-      
-#if !NO_PEGI
+        
         public override bool Inspect() {
 
             bool changed = false; 
@@ -222,8 +220,7 @@ namespace NodeNotes
 
             return changed;
         }
-        #endif
-
+   
         #endregion
 
         #region Encoding_Decoding

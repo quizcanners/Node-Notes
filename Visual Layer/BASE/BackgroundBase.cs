@@ -18,6 +18,8 @@ namespace NodeNotes_Visual {
         public TaggedTypesCfg AllTypes => all;
         #endregion
 
+        public static Camera MainCamera => NodesVisualLayer.MainCam;
+        
         public abstract void FadeAway();
 
         public abstract bool TryFadeIn();

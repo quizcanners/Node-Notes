@@ -27,8 +27,6 @@ namespace NodeNotes {
             return true;
         }
 
-        #if !NO_PEGI
-
         protected override string InspectionHint => "Inspect Button";
 
         protected override string ResultsRole => "On Click";
@@ -41,7 +39,6 @@ namespace NodeNotes {
 
             return changed;
         }
-        #endif
 
     }
 }

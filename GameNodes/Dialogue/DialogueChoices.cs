@@ -86,8 +86,7 @@ namespace NodeNotes_Visual {
                 referenceName = value;
             }
         }
-
-        #if !NO_PEGI
+        
         public string NameForDisplayPEGI() => texts.NameForPEGI;
 
         public string NeedAttention() {
@@ -160,7 +159,6 @@ namespace NodeNotes_Visual {
 
         }
         
-        #endif
         #endregion
 
     }
@@ -175,8 +173,7 @@ namespace NodeNotes_Visual {
             foreach (var sb in br.subBranches)
                 RenameReferenceLoop(sb, oldName, newName);
         }
-
-        #if !NO_PEGI
+        
         public override bool Inspect()
         {
             Interaction.inspectedList.Clear();
@@ -185,7 +182,6 @@ namespace NodeNotes_Visual {
 
             return base.Inspect();
         }
-        #endif
 
         public void RenameReferance (string oldName, string newName) => RenameReferenceLoop(this, oldName, newName);
         
@@ -237,10 +233,7 @@ namespace NodeNotes_Visual {
         #region Inspector
 
         public void RenameReference(string oldName, string newName) => nextOne = nextOne.SameAs(oldName) ? newName : nextOne;
-
-
-        #if !NO_PEGI
-
+        
         int inspectedResult = -1;
 
         public string NeedAttention() {
@@ -282,9 +275,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-
-    
-        #endif
+        
         #endregion
     }
 

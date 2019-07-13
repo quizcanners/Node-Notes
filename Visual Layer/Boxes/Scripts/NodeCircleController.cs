@@ -17,7 +17,7 @@ namespace NodeNotes_Visual {
     [ExecuteInEditMode]
     public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
 
-        private static Nodes_PEGI Mgmt => Nodes_PEGI.Instance;
+        private static NodesVisualLayer Mgmt => NodesVisualLayer.Instance;
 
         public Renderer circleRenderer;
 
@@ -93,8 +93,6 @@ namespace NodeNotes_Visual {
         private int _indexInPool;
         public int IndexForPEGI { get { return _indexInPool;  } set { _indexInPool = value; } }
         
-        #if !NO_PEGI
-
         public override bool InspectInList(IList list, int ind, ref int edited) {
 
             var changed = ActiveConfig.InspectInList(list, ind, ref edited);
@@ -185,7 +183,7 @@ namespace NodeNotes_Visual {
                             if (bg != null)
                             {
                                 if (bg.Try_Nested_Inspect().nl(ref changed))
-                                    source.visualStyleConfigs[Nodes_PEGI.SelectedVisualLayer.ClassTag] =
+                                    source.visualStyleConfigs[NodesVisualLayer.SelectedVisualLayer.ClassTag] =
                                         bg.Encode().ToString();
                             }
                         }
@@ -280,8 +278,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-
-        #endif
+        
         #endregion
 
         #region Visual Configuration
@@ -538,16 +535,7 @@ namespace NodeNotes_Visual {
             } 
         }
 
-        private static Camera _mainCam;
-
-        private static Camera MainCam {
-            get
-            {
-                if (!_mainCam)
-                    _mainCam = Camera.main;
-                return _mainCam;
-            }
-        }
+        private static Camera MainCamera => NodesVisualLayer.MainCam;
         
         private void UpdateView() {
 
@@ -564,7 +552,7 @@ namespace NodeNotes_Visual {
             if (circleRenderer) {
                 bgColor.a = fadePortion;
                 
-                var pos = MainCam.WorldToScreenPoint(transform.position).ToVector2();
+                var pos = MainCamera.WorldToScreenPoint(transform.position).ToVector2();
                 pos.Scale(new Vector2(1f / Screen.width, 1f / Screen.height));
 
                 var mat = circleRenderer.MaterialWhatever();
@@ -599,7 +587,7 @@ namespace NodeNotes_Visual {
                     WhiteBackground.inst.SetSelected(this);
 
                 Vector3 pos;
-                if (UpPlane.MouseToPlane(out pos, MainCam))
+                if (UpPlane.MouseToPlane(out pos, MainCamera))
                 {
                     _dragging = this;
                     _dragOffset = transform.position - pos;
@@ -618,7 +606,7 @@ namespace NodeNotes_Visual {
             else
             {
                 Vector3 pos;
-                if (UpPlane.MouseToPlane(out pos, MainCam))
+                if (UpPlane.MouseToPlane(out pos, MainCamera))
                 {
                     transform.localPosition = pos + _dragOffset;
                     ActiveConfig.targetLocalPosition = transform.localPosition;
@@ -795,7 +783,6 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspect
-        #if !NO_PEGI
         public override bool Inspect() {
 
             var changed = false;
@@ -824,7 +811,6 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-        #endif
         #endregion
     }
 

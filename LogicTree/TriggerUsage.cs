@@ -19,7 +19,6 @@ namespace QcTriggerLogic
         public static TriggerUsage Get(int ind) => Usages[ind];
         
         #region Inspector
-        #if !NO_PEGI
         public static bool SelectUsage(ref int ind) => pegi.select_Index(ref ind, Usages, 45);
 
         public virtual void Inspect(ConditionLogic c) { }
@@ -69,8 +68,7 @@ namespace QcTriggerLogic
             }
             return changed;
         }
-
-        #endif
+        
         #endregion
 
         public virtual bool HasMoreTriggerOptions => false;
@@ -108,7 +106,7 @@ namespace QcTriggerLogic
         public override string NameForDisplayPEGI()=> "YesNo";
 
         #region Inspector
-#if !NO_PEGI
+
         public override void Inspect(ConditionLogic c) {
             if (!c.IsBoolean) {
                 icon.Warning.write("Wrong Type: " + c.IsBoolean);
@@ -140,7 +138,7 @@ namespace QcTriggerLogic
 
             return changed;
         }
-#endif
+
         #endregion
 
         public override bool IsBoolean => true;
@@ -166,7 +164,7 @@ namespace QcTriggerLogic
         };
 
         #region Inspector
-#if !NO_PEGI
+
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicInt;
@@ -185,14 +183,13 @@ namespace QcTriggerLogic
             Select(ref r.type, ResultUsages) ||
             pegi.edit(ref r.updateValue, 40);
         
-
         public override bool Inspect(Trigger t) {
             var changed = base.Inspect(t);
             Values.global.ints.Edit(t).changes(ref changed);
 
             return changed;
         }
-#endif
+
         #endregion
 
         public UsageNumber(int index) : base(index) { }
@@ -204,7 +201,7 @@ namespace QcTriggerLogic
         public override string NameForDisplayPEGI()=> "Enums";
 
         #region Inspector
-#if !NO_PEGI
+
         public override void Inspect(ConditionLogic c) {
 
 
@@ -242,7 +239,7 @@ namespace QcTriggerLogic
 
             return changed;
         }
-#endif
+
         #endregion
 
         public override bool HasMoreTriggerOptions => true;
@@ -260,7 +257,7 @@ namespace QcTriggerLogic
         };
 
         #region Inspector
-        #if !NO_PEGI
+     
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicInt;
@@ -285,7 +282,7 @@ namespace QcTriggerLogic
 
             return changed;
         }
-        #endif
+       
         #endregion
 
         private static readonly Dictionary<int, string> ResultUsages = new Dictionary<int, string> {
@@ -308,7 +305,7 @@ namespace QcTriggerLogic
         };
 
         #region Inspector
-#if !NO_PEGI
+
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicInt;
@@ -334,7 +331,6 @@ namespace QcTriggerLogic
             return changed;
         }
 
-#endif
         #endregion
 
         private static readonly Dictionary<int, string> ResultUsages = new Dictionary<int, string> {

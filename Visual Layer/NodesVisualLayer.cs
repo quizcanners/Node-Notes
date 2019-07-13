@@ -16,9 +16,20 @@ namespace NodeNotes_Visual
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteInEditMode]
-    public class Nodes_PEGI : NodesVisualLayerAbstract {
+    public class NodesVisualLayer : NodesVisualLayerAbstract {
 
-        public static Nodes_PEGI Instance => inst as Nodes_PEGI;
+        public static NodesVisualLayer Instance => inst as NodesVisualLayer;
+
+        [SerializeField] private Camera _mainCam;
+
+        public static Camera MainCam {
+            get
+            {
+                if (!Instance._mainCam)
+                    Instance._mainCam = Camera.main;
+                return Instance._mainCam;
+            }
+        }
 
         public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
         
@@ -34,8 +45,6 @@ namespace NodeNotes_Visual
 
             set
             {
-
-
                 SetBackground(value);
 
                 if (Application.isPlaying)
@@ -107,7 +116,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Inspector
-#if !NO_PEGI
+
         pegi.WindowPositionData_PEGI_GUI window = new pegi.WindowPositionData_PEGI_GUI();
 
         protected override void ResetInspector()
@@ -169,6 +178,8 @@ namespace NodeNotes_Visual
             if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                 pegi.nl();
 
+                "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
+
                 "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
             }
 
@@ -188,14 +199,13 @@ namespace NodeNotes_Visual
         }
 
         public void OnGUI() {
-            if (Application.isPlaying && !Base_Node.editingNodes)
-                return;
-              //  window.Render(selectedNode);
-           // else 
-                window.Render(this);
-        }
 
-#endif
+            if (!Shortcuts.showPlaytimeUI || (Application.isPlaying && !Base_Node.editingNodes))
+                return;
+            
+            window.Render(this);
+        }
+        
         #endregion
 
         protected override void DerivedUpdate() {

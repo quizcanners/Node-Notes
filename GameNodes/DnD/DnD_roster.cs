@@ -37,12 +37,10 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if !NO_PEGI
         protected override bool InspectGameNode() {
             bool changed = "Roster Groups".edit_List(ref _perBookGroups, ref _inspectedGroup);
             return changed;
         }
-        #endif
         #endregion
 
     }
@@ -75,16 +73,14 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if !NO_PEGI
         public override bool Inspect()
         {
             bool changed = base.Inspect();
             
-            changed |= "Roster".edit_List(ref _elements, ref _inspectedElement);
+            "Roster".edit_List(ref _elements, ref _inspectedElement).changes(ref changed);
 
             return changed;
         }
-        #endif
         #endregion
 
     }
@@ -116,18 +112,16 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        #if !NO_PEGI
         public override bool Inspect() {
             bool changed = false;
             
             if (inspectedItems == -1)
-            changed |= "Description".editBig(ref description).nl();
+                "Description".editBig(ref description).nl(ref changed);
             
-            changed |= "Conditions".enter_Inspect(visibilityConditions, ref inspectedItems, 4);
+            "Conditions".enter_Inspect(visibilityConditions, ref inspectedItems, 4).changes(ref changed);
 
             return changed;
         }
-        #endif
         #endregion
 
     }

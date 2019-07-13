@@ -20,9 +20,8 @@ namespace QcTriggerLogic {
 
  
         private int inspected = -1;
-
-#if !NO_PEGI
-               public bool SelectCategory(PickedCategory pc)
+        
+        public bool SelectCategory(PickedCategory pc)
         {
             var changed = false;
 
@@ -52,8 +51,7 @@ namespace QcTriggerLogic {
 
             return changed;
         }
-
-
+        
         public override bool Inspect()
         {
             current = this;
@@ -66,7 +64,6 @@ namespace QcTriggerLogic {
 
             return changed;
         }
-#endif
         #endregion
 
         #region Encode & Decode
@@ -126,8 +123,7 @@ namespace QcTriggerLogic {
         #region Inspect
 
         private int _inspected = -1;
-
-#if !NO_PEGI
+        
         public bool Select(ref T val) => pegi.select(ref val, elements);
         
         public override bool Inspect() {
@@ -183,7 +179,7 @@ namespace QcTriggerLogic {
 
             return changed;
         }
-#endif
+
 #endregion
 
 #region Encode & Decode
@@ -220,10 +216,8 @@ namespace QcTriggerLogic {
     public class PickedCategory: AbstractCfg {
 
         public List<int> path = new List<int>();
-
-#if !NO_PEGI
+        
         public bool Inspect<T>() where T: ICategorized => CategoryRoot<T>.current.SelectCategory(this);
-#endif        
 
 #region Encode & Decode
         public override CfgEncoder Encode() => new CfgEncoder()

@@ -19,7 +19,6 @@ namespace NodeNotes_Visual.ECS {
         public float testValue;
 
         #region Inspector
-        #if !NO_PEGI
         public string NameForDisplayPEGI() => "Phisics Array index";
 
         public bool InspectInList(IList list, int ind, ref int edited) {
@@ -32,9 +31,8 @@ namespace NodeNotes_Visual.ECS {
 
             return changed;
         }
-#endif
 
-#endregion
+        #endregion
 
         #region Encode & Decode
         public CfgEncoder Encode() => new CfgEncoder()
@@ -88,10 +86,9 @@ namespace NodeNotes_Visual.ECS {
         public override void SetData(Entity e) => e.Set_Position(startPosition);
 
         #region Inspector
-#if !NO_PEGI
         public override bool InspectInList(IList list, int ind, ref int edited) => "pos".edit(30, ref startPosition);
-#endif
-#endregion
+
+        #endregion
 
 #region Encode & Decode
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
@@ -123,10 +120,9 @@ namespace NodeNotes_Visual.ECS {
         public override void SetData(Entity e) => e.Set_Rotation(qt);
 
         #region Inspector
-#if !NO_PEGI
         public override bool InspectInList(IList list, int ind, ref int edited) => "Rotation".edit(60, ref qt);
-#endif
-#endregion
+
+        #endregion
 
 #region Encode & Decode
         public override CfgEncoder Encode() => this.EncodeUnrecognized()

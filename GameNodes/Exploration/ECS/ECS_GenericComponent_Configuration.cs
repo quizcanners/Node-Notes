@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
 
+#pragma warning disable IDE0019 // Simplify 'default' expression
+
+
     #region Generic Entity Config
     public class ComponentSTDAttributeAttribute : AbstractWithTaggedTypes {
         public override TaggedTypesCfg TaggedTypes => ComponentCfgAbstract.all;
@@ -35,8 +38,7 @@ namespace NodeNotes_Visual.ECS {
         public abstract bool HasComponent(Entity e);
         #endregion
 
-#region Inspector
-#if !NO_PEGI
+        #region Inspector
         public static Entity inspectedEntity;
         public virtual bool InspectInList(IList list, int ind, ref int edited)
         {
@@ -61,8 +63,7 @@ namespace NodeNotes_Visual.ECS {
 
             return false;
         }
-#endif
-#endregion
+        #endregion
     }
 
     public abstract class ComponentCfgGeneric<T> : ComponentCfgAbstract where T : struct, IComponentData {

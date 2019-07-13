@@ -130,17 +130,16 @@ namespace QcTriggerLogic {
         #region Inspector
 
         public int CountForInspector() => booleans.CountForInspector() + ints.CountForInspector();// + enumTags.CountForInspector + boolTags.CountForInspector; 
-
-#if !NO_PEGI
-
-
+        
         public override bool Inspect() {
             
             var changed = false;
 
 
-            if (icon.Next.Click("Add 1 to logic version (will cause conditions to be reevaluated)").nl())
+            if (Application.isPlaying && icon.Refresh.Click("Add 1 to logic version (will cause conditions to be reevaluated)"))
                     LogicMGMT.AddLogicVersion();
+
+            pegi.nl();
 
             foreach (var bGr in booleans) {
                 var group = TriggerGroup.all[booleans.currentEnumerationIndex];
@@ -158,7 +157,7 @@ namespace QcTriggerLogic {
 
             return changed;
         }
-        #endif
+
         #endregion
     }
 

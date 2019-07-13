@@ -21,54 +21,100 @@ namespace NodeNotes_Visual {
         const string classTag = "textRead";
         public override string ClassTag => classTag;
         #endregion
-        
+
         #region Text MGMT
+
+        [SerializeField] private Texture floatingParticles;
+
+        private TextConfiguration activeTexts = new TextConfiguration();
+
+        ShaderProperty.TextureValue floatingParticlesProperty = new ShaderProperty.TextureValue("_FloatingParticles");
+        LinkedLerp.ColorValue textColor = new LinkedLerp.ColorValue("TextColor");
+        LinkedLerp.FloatValue textFade = new LinkedLerp.FloatValue("Text Lerp", 0, 2);
+
+
+        private LinkedLerp.ShaderColorValueGlobal bgColUp = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_1");
+        private LinkedLerp.ShaderColorValueGlobal bgColCnter = new LinkedLerp.ShaderColorValueGlobal("_BG_CENTER_COL");
+        private LinkedLerp.ShaderColorValueGlobal bgColDown = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_2");
+        
+
+
+        private LerpData ld = new LerpData();
+
+        bool dirty = false;
 
         public void Update()
         {
 
-            bool dirty = false;
-
-            if (isFadingAway)
-            {
+            bool needUpdate = false;
+            
+            if (isFadingAway) {
                 if (pTextMeshPro.enabled) {
 
-                    textPosition = LerpUtils.LerpBySpeed(textPosition, textPosition > 0.5f ? 1f : 0f, 2f);
+                    float tfd = textFade.CurrentValue;
 
-                    dirty = true;
+                    tfd = LerpUtils.LerpBySpeed(tfd, tfd > 0.5f ? 1f : 0f, 2f);
 
-
-                    if (textPosition == 0 || textPosition == 1)
-                    {
+                    needUpdate = true;
+                    
+                    if (tfd == 0 || tfd == 1) {
                         pTextMeshPro.text = "";
                         pTextMeshPro.enabled = false;
                     }
 
-
+                    textFade.CurrentValue = tfd;
 
                 }
-            } else if (targetText != null) {
+            }
+            else
+            {
 
-                textPosition = LerpUtils.LerpBySpeed(textPosition, 1, 2f);
+                bool gotAnotherText = targetText != null;
 
-                dirty = true;
+                if (gotAnotherText || dirty) {
 
-                if (textPosition == 1) {
-                    pTextMeshPro.text = targetText;
-                    targetText = null;
-                    textPosition = 0;
+                    ld.Reset();
+
+                    bgColUp.targetValue = activeTexts.backgroundColorUp;
+                    bgColCnter.targetValue = activeTexts.backgroundColorCenter;
+                    bgColDown.targetValue = activeTexts.backgroundColorDown;
+                    textColor.targetValue = activeTexts.textColor;
+                    textFade.targetValue = gotAnotherText ? 1 : 0.5f;
+
+                    textFade.Portion(ld);
+                    bgColUp.Portion(ld);
+                    bgColCnter.Portion(ld);
+                    bgColDown.Portion(ld);
+                    textColor.Portion(ld);
+
+                    bgColUp.Lerp(ld);
+                    bgColCnter.Lerp(ld);
+                    bgColDown.Lerp(ld);
+                    textColor.Lerp(ld);
+                    textFade.Lerp(ld);
+                    
+                    needUpdate = true;
+
+                    dirty = ld.Portion() < 1;
+
+                    if (gotAnotherText && textFade.CurrentValue == 1) {
+                        pTextMeshPro.text = targetText;
+                        targetText = null;
+                        textFade.CurrentValue = 0;
+                    }
+
+                } else if  (textFade.CurrentValue < 0.5f) {
+
+                    textFade.CurrentValue = LerpUtils.LerpBySpeed(textFade.CurrentValue, 0.5f, 1f);
+                    needUpdate = true;
+
                 }
-
-            } else if  (textPosition < 0.5f) {
-
-                textPosition = LerpUtils.LerpBySpeed(textPosition, 0.5f, 1f);
-                dirty = true;
-
             }
 
-            if (dirty)
-                pTextMeshPro.TrySetAlpha(textPosition);
+            if (needUpdate) 
+                pTextMeshPro.color = textColor.CurrentValue.Alpha(textFade.CurrentValue);
             
+
         }
 
         public void UpdateText()
@@ -93,7 +139,6 @@ namespace NodeNotes_Visual {
         }
 
         public StringBuilder stringBuilder = new StringBuilder();
-        private float textPosition;
         private string targetText ="";
 
         public TextMeshProUGUI pTextMeshPro;
@@ -101,13 +146,16 @@ namespace NodeNotes_Visual {
 
         public bool isFadingAway = false;
 
-        public override bool TryFadeIn()
-        {
+        public override bool TryFadeIn() {
 
             isFadingAway = false;
 
+            floatingParticlesProperty.GlobalValue = floatingParticles;
+
             instance = this;
             pTextMeshPro.enabled = true;
+
+            dirty = true;
 
             return true;
         }
@@ -155,9 +203,7 @@ namespace NodeNotes_Visual {
             }
         }
 
-        private TextConfiguration activeTexts = new TextConfiguration();
-
-        private Node currentNode;
+        public Node currentNode;
 
         public override void SetNode(Node node)
         {
@@ -180,23 +226,41 @@ namespace NodeNotes_Visual {
 
         public static TextBackgroundController instance;
 
+        private bool showDependencies = false;
+
         public override bool Inspect() {
 
             var changed = false;
 
             instance = this;
-
+            
             if (currentNode != null)
                 currentNode.Nested_Inspect().nl(ref changed);
+
+            if ("Dependencies".foldout(ref showDependencies).nl()){
+
+                if ("Floating Particles".edit(ref floatingParticles).nl(ref changed))
+                    floatingParticlesProperty.GlobalValue = floatingParticles;
+            }
+
+            dirty |= changed;
 
             return changed;
         }
         #endregion
     }
     
-    public class TextConfiguration : AbstractKeepUnrecognizedCfg, IPEGI {
+    public class TextConfiguration : AbstractKeepUnrecognizedCfg, IPEGI
+    {
+        private Node Node => TextBackgroundController.instance.currentNode;
 
         public Color linksColor = Color.blue;
+
+        public Color backgroundColorUp = Color.white;
+        public Color backgroundColorCenter = Color.white;
+        public Color backgroundColorDown = Color.white;
+
+        public Color textColor = Color.black;
 
         public List<TextChunkBase> textChunks = new List<TextChunkBase>();
 
@@ -215,6 +279,10 @@ namespace NodeNotes_Visual {
             {
                 case "tch": data.Decode_List(out textChunks, TextChunkBase.all); break;
                 case "lnkCol": linksColor = data.ToColor(); break;
+                case "bgUp": backgroundColorUp = data.ToColor(); break;
+                case "bgc": backgroundColorCenter = data.ToColor(); break;
+                case "bgDwn": backgroundColorDown = data.ToColor(); break;
+                case "tx": textColor = data.ToColor(); break;
                 default: return false;
             }
 
@@ -223,8 +291,15 @@ namespace NodeNotes_Visual {
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("tch", textChunks, TextChunkBase.all)
-            .Add("lnkCol", linksColor);
+            .Add("lnkCol", linksColor)
+            .Add("bgUp", backgroundColorUp)
+            .Add("bgc", backgroundColorCenter)
+            .Add("bgDwn", backgroundColorDown)
+
+            .Add("tx", textColor);
         #endregion
+
+
 
         public static TextConfiguration inspected;
 
@@ -286,7 +361,13 @@ namespace NodeNotes_Visual {
             pegi.nl();
 
             if (enteredText == -1)
+            {
+                "Text Color".edit(ref textColor).nl(ref changed);
                 "Link color".edit(ref linksColor).nl(ref changed);
+                "Background Up".edit(ref backgroundColorUp).nl(ref changed);
+                "Background Center".edit(ref backgroundColorCenter).nl(ref changed);
+                "Background Down".edit(ref backgroundColorDown).nl(ref changed); 
+            }
             else {
 
                 if ("…".Click("Copy Ellipsis to Clipboard"))
@@ -317,6 +398,8 @@ namespace NodeNotes_Visual {
 
             if (changed)
                 TextBackgroundController.skipLerpForEditor = true;
+
+
 
             return changed;
         }
@@ -441,7 +524,7 @@ namespace NodeNotes_Visual {
                 
                 linkId = GetLinkIndex();
 
-                return HtmlTagWrap("link", HtmlTagWrap(text, inspected.linksColor));
+                return HtmlTagWrap("b", HtmlTagWrap("link", HtmlTagWrap(text, inspected.linksColor)));
 
             }
 
@@ -479,7 +562,7 @@ namespace NodeNotes_Visual {
 
             public override bool Inspect() => pegi.editBig(ref text);
             
-            public override string NameForDisplayPEGI() => "Ext: " + text.ToElipsisString(30);
+            public override string NameForDisplayPEGI() => "Exit: " + text.ToElipsisString(30);
 
             #endregion
         }
@@ -504,7 +587,7 @@ namespace NodeNotes_Visual {
             {
                 linkNo = GetLinkIndex();
 
-                return HtmlTagWrap("link", HtmlTagWrap(text, inspected.linksColor));
+                return HtmlTagWrap("b",HtmlTagWrap("link", HtmlTagWrap(text, inspected.linksColor)));
 
             }
 
@@ -532,6 +615,7 @@ namespace NodeNotes_Visual {
             #endregion
 
             #region Inspect
+
             public bool InspectInList(IList list, int ind, ref int edited) {
 
                 var changed = false;
@@ -548,7 +632,7 @@ namespace NodeNotes_Visual {
 
             public override bool Inspect() => pegi.editBig(ref text);
 
-            public override string NameForDisplayPEGI() => "Ext: " + text.ToElipsisString(30);
+            public override string NameForDisplayPEGI() => "Node: " + text.ToElipsisString(30);
 
             #endregion
         }

@@ -59,7 +59,6 @@ namespace QcTriggerLogic
         protected virtual bool SearchTriggerSameType => false;
         
         #region Inspector
-        #if !NO_PEGI
 
         public static Trigger selectedTrig;
         public static ValueIndex selected;
@@ -189,8 +188,7 @@ namespace QcTriggerLogic
         }
 
         public virtual string NameForDisplayPEGI() => Trigger.GetNameForInspector();
-
-        #endif
+        
         #endregion
     }
 
@@ -209,8 +207,7 @@ namespace QcTriggerLogic
         public static int Get(this UnNullableCfg<CountlessInt> uc, ValueIndex ind) => uc[ind.groupIndex][ind.triggerIndex];
         public static void Set(this UnNullableCfg<CountlessInt> uc, ValueIndex ind, int value) => uc[ind.groupIndex][ind.triggerIndex] = value;
 
-
-#if !NO_PEGI
+        
         public static bool Toggle(this UnNullableCfg<CountlessBool> uc, ValueIndex ind)
         {
             var tmp = uc.Get(ind);//[ind.groupIndex][ind.triggerIndex];
@@ -243,8 +240,7 @@ namespace QcTriggerLogic
             }
             return false;
         }
-
-#endif
+        
 
     }
 

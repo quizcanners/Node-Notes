@@ -1,20 +1,18 @@
 ﻿Shader "Playtime Painter/Effects/GradientBackground" {
 	Properties{
-		_MainTex("Noise Texture (RGB)", 2D) = "white" {}
 	}
 	
 	Category{
 		Tags{
 			"Queue" = "Background"
 			"IgnoreProjector" = "True"
-			"RenderType" = "Transparent"
+			"RenderType" = "Opaque"
 		}
 
 		ColorMask RGB
 		Cull Off
 		ZWrite Off
 		ZTest Off
-		Blend SrcAlpha One //MinusSrcAlpha
 
 		SubShader{
 			Pass{
@@ -22,12 +20,10 @@
 				CGPROGRAM
 
 				#include "UnityCG.cginc"
-
 				#pragma vertex vert
 				#pragma fragment frag
 				#pragma multi_compile_fwdbase
-				#pragma multi_compile_instancing
-				#pragma target 3.0
+				#pragma multi_compile ___ USE_NOISE_TEXTURE
 
 				struct v2f {
 					float4 pos : SV_POSITION;
@@ -55,36 +51,48 @@
 				float4 _BG_GRAD_COL_1;
 				float4 _BG_GRAD_COL_2;
 				float4 _BG_CENTER_COL;
-				sampler2D _MainTex;
+				sampler2D _Global_Noise_Lookup;
 
 				float4 frag(v2f i) : COLOR{
 
-					float2 off = i.texcoord - 0.5;
-					off.y *= _ScreenParams.y / _ScreenParams.x;
+
+					float2 duv = i.screenPos.xy / i.screenPos.w;
+
+					float2 off = duv - 0.5;
+					off.x *= _ScreenParams.x / _ScreenParams.y;
 					off *= off;
 
 					i.viewDir.xyz = normalize(i.viewDir.xyz);
-					float2 duv = i.screenPos.xy / i.screenPos.w;
 
-					float4 noise = tex2Dlod(_MainTex,float4(duv*5,0,0));
-
-					float noisy = (noise.r - 0.5) * 0.2;
-
-					duv.y *= (1 + noisy);
+					#ifdef UNITY_COLORSPACE_GAMMA
+					_BG_GRAD_COL_1.rgb *= _BG_GRAD_COL_1.rgb;
+					_BG_GRAD_COL_2.rgb *= _BG_GRAD_COL_2.rgb;
+					_BG_CENTER_COL.rgb *= _BG_CENTER_COL.rgb;
+					#endif
 
 					float4 col = _BG_GRAD_COL_1 * duv.y + _BG_GRAD_COL_2 * (1 - duv.y);
 
 					//_ScreenParams.xy
 
-					float center = saturate(1 - (off.x + off.y) + +noisy);
+					float center = saturate(1 - (off.x + off.y));
 
-					center = pow(center, 4 )*_BG_CENTER_COL.a;
+					center = center*_BG_CENTER_COL.a;
 	
 					col.rgb = col.rgb * (1 - center) + _BG_CENTER_COL.rgb*center;
 
-					float3 mix = col.gbr + col.brg;
-					mix *= mix;
-					col.rgb += mix * 0.05;
+					#ifdef UNITY_COLORSPACE_GAMMA
+					col.rgb = sqrt(o.color.rgb);
+					#endif
+
+
+					#if USE_NOISE_TEXTURE
+						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
+						#ifdef UNITY_COLORSPACE_GAMMA
+							col.rgb += (noise.rgb - 0.5)*0.02;
+						#else
+							col.rgb += (noise.rgb - 0.5)*0.0055;
+						#endif
+					#endif
 
 					return col;
 				}

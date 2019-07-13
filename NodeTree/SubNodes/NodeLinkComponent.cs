@@ -8,6 +8,9 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes {
 
+#pragma warning disable IDE0019 // Simplify 'default' expression
+
+
     public class NodeLinkComponent : Base_Node, IPEGI_ListInspect {
 
         public int linkedNodeIndex = 0;
@@ -34,7 +37,6 @@ namespace NodeNotes {
         }
 
         #region Inspector
-        #if !NO_PEGI
 
         protected override string InspectionHint => "Inspect Node Link";
 
@@ -62,8 +64,7 @@ namespace NodeNotes {
 
             return changed;
         }
-
-        #endif
+        
         #endregion
         
         #region Encode_Decode

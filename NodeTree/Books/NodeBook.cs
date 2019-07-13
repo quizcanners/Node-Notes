@@ -64,7 +64,6 @@ namespace NodeNotes
 
         public override string NameForPEGI { get => subNode.name; set => subNode.name = value; }
        
-        #if !NO_PEGI
         public bool String_SearchMatch(string searchString) => pegi.Try_SearchMatch_Obj(subNode, searchString);
         
         public BookEntryPoint GetEntryPoint(string name) => entryPoints.GetByIGotName(name);
@@ -99,7 +98,18 @@ namespace NodeNotes
             }
 
             if (inspectedItems == -1) {
-                "Author: {0} {1}".F(authorName, this.EditedByCurrentUser() ? "(ME)" : "").nl();
+
+                "Author: {0} {1}".F(authorName, this.EditedByCurrentUser() ? "(ME)" : "").write();
+
+                "Change".select(ref replacingAuthor, Shortcuts.users);
+
+                if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.Count && !Shortcuts.users[replacingAuthor].Equals(authorName)
+                                          && icon.Replace.ClickConfirm("repAu",
+                                              "Changing an author may break links to this book from other books."))
+                    authorName = Shortcuts.users[replacingAuthor];
+                
+
+                pegi.nl();
                 subNode.Nested_Inspect().nl(ref changed);
 
             }
@@ -109,7 +119,9 @@ namespace NodeNotes
             inspected = null;
             return changed;
         }
-        
+
+        private int replacingAuthor = -1;
+
         public bool InspectInList(IList list, int ind, ref int edited) {
             var changed = false;
 
@@ -133,7 +145,7 @@ namespace NodeNotes
             
             return changed;
         }
-        #endif
+
         #endregion
 
         #region Encode_Decode

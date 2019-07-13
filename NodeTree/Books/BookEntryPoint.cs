@@ -43,15 +43,14 @@ namespace NodeNotes
         #endregion
 
         #region Inspector
-
-        #if !NO_PEGI
+        
         public override bool Inspect() {
 
             bool changed = false;
 
             this.inspect_Name().nl(ref changed);
 
-            "{0} is a reference Key to this Entry Point. Name & Target node can be changed".F(nodeIndex).writeHint();
+            "{0} is a reference Key to this Entry Point. Target node can be changed at any point".F(entryPointName).writeHint();
 
             "On Node".select_iGotIndex_SameClass<Base_Node, Node>(60, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
             
@@ -76,7 +75,7 @@ namespace NodeNotes
 
             return changed;
         }
-#endif
+
         #endregion
 
     }

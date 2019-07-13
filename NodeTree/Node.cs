@@ -161,8 +161,7 @@ namespace NodeNotes {
 
             parentNode?.SetInspectedUpTheHierarchy(this);
         }
-
-        #if !NO_PEGI
+        
         protected override icon ExecuteIcon => icon.Next;
         protected override string ExecuteHint => "Enter Node";
 
@@ -302,7 +301,7 @@ namespace NodeNotes {
 
             return changed;
         }
-        #endif
+      
         #endregion
 
         #region Encode_Decode

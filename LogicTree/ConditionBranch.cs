@@ -34,8 +34,6 @@ namespace QcTriggerLogic {
         private int _browsedBranch = -1;
         private int _browsedCondition = -1;
 
-        #if !NO_PEGI
-        
         public string NeedAttention() {
 
             if (_branches.NeedsAttention() || _conditions.NeedsAttention())
@@ -133,7 +131,7 @@ namespace QcTriggerLogic {
             
             return changed;
         }
-        #endif
+       
         #endregion
         
         #region Encode & Decode

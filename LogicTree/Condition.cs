@@ -36,7 +36,6 @@ namespace QcTriggerLogic
         protected override bool SearchTriggerSameType => false;
         
         #region Inspector
-        #if !NO_PEGI
 
         public static Values inspectedTarget = null;
 
@@ -48,8 +47,7 @@ namespace QcTriggerLogic
 
             return changed;
         }
-
-        #endif
+        
         #endregion
 
         public ConditionLogic()
@@ -82,11 +80,9 @@ namespace QcTriggerLogic
         #endregion
 
         #region Inspect
-        #if !NO_PEGI
-
+  
         public override string NameForDisplayPEGI() => "if {0}{1}".F(compareValue ? "" : "NOT ",base.NameForDisplayPEGI());
-
-        #endif
+        
         #endregion
 
         public override bool TryForceConditionValue(Values values, bool toTrue)
@@ -130,7 +126,6 @@ namespace QcTriggerLogic
         #endregion
 
         #region Inspect
-#if !NO_PEGI
 
         public override string NameForDisplayPEGI() {
                 var name = "If {0} {1} {2}".F(base.NameForDisplayPEGI(), type.GetName(), compareValue);
@@ -138,7 +133,6 @@ namespace QcTriggerLogic
             
         }
 
-#endif
         #endregion
 
         protected override bool SearchTriggerSameType => true;
@@ -231,7 +225,6 @@ namespace QcTriggerLogic
     {
 
         #region Inspector
-        #if !NO_PEGI
         public override bool InspectInList(IList list, int ind, ref int edited)
         {
             bool changed = FocusedField_PEGI(ind, "Cond");
@@ -242,7 +235,6 @@ namespace QcTriggerLogic
 
             return base.Inspect() || changed;
         }
-        #endif
         #endregion
 
         public override bool TestFor(Values st)

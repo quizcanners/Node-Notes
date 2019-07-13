@@ -90,7 +90,6 @@ namespace QcTriggerLogic  {
         }
         
         #region Inspector
-        #if !NO_PEGI
         public override string NameForDisplayPEGI() =>
             "{0} : {1} {2} ".F(base.NameForDisplayPEGI(), type.GetText(), 
             (IsBoolean ? (updateValue != 0).ToString() : updateValue.ToString()));
@@ -103,7 +102,6 @@ namespace QcTriggerLogic  {
             return changed;
         }
     
-        #endif
         #endregion
 
     }

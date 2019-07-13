@@ -31,8 +31,7 @@ namespace NodeNotes {
             .Add_String("n", name);
 
         #endregion
-
-        #if !NO_PEGI
+        
         public bool InspectInList(IList list, int ind, ref int edited) {
             this.GetNameForInspector().write();
 
@@ -41,7 +40,6 @@ namespace NodeNotes {
 
             return false;
         }
-        #endif
 
         public NodeBook_OffLoaded() {
 

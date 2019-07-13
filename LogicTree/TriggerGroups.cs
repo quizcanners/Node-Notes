@@ -6,6 +6,9 @@ using QuizCannersUtilities;
 
 namespace QcTriggerLogic {
 
+#pragma warning disable IDE0018 // Simplify 'default' expression
+
+
     public sealed class TriggerGroup : AbstractKeepUnrecognizedCfg, IGotName, IGotIndex, IPEGI, IPEGI_ListInspect {
 
         public static UnNullableCfg<TriggerGroup> all = new UnNullableCfg<TriggerGroup>();
@@ -34,9 +37,9 @@ namespace QcTriggerLogic {
                     ready = _triggers[index];
                     ready.groupIndex = IndexForPEGI;
                     ready.triggerIndex = index;
-#if !NO_PEGI
+
                     _listDirty = true;
-#endif
+
                     return ready;
                 }
                 else return null;
@@ -66,10 +69,9 @@ namespace QcTriggerLogic {
             }
 
             _lastUsedTrigger = ind;
-
-#if !NO_PEGI
+            
             _listDirty = true;
-#endif
+
         }
 
         #endregion
@@ -105,9 +107,8 @@ namespace QcTriggerLogic {
 
         public override void Decode(string data)
         {
-#if !NO_PEGI
             _listDirty = true;
-#endif
+
             base.Decode(data);
         }
 
@@ -132,8 +133,7 @@ namespace QcTriggerLogic {
             get { return _browsedGroup >= 0 ? all[_browsedGroup] : null; }
             set { _browsedGroup = value?.IndexForPEGI ?? -1; }
         }
-
-        #if !NO_PEGI
+        
         private bool _listDirty;
 
         private string _lastFilteredString = "";
@@ -166,9 +166,9 @@ namespace QcTriggerLogic {
                     }
 
                 _lastFilteredString = Trigger.searchField;
-#if !NO_PEGI
+
                 _listDirty = false;
-#endif
+
             }
             return _filteredList;
         }
@@ -253,7 +253,7 @@ namespace QcTriggerLogic {
 
                 pegi.nl();
 
-                if (goodLength && icon.Replace.ClickUnFocus(
+                if (goodLength && icon.Replace.ClickConfirm("rnmTrg",
                     "Rename {0} if group {1} to {2}".F(selectedTrig.name, selectedTrig.Group.GetNameForInspector(), Trigger.searchField)
                     ).changes(ref changed)) selectedTrig.Using().name = Trigger.searchField;
                 
@@ -280,7 +280,7 @@ namespace QcTriggerLogic {
 
             return changed;
         }
-#endif
+
 
         #endregion
         

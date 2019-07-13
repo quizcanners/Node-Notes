@@ -92,7 +92,10 @@ namespace NodeNotes {
             user.SaveToPersistentPath_Json(_usersFolder, user.Name);
         }
 
-        void DeleteUser() {
+        void DeleteUser()
+        {
+            CurrentNode = null;
+
             DeleteUser_File(user.Name);
             if (users.Count > 0)
                 LoadUser(users[0]);
@@ -188,11 +191,11 @@ namespace NodeNotes {
         #region Inspector
         
         private string _tmpUserName;
-
-        #if !NO_PEGI
         
         private int _inspectedBook = -1;
-
+        
+        public static bool showPlaytimeUI = false;
+        
         public override void ResetInspector() {
             _inspectReplacementOption = false;
             _tmpUserName = "";
@@ -208,8 +211,7 @@ namespace NodeNotes {
 
         private NodeBook _replaceReceived;
         private bool _inspectReplacementOption;
-
-  
+        
         public override bool Inspect() {
 
             var changed = false;
@@ -217,19 +219,18 @@ namespace NodeNotes {
             if (_inspectedBook == -1) {
 
                 if (inspectedItems == -1) {
-                    if (users.Count > 1 && icon.Delete.Click("Delete User"))
+                    if (users.Count > 1 && icon.Delete.ClickConfirm("delUsr","Are you sure you want to delete this User?"))
                         DeleteUser();
 
                     string usr = user.Name;
-                    if (pegi.select(ref usr, users))
-                    {
+                    if (pegi.select(ref usr, users)) {
                         SaveUser();
                         LoadUser(usr);
                     }
                 }
 
                 if (icon.Enter.enter(ref inspectedItems, 4, "Inspect user"))
-                    changed |= user.Nested_Inspect();
+                    user.Nested_Inspect().changes(ref changed);
 
                 if (icon.Edit.enter(ref inspectedItems, 6, "Edit or Add user")) {
 
@@ -243,7 +244,7 @@ namespace NodeNotes {
                         if (icon.Add.Click("Add new user"))
                             CreateUser(_tmpUserName);
 
-                        if (icon.Replace.Click("Rename {0}".F(user.Name)))
+                        if (icon.Replace.ClickConfirm("rnUsr" ,"Do you want to rename a user {0}? This may break links between his books.".F(user.Name)))
                             RenameUser(_tmpUserName);
                     }
                 }
@@ -314,7 +315,7 @@ namespace NodeNotes {
                 if (_inspectedBook == -1)
                 {
 
-        #region Paste Options
+                    #region Paste Options
 
                     if (_replaceReceived != null)
                     {
@@ -350,14 +351,14 @@ namespace NodeNotes {
                     }
                     pegi.nl();
 
-        #endregion
+                    #endregion
 
                 }
 
             }
             return changed;
             }
-        #endif
+
         #endregion
 
         #region Encode_Decode
@@ -365,6 +366,7 @@ namespace NodeNotes {
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("trigs", TriggerGroup.all)
             .Add("books", books, this)
+            .Add_IfTrue("ptUI", showPlaytimeUI)
             .Add("us", users)
             .Add_String("curUser", user.Name);
         
@@ -373,6 +375,7 @@ namespace NodeNotes {
             switch (tg)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "books": data.Decode_List(out books, this); break;
+                case "ptUI": showPlaytimeUI = data.ToBool(); break;
                 case "us": data.Decode_List(out users); break;
                 case "curUser": LoadUser(data); break;
                 default: return false;

@@ -65,7 +65,6 @@ namespace QcTriggerLogic
         public void Awake() => RealTimeNow();
 
         #region Inspector
-        #if !NO_PEGI
 
         protected override void ResetInspector() {
             inspectedTriggerGroup = -1;
@@ -162,7 +161,7 @@ namespace QcTriggerLogic
 
             return changed;
         }
-#endif
+
         #endregion
     }
 }

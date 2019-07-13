@@ -55,6 +55,7 @@
 			"RenderType" = "Transparent"
 		}
 
+			/*
 		Stencil
 		{
 			Ref[_Stencil]
@@ -63,13 +64,14 @@
 			ReadMask[_StencilReadMask]
 			WriteMask[_StencilWriteMask]
 		}
+		*/
 
-		Cull[_CullMode]
+		Cull Off
 		ZWrite Off
 		Lighting Off
 		Fog{ Mode Off }
 		ZTest[unity_GUIZTestMode]
-		Blend One OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcAlpha
 		ColorMask[_ColorMask]
 
 		Pass{
@@ -160,7 +162,8 @@
 			uniform float		_ScaleY;
 			uniform float		_PerspectiveFilter;
 
-			//	uniform float		_Fade;
+			uniform sampler2D	_FloatingParticles;
+			uniform sampler2D _Global_Noise_Lookup;
 
 			struct vertex_t {
 				float4	vertex			: POSITION;
@@ -286,35 +289,70 @@
 			float4 PixShader(pixel_t input) : SV_Target
 			{
 
-				float2 sp = input.screenPos.xy / input.screenPos.w;
 
 				float d = tex2D(_MainTex, input.texcoord0.xy).a * input.param.x;
-				float4 c = input.faceColor * saturate(d - input.param.w);
+			
+				float2 sp = input.screenPos.xy / input.screenPos.w;
+
+				float angle = _Time.x - d*0.05;
+
+				float2 rotUV = sp - 0.5;
+				float si = sin(angle);
+				float co = cos(angle);
+
+				float tx = rotUV.x;
+				float ty = rotUV.y;
+				rotUV.x = (co * tx) - (si * ty);
+				rotUV.y = (si * tx) + (co * ty);
+				rotUV += 0.5;
+
+
+				float dust = tex2Dlod(_FloatingParticles, float4(rotUV, 0, 0)).r * tex2Dlod(_FloatingParticles, float4(sp * 3 + float2(_Time.x * 0.13,d*0.1), 0, 0)).r;
+
+				float4 c = input.faceColor;
+				
+				c.a *= saturate(d - input.param.w);
 
 				#ifdef OUTLINE_ON
-				c = lerp(input.outlineColor, input.faceColor, saturate(d - input.param.z));
-				c *= saturate(d - input.param.y);
+				c.rgb =  input.faceColor.rgb + input.outlineColor.rgb*saturate(pow(c.a * d * dust,3));
+				c.a *= saturate(d - input.param.y);
+
 				#endif
 
 				#if UNDERLAY_ON
 				float2 underUV = input.texcoord1.xy + (sp - 0.5)*0.01;
 
 				d = tex2D(_MainTex, underUV).a * input.underlayParam.x;
-				c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * saturate(d - input.underlayParam.y) * (1 - c.a);
+				c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * saturate(d - input.underlayParam.y) * (1 - c.a) * dust;
 				#endif
 
 				#if UNDERLAY_INNER
 				float sd = saturate(d - input.param.z);
 				d = tex2D(_MainTex, input.texcoord1.xy).a * input.underlayParam.x;
-				c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * (1 - saturate(d - input.underlayParam.y)) * sd * (1 - c.a);
+				c += float4(_UnderlayColor.rgb * _UnderlayColor.a, _UnderlayColor.a) * (1 - saturate((d - input.underlayParam.y)* (1 - c.a)) * sd );
 				#endif
 
 				#if (UNDERLAY_ON | UNDERLAY_INNER)
-				c *= input.texcoord1.z;
+				c.a *= input.texcoord1.z;
 				#endif
 
-				c *= input.fadeMask.x * (input.fadeMask.y);
+				c.a *= input.fadeMask.x * (input.fadeMask.y);
 
+				c.a *= c.a*2;
+
+				float3 mix = min(c.gbr + c.brg, 128);
+				c.rgb += mix * mix * dust*0.25;
+
+
+				#if USE_NOISE_TEXTURE
+
+				float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(noiseUV * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
+
+				c.rgb += (noise.rgb - 0.5)*0.05 * c.rgb;
+
+				#endif
+
+			
 				return c;
 			}
 			ENDCG

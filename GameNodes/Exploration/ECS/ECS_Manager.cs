@@ -10,6 +10,8 @@ using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
     
+    #pragma warning disable IDE0034 // Simplify 'default' expression
+
     public static class NodeNotesECSManager {
 
         public static EntityManager manager;
@@ -151,9 +153,7 @@ namespace NodeNotes_Visual.ECS {
         #endregion
 
         #region Inspector
-#if !NO_PEGI
 
-        
         static int exploredEntity = -1;
         public static bool Inspect()   {
 
@@ -278,7 +278,6 @@ namespace NodeNotes_Visual.ECS {
 
             return changed;
         }
-#endif
 
         #endregion
     }

@@ -8,6 +8,9 @@ using PlayerAndEditorGUI;
 
 namespace NodeNotes {
 
+
+    #pragma warning disable IDE0019 // Simplify 'default' expression
+
     public class BookLinkComponent : Base_Node, IPEGI_ListInspect {
 
         public enum BookLinkType { BookLink, BookExit }

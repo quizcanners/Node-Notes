@@ -15,14 +15,12 @@ namespace NodeNotes_Visual {
     {
 
         public static WhiteBackground inst;
-
+        
         public const string classTag = "white";
 
         public override string ClassTag => classTag;
 
         public bool isFading;
-
-        public Color color = Color.white;
 
         #region Click Events
 
@@ -86,15 +84,12 @@ namespace NodeNotes_Visual {
 
         public RoundedGraphic addButton;
 
-        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 8);
-
         public NodeCircleController circlePrefab;
 
         public RoundedGraphic deleteButton;
         #endregion
 
         #region Inspector
-        #if !NO_PEGI
         public string NameForPEGIdisplay => "White Background";
 
         public override bool Inspect() {
@@ -109,7 +104,7 @@ namespace NodeNotes_Visual {
 
             if (selectedNode == null || (selectedNode.source == Shortcuts.CurrentNode && selectedNode.source.inspectedItems == 21))
             {
-                "Background Color".edit(ref color).nl();
+               // "Background Color".edit(ref color).nl();
 
                 if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
                 {
@@ -126,7 +121,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-        #endif
+  
         #endregion
 
         #region Encode & Decode
@@ -135,15 +130,16 @@ namespace NodeNotes_Visual {
         {
             switch (tg)
             {
-                case "col": color = data.ToColor(); break;
+                //case "col": color = data.ToColor(); break;
                 default: return true;
 
             }
-            return false;
+           // return false;
         }
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
-            .Add("col", color);
+           // .Add("col", color)
+        ;
 
         #endregion
 
@@ -160,19 +156,7 @@ namespace NodeNotes_Visual {
 
             return true;
         }
-
-        [NonSerialized] private Camera _mainCam;
-
-        private Camera MainCam
-        {
-            get
-            {
-                if (!_mainCam)
-                    _mainCam = Camera.main;
-                return _mainCam;
-            }
-        }
-
+        
         private readonly LoopLock _loopLock = new LoopLock();
         
         public override void SetNode(Node node) {
@@ -213,7 +197,9 @@ namespace NodeNotes_Visual {
         }
 
         private readonly LerpData _ld = new LerpData();
+        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 8);
 
+        
         void Update() {
 
             _ld.Reset();
@@ -227,13 +213,12 @@ namespace NodeNotes_Visual {
             slidingButtons.Lerp(_ld);
 
             addButton.SetCorner(1, addButtonCourner.CurrentValue);
-            
-            if (!MainCam) return;
 
-            var col = _mainCam.backgroundColor;
+            if (!isFading) {
+                var col = MainCamera.backgroundColor;
 
-            _mainCam.backgroundColor = col.LerpBySpeed(Color.white, 3);
-
+                MainCamera.backgroundColor = col.LerpBySpeed(Color.white, 3);
+            }
         }
 
         #region Node MGMT

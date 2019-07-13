@@ -9,6 +9,9 @@ using QcTriggerLogic;
 
 namespace NodeNotes {
 
+
+    #pragma warning disable IDE0018 // Inline variable declaration
+
     public enum Languages { note = 0, en = 1, uk = 2, tr = 3, ru = 4 }
     
     public class SentenceAttribute : AbstractWithTaggedTypes {
@@ -80,17 +83,14 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-
-        #if !NO_PEGI
+        
         public override bool Inspect()
         {
             var changed = pegi.edit(ref text).nl();
 
             return changed;
         }
-
-    
-        #endif
+        
         #endregion
 
         public StringSentence()
@@ -203,7 +203,6 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-        #if !NO_PEGI
 
         public static bool LanguageSelector_PEGI() => pegi.editEnum(ref currentLanguage, 30);
         
@@ -248,9 +247,6 @@ namespace NodeNotes {
             return false;
         }
 
-
-
-#endif
         #endregion
     }
 
@@ -281,7 +277,6 @@ namespace NodeNotes {
         }
 
         #region Inspector
-        #if !NO_PEGI
 
         public override bool Inspect()
         {
@@ -296,7 +291,6 @@ namespace NodeNotes {
             return base.InspectInList(list, ind, ref edited);
         }
 
-        #endif
         #endregion
 
     }
@@ -359,7 +353,6 @@ namespace NodeNotes {
         #endregion
 
         #region Inspector
-        #if !NO_PEGI
 
         private int inspectedSentence = -1;
 
@@ -386,8 +379,6 @@ namespace NodeNotes {
 
         public int CountForInspector() => options.Count;
 
-#endif
-
         #endregion
 
         public ListOfSentences() {
@@ -409,8 +400,7 @@ namespace NodeNotes {
         public bool CheckConditions(Values values) => _condition.CheckConditions(values);
 
         #region Inspector
-
-#if !NO_PEGI
+        
         public override bool InspectInList(IList list, int ind, ref int edited)
         {
             var changed = this.inspect_Name();
@@ -426,7 +416,6 @@ namespace NodeNotes {
             changes |= base.Inspect();
             return changes;
         }
-#endif
 
         #endregion
 

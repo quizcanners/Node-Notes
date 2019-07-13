@@ -170,9 +170,6 @@ namespace NodeNotes {
 
         protected bool showLogic;
 
-
-        #if !NO_PEGI
-        
         public virtual bool InspectInList(IList list, int ind, ref int edited)
         {
 
@@ -251,10 +248,9 @@ namespace NodeNotes {
 
                 var onPlayScreen = pegi.paintingPlayAreaGui;
 
-                if (inspectedItems == -1)
-                {
-                    if (GetType() == typeof(Node) || onPlayScreen)
-                        this.inspect_Name().changes(ref changed);
+                if (inspectedItems == -1) {
+                    this.inspect_Name().changes(ref changed);
+
                     if ((this != Shortcuts.Cut_Paste) && icon.Cut.Click("Cut/Paste"))
                         Shortcuts.Cut_Paste = this;
                     if (visualRepresentation != null && icon.Show.Click("Visible. Click To Hide Visual Representation."))
@@ -292,7 +288,7 @@ namespace NodeNotes {
 
             return changed;
         }
-        #endif
+        
         #endregion
 
         #region MGMT

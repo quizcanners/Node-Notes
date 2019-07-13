@@ -24,7 +24,7 @@ namespace NodeNotes
 
 
         #region Inspector
-#if !NO_PEGI
+
         public bool InspectInList(IList list, int ind, ref int edited) {
             NameForDisplayPEGI().write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
@@ -32,7 +32,7 @@ namespace NodeNotes
             
             return false;
         }
-#endif
+
         #endregion
 
         #region Encode_Decode
