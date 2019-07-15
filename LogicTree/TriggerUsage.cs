@@ -350,7 +350,7 @@ namespace QcTriggerLogic
         public override string NameForDisplayPEGI()=> "TagGroup";
 
         #region Inspector
-        #if !NO_PEGI
+     
         public override bool Inspect(Trigger t) {
             var changed = base.Inspect(t);
 
@@ -396,7 +396,6 @@ namespace QcTriggerLogic
             pegi.select(ref r.updateValue, r.Trigger.enm);
             return changed;
         }
-        #endif
         #endregion
 
         public override bool HasMoreTriggerOptions => true;
@@ -409,7 +408,7 @@ namespace QcTriggerLogic
         public override string NameForDisplayPEGI()=> "Tag";
 
         #region Inspector
-        #if !NO_PEGI
+      
         public override void Inspect(ConditionLogic c) {
 
             var num = c as ConditionLogicBool;
@@ -431,7 +430,6 @@ namespace QcTriggerLogic
 
             return changed;
         }
-#endif
         #endregion
         
         public override bool IsBoolean => true;
