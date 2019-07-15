@@ -17,7 +17,7 @@ namespace NodeNotes {
 
         public override bool ExecuteInteraction() {
 
-            var node = root.allBaseNodes[linkedNodeIndex] as Node;
+            var node = parentBook.allBaseNodes[linkedNodeIndex] as Node;
 
             if (node != null) {
                 Shortcuts.CurrentNode = node;
@@ -45,7 +45,7 @@ namespace NodeNotes {
         protected override icon ExecuteIcon => icon.Link;
         protected override string ExecuteHint => "Execute Transition";
 
-        bool SharedPEGI() => "Node Link ".select_iGotIndex_SameClass<Base_Node, Node>(65, ref linkedNodeIndex, root.allBaseNodes.GetAllObjsNoOrder());
+        bool SharedPEGI() => "Node Link ".select_iGotIndex_SameClass<Base_Node, Node>(65, ref linkedNodeIndex, parentBook.allBaseNodes.GetAllObjsNoOrder());
 
         public override bool InspectInList(IList list, int ind, ref int edited)
         {

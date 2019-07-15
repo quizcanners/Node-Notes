@@ -56,8 +56,8 @@ namespace NodeNotes
                                 return;
                             }
 
-                            if (_currentNode == null || _currentNode.root != value.root)
-                                SetNextBook(value.root);
+                            if (_currentNode == null || _currentNode.parentBook != value.parentBook)
+                                SetNextBook(value.parentBook);
                         }
                     }
 
@@ -90,7 +90,7 @@ namespace NodeNotes
 
             if (_currentNode != null) {
                 
-                var currentBook = _currentNode.root;
+                var currentBook = _currentNode.parentBook;
 
                 if (currentBook != null) {
 
@@ -151,12 +151,12 @@ namespace NodeNotes
             if (bookMarks.Count == 0)
             {
                 if (_currentNode != null)
-                    startingPoint = _currentNode.root.NameForPEGI;
+                    startingPoint = _currentNode.parentBook.NameForPEGI;
                 else 
                     startingPoint = nextBook.NameForPEGI;
             }
 
-            if (_currentNode != null && _currentNode.root == nextBook)
+            if (_currentNode != null && _currentNode.parentBook == nextBook)
                 return;
 
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
@@ -266,8 +266,8 @@ namespace NodeNotes
 
             var cur = Shortcuts.CurrentNode;
             if (cur != null) {
-                cody.Add_String("curB", cur.root.NameForPEGI)
-                    .Add_String("curA", cur.root.AuthorName)
+                cody.Add_String("curB", cur.parentBook.NameForPEGI)
+                    .Add_String("curA", cur.parentBook.AuthorName)
                 .Add("cur", cur.IndexForPEGI);
             }
 

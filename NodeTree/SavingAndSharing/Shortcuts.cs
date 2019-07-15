@@ -178,7 +178,7 @@ namespace NodeNotes {
             var el = books.GetByIGotName(nb);
 
             if (el != null) {
-                if (CurrentNode != null && CurrentNode.root == el)
+                if (CurrentNode != null && CurrentNode.parentBook == el)
                     CurrentNode = null;
                 books[books.IndexOf(el)] = nb;
             }

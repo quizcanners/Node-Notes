@@ -58,8 +58,7 @@ namespace NodeNotes {
                 case BookLinkType.BookLink:
 
                     var book = LoadLinkedBook;
-                    if (book != null)
-                    {
+                    if (book != null) {
 
                         var ep = book.entryPoints.GetByIGotName(bookEntryPoint);
 
@@ -87,8 +86,8 @@ namespace NodeNotes {
                     return executed;
                 case BookLinkType.BookExit:
 
-                    if (Shortcuts.user.bookMarks.Count != 0)
-                    {
+                    if (Shortcuts.user.bookMarks.Count != 0) {
+
                         Shortcuts.user.ExitCurrentBook();
                         executed = true;
                     }
@@ -142,6 +141,9 @@ namespace NodeNotes {
                         linkedBookName = linkedBook.NameForPEGI;
                         linkedBookAuthor = linkedBook.authorName;
                     }
+
+                    if (linkedBook.Equals(parentBook))
+                        "Linking to the same book. Use Node Link.".writeWarning();
 
                     var book = LoadLinkedBook;
 

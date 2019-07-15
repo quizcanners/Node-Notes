@@ -15,7 +15,7 @@ namespace NodeNotes {
 
         #region Values
         public Node parentNode;
-        public NodeBook root;
+        public NodeBook parentBook;
 
         public bool IsChildOrSubChildOf(Node node) {
 
@@ -32,7 +32,7 @@ namespace NodeNotes {
             if (!(previousInstance is Base_Node other)) return;
             
             parentNode = other.parentNode;
-            root = other.root;
+            parentBook = other.parentBook;
             visualRepresentation = other.visualRepresentation;
             previousVisualRepresentation = other.previousVisualRepresentation;
         }
@@ -222,7 +222,7 @@ namespace NodeNotes {
 
         public virtual string NeedAttention()
         {
-            if (root == null)
+            if (parentBook == null)
                 return "{0} : {1} No root detected".F(IndexForPEGI, name);
 
             if (parentNode == null)
@@ -319,15 +319,15 @@ namespace NodeNotes {
 
         public virtual Base_Node CreatedFor(Node target) {
             parentNode = target;
-            return CreatedFor(target.root);
+            return CreatedFor(target.parentBook);
         }
 
         public virtual Base_Node CreatedFor(NodeBook r) {
-            root = r;
+            parentBook = r;
 
-            IndexForPEGI = root.firstFree;
+            IndexForPEGI = parentBook.firstFree;
           
-            root.firstFree += 1;
+            parentBook.firstFree += 1;
 
             Init(r, null);
 
@@ -336,10 +336,10 @@ namespace NodeNotes {
 
         public virtual void Init(NodeBook nRoot, Node parent)
         {
-            root = nRoot;
+            parentBook = nRoot;
             if (parent != null)
                 parentNode = parent;
-            root.Register(this); //allBaseNodes[index] = this;
+            parentBook.Register(this); //allBaseNodes[index] = this;
         }
 
         public virtual void Delete() {
@@ -349,7 +349,7 @@ namespace NodeNotes {
             else
                 parentNode.coreNodes.Remove(this);
 
-            root.allBaseNodes[IndexForPEGI] = null;
+            parentBook.allBaseNodes[IndexForPEGI] = null;
         }
         
         #endregion

@@ -101,13 +101,16 @@ namespace NodeNotes
 
                 "Author: {0} {1}".F(authorName, this.EditedByCurrentUser() ? "(ME)" : "").write();
 
-                "Change".select(ref replacingAuthor, Shortcuts.users);
+                if (!subNode.InspectingSubNode) {
 
-                if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.Count && !Shortcuts.users[replacingAuthor].Equals(authorName)
-                                          && icon.Replace.ClickConfirm("repAu",
-                                              "Changing an author may break links to this book from other books."))
-                    authorName = Shortcuts.users[replacingAuthor];
-                
+                    "Change".select(ref replacingAuthor, Shortcuts.users);
+
+                    if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.Count &&
+                        !Shortcuts.users[replacingAuthor].Equals(authorName)
+                        && icon.Replace.ClickConfirm("repAu",
+                            "Changing an author may break links to this book from other books."))
+                        authorName = Shortcuts.users[replacingAuthor];
+                }
 
                 pegi.nl();
                 subNode.Nested_Inspect().nl(ref changed);

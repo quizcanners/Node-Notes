@@ -131,7 +131,7 @@ namespace NodeNotes_Visual
 
             if (cn != null) {
                 icon.Active.toggle("{0} -> [{1}] Current: {2} - {3}"
-                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.root.GetNameForInspector(), cn.GetNameForInspector())
+                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector())
                     , ref inspectedItems, 2);
             }
             else icon.InActive.write("No Active Node");

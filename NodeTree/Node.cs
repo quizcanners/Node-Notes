@@ -174,7 +174,7 @@ namespace NodeNotes {
                     return pegi.LastNeedAttentionMessage;
             }
 
-            return root == null ? "No root detected" : null;
+            return parentBook == null ? "No root detected" : null;
 
         }
 
@@ -249,7 +249,7 @@ namespace NodeNotes {
             
             if (!InspectingSubNode && inspectedItems ==-1)  {
                 if (this != CurrentNode) {
-                    if (root.EditedByCurrentUser()) {
+                    if (parentBook.EditedByCurrentUser()) {
                         if (parentNode != null && icon.State.Click("Enter Node"))
                             CurrentNode = this;
                     } else if (CurrentNode != null && CurrentNode == parentNode) {
@@ -275,7 +275,7 @@ namespace NodeNotes {
 
                     var gn = cp.AsGameNode;
 
-                    var canPaste = (cp.root == root) && cp != this && !coreNodes.Contains(cp) && (gn == null || !gameNodes.Contains(gn)) && (!IsOneOfChildrenOf(cp.AsNode));
+                    var canPaste = (cp.parentBook == parentBook) && cp != this && !coreNodes.Contains(cp) && (gn == null || !gameNodes.Contains(gn)) && (!IsOneOfChildrenOf(cp.AsNode));
 
                     if (icon.Delete.Click("Remove Cut / Paste object"))
                         Shortcuts.Cut_Paste = null;
