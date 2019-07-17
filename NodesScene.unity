@@ -2424,7 +2424,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0.7, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -13.62}
+  m_AnchoredPosition: {x: 0, y: -16.15}
   m_SizeDelta: {x: -40, y: 119.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1466066526
@@ -2459,8 +2459,8 @@ MonoBehaviour:
   feedPositionData: 1
   _positionDataType: 2
   _roundedCorners:
-  - 0.5
-  - 0.5
+  - 0.633
+  - 0.475
   - 0.5
   - 1
   faeOutUvPosition:
@@ -3362,7 +3362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1993317235
 RectTransform:
   m_ObjectHideFlags: 0

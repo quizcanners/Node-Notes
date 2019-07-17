@@ -263,7 +263,12 @@ namespace NodeNotes_Visual.ECS {
                 if (inspected == -1)
                 {
                     for (int i = 0; i < array.Length; i++)
-                        pegi.InspectValueInList(array[i], null, i, ref inspected, metaDatas).nl(ref changed);
+                    {
+                        var val = array[i];
+                        if (pegi.InspectValueInCollection(ref val, null, i, ref inspected, metaDatas).nl(ref changed) &&
+                            typeof(T).IsValueType)
+                            array[i] = val;
+                    }
                 }
             }
 
