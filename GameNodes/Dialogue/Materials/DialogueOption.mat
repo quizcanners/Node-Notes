@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: DialogueOption
   m_Shader: {fileID: 4800000, guid: c5c595cad2bbf0d4fbf55305b131803a, type: 3}
-  m_ShaderKeywords: FADE _GRADS_ONCE _GRADS_RIGHT _GRAD_HOR _UNLINKED
+  m_ShaderKeywords: FADE TRIMMED _GRADS_ONCE _GRADS_RIGHT _GRAD_HOR _UNLINKED
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -79,7 +79,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - faded: 1
-    - trimmed: 0
+    - trimmed: 1
     - unlinked: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

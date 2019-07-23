@@ -308,7 +308,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  feedPositionData: 0
+  feedPositionData: 1
   _positionDataType: 2
   _roundedCorners:
   - 0.5
@@ -318,9 +318,9 @@ MonoBehaviour:
   faeOutUvPosition:
     serializedVersion: 2
     x: -1
-    y: 0.4
+    y: 0.6
     width: 2
-    height: 0.6
+    height: 0.39999998
   _showModules: 0
   _inspectedModule: 0
   OnClick:
@@ -346,4 +346,6 @@ MonoBehaviour:
   text: {fileID: 6899690757260374191}
   graphic: {fileID: 6899690758522091681}
   rectTransform: {fileID: 6899690758522091686}
-  state: 0
+  isFirst: 0
+  isLast: 0
+  deformingFinished: 0

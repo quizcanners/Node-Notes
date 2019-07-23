@@ -62,7 +62,10 @@ MonoBehaviour:
   text: {fileID: 2989937148335577553}
   graphic: {fileID: 2989937148123703639}
   rectTransform: {fileID: 2989937148123703640}
-  state: 0
+  index: 0
+  isFirst: 0
+  isLast: 0
+  deformingFinished: 0
 --- !u!114 &2989937148123703639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: bd4513c00b584ce43a5e7f76eea21dd5, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -92,7 +95,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  feedPositionData: 0
+  feedPositionData: 1
   _positionDataType: 2
   _roundedCorners:
   - 1
@@ -104,12 +107,23 @@ MonoBehaviour:
     x: -1
     y: 0
     width: 2
-    height: 0.4
+    height: 0.6
   _showModules: 0
   _inspectedModule: 0
   OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2989937148123703638}
+        m_MethodName: Click
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   maxHoldForClick: 0.3

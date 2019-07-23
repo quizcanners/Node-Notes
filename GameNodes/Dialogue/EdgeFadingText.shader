@@ -261,9 +261,17 @@
 
 				float4 c = input.faceColor;
 
-				c.a *= saturate(d - input.param.w);
 
-				
+				const float _FadeEdge = 10;
+
+				float fadePortion =
+					saturate((sp.x - _FadeRange.x) * _FadeEdge)
+					* saturate((sp.y - _FadeRange.y) * _FadeEdge)
+					* saturate((_FadeRange.z - sp.x) * _FadeEdge)
+					* saturate((_FadeRange.w - sp.y) * _FadeEdge)
+					;
+
+				c.a *= saturate(d - input.param.w*(1.15- fadePortion*0.15));
 
 				#ifdef OUTLINE_ON
 				c.rgb = input.faceColor.rgb + input.outlineColor.rgb*saturate(pow(c.a * d,3));
@@ -290,14 +298,8 @@
 
 				c.a *= c.a * 2;
 
-				const float _FadeEdge = 10;
-
-				c.a *=
-					saturate((sp.x - _FadeRange.x) * _FadeEdge)
-					* saturate((sp.y - _FadeRange.y) * _FadeEdge)
-					* saturate((_FadeRange.z - sp.x) * _FadeEdge)
-					* saturate((_FadeRange.w - sp.y) * _FadeEdge)
-					;
+		
+				c.a *= fadePortion;
 					
 				#if USE_NOISE_TEXTURE
 					float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(input.texcoord0.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
