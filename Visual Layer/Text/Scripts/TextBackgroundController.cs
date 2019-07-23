@@ -38,7 +38,6 @@ namespace NodeNotes_Visual {
         private LinkedLerp.ShaderColorValueGlobal bgColDown = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_2");
         
 
-
         private LerpData ld = new LerpData();
 
         bool dirty = false;
@@ -156,6 +155,8 @@ namespace NodeNotes_Visual {
             pTextMeshPro.enabled = true;
 
             dirty = true;
+            
+            gameObject.SetActive(true);
 
             return true;
         }

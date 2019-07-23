@@ -62,6 +62,11 @@ namespace NodeNotes_Visual {
             else
                 interactionBranch.Nested_Inspect().nl(ref changed);
 
+
+            "Dialogue UI"
+                .conditional_enter_inspect(DialogueUI.instance, DialogueUI.instance, ref inspectedGameNodeItems, 14)
+                .nl(ref changed);
+
             inspected = null;
 
             return changed;
@@ -143,9 +148,18 @@ namespace NodeNotes_Visual {
             else
                 Exit();
         }
-
-        protected override void AfterEnter() => BackToInteractionSelection();
         
+        protected override void AfterEnter() {
+           
+            BackToInteractionSelection();
+            DialogueUI.instance.TryFadeIn();
+        }
+
+        protected override void OnExit() {
+            DialogueUI.instance.FadeAway();
+
+        }
+
         private static int _interactionStage;
 
         static Interaction _interaction;

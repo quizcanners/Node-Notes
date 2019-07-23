@@ -153,7 +153,7 @@ namespace NodeNotes_Visual {
         public override bool TryFadeIn() {
 
             isFading = false;
-
+            gameObject.SetActive(true);
             return true;
         }
         

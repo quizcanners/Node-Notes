@@ -62,7 +62,7 @@ namespace NodeNotes {
         }
 
         public void FailExit() {
-            Debug.Log("Exiting Game Node Without Saving");
+            //Debug.Log("Exiting Game Node Without Saving");
 
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {

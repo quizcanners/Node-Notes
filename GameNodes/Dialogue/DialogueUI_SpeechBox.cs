@@ -3,19 +3,24 @@ using PlaytimePainter;
 using TMPro;
 using UnityEngine;
 
-[ExecuteInEditMode]
+[ExecuteAlways] 
 public class DialogueUI_SpeechBox : MonoBehaviour {
 
     private DialogueUI Mgmt => DialogueUI.instance;
 
     private NodesVisualLayer VisualMgmt => NodesVisualLayer.Instance;
 
-    public TextMeshProUGUI text;
+    public TextMeshProUGUI text = null;
+
     public RoundedGraphic graphic;
+
+    public RectTransform rectTransform;
 
     public State state = State.Option;
 
     public enum State { Option, PlayerText, OtherPersonsText }
+
+    public string Text { set { text.text = value; } }
 
     public void Update() {
 

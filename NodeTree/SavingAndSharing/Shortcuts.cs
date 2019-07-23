@@ -43,7 +43,7 @@ namespace NodeNotes {
 
                         try
                         {
-                            visualLayer.CurrentNode = value;
+                            visualLayer.OnNodeSet(value);
                         }
                         catch (Exception ex)
                         {

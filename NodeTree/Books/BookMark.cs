@@ -28,7 +28,7 @@ namespace NodeNotes
         public bool InspectInList(IList list, int ind, ref int edited) {
             NameForDisplayPEGI().write();   
             if (icon.Undo.Click("Return to the point (Will discard all the progress)")) 
-                Shortcuts.user.ReturnToMark(this);
+                Shortcuts.user.ReturnToBookMark(this);
             
             return false;
         }

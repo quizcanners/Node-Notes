@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
@@ -32,36 +33,40 @@ namespace NodeNotes_Visual
         }
 
         public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
-        
+
+        #region Game Nodes
+
+        public List<GameControllerBase> gameNodeControllers = new List<GameControllerBase>();
+
+        #endregion
+
         #region Node MGMT
-        
+
         public override void Show(Base_Node node) => SelectedVisualLayer.MakeVisible(node);
         
         public override void Hide(Base_Node node) => SelectedVisualLayer.MakeHidden(node);
 
-        public override Node CurrentNode {
+        private LoopLock _setNodeLoopLock = new LoopLock();
 
-            get {  return Shortcuts.CurrentNode; }
+        public override Node CurrentNode => Shortcuts.CurrentNode; 
+        
+        public override void OnNodeSet(Node node) {
 
-            set
-            {
-                SetBackground(value);
+            SetBackground(node);
 
-                if (Application.isPlaying)
-                    value?.SetInspected();
+            if (Application.isPlaying)
+                node?.SetInspected();
 
-                SelectedVisualLayer.SetNode(value);
-            }
+            SelectedVisualLayer.SetNode(node);
         }
 
-        public override void OnLogicVersionChange()
-        {
-            var cn = Shortcuts.CurrentNode;
+        public override void OnLogicVersionChange() {
 
-            SetBackground(cn);
-
-            SelectedVisualLayer.OnLogicUpdate();
-
+            if (gameNode == null) {
+                var cn = Shortcuts.CurrentNode;
+                SetBackground(cn);
+                SelectedVisualLayer.OnLogicUpdate();
+            }
         }
 
         #endregion
@@ -109,8 +114,11 @@ namespace NodeNotes_Visual
                     data.TryDecodeInto(bc);
                     break;
                 }
+        }
 
-                
+        public override void HideAllBackgrounds() {
+            foreach (var bc in Instance.backgroundControllers)
+                bc.FadeAway();
         }
 
         #endregion
@@ -181,6 +189,9 @@ namespace NodeNotes_Visual
                 "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
 
                 "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
+
+                "Game Controllers".edit_List_UObj(ref gameNodeControllers).nl(ref changed);
+
             }
 
             pegi.nl();
@@ -232,6 +243,10 @@ namespace NodeNotes_Visual
 
         public override void OnEnable()
         {
+
+            foreach (var gc in gameNodeControllers)
+                if (gc) gc.Initialize();
+
             Shortcuts.visualLayer = this;
 
             base.OnEnable();

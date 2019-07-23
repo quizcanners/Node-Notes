@@ -51,7 +51,7 @@ namespace NodeNotes
                         using (loopLockLocal.Lock()) {
 
                             if (value == null) {
-                                SaveCurrentBook();
+                                SaveBookMark();
                                 _currentNode = null;
                                 return;
                             }
@@ -86,7 +86,7 @@ namespace NodeNotes
             SetNextBook(b);
         }
 
-        void SaveCurrentBook() {
+        void SaveBookMark() {
 
             if (_currentNode != null) {
                 
@@ -108,19 +108,19 @@ namespace NodeNotes
             }
         }
 
-        public void ReturnToMark() => ReturnToMark(bookMarks.TryGetLast());
+        public void ReturnToBookMark() => ReturnToBookMark(bookMarks.TryGetLast());
         
-        public void ReturnToMark(BookMark mark) {
+        public void ReturnToBookMark(BookMark mark) {
             if (mark != null)
             {
                 if (bookMarks.Contains(mark))
-                    ReturnToMark(bookMarks.IndexOf(mark));
+                    ReturnToBookMark(bookMarks.IndexOf(mark));
                 else Debug.LogError("Book Marks don't contain {0}".F(mark));
             }
             else Debug.LogError("Bookmark is null");
         }
 
-        void ReturnToMark (int ind) {
+        void ReturnToBookMark (int ind) {
 
             if (ind < bookMarks.Count) {
 
@@ -162,7 +162,7 @@ namespace NodeNotes
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
 
             if (bMarkForNextBook == null)  
-                SaveCurrentBook();
+                SaveBookMark();
             else  {
                 int ind = bookMarks.IndexOf(bMarkForNextBook);
 
@@ -233,11 +233,10 @@ namespace NodeNotes
 
             if (b != null)
                 Shortcuts.CurrentNode = b.allBaseNodes[tmpNode] as Node;
-            
+            else
+                ReturnToBookMark();
         }
-
-
-
+        
         public override bool Decode(string tg, string data) {
             switch (tg) {
                 case "bm": data.Decode_List(out bookMarks); break;

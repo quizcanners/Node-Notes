@@ -6,9 +6,7 @@ using PlayerAndEditorGUI;
 using System.Collections.Generic;
 
 namespace NodeNotes {
-
-
-
+    
     public abstract class NodesVisualLayerAbstract : LogicMGMT {
 
         public static NodesVisualLayerAbstract InstAsNodesVisualLayer => inst as NodesVisualLayerAbstract;
@@ -17,7 +15,11 @@ namespace NodeNotes {
 
         public Shortcuts shortcuts;
 
-        public abstract Node CurrentNode { get; set; }
+        public abstract Node CurrentNode { get; }
+
+        public abstract void OnNodeSet(Node node);
+
+        
 
         [NonSerialized] protected GameNodeBase gameNode = null;
 
@@ -31,11 +33,12 @@ namespace NodeNotes {
 
         public abstract void Hide(Base_Node node);
 
+        public abstract void HideAllBackgrounds();
+
         public virtual void FromNodeToGame(GameNodeBase gn)
         {
 
-            if (gameNode != null)
-            {
+            if (gameNode != null) {
                 Debug.LogError("Exit previous Game Node");
                 FromGameToNode();
             }
@@ -57,7 +60,9 @@ namespace NodeNotes {
                     }
                     else preGameNode = gn.parentNode;
 
-                    CurrentNode = null;
+                    Shortcuts.CurrentNode = null;
+
+                    HideAllBackgrounds();
 
                     gn.Enter();
 
@@ -84,11 +89,11 @@ namespace NodeNotes {
                     gameNode = null;
 
                     if (failed)
-                        Shortcuts.user.ReturnToMark();
+                        Shortcuts.user.ReturnToBookMark();
                     else
                     {
                         if (preGameNode != null)
-                            CurrentNode = preGameNode;
+                            Shortcuts.CurrentNode = preGameNode;
                         else Debug.LogError("Pre Game Node was null");
                     }
                 }
