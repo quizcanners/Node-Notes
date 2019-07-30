@@ -211,7 +211,7 @@
 				opacity = 1.0;
 				#endif
 
-				fixed4 faceColor = fixed4(input.color.rgb, opacity) * _FaceColor;
+				fixed4 faceColor = fixed4(input.color.rgb, opacity);
 				faceColor.rgb *= faceColor.a;
 
 				fixed4 outlineColor = _OutlineColor;
@@ -259,8 +259,13 @@
 
 				float2 sp = input.screenPos.xy / input.screenPos.w;
 
-				float4 c = input.faceColor;
+				
 
+
+				float edges = abs(sp.x - 0.5) * 2;
+				edges *= edges;
+
+				float4 c = input.faceColor * (1-edges) + _FaceColor * (edges);
 
 				const float _FadeEdge = 10;
 
@@ -271,7 +276,7 @@
 					* saturate((_FadeRange.w - sp.y) * _FadeEdge)
 					;
 
-				c.a *= saturate(d - input.param.w*(1.15- fadePortion*0.15));
+				c.a *= saturate(d - input.param.w*(1.15 - fadePortion * 0.15));
 
 				#ifdef OUTLINE_ON
 				c.rgb = input.faceColor.rgb + input.outlineColor.rgb*saturate(pow(c.a * d,3));

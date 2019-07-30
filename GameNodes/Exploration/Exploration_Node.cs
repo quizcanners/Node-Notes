@@ -270,7 +270,7 @@ namespace NodeNotes_Visual {
             "Prefab".select_Index(ref prefabIndex, Exploration_Node.monoBehaviourPrefabs);
 
             if (instance)
-                instance.Try_Nested_Inspect().nl(ref changed);
+                pegi.Try_Nested_Inspect(instance).nl(ref changed);
 
             return changed;
         }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Schema;
+using NodeNotes_Visual;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using Unity.Entities;
-using UnityEditor.Animations;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [ExecuteInEditMode]
 public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
@@ -14,24 +14,98 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     
     private ShaderProperty.VectorValue textMeshProEdgeFading = new ShaderProperty.VectorValue("_FadeRange");
     
-    public DialogueUI_SpeechBox conversationHistoryPrefab;
+    [SerializeField] protected Material upperText;
 
-    public DialogueUI_SpeechBox optionPrefab;
-    
-    public Material upperText;
+    [SerializeField] protected Material lowerText;
 
-    public Material lowerText;
+    [SerializeField] protected RectTransform separatorLine;
 
-    public RectTransform separatorLine;
+    [SerializeField] protected Graphic singlePhraseBg;
+
+    [SerializeField] protected TextMeshProUGUI singlePhraseText;
 
     private float Separator => separatorPosition.CurrentValue;
 
-    [NonSerialized] protected List<string> history = new List<string>();
-    protected List<DialogueUI_SpeechBox> historyPool = new List<DialogueUI_SpeechBox>();
+    public string SingleText {
+        set {
+            
+            if (!SingleText.IsNullOrEmpty())
+                AddToHistory(SingleText);
+            
+            singlePhraseText.text = value;
+            
+            ClearOptions();
 
-    [NonSerialized] protected List<string> options = new List<string>();
-    protected List<DialogueUI_SpeechBox> optionsPool = new List<DialogueUI_SpeechBox>();
+        }
+        get { return singlePhraseText.text; }
+    }
+    
+    private void AddToOptions(string text, int index)
+    {
 
+        var opt = optionsPool.GetOne(belowTheLineParent);
+        opt.Text = text;
+        opt.index = index;
+        opt.TryFadeIn();
+
+        UpdateCourners();
+
+        poolsDirty = true;
+    }
+
+    public void AddToHistory(string text) {
+
+        var newH = historyPool.GetOne(aboveTheLineParent, true);
+        newH.Text = text;
+        newH.TryFadeIn();
+
+        historyScroll.offset -= historyScroll.gap;
+
+        scrollHistoryUpRequested = true;
+
+        UpdateCourners();
+
+        poolsDirty = true;
+    }
+
+    public void ClearOptions()
+    {
+        foreach (var o in optionsPool)
+            o.FadeAway();
+    }
+
+    private List<string> options;
+
+    public List<string> Options
+    {
+        set
+        {
+            options = value;
+
+            SingleText = "";
+
+            for (int i = 0; i < value.Count; i++) //(var txt in value) 
+                AddToOptions(value[i], i);
+
+        }
+    }
+
+    public void ClickNext()
+    {
+        DialogueNode.SelectOption(0);
+    }
+
+
+    [Serializable]
+    public class SpeedPool : PoolSimple<DialogueUI_SpeechBox>{
+        public SpeedPool(string name) : base(name){}
+
+        public SpeedPool() : base("pool") { }
+    }
+
+    public SpeedPool historyPool = new SpeedPool("History");
+    public SpeedPool optionsPool = new SpeedPool("Options");
+    
     [Serializable]
     public class ScrollData {
         public float gap = 100;
@@ -58,35 +132,50 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     public ScrollData historyScroll = new ScrollData();
     public ScrollData optionsScroll = new ScrollData();
 
-  //  public float separator = 0.4f;
-
     private enum ScrollingState { None, ScrollingOptions, ScrollingHistory }
     private ScrollingState state;
 
     private Vector2 prevousMousePos;
 
+    private bool poolsDirty;
+
     LerpData ld = new LerpData();
 
     LinkedLerp.FloatValue separatorPosition = new LinkedLerp.FloatValue("Separator", 0.5f, 2);
-
+    LinkedLerp.FloatValue singlePhraseBoxHeight = new LinkedLerp.FloatValue("Single Box size", 0, 2);
+    
     public void Update() {
 
         ld.Reset();
 
+        int activeCount = 0;
 
-        separatorPosition.targetValue = Mathf.Min(0.6f, optionsPool.Count * 0.2f);
+        foreach (var op in optionsPool)
+            activeCount += op.isFadingOut ? 0 : 1;
+        
+        separatorPosition.targetValue = Mathf.Min(0.6f, 0.3f+ activeCount * 0.2f);
 
-     
+        singlePhraseBoxHeight.targetValue = activeCount > 0 ? 0 : 1;
 
-
-        historyPool.Portion(ld);
-        optionsPool.Portion(ld);
+        singlePhraseBoxHeight.Portion(ld);
+        historyPool.active.Portion(ld);
+        optionsPool.active.Portion(ld);
         separatorPosition.Portion(ld);
 
-        historyPool.Lerp(ld);
-        optionsPool.Lerp(ld);
+        historyPool.active.Lerp(ld);
+        optionsPool.active.Lerp(ld);
+        singlePhraseBoxHeight.Lerp(ld);
 
-        if (separatorPosition.targetValue != separatorPosition.CurrentValue) {
+        var tf = singlePhraseBg.rectTransform;
+        var size = tf.sizeDelta;
+        float curBoxFadeIn = singlePhraseBoxHeight.CurrentValue;
+        size.y = curBoxFadeIn * 400;
+        singlePhraseBg.TrySetAlpha_DisableIfZero(curBoxFadeIn * 20);
+        singlePhraseText.TrySetAlpha_DisableIfZero((curBoxFadeIn - 0.9f)*10);
+        tf.sizeDelta = size;
+
+        if (separatorPosition.targetValue != separatorPosition.CurrentValue || poolsDirty) {
+            poolsDirty = false;
             separatorPosition.Lerp(ld);
             UpdateCourners();
         }
@@ -119,7 +208,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         
         float pos = historyScroll.offset;
 
-        foreach (var h in historyPool) {
+        foreach (var h in historyPool.active) {
             var rt = h.rectTransform;
             var anch = rt.anchoredPosition;
             anch.y = pos;
@@ -145,18 +234,18 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
             
             if (outOfList)
                 historyScroll.FadeInnertia();
-           
-
         }
 
         pos = optionsScroll.offset;
 
-        foreach (var h in optionsPool) {
-            var rt = h.rectTransform;
-            var anch = rt.anchoredPosition;
-            anch.y = pos;
-            rt.anchoredPosition = anch;
-            pos -= optionsScroll.gap;
+        foreach (var h in optionsPool.active) {
+            if (!h.isFadingOut) {
+                var rt = h.rectTransform;
+                var anch = rt.anchoredPosition;
+                anch.y = pos;
+                rt.anchoredPosition = anch;
+                pos -= optionsScroll.gap;
+            }
         }
         
         if (state != ScrollingState.ScrollingOptions) {
@@ -189,30 +278,29 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     void UpdateCourners() {
 
         if (historyPool.Count > 0) {
-            if (historyPool.Count > 1)
-                foreach (var box in historyPool) {
+                foreach (var box in historyPool.active) {
                     box.isLast = false;
                     box.isFirst = false;
                     box.graphic.FadeFromY = Separator;
                 }
 
-            historyPool[0].isLast = true;
-            historyPool.Last().isFirst = true;
+            historyPool.active[0].isLast = true;
+            historyPool.active.Last().isFirst = true;
         }
 
         if (optionsPool.Count > 0) {
 
             if (optionsPool.Count > 1)
-                for (int i = 0; i<optionsPool.Count; i++) {
-                    var box = optionsPool[i];
+                for (int i = 0; i< optionsPool.Count; i++) {
+                    var box = optionsPool.active[i];
                     box.isLast = false;
                     box.isFirst = false;
-                    box.index = i;
+                    //box.index = i;
                     box.graphic.FadeToY = Separator;
                 }
 
-            optionsPool[0].isFirst = true;
-            optionsPool.Last().isLast = true;
+            optionsPool.active[0].isFirst = true;
+            optionsPool.active.Last().isLast = true;
         }
 
 
@@ -227,26 +315,33 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         separatorLine.anchoredPosition = Vector2.zero;
         
 
-        if (lowerText && upperText) {
-            textMeshProEdgeFading.SetOn(lowerText, new Vector4(0, 0, 1, Separator));
-            textMeshProEdgeFading.SetOn(upperText, new Vector4(0, Separator, 1, 1));
+        if (lowerText && upperText)
+        {
+            const float padding = 0.2f;
+            const float minP = -padding;
+            const float maxP = 1f + padding;
+
+            textMeshProEdgeFading.SetOn(lowerText, new Vector4(minP, 0, maxP, Separator));
+            textMeshProEdgeFading.SetOn(upperText, new Vector4(minP, Separator, maxP, 1));
         }
 
     }
 
     void OnEnable() {
-      
-
         UpdateCourners();
-
     }
 
-    public void Click(int index) {
-        Debug.Log("Clicked "+ index );
+    void OnDisable() {
+        historyPool.DeleteAll();
+        optionsPool.DeleteAll();
     }
 
-    private int inspectedHistory = -1;
-    private int inspectedOptions = -1;
+    public void Click(int index)
+    {
+        AddToHistory(options[index]);
+
+        DialogueNode.SelectOption(index);
+    }
 
     public RectTransform aboveTheLineParent;
 
@@ -256,49 +351,27 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
     private bool scrollHistoryUpRequested = false;
 
-    private void AddToOptions(string text)
-    {
-        var newH = Instantiate(optionPrefab, belowTheLineParent);
-        optionsPool.Add(newH);
-        newH.Text = text;
-
-        UpdateCourners();
-    }
-
-    private void AddToHistory(string text)
-    {
-        var newH = Instantiate(conversationHistoryPrefab, aboveTheLineParent);
-        historyPool.Insert(0, newH);
-        newH.Text = text;
-
-        historyScroll.offset -= historyScroll.gap;
-
-        scrollHistoryUpRequested = true;
-
-        UpdateCourners();
-    }
-
     public bool Inspect() {
         var changed = false;
 
         pegi.nl();
 
-        "History".edit_List_MB(ref historyPool, ref inspectedHistory).nl(ref changed);
-        "Options".edit_List_MB(ref optionsPool, ref inspectedOptions).nl(ref changed);
+        historyPool.Nested_Inspect().nl(ref changed);
 
-        if ("Add History".Click()) 
+        optionsPool.Nested_Inspect().nl(ref changed);
+        
+        pegi.editBig(ref tmpText);
+
+        if ("Add History".Click())
             AddToHistory(tmpText);
 
-        if ("Add to Options".Click())
-            AddToOptions(tmpText);
+        if ("Add Option".Click())
+            AddToOptions(tmpText, optionsPool.Count);
 
         pegi.nl();
 
-        pegi.editBig(ref tmpText);
-
         var sp = Separator;
-        if ("Separator ".edit(ref sp, 0, 1).nl(ref changed))
-        {
+        if ("Separator ".edit(ref sp, 0, 1).nl(ref changed)) {
             separatorPosition.targetValue = sp;
             separatorPosition.CurrentValue = sp;
         }
@@ -310,10 +383,16 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     }
 
     public void FadeAway() {
+        optionsPool.DeleteAll();
+        historyPool.DeleteAll();
         gameObject.SetActive(false);
     }
 
     public bool TryFadeIn()   {
+        SingleText = "";
+        optionsPool.DeleteAll();
+        historyPool.DeleteAll();
+      
         gameObject.SetActive(true);
         return true;
     }

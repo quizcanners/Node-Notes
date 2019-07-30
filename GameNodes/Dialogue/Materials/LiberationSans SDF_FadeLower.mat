@@ -86,7 +86,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _Diffuse: 0.904
     - _DstBlend: 0
-    - _FaceDilate: 0.071
+    - _FaceDilate: -0.25
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlossMapScale: 1
@@ -106,7 +106,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineSoftness: 0.13
+    - _OutlineSoftness: 0.246
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
     - _OutlineWidth: 0.204
@@ -115,7 +115,7 @@ Material:
     - _Reflectivity: 15
     - _ScaleRatioA: 0.9
     - _ScaleRatioB: 0.8758275
-    - _ScaleRatioC: 0.36131564
+    - _ScaleRatioC: 0.5177314
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -146,8 +146,8 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EnvMatrixRotation: {r: 0, g: 0, b: 0, a: 0}
-    - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
-    - _FadeRange: {r: 0, g: 0, b: 1, a: 0.6}
+    - _FaceColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FadeRange: {r: -0.2, g: 0, b: 1.2, a: 0.6}
     - _GlowColor: {r: 0.050980568, g: 0, b: 1, a: 0.76862746}
     - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
     - _MaskEdgeColor: {r: 1, g: 1, b: 1, a: 1}

@@ -3,10 +3,17 @@ using NodeNotes;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using QcTriggerLogic;
+
 namespace NodeNotes_Visual {
     
     [TaggedType(Tag, "Dialogue Node")]
-    public class DialogueNode : GameNodeBase  {
+    public class DialogueNode : GameNodeBase
+    {
+
+        public static DialogueNode enteredInstance;
+
+        private static DialogueUI View => DialogueUI.instance;
+
         private const string Tag = "GN_talk";
 
         public override string ClassTag => Tag;
@@ -67,6 +74,13 @@ namespace NodeNotes_Visual {
                 .conditional_enter_inspect(DialogueUI.instance, DialogueUI.instance, ref inspectedGameNodeItems, 14)
                 .nl(ref changed);
 
+            if (inspectedGameNodeItems == -1)
+            {
+
+                "Interaction stage: {0}".F(_interactionStage).nl();
+
+            }
+
             inspected = null;
 
             return changed;
@@ -76,9 +90,10 @@ namespace NodeNotes_Visual {
 
         #region Options MGMT
 
-        private static string SingleText {
-            get { return OptText.Count > 0 ? OptText[0] : null; }
-            set { OptText.Clear(); OptText.Add(value); } }
+        private static string SingleText { set {
+                OptText.Clear(); 
+                View.SingleText = value;
+            } }
 
         private static readonly List<string> OptText = new List<string>();
         private static readonly List<Interaction> PossibleInteractions = new List<Interaction>();
@@ -96,11 +111,11 @@ namespace NodeNotes_Visual {
                 }
             
             _questVersion = LogicMGMT.CurrentLogicVersion;
+            
+            View.Options = OptText;
 
             return cnt > 0;
         }
-
-        private void CollectInteractions() => CollectInteractions(interactionBranch);
 
         private void CollectInteractions(LogicBranch<Interaction> gr) {
 
@@ -125,34 +140,46 @@ namespace NodeNotes_Visual {
 
             LogicMGMT.AddLogicVersion();
             ClearTexts();
-            
-            CollectInteractions();
+
+            CollectInteractions(interactionBranch);
 
             if (PossibleInteractions.Count != 0) {
 
                 _questVersion = LogicMGMT.CurrentLogicVersion;
               
                 _interactionStage = 0;
-               
-                if (continuationReference.IsNullOrEmpty())
-                    return;
-                
-                foreach (var ie in PossibleInteractions)
-                    if (ie.referenceName.SameAs(continuationReference)) {
-                        _interaction = ie;
-                        _interactionStage++;
-                        SelectOption(0);
-                        break;
-                    }
+
+                if (!continuationReference.IsNullOrEmpty()) {
+                    foreach (var ie in PossibleInteractions)
+                        if (ie.referenceName.SameAs(continuationReference)) {
+                            _interaction = ie;
+                            _interactionStage++;
+                            SelectOption(0);
+                            break;
+                        }
+                }
+
+                if (View && _interactionStage == 0) {
+
+                    var lst = new List<string>();
+
+                    foreach (var interaction in PossibleInteractions)
+                        lst.Add(interaction.texts.NameForPEGI);
+
+                    View.Options = lst;
+                }
+
             }
             else
                 Exit();
         }
         
-        protected override void AfterEnter() {
-           
-            BackToInteractionSelection();
+        protected override void AfterEnter()
+        {
+            enteredInstance = this;
             DialogueUI.instance.TryFadeIn();
+            BackToInteractionSelection();
+            
         }
 
         protected override void OnExit() {
@@ -174,7 +201,7 @@ namespace NodeNotes_Visual {
             switch (_interactionStage) {
 
                 case 0: BackToInteractionSelection(); break;
-                case 1: SingleText = _interaction.texts.NameForPEGI; break;
+                case 1: SingleText = _interaction.texts.NameForPEGI;  break;
                 case 3: CheckOptions(_interaction); break;
                 case 5: SingleText = _option.text2.NameForPEGI; break;
             }
@@ -190,21 +217,23 @@ namespace NodeNotes_Visual {
         
         static string continuationReference;
 
-        private void SelectOption(int no)
+        public static void SelectOption(int no)
         {
             LogicMGMT.AddLogicVersion();
-            switch (_interactionStage)
-            {
+            switch (_interactionStage) {
                 case 0:
-                    _interactionStage++; _interaction = PossibleInteractions[no]; goto case 1;
+                    _interactionStage++; _interaction = PossibleInteractions[no];
+                    goto case 1;
                 case 1:
                     continuationReference = null;
+                    
                     if (_interaction.texts.GotNextText) {
                         SingleText = _interaction.texts.GetNext();
                         break;
                     }
 
                     _interactionStage++;
+
                     goto case 2;
                 case 2:
                     _interactionStage++;
@@ -217,7 +246,7 @@ namespace NodeNotes_Visual {
                     goto case 5;
 
                 case 4:
-                    _interaction.finalResults.Apply(); BackToInteractionSelection(); break;
+                    _interaction.finalResults.Apply(); enteredInstance.BackToInteractionSelection(); break;
                 case 5:
                     
                     if (_option.text2.GotNextText)
@@ -229,12 +258,11 @@ namespace NodeNotes_Visual {
 
                 case 6:
 
-                    BackToInteractionSelection();
+                    enteredInstance.BackToInteractionSelection();
                     break;
             }
         }
-
-      
+        
         #endregion
     }
 }

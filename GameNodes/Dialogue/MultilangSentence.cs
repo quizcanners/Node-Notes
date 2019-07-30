@@ -305,7 +305,7 @@ namespace NodeNotes {
 
         protected List<Sentence> options = new List<Sentence>();
 
-        protected Sentence Current => options[index];
+        protected Sentence Current => options.TryGet(index);
 
         protected int index = 0;
 
@@ -316,7 +316,7 @@ namespace NodeNotes {
             index = 0;
         }
 
-        public override bool GotNextText => options.Count-1 > index || Current.GotNextText;
+        public override bool GotNextText => options.Count-1 > index || (index<options.Count && Current.GotNextText);
 
         public override string NameForPEGI
         {
@@ -365,11 +365,14 @@ namespace NodeNotes {
             return changed;
         }
 
-        public virtual bool InspectInList(IList list, int ind, ref int edited)
-        {
+        public virtual bool InspectInList(IList list, int ind, ref int edited) {
+
             var changed = false;
 
-            options[0].inspect_Name().changes(ref changed);
+            if (options.Count>0)
+                options[0].inspect_Name().changes(ref changed);
+            else if ("Add Sentence".Click())
+                options.Add(new StringSentence(" "));
 
             if (icon.Enter.Click())
                 edited = ind;

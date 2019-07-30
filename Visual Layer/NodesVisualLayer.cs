@@ -8,6 +8,8 @@ using UnityEngine.UI;
 using TMPro;
 using NodeNotes;
 using PlaytimePainter;
+using Unity.Entities;
+using Object = UnityEngine.Object;
 
 
 namespace NodeNotes_Visual
@@ -46,7 +48,7 @@ namespace NodeNotes_Visual
         
         public override void Hide(Base_Node node) => SelectedVisualLayer.MakeHidden(node);
 
-        private LoopLock _setNodeLoopLock = new LoopLock();
+        private readonly LoopLock _setNodeLoopLock = new LoopLock();
 
         public override Node CurrentNode => Shortcuts.CurrentNode; 
         
@@ -268,4 +270,79 @@ namespace NodeNotes_Visual
             return changed;
         }
     }
+
+
+    [Serializable]
+    public class PoolSimple<T>: IPEGI where T : Component {
+
+        private ListMetaData activeList;
+        public List<T> active = new List<T>();
+        public List<T> disabled = new List<T>();
+        public T prefab;
+
+        public IEnumerator<T> GetEnumerator() {
+            foreach (var i in active)
+                yield return i;
+        }
+
+        public void DeleteAll() {
+
+            foreach (var el in active)
+                el.gameObject.DestroyWhatever();
+
+            foreach (var el in disabled)
+                el.gameObject.DestroyWhatever();
+                
+            active.Clear();
+            disabled.Clear();
+
+        }
+
+        public void Disable(T obj) {
+            active.Remove(obj);
+            obj.gameObject.SetActive(false);
+            disabled.Add(obj);
+        }
+
+        public T GetOne(Transform parent, bool insertFirst = false) {
+
+            T toReturn;
+
+            if (disabled.Count > 0) {
+                 toReturn = disabled[0];
+                 disabled.RemoveAt(0);
+            }
+            else
+                toReturn = Object.Instantiate(prefab, parent);
+            
+            if (insertFirst)
+                active.Insert(0, toReturn);
+            else 
+                active.Add(toReturn);
+
+            toReturn.gameObject.SetActive(true);
+
+            return toReturn;
+        }
+
+        public bool Inspect() {
+            var changed = false;
+
+            "Prefab".edit(ref prefab).nl(ref changed);
+            
+            "Inactive: {0};".F(disabled.Count).writeHint();
+            
+            activeList.edit_List_UObj(ref active).nl(ref changed);
+                        
+            return changed;
+        }
+
+        public PoolSimple (string name) {
+            activeList = new ListMetaData(name, true, true, allowCreating: false);
+
+        }
+
+        public int Count => active.Count;
+    }
+
 }

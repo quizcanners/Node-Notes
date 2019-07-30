@@ -182,7 +182,7 @@ namespace NodeNotes_Visual {
 
                             if (bg != null)
                             {
-                                if (bg.Try_Nested_Inspect().nl(ref changed))
+                                if (pegi.Try_Nested_Inspect(bg).nl(ref changed))
                                     source.visualStyleConfigs[NodesVisualLayer.SelectedVisualLayer.ClassTag] =
                                         bg.Encode().ToString();
                             }
