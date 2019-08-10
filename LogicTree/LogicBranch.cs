@@ -112,8 +112,8 @@ namespace QcTriggerLogic
             parent = this;
 
             NameForElements.enter_List(ref elements, ref _inspectedElement, ref inspectedItems, 2).nl(ref changed);
-            
-            "Sub Branches".enter_List(ref subBranches, ref _inspectedBranch, ref inspectedItems, 3).nl(ref changed);
+
+            ("Subs: " + NameForPEGI).enter_List(ref subBranches, ref _inspectedBranch, ref inspectedItems, 3).nl(ref changed);
 
             parent = null;
             return changed;

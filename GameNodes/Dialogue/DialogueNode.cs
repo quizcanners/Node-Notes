@@ -48,14 +48,13 @@ namespace NodeNotes_Visual {
 
             pegi.nl();
             
-            if (icon.Play.enter(ref inspectedGameNodeItems, 13).nl_ifNotEntered()) {
+            if ("Play In Inspector".enter(ref inspectedGameNodeItems, 13).nl()) {
 
-                "{0} Dialogue".F(name).write();
+                "Playing {0} Dialogue".F(name).write();
 
                 if (icon.Refresh.Click("Restart dialogue", 20))
                     BackToInteractionSelection();
-                else
-                {
+                else {
                     DistantUpdate();
                     pegi.nl();
                     for (var i = 0; i < OptText.Count; i++)
@@ -66,12 +65,13 @@ namespace NodeNotes_Visual {
 
                 }
             }
-            else
+
+            if ("Interactions tree".enter(ref inspectedGameNodeItems, 14).nl_ifNotEntered())
                 interactionBranch.Nested_Inspect().nl(ref changed);
 
 
-            "Dialogue UI"
-                .conditional_enter_inspect(DialogueUI.instance, DialogueUI.instance, ref inspectedGameNodeItems, 14)
+            "Game View UI"
+                .conditional_enter_inspect(DialogueUI.instance, DialogueUI.instance, ref inspectedGameNodeItems, 15)
                 .nl(ref changed);
 
             if (inspectedGameNodeItems == -1)
@@ -241,23 +241,23 @@ namespace NodeNotes_Visual {
                 case 3:
                     _option = PossibleOptions[no];
                     _option.results.Apply();
-                    continuationReference = _option.nextOne;
                     _interaction.finalResults.Apply();
+                    continuationReference = _option.nextOne;
                     goto case 5;
 
                 case 4:
                     _interaction.finalResults.Apply(); enteredInstance.BackToInteractionSelection(); break;
                 case 5:
-                    
-                    if (_option.text2.GotNextText)
+                    if (_option.text2.GotNextText) {
                         SingleText = _option.text2.GetNext();
+                        _interactionStage = 5;
+                    }
                     else
                         goto case 6;
 
                     break;
 
                 case 6:
-
                     enteredInstance.BackToInteractionSelection();
                     break;
             }

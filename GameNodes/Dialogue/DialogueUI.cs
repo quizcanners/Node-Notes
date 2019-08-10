@@ -352,6 +352,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     private bool scrollHistoryUpRequested = false;
 
     public bool Inspect() {
+
         var changed = false;
 
         pegi.nl();

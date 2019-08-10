@@ -130,7 +130,7 @@ namespace QcTriggerLogic
             if (this == edited)
                 changed |= t.Inspect();
 
-            if ((pegi.nameFocused == (focusName)) && (this != edited)) {
+            if ((pegi.FocusedName == (focusName)) && (this != edited)) {
                 selected = this;
 
                 if (Trigger.focusIndex != index) {
