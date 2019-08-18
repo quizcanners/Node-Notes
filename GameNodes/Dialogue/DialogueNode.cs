@@ -21,7 +21,19 @@ namespace NodeNotes_Visual {
         public InteractionBranch interactionBranch = new InteractionBranch();
 
         public static DialogueNode inspected;
-        
+
+        public override bool Conditions_isVisible() {
+
+            var vis = base.Conditions_isVisible();
+
+            if (vis) {
+                CollectInteractions(interactionBranch);
+                vis &= PossibleInteractions.Count > 0;
+            }
+
+            return vis;
+        }
+
         #region Encode & Decode
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
@@ -75,12 +87,8 @@ namespace NodeNotes_Visual {
                 .nl(ref changed);
 
             if (inspectedGameNodeItems == -1)
-            {
-
                 "Interaction stage: {0}".F(_interactionStage).nl();
-
-            }
-
+            
             inspected = null;
 
             return changed;
@@ -151,7 +159,7 @@ namespace NodeNotes_Visual {
 
                 if (!continuationReference.IsNullOrEmpty()) {
                     foreach (var ie in PossibleInteractions)
-                        if (ie.referenceName.SameAs(continuationReference)) {
+                        if (ie.ReferenceName.SameAs(continuationReference)) {
                             _interaction = ie;
                             _interactionStage++;
                             SelectOption(0);
@@ -222,19 +230,26 @@ namespace NodeNotes_Visual {
             LogicMGMT.AddLogicVersion();
             switch (_interactionStage) {
                 case 0:
-                    _interactionStage++; _interaction = PossibleInteractions[no];
+                    _interactionStage++; _interaction = PossibleInteractions.TryGet(no);
                     goto case 1;
                 case 1:
                     continuationReference = null;
-                    
-                    if (_interaction.texts.GotNextText) {
-                        SingleText = _interaction.texts.GetNext();
-                        break;
+
+                    if (_interaction == null)
+                        SingleText = "No Possible Interactions.";
+                    else {
+                        if (_interaction.texts.GotNextText) {
+                            SingleText = _interaction.texts.GetNext();
+                            break;
+                        }
+
+                        _interactionStage++;
+
+
+                        goto case 2;
                     }
 
-                    _interactionStage++;
-
-                    goto case 2;
+                    break;
                 case 2:
                     _interactionStage++;
                     if (!CheckOptions(_interaction)) goto case 4; break;

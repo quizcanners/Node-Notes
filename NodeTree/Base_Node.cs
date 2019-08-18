@@ -96,7 +96,7 @@ namespace NodeNotes {
 
             _visConditionsResult = _visCondition.IsTrue;
 
-            _enabledConditionResult = _eblCondition.IsTrue;
+            _enabledConditionResult = _eblCondition.IsTrue && _visConditionsResult;
         }
 
         protected bool IsOneOfChildrenOf(Node other) {

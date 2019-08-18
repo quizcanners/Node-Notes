@@ -7,9 +7,9 @@ using NodeNotes;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
+    public class Interaction : AbstractKeepUnrecognizedCfg, IPEGI, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
 
-        public string referenceName = "";
+        private string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
         public ListOfSentences texts = new ListOfSentences();
         public List<DialogueChoice> options = new List<DialogueChoice>();
@@ -77,6 +77,18 @@ namespace NodeNotes_Visual {
             base.ResetInspector();
         }
 
+
+        public string ReferenceName {
+            get { return referenceName; }
+            set
+            {
+                if (renameLinkedReferences && DialogueNode.inspected != null)
+                    DialogueNode.inspected.interactionBranch.RenameReferance(referenceName, value);
+                referenceName = value;
+            }
+        }
+
+        /*
         public string NameForPEGI
         {
             get { return referenceName; }
@@ -85,7 +97,7 @@ namespace NodeNotes_Visual {
                     DialogueNode.inspected.interactionBranch.RenameReferance(referenceName, value);
                 referenceName = value;
             }
-        }
+        }*/
         
         public string NameForDisplayPEGI() => texts.NameForPEGI;
 
@@ -102,15 +114,15 @@ namespace NodeNotes_Visual {
             if (inspectedItems == -1)
             {
 
-                var n = NameForPEGI;
+                var n = referenceName;
 
                 if (renameLinkedReferences)
                 {
                     if ("Ref".editDelayed(50, ref n))
-                        NameForPEGI = n;
+                        ReferenceName = n;
                 } else
                 if ("Ref".edit(50, ref n))
-                    NameForPEGI = n;
+                    ReferenceName = n;
 
                 //this.inspect_Name("Rename Reference", "Other choices can set this interaction as a next one").changes(ref changed);
 
@@ -271,7 +283,7 @@ namespace NodeNotes_Visual {
                 nextOne = "";
 
             if (inspectedItems == -1)
-                "Go To".select_iGotName(60, ref nextOne, Interaction.inspectedList).nl();
+                "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
 
             return changed;
         }

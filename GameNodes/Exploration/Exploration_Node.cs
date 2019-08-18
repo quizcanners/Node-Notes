@@ -31,9 +31,8 @@ namespace NodeNotes_Visual {
         public static List<MonoBehaviour> monoBehaviourPrefabs = new List<MonoBehaviour>();
 
         static List<Exploration_Element> instances = new List<Exploration_Element>();
-        static ListMetaData instancesMeta = new ListMetaData("Instances");
-
-
+        static ListMetaData instancesMeta = new ListMetaData("ECS & Mono instances");
+        
         protected override void OnExit() {
             foreach (var i in instances)
                 i.OnExit();
@@ -67,14 +66,15 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-
-
+        
         int inspectedPrefab = -1;
 
         protected override bool InspectGameNode() {
             var changed = false;
 
-            "Prefabs".enter_List_UObj(ref monoBehaviourPrefabs,ref inspectedPrefab , ref inspectedGameNodeItems, 0).nl(ref changed);
+            pegi.nl();
+
+            "Mono Prefabs".enter_List_UObj(ref monoBehaviourPrefabs,ref inspectedPrefab , ref inspectedGameNodeItems, 0).nl(ref changed);
 
             instancesMeta.enter_List(ref instances, ref inspectedGameNodeItems, 1).nl(ref changed);
 
@@ -84,7 +84,6 @@ namespace NodeNotes_Visual {
             return changed;
         }
         
-
         #endregion
 
     }
@@ -105,7 +104,7 @@ namespace NodeNotes_Visual {
         ListMetaData componentsMeta = new ListMetaData("Components");
         EntityArchetype archetype;
 
-        static EntityManager Manager => NodeNotesECSManager.manager;
+        static EntityManager Manager => NodeNotesECSManager.Manager;
 
         Entity instance;
 
@@ -114,7 +113,7 @@ namespace NodeNotes_Visual {
         void DestroyInstance() {
             if (instanciated) {
                 instanciated = false;
-                Manager.DestroyEntity(instance);
+                Manager?.DestroyEntity(instance);
             }
         }
 
@@ -128,8 +127,6 @@ namespace NodeNotes_Visual {
 
 #region Encode & Decode
         public override void Decode(string data) {
-            if (Manager == null)
-                NodeNotesECSManager.Init();
             base.Decode(data);
         }
 

@@ -93,10 +93,19 @@ namespace NodeNotes_Visual
         public static void SetBackground(Node source)
         {
 
+            var bgc = Instance.backgroundControllers;
+            
+            if (source == null) {
+
+                foreach (var bc in bgc)
+                    if (bc) bc.FadeAway();
+
+                return;
+            }
+
             var tag = source?.visualStyleTag;
 
-            var bgc = Instance.backgroundControllers;
-
+       
             if (tag.IsNullOrEmpty() && bgc.Count > 0)
                 tag = bgc[0].ClassTag;
 

@@ -68,7 +68,7 @@ namespace NodeNotes_Visual.ECS {
 
     public abstract class ComponentCfgGeneric<T> : ComponentCfgAbstract where T : struct, IComponentData {
 
-        public static EntityManager Manager => NodeNotesECSManager.manager;
+        public static EntityManager Manager => NodeNotesECSManager.Manager;
 
         static ComponentType type = ComponentType.ReadWrite<T>();
         

@@ -18,9 +18,7 @@ namespace NodeNotes {
         public abstract Node CurrentNode { get; }
 
         public abstract void OnNodeSet(Node node);
-
         
-
         [NonSerialized] protected GameNodeBase gameNode = null;
 
         protected LoopLock loopLockEnt = new LoopLock();
@@ -46,6 +44,8 @@ namespace NodeNotes {
             if (loopLockEnt.Unlocked)
                 using (loopLockEnt.Lock())
                 {
+
+                    Debug.Log("From node to game");
 
                     if (CurrentNode != null)
                     {

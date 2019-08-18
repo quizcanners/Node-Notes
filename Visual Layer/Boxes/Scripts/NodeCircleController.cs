@@ -579,12 +579,12 @@ namespace NodeNotes_Visual {
 
             if (Input.GetMouseButtonDown(0))
             {
-                var gn = source.AsGameNode;
+                //var gn = source.AsGameNode;
 
-                if (gn != null)
-                    Shortcuts.visualLayer.FromNodeToGame(gn);
-                else
-                    WhiteBackground.inst.SetSelected(this);
+               // if (gn != null)
+                 //   Shortcuts.visualLayer.FromNodeToGame(gn);
+                //else
+                WhiteBackground.inst.SetSelected(this);
 
                 Vector3 pos;
                 if (UpPlane.MouseToPlane(out pos, MainCamera))

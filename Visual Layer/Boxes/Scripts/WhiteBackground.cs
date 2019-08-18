@@ -31,7 +31,7 @@ namespace NodeNotes_Visual {
             Base_Node.editingNodes = !Base_Node.editingNodes;
 
             if (editButton)
-                editButton.text = Base_Node.editingNodes ? "Play" : "Edit";
+                editButton.Text = Base_Node.editingNodes ? "Play" : "Edit";
 
             if (addButton)
                 addButton.gameObject.SetActive(Base_Node.editingNodes);
@@ -80,7 +80,7 @@ namespace NodeNotes_Visual {
 
         public List<CreateNodeButton> slidingButtons = new List<CreateNodeButton>();
 
-        public TextMeshProUGUI editButton;
+        public RoundedButtonWithText editButton;
 
         public RoundedGraphic addButton;
 
@@ -102,12 +102,9 @@ namespace NodeNotes_Visual {
                     selectedNode.UpdateName();
             } else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
 
-            if (selectedNode == null || (selectedNode.source == Shortcuts.CurrentNode && selectedNode.source.inspectedItems == 21))
-            {
-               // "Background Color".edit(ref color).nl();
+            if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.inspectedItems == 21))) {
 
-                if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
-                {
+                if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                     pegi.nl();
                     "Edit Button".edit(90, ref editButton).nl(ref changed);
                     "Add Button".edit(90, ref addButton).nl(ref changed);
@@ -147,6 +144,8 @@ namespace NodeNotes_Visual {
 
             HideAll();
 
+            editButton.gameObject.SetActive(false);
+
             isFading = true;
         }
 
@@ -154,6 +153,7 @@ namespace NodeNotes_Visual {
 
             isFading = false;
             gameObject.SetActive(true);
+            editButton.gameObject.SetActive(true);
             return true;
         }
         
@@ -218,7 +218,8 @@ namespace NodeNotes_Visual {
                 var col = MainCamera.backgroundColor;
 
                 MainCamera.backgroundColor = col.LerpBySpeed(Color.white, 3);
-            }
+            } else if (_ld.Portion() == 1)
+                gameObject.SetActive(false);
         }
 
         #region Node MGMT
@@ -407,7 +408,7 @@ namespace NodeNotes_Visual {
             inst = this;
 
             if (editButton)
-                editButton.text = "Edit";
+                editButton.Text = "Edit";
 
             if (addButton)
                 addButton.gameObject.SetActive(false);

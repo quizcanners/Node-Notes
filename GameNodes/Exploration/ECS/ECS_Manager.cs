@@ -12,22 +12,18 @@ namespace NodeNotes_Visual.ECS {
     
     #pragma warning disable IDE0034 // Simplify 'default' expression
 
-    public static class NodeNotesECSManager {
+    public static class NodeNotesECSManager
+    {
 
-        public static EntityManager manager;
-
-        public static void Init() {
-            Debug.Log("Getting manager");
-            manager = World.Active.EntityManager; //<EntityManager>();
-        }
+        public static EntityManager Manager => World.Active?.EntityManager;
 
         #region Entity MGMT
         public static Entity Instantiate(GameObject prefab)
         {
-            Entity e = manager.Instantiate(prefab);
+            Entity e = Manager.Instantiate(prefab);
 
-            if (prefab)
-            {
+            if (prefab) {
+
                 Debug.Log("Instantiating ECS from prefab {0}".F(prefab));
                 e.Set(new PhisicsArrayDynamic_Component { testValue = e.Index });
             }
@@ -37,37 +33,37 @@ namespace NodeNotes_Visual.ECS {
         public static Entity Instantiate(this EntityArchetype arch)
         {
 
-            Entity e = manager.CreateEntity(arch);
+            Entity e = Manager.CreateEntity(arch);
             return e;
 
         }
         
         public static Entity Add(this Entity ent, ComponentType type) {
-            manager.AddComponent(ent, type);
+            Manager.AddComponent(ent, type);
             return ent;
         }
 
         public static Entity Add<T>(this Entity ent) where T : struct, IComponentData
         {
-            manager.AddComponent(ent, typeof(T));
+            Manager.AddComponent(ent, typeof(T));
             return ent;
         }
 
         public static Entity Set<T>(this Entity ent, T dta) where T : struct, IComponentData {
-            manager.SetComponentData(ent, dta);
+            Manager.SetComponentData(ent, dta);
             return ent;
         }
 
         public static T Get<T>(this Entity ent) where T : struct, IComponentData =>
-            manager.GetComponentData<T>(ent);
+            Manager.GetComponentData<T>(ent);
 
         public static bool Has<T>(this Entity ent) where T : struct, IComponentData =>
-            manager.HasComponent<T>(ent);
+            Manager.HasComponent<T>(ent);
         
-        public static void Destroy(this Entity ent) => manager.DestroyEntity(ent);
+        public static void Destroy(this Entity ent) => Manager.DestroyEntity(ent);
         
         public static NativeArray<ComponentType> GetComponentTypes (this Entity ent) =>
-            manager.GetComponentTypes(ent, Allocator.Temp);
+            Manager.GetComponentTypes(ent, Allocator.Temp);
         #endregion
 
         #region Entity Config 
@@ -81,12 +77,12 @@ namespace NodeNotes_Visual.ECS {
 
         }
 
-        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) => manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) => Manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
 
         public static Entity Instantiate(this List<ComponentCfgAbstract> cmps)
         {
 
-            Entity e = manager.CreateEntity();
+            Entity e = Manager.CreateEntity();
 
             foreach (var c in cmps)
             {
@@ -159,17 +155,17 @@ namespace NodeNotes_Visual.ECS {
 
             var changed = false;
 
-            if (manager != null) {
+            if (Manager != null) {
 
-                NativeArray<Entity> all = manager.GetAllEntities(Allocator.Temp);
+                NativeArray<Entity> all = Manager.GetAllEntities(Allocator.Temp);
 
                 GameObject go = null;
 
                 if ("instantiate".edit(ref go).nl())
                     Instantiate(go);
 
-                for (int i = 0; i < all.Length; i++)
-                {
+                for (int i = 0; i < all.Length; i++) {
+
                     var e = all[i];
 
                     if (e.GetNameForInspector().foldout(ref exploredEntity, i).nl())
@@ -178,8 +174,21 @@ namespace NodeNotes_Visual.ECS {
                 }
 
             }
-            else if (icon.Search.Click("Find manager"))
-                Init();
+            else{
+
+                if (World.Active == null) {
+                    "Active World is null".writeWarning();
+
+                    foreach (var world in World.AllWorlds) {
+                        if (world.Name.Click().nl())
+                            World.Active = world;
+                    }
+                    
+                    if ("Create".Click())
+                        World.Active = new World("Node Notes");
+                } 
+
+            }
 
             return changed;
         }
@@ -188,7 +197,7 @@ namespace NodeNotes_Visual.ECS {
             bool changed = false;
 
             if (e.Has<PhisicsArrayDynamic_Component>()) {
-                var cmps = manager.GetComponentData<PhisicsArrayDynamic_Component>(e);
+                var cmps = Manager.GetComponentData<PhisicsArrayDynamic_Component>(e);
                 cmps.Inspect_AsInList();
             }
 
@@ -216,10 +225,6 @@ namespace NodeNotes_Visual.ECS {
                 if (changed)
                 {
                     var qt = Quaternion.Euler(eul);
-                    /*new Quaternion
-                    {
-                        eulerAngles = eul
-                    };*/
 
                     rot.Value.value = new float4(qt.x, qt.y, qt.z, qt.w);
                     e.Set(rot);
@@ -278,6 +283,8 @@ namespace NodeNotes_Visual.ECS {
         public static bool Edit_Array<T>(this string label, ref NativeArray<T> array, ref int inspected) where T : struct
         {
             //pegi.write_Search_ListLabel(label, ref inspected, null);
+            label.write(PEGI_Styles.ListLabel);
+
             bool changed = false;
             Edit_Array(ref array, ref inspected, ref changed);
 

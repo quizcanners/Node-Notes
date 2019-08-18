@@ -119,7 +119,6 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
         public void FadeInnertia() => innertia = Mathf.Lerp(innertia, 0, Time.deltaTime * 10);
         
-
         public void ApplyInnertia() {
 
             offset += innertia * Time.deltaTime;
@@ -278,26 +277,25 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     void UpdateCourners() {
 
         if (historyPool.Count > 0) {
-                foreach (var box in historyPool.active) {
-                    box.isLast = false;
-                    box.isFirst = false;
-                    box.graphic.FadeFromY = Separator;
-                }
+
+            foreach (var box in historyPool.active) {
+                box.isLast = false;
+                box.isFirst = false;
+                box.graphic.FadeFromY = Separator;
+            }
 
             historyPool.active[0].isLast = true;
             historyPool.active.Last().isFirst = true;
         }
 
         if (optionsPool.Count > 0) {
-
-            if (optionsPool.Count > 1)
-                for (int i = 0; i< optionsPool.Count; i++) {
-                    var box = optionsPool.active[i];
-                    box.isLast = false;
-                    box.isFirst = false;
-                    //box.index = i;
-                    box.graphic.FadeToY = Separator;
-                }
+            
+            for (int i = 0; i< optionsPool.Count; i++) {
+                var box = optionsPool.active[i];
+                box.isLast = false;
+                box.isFirst = false;
+                box.graphic.FadeToY = Separator;
+            }
 
             optionsPool.active[0].isFirst = true;
             optionsPool.active.Last().isLast = true;
@@ -314,9 +312,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
         separatorLine.anchoredPosition = Vector2.zero;
         
-
-        if (lowerText && upperText)
-        {
+        if (lowerText && upperText) {
             const float padding = 0.2f;
             const float minP = -padding;
             const float maxP = 1f + padding;
@@ -343,6 +339,8 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         DialogueNode.SelectOption(index);
     }
 
+    public void Exit() => DialogueNode.enteredInstance?.Exit();
+    
     public RectTransform aboveTheLineParent;
 
     public RectTransform belowTheLineParent;

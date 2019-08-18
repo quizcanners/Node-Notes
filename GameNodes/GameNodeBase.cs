@@ -113,10 +113,7 @@ namespace NodeNotes {
         protected virtual string GameNodeTypeName => ClassTag; 
         
         public sealed override bool Inspect() {
-
-            if (!Shortcuts.visualLayer.IsCurrentGameNode(this))
-                Shortcuts.visualLayer.FromNodeToGame(this);
-
+            
             var changed = false;
 
             if (!_inspectLoopLock.Unlocked) return changed;
@@ -129,9 +126,13 @@ namespace NodeNotes {
                     ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref inspectedItems, 7, ref changed).SetLastUsedTrigger();
                         
                 pegi.nl_ifNotEntered();
-
-                if (GameNodeTypeName.enter(ref inspectedItems, 8).nl_ifNotEntered())
+                
+                bool current = Shortcuts.visualLayer.IsCurrentGameNode(this);
+                  
+                if (GameNodeTypeName.conditional_enter(current, ref inspectedItems, 8).nl_ifNotEntered())
                     InspectGameNode();
+                else if (inspectedItems == -1 && !current && "Enter game node".Click())
+                    Shortcuts.visualLayer.FromNodeToGame(this);
 
             }
 
@@ -178,6 +179,8 @@ namespace NodeNotes {
         #endregion
     }
 
+
+    /*
     [TaggedType(classTag)]
     public class GameNodeTest0 : GameNodeBase {
         const string classTag = "test0";
@@ -202,6 +205,6 @@ namespace NodeNotes {
 
         public override string ClassTag => classTag;
 
-    }
+    }*/
 
 }
