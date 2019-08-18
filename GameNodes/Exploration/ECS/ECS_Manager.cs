@@ -30,13 +30,12 @@ namespace NodeNotes_Visual.ECS {
             return e;
         }
 
-        public static Entity Instantiate(this EntityArchetype arch)
-        {
-
+        public static Entity Instantiate(this EntityArchetype arch) {
             Entity e = Manager.CreateEntity(arch);
             return e;
-
         }
+
+        public static void Destroy(this Entity ent) => Manager.DestroyEntity(ent);
         
         public static Entity Add(this Entity ent, ComponentType type) {
             Manager.AddComponent(ent, type);
@@ -49,21 +48,40 @@ namespace NodeNotes_Visual.ECS {
             return ent;
         }
 
+        public static Entity AddShared<T>(this Entity ent) where T : struct, ISharedComponentData
+        {
+            Manager.AddComponent(ent, typeof(T));
+            return ent;
+        }
+
         public static Entity Set<T>(this Entity ent, T dta) where T : struct, IComponentData {
             Manager.SetComponentData(ent, dta);
+            return ent;
+        }
+
+        public static Entity SetShared<T>(this Entity ent, T dta) where T : struct, ISharedComponentData
+        {
+            Manager.SetSharedComponentData(ent, dta);
             return ent;
         }
 
         public static T Get<T>(this Entity ent) where T : struct, IComponentData =>
             Manager.GetComponentData<T>(ent);
 
+        public static T GetShared<T>(this Entity ent) where T : struct, ISharedComponentData =>
+            Manager.GetSharedComponentData<T>(ent);
+
+
         public static bool Has<T>(this Entity ent) where T : struct, IComponentData =>
             Manager.HasComponent<T>(ent);
+
+        public static bool HasShared<T>(this Entity ent) where T : struct, ISharedComponentData =>
+            Manager.HasComponent<T>(ent);
+
+
+        public static NativeArray<ComponentType> GetComponentTypes(this Entity ent) => Manager.GetComponentTypes(ent, Allocator.Temp);
         
-        public static void Destroy(this Entity ent) => Manager.DestroyEntity(ent);
-        
-        public static NativeArray<ComponentType> GetComponentTypes (this Entity ent) =>
-            Manager.GetComponentTypes(ent, Allocator.Temp);
+
         #endregion
 
         #region Entity Config 
@@ -77,20 +95,26 @@ namespace NodeNotes_Visual.ECS {
 
         }
 
-        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) => Manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) {
+
+            if (Manager!= null)
+                return Manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+            else 
+                Debug.LogError("Manager is null");
+
+            return new EntityArchetype();
+        }
 
         public static Entity Instantiate(this List<ComponentCfgAbstract> cmps)
         {
-
+           
             Entity e = Manager.CreateEntity();
 
             foreach (var c in cmps)
-            {
-                c.AddComponent(e);
-                c.SetData(e);
-            }
-
+                c.AddComponentSetData(e);
+            
             return e;
+            
         }
         #endregion
 

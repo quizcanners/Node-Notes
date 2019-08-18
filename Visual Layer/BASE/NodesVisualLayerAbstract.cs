@@ -45,7 +45,7 @@ namespace NodeNotes {
                 using (loopLockEnt.Lock())
                 {
 
-                    Debug.Log("From node to game");
+                    //Debug.Log("From node to game");
 
                     if (CurrentNode != null)
                     {

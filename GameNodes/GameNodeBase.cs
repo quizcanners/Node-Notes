@@ -32,7 +32,7 @@ namespace NodeNotes {
                 VisualLayer.FromNodeToGame(this);
         }
 
-        protected virtual void AfterEnter() { }
+        protected virtual void OnEnter() { }
 
         protected virtual void OnExit() { }
 
@@ -57,7 +57,7 @@ namespace NodeNotes {
 
                     results.Apply();
 
-                    AfterEnter();
+                    OnEnter();
                 }
         }
 
@@ -80,7 +80,7 @@ namespace NodeNotes {
                     Shortcuts.user.gameNodesData[ClassTag] = Encode_PerUserData().ToString();
                     parentNode.parentBook.gameNodesData[ClassTag] = Encode_PerBookStaticData().ToString();
 
-                    Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.parentBook.gameNodesData[ClassTag]));
+                   // Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.parentBook.gameNodesData[ClassTag]));
 
                     VisualLayer.FromGameToNode(false);
 

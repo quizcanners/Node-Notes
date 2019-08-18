@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using QcTriggerLogic;
 using PlayerAndEditorGUI;
+using UnityEngine.Experimental.PlayerLoop;
 
 namespace NodeNotes {
 
@@ -12,6 +13,20 @@ namespace NodeNotes {
     public class Shortcuts : CfgReferencesHolder {
 
         public const string ProjectName = "NodeNotes";
+
+        #region Assets
+
+        public static Shortcuts Instance => NodesVisualLayerAbstract.InstAsNodesVisualLayer.shortcuts;
+
+        [SerializeField] private List<UnityAssetGroups> assetGroups;
+
+        [SerializeField] protected Mesh _defaultMesh = null;
+        public Mesh GetMesh(string name) => _defaultMesh;
+
+        [SerializeField] protected Material _defaultMaterial = null;
+        public Material GetMaterial(string name) => _defaultMaterial;
+
+        #endregion
 
         #region Progress
 

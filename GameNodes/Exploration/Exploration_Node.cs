@@ -30,11 +30,24 @@ namespace NodeNotes_Visual {
 
         public static List<MonoBehaviour> monoBehaviourPrefabs = new List<MonoBehaviour>();
 
-        static List<Exploration_Element> instances = new List<Exploration_Element>();
-        static ListMetaData instancesMeta = new ListMetaData("ECS & Mono instances");
-        
+        static List<Exploration_Element> entityConfigurations = new List<Exploration_Element>();
+        static ListMetaData entityConfigurationsMeta = new ListMetaData("ECS & Mono instances");
+
+        protected override void OnEnter() {
+
+            if (World.Active == null)
+            { 
+                World.Active = new World("Node Notes");
+                Debug.LogError("Recreating world");
+            }
+
+            foreach (var i in entityConfigurations)
+                i.OnEnter();
+
+        }
+
         protected override void OnExit() {
-            foreach (var i in instances)
+            foreach (var i in entityConfigurations)
                 i.OnExit();
         }
 
@@ -46,7 +59,7 @@ namespace NodeNotes_Visual {
                 case "b": data.Decode_Base(base.Decode, this); break;
                 case "pos": playerPosition = data.ToVector3(); break;
                 case "expl": data.Decode_References(out monoBehaviourPrefabs); break;
-                case "els": data.Decode_List(out instances, ref instancesMeta); break;
+                case "els": data.Decode_List_Derived(out entityConfigurations, ref entityConfigurationsMeta); break;
                 default: return false;
             }
 
@@ -62,7 +75,7 @@ namespace NodeNotes_Visual {
         public override CfgEncoder Encode_PerBookStaticData() 
             => new CfgEncoder()
             .Add_References("expl", monoBehaviourPrefabs)
-            .Add("els", instances, instancesMeta);
+            .Add("els", entityConfigurations, entityConfigurationsMeta);
         #endregion
 
         #region Inspector
@@ -74,12 +87,20 @@ namespace NodeNotes_Visual {
 
             pegi.nl();
 
-            "Mono Prefabs".enter_List_UObj(ref monoBehaviourPrefabs,ref inspectedPrefab , ref inspectedGameNodeItems, 0).nl(ref changed);
+            if (NodeNotesECSManager.Manager == null)
+                NodeNotesECSManager.Inspect().nl(ref changed);
+            else {
 
-            instancesMeta.enter_List(ref instances, ref inspectedGameNodeItems, 1).nl(ref changed);
+                "Mono Prefabs"
+                    .enter_List_UObj(ref monoBehaviourPrefabs, ref inspectedPrefab, ref inspectedGameNodeItems, 0)
+                    .nl(ref changed);
 
-            if ("Entity Manager".enter(ref inspectedGameNodeItems, 2).nl())
-                NodeNotesECSManager.Inspect();
+                entityConfigurationsMeta.enter_List(ref entityConfigurations, ref inspectedGameNodeItems, 1)
+                    .nl(ref changed);
+
+                if ("Entity Manager".enter(ref inspectedGameNodeItems, 2).nl())
+                    NodeNotesECSManager.Inspect();
+            }
 
             return changed;
         }
@@ -89,9 +110,48 @@ namespace NodeNotes_Visual {
     }
 
     [DerivedList(typeof(Exploration_MonoInstance), typeof(Exploration_ECSinstance))]
-    public class Exploration_Element : AbstractKeepUnrecognizedCfg  {
+    public abstract class Exploration_Element : AbstractKeepUnrecognizedCfg  {
+
+        public bool instantiateDirectly;
+
+        public virtual void OnEnter()
+        {
+            if (instantiateDirectly)
+                Instantiate();
+
+        }
+
+        protected virtual void Instantiate(){ }
 
         public virtual void OnExit() { }
+
+        #region Encode & Decode
+
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+            .Add_IfTrue("inst", instantiateDirectly);
+
+        public override bool Decode(string tg, string data)
+        {
+            switch (tg) {
+                case "inst": instantiateDirectly = data.ToBool(); break;
+                default: return false;
+            }
+            return true;
+        }
+
+        #endregion
+
+        #region Inspector
+
+        public override bool Inspect()
+        {
+            var changed = "Instantiate directly".toggleIcon(ref instantiateDirectly).nl();
+
+
+            return changed;
+        }
+
+        #endregion
 
     }
 
@@ -117,29 +177,34 @@ namespace NodeNotes_Visual {
             }
         }
 
-        void Instantiate() {
-            if (!archetype.Valid)
-                archetype = entityComponents.ToArchetype();
+        protected override void Instantiate() {
 
-            instance = NodeNotesECSManager.Instantiate(entityComponents);
-            instanciated = true;
+            if (Manager != null) {
+
+                if (!archetype.Valid)
+                    archetype = entityComponents.ToArchetype();
+
+                instance = NodeNotesECSManager.Instantiate(entityComponents);
+                instanciated = true;
+            } else 
+                Debug.LogError("Manager is null");
         }
 
 #region Encode & Decode
-        public override void Decode(string data) {
-            base.Decode(data);
-        }
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
+            .Add("b", base.Encode)
             .Add_String("n", name)
             .Add_IfNotEmpty("cfg", instanceConfig)
             .Add("ent", entityComponents, componentsMeta, ComponentCfgAbstract.all);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "n": name = data; break;
                 case "cfg": instanceConfig = data; break;
                 case "ent": data.Decode_List(out entityComponents, ref componentsMeta, ComponentCfgAbstract.all); break;
+        
                 default: return false;
             }
             return true;
@@ -152,25 +217,24 @@ namespace NodeNotes_Visual {
         
         public bool InspectInList(IList list, int ind, ref int edited) {
 
+            if (instanciated && icon.Clear.Click("Delete instance"))
+                DestroyInstance();
+            
             var changed = this.inspect_Name();
-
-         
-
+            
             if ((instanciated ? icon.Active : icon.InActive).Click("Inspect"))
                 edited = ind;
             
            if (!instanciated && icon.Play.Click())
                 Instantiate();
 
-            if (instanciated && icon.Delete.Click("Delete instance"))
-                DestroyInstance();
 
             return changed;
         }
 
         public override bool Inspect() {
 
-            var changed = false;
+            var changed = base.Inspect();
 
             if (instanciated) {
                 var cmps = instance.GetComponentTypes();
@@ -189,19 +253,11 @@ namespace NodeNotes_Visual {
 
             if (componentsMeta.enter_List(ref entityComponents, ref inspectedItems, 1).nl(ref changed)) {
 
-                var narch = entityComponents.ToArchetype();
+                archetype = entityComponents.ToArchetype();
 
-                if (narch != archetype)
-                {
-                    Debug.Log("Archetype was changed");
-
-                    archetype = narch;
-
-                    if (instanciated)
-                    {
-                        DestroyInstance();
-                        Instantiate();
-                    }
+                if (instanciated) {
+                    DestroyInstance();
+                    Instantiate();
                 }
             }
  
@@ -221,12 +277,14 @@ namespace NodeNotes_Visual {
 #region Encode & Decode
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
+            .Add("b", base.Encode)
             .Add_String("n", name)
             .Add("ind", prefabIndex)
             .Add_IfNotEmpty("cfg", instanceConfig);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
+                case "b": data.Decode_Base(base.Decode, this); break;
                 case "n": name = data; break;
                 case "ind": prefabIndex = data.ToInt(); break;
                 case "cfg": instanceConfig = data; break;
@@ -262,7 +320,7 @@ namespace NodeNotes_Visual {
 
         public override bool Inspect() {
 
-            var changed = false;
+            var changed = base.Inspect();
 
             "Prefab".select_Index(ref prefabIndex, Exploration_Node.monoBehaviourPrefabs);
 
@@ -327,6 +385,8 @@ namespace NodeNotes_Visual {
         }
 
         public override void OnExit() => FadeAway();
+
+        protected override void Instantiate() => TryFadeIn();
     }
 
 }

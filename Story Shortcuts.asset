@@ -18,3 +18,6 @@ MonoBehaviour:
     fileFolderHolder: STDEncodes
   inspectedItems: -1
   inspectedReference: -1
+  assetGroups: []
+  _defaultMesh: {fileID: 4300000, guid: 395cce1cea808a54c8df538cf4ff0a21, type: 3}
+  _defaultMaterial: {fileID: 2100000, guid: f90d3c8fe8280d043b64fa62d862113a, type: 2}

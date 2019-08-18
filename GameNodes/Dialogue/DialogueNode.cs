@@ -182,7 +182,7 @@ namespace NodeNotes_Visual {
                 Exit();
         }
         
-        protected override void AfterEnter()
+        protected override void OnEnter()
         {
             enteredInstance = this;
             DialogueUI.instance.TryFadeIn();
