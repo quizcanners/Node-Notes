@@ -111,7 +111,7 @@ namespace NodeNotes_Visual {
 
             ClearTexts();
             var cnt = 0;
-            foreach (var dio in ia.options)
+            foreach (var dio in ia.choices)
                 if (dio.conditions.IsTrue) {
                     OptText.Add(dio.text.NameForPEGI);
                     PossibleOptions.Add(dio);

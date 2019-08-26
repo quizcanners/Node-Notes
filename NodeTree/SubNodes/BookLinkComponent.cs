@@ -142,7 +142,7 @@ namespace NodeNotes {
                         linkedBookAuthor = linkedBook.authorName;
                     }
 
-                    if (linkedBook.Equals(parentBook))
+                    if (linkedBook!= null && linkedBook.Equals(parentBook))
                         "Linking to the same book. Use Node Link.".writeWarning();
 
                     var book = LoadLinkedBook;

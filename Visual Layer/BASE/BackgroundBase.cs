@@ -35,10 +35,8 @@ namespace NodeNotes_Visual {
         public abstract void SetNode(Node node);
 
         public abstract void ManagedOnDisable();
-
-
-
-
+        
+        public virtual CfgEncoder EncodePerBookData() => new CfgEncoder();
 
     }
 

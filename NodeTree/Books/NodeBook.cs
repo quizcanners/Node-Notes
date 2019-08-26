@@ -4,6 +4,7 @@ using UnityEngine;
 using QuizCannersUtilities;
 using PlayerAndEditorGUI;
 using System.IO;
+using NodeNotes_Visual;
 
 namespace NodeNotes
 {
@@ -41,6 +42,7 @@ namespace NodeNotes
 
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
         public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
+        public Dictionary<string, string> visualBackgroundsData = new Dictionary<string, string>();
         public Node subNode = new Node();
         #endregion
 
@@ -153,6 +155,27 @@ namespace NodeNotes
 
         #region Encode_Decode
 
+        public void LoadPerBookBackgroundConfigs()
+        {
+            if (Application.isPlaying && NodesVisualLayer.Instance) {
+                foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
+                    string data = "";
+                    visualBackgroundsData.TryGetValue(bg.ClassTag, out data);
+                    bg.Decode(data);
+                    
+                }
+            }
+        }
+
+        public void UpdatePerBookVisualBackgroundConfigs() {
+            if (Application.isPlaying && NodesVisualLayer.Instance) {
+                foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
+                    var data = bg.EncodePerBookData().ToString();
+                    visualBackgroundsData[bg.ClassTag] = data;
+                }
+            }
+        }
+
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add("f", firstFree)
@@ -161,7 +184,8 @@ namespace NodeNotes
             .Add_IfNotNegative("inE", _inspectedEntry)
             .Add_IfNotEmpty("ep", entryPoints)
             .Add_IfNotNegative("i",inspectedItems)
-            .Add_IfNotEmpty("gn", gameNodesData);
+            .Add_IfNotEmpty("gn", gameNodesData)
+            .Add_IfNotEmpty("bg", visualBackgroundsData);
           
         public override bool Decode(string tg, string data) {
             switch (tg) {
@@ -173,6 +197,7 @@ namespace NodeNotes
                 case "ep": data.Decode_List(out entryPoints); break;
                 case "i": inspectedItems = data.ToInt(); break;
                 case "gn": data.Decode_Dictionary(out gameNodesData); break;
+                case "bg": data.Decode_Dictionary(out visualBackgroundsData); break;
                 default: return false;
             }
             return true;

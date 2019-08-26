@@ -104,7 +104,7 @@ namespace NodeNotes {
             if (shortcuts)
                 shortcuts.SaveAll();
 
-            Shortcuts.CurrentNode = null;
+           // Shortcuts.CurrentNode = null;
         }
 
 

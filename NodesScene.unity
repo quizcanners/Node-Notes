@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 39652739}
   - component: {fileID: 39652738}
   - component: {fileID: 39652741}
+  - component: {fileID: 39652742}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -219,6 +220,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enableNoise: 1
   prerenderedNoiseTexture: {fileID: 2800000, guid: 11497ba5e98f8f745b5c3051fcf4eae0,
+    type: 3}
+--- !u!114 &39652742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39652737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a68964473511194c8b89eadc2e327fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightParticlesTexture: {fileID: 2800000, guid: e5bda84bab5eda944944b6a723f606c2,
+    type: 3}
+  darkParticlesTexture: {fileID: 2800000, guid: 84c85ff61cb69344eba059c249c83db1,
     type: 3}
 --- !u!1 &77096818
 GameObject:
@@ -920,7 +937,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 4.0000305, y: 4}
+  m_AnchoredPosition: {x: 4, y: 4}
   m_SizeDelta: {x: 189.8, y: 100}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &185404330
@@ -1137,6 +1154,104 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194740141}
   m_CullTransparentMesh: 0
+--- !u!1 &246290057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 246290060}
+  - component: {fileID: 246290059}
+  - component: {fileID: 246290058}
+  m_Layer: 5
+  m_Name: Highlight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &246290058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246290057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4c84c7d03e087744afb2d04bc76b094, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: b04cce354a1033b47a264564c9dcddad, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: 35c200f47dffd51449fbe2275ec6f984, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+  feedPositionData: 1
+  _positionDataType: 0
+  _roundedCorners:
+  - 0
+  - 1
+  - 1
+  - 1
+  faeOutUvPosition:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  _showModules: 0
+  _inspectedModule: 0
+  OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  maxHoldForClick: 0.3
+  maxMousePositionPixOffsetForClick: 20
+  _modulesStd: 
+--- !u!222 &246290059
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246290057}
+  m_CullTransparentMesh: 0
+--- !u!224 &246290060
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246290057}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 808421425}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 16, y: 16}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &695423273
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,6 +1590,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1742041632}
+  - {fileID: 246290060}
   m_Father: {fileID: 1274019442}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1497,6 +1613,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textMeshPro: {fileID: 1742041633}
   graphic: {fileID: 808421427}
+  highlight: {fileID: 246290058}
 --- !u!114 &808421427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1714,7 +1831,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.599365, y: 0}
+  m_AnchoredPosition: {x: -13.599609, y: 0}
   m_SizeDelta: {x: -13.6, y: 0.00022125}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -1837,6 +1954,7 @@ MonoBehaviour:
     fileFolderHolder: STDEncodes
   inspectedItems: -1
   nestedReferences: []
+  test: 0
   isFading: 1
   slidingButtons:
   - {fileID: 1417408137}
@@ -1883,6 +2001,7 @@ GameObject:
   - component: {fileID: 1290433476}
   - component: {fileID: 1290433478}
   - component: {fileID: 1290433477}
+  - component: {fileID: 1290433479}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -1950,6 +2069,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1290433475}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1290433479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1290433475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c71fa0ddadde9946986215dcd7434a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1337065240
 GameObject:
   m_ObjectHideFlags: 0
@@ -2994,7 +3125,7 @@ MonoBehaviour:
         dirty: 1
         inspectedTag: 2
     fileFolderHolder: STDEncodes
-  inspectedItems: 2
+  inspectedItems: 4
   nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: 3

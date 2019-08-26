@@ -182,9 +182,13 @@ namespace NodeNotes {
 
         public bool LoadAll() => this.LoadFromPersistentPath_Json(_generalItemsFolder, _generalItemsFile);
 
-        public void SaveAll()
-        {
+        public void SaveAll() {
+
             SaveUser();
+            
+            if (CurrentNode != null)
+                CurrentNode.parentBook.UpdatePerBookVisualBackgroundConfigs();
+
             QcFile.SaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 

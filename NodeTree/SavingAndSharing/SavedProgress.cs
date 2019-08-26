@@ -23,10 +23,9 @@ namespace NodeNotes
         private static int tmpNode;
         private string tmpBookName;
         private string tmpAuthorName;
-
-
+        
         #region GameNodes
-        public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
+        public Dictionary<string, string> gameNodesData_PerUser = new Dictionary<string, string>();
         #endregion
 
         #region CurrentState
@@ -48,7 +47,13 @@ namespace NodeNotes
                 }  else  {
 
                     if (loopLockLocal.Unlocked) {
-                        using (loopLockLocal.Lock()) {
+                        using (loopLockLocal.Lock())
+                        {
+
+                            bool bookChanged = _currentNode != null && (value == null || (_currentNode.parentBook != value.parentBook));
+
+                            if (Application.isPlaying && bookChanged)
+                                CurrentNode.parentBook.UpdatePerBookVisualBackgroundConfigs();
 
                             if (value == null) {
                                 SaveBookMark();
@@ -56,7 +61,7 @@ namespace NodeNotes
                                 return;
                             }
 
-                            if (_currentNode == null || _currentNode.parentBook != value.parentBook)
+                            if (_currentNode == null || bookChanged)
                                 SetNextBook(value.parentBook);
                         }
                     }
@@ -100,7 +105,7 @@ namespace NodeNotes
                         AuthorName = currentBook.authorName,
                         nodeIndex = _currentNode.IndexForPEGI,
                         values = Values.global.Encode().ToString(),
-                        gameNodesData = gameNodesData.Encode().ToString()
+                        gameNodesData = gameNodesData_PerUser.Encode().ToString()
 
                     });
                 }
@@ -132,7 +137,7 @@ namespace NodeNotes
                     Debug.LogError("No book {0} found".F(bm));
                 else {
                     if (TrySetCurrentNode(book, bm.nodeIndex)) {
-                        bm.gameNodesData.Decode_Dictionary(out gameNodesData);
+                        bm.gameNodesData.Decode_Dictionary(out gameNodesData_PerUser);
                         bm.values.DecodeInto(out Values.global);
                         bookMarks = bookMarks.GetRange(0, ind);
                     }
@@ -148,8 +153,7 @@ namespace NodeNotes
             if (nextBook == null)
                 Debug.LogError("Next book is null");
             
-            if (bookMarks.Count == 0)
-            {
+            if (bookMarks.Count == 0) {
                 if (_currentNode != null)
                     startingPoint = _currentNode.parentBook.NameForPEGI;
                 else 
@@ -158,6 +162,8 @@ namespace NodeNotes
 
             if (_currentNode != null && _currentNode.parentBook == nextBook)
                 return;
+            
+            nextBook.LoadPerBookBackgroundConfigs();
 
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
 
@@ -247,7 +253,7 @@ namespace NodeNotes
                 case "dev": isADeveloper = data.ToBool(); break;
                 case "n": Name = data; break;
                 case "start": startingPoint = data; break;
-                case "pgnd": data.Decode_Dictionary(out gameNodesData); break;
+                case "pgnd": data.Decode_Dictionary(out gameNodesData_PerUser); break;
                 default: return false;
             }
             return true;
@@ -261,7 +267,7 @@ namespace NodeNotes
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", Name)
             .Add_String("start", startingPoint)
-            .Add_IfNotEmpty("pgnd", gameNodesData);
+            .Add_IfNotEmpty("pgnd", gameNodesData_PerUser);
 
             var cur = Shortcuts.CurrentNode;
             if (cur != null) {

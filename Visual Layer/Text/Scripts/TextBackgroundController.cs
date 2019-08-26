@@ -31,13 +31,7 @@ namespace NodeNotes_Visual {
         ShaderProperty.TextureValue floatingParticlesProperty = new ShaderProperty.TextureValue("_FloatingParticles");
         LinkedLerp.ColorValue textColor = new LinkedLerp.ColorValue("TextColor");
         LinkedLerp.FloatValue textFade = new LinkedLerp.FloatValue("Text Lerp", 0, 2);
-
-
-        private LinkedLerp.ShaderColorValueGlobal bgColUp = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_1");
-        private LinkedLerp.ShaderColorValueGlobal bgColCnter = new LinkedLerp.ShaderColorValueGlobal("_BG_CENTER_COL");
-        private LinkedLerp.ShaderColorValueGlobal bgColDown = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_2");
         
-
         private LerpData ld = new LerpData();
 
         bool dirty = false;
@@ -73,22 +67,13 @@ namespace NodeNotes_Visual {
                 if (gotAnotherText || dirty) {
 
                     ld.Reset();
-
-                    bgColUp.targetValue = activeTexts.backgroundColorUp;
-                    bgColCnter.targetValue = activeTexts.backgroundColorCenter;
-                    bgColDown.targetValue = activeTexts.backgroundColorDown;
+                    
                     textColor.targetValue = activeTexts.textColor;
                     textFade.targetValue = gotAnotherText ? 1 : 0.5f;
 
                     textFade.Portion(ld);
-                    bgColUp.Portion(ld);
-                    bgColCnter.Portion(ld);
-                    bgColDown.Portion(ld);
                     textColor.Portion(ld);
-
-                    bgColUp.Lerp(ld);
-                    bgColCnter.Lerp(ld);
-                    bgColDown.Lerp(ld);
+                    
                     textColor.Lerp(ld);
                     textFade.Lerp(ld);
                     
@@ -212,9 +197,11 @@ namespace NodeNotes_Visual {
             
             currentNode = node;
 
-            if (node!= null)
+            if (node != null) 
                 activeTexts.Decode(node.LinkTo(activeTexts));
 
+            NodeNotesGradientController.instance.SetTarget(activeTexts.gradient);
+            
             UpdateText();
 
         }
@@ -256,10 +243,8 @@ namespace NodeNotes_Visual {
         private Node Node => TextBackgroundController.instance.currentNode;
 
         public Color linksColor = Color.blue;
-
-        public Color backgroundColorUp = Color.white;
-        public Color backgroundColorCenter = Color.white;
-        public Color backgroundColorDown = Color.white;
+        
+        public BackgroundGradient gradient = new BackgroundGradient();
 
         public Color textColor = Color.black;
 
@@ -280,9 +265,7 @@ namespace NodeNotes_Visual {
             {
                 case "tch": data.Decode_List(out textChunks, TextChunkBase.all); break;
                 case "lnkCol": linksColor = data.ToColor(); break;
-                case "bgUp": backgroundColorUp = data.ToColor(); break;
-                case "bgc": backgroundColorCenter = data.ToColor(); break;
-                case "bgDwn": backgroundColorDown = data.ToColor(); break;
+                case "g": gradient.Decode(data); break;
                 case "tx": textColor = data.ToColor(); break;
                 default: return false;
             }
@@ -293,15 +276,10 @@ namespace NodeNotes_Visual {
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("tch", textChunks, TextChunkBase.all)
             .Add("lnkCol", linksColor)
-            .Add("bgUp", backgroundColorUp)
-            .Add("bgc", backgroundColorCenter)
-            .Add("bgDwn", backgroundColorDown)
-
+            .Add("g", gradient)
             .Add("tx", textColor);
         #endregion
-
-
-
+        
         public static TextConfiguration inspected;
 
         public int linkIndex = 0;
@@ -365,9 +343,9 @@ namespace NodeNotes_Visual {
             {
                 "Text Color".edit(ref textColor).nl(ref changed);
                 "Link color".edit(ref linksColor).nl(ref changed);
-                "Background Up".edit(ref backgroundColorUp).nl(ref changed);
-                "Background Center".edit(ref backgroundColorCenter).nl(ref changed);
-                "Background Down".edit(ref backgroundColorDown).nl(ref changed); 
+
+                gradient.Nested_Inspect().nl(ref changed);
+
             }
             else {
 

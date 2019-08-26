@@ -260,8 +260,6 @@
 				float2 sp = input.screenPos.xy / input.screenPos.w;
 
 				
-
-
 				float edges = abs(sp.x - 0.5) * 2;
 				edges *= edges;
 

@@ -12,18 +12,18 @@ namespace NodeNotes_Visual {
         private string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
         public ListOfSentences texts = new ListOfSentences();
-        public List<DialogueChoice> options = new List<DialogueChoice>();
+        public List<DialogueChoice> choices = new List<DialogueChoice>();
         public List<Result> finalResults = new List<Result>();
 
         public void ResetSentences() {
             texts.Reset();
-            foreach (var o in options)
+            foreach (var o in choices)
                 o.ResetSentences();
         }
 
         public void Execute() {
-            for (int j = 0; j < options.Count; j++)
-                if (options[j].conditions.IsTrue) { options[j].results.Apply(); break; }
+            for (int j = 0; j < choices.Count; j++)
+                if (choices[j].conditions.IsTrue) { choices[j].results.Apply(); break; }
 
             finalResults.Apply();
         }
@@ -36,7 +36,7 @@ namespace NodeNotes_Visual {
             .Add_IfNotEmpty("ref", referenceName)
             .Add_IfNotDefault("Conds", conditions)
             .Add("txts", texts)
-            .Add_IfNotEmpty("opt", options)
+            .Add_IfNotEmpty("opt", choices)
             .Add_IfNotEmpty("fin", finalResults)
             .Add_IfNotNegative("is", inspectedItems)
             .Add_IfNotNegative("bc", _inspectedChoice)
@@ -47,7 +47,7 @@ namespace NodeNotes_Visual {
                 case "ref": referenceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
                 case "txts": texts.Decode(data); break;
-                case "opt": data.Decode_List(out options); break;
+                case "opt": data.Decode_List(out choices); break;
                 case "fin": data.Decode_List(out finalResults); break;
                 case "is": inspectedItems = data.ToInt(); break;
                 case "bc": _inspectedChoice = data.ToInt(); break;
@@ -63,7 +63,7 @@ namespace NodeNotes_Visual {
         public static List<Interaction> inspectedList = new List<Interaction>();
         
         public void RenameReferenceName (string oldName, string newName) {
-            foreach (var o in options)
+            foreach (var o in choices)
                 o.RenameReference(oldName, newName);
         }
         
@@ -103,7 +103,7 @@ namespace NodeNotes_Visual {
 
         public string NeedAttention() {
 
-            var na = options.NeedAttentionMessage();
+            var na = choices.NeedAttentionMessage();
 
             return na;
         }
@@ -145,7 +145,7 @@ namespace NodeNotes_Visual {
             
             "Texts".enter_Inspect(texts, ref inspectedItems, 1).nl_ifNotEntered(ref changed);
 
-            "Choices".enter_List(ref options, ref _inspectedChoice, ref inspectedItems, 2).nl_ifNotEntered(ref changed);
+            "Choices".enter_List(ref choices, ref _inspectedChoice, ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
             "Final Results".enter_List(ref finalResults, ref _inspectedResult, ref inspectedItems, 3, ref changed).SetLastUsedTrigger();
 
@@ -264,11 +264,11 @@ namespace NodeNotes_Visual {
 
             bool changed = false;
 
-            if (icon.Hint.enter(text.GetNameForInspector() ,ref inspectedItems, 1))
+            conditions.enter_Inspect_AsList(ref inspectedItems, 1).nl_ifNotEntered(ref changed);
+
+            if (icon.Hint.enter(text.GetNameForInspector() ,ref inspectedItems, 2))
                 text.Nested_Inspect();
             else if (inspectedItems == -1) MultilanguageSentence.LanguageSelector_PEGI().nl();
-
-            conditions.enter_Inspect_AsList(ref inspectedItems, 2).nl_ifNotEntered(ref changed);
 
             "Results".enter_List(ref results, ref inspectedResult, ref inspectedItems, 3, ref changed).SetLastUsedTrigger();
                 

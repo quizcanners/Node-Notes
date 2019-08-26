@@ -3,6 +3,7 @@ using UnityEngine;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using NodeNotes;
 using TMPro;
 using PlaytimePainter;
@@ -11,14 +12,19 @@ using QcTriggerLogic;
 namespace NodeNotes_Visual {
 
     [TaggedType(classTag)]
-    public class WhiteBackground : BackgroundBase
-    {
+    public class WhiteBackground : BackgroundBase {
 
         public static WhiteBackground inst;
         
         public const string classTag = "white";
 
         public override string ClassTag => classTag;
+
+        public Countless<string> perNodeGradientConfigs = new Countless<string>();
+
+        public int test = 0;
+
+        protected BackgroundGradient currentNodeGradient = new BackgroundGradient();
 
         public bool isFading;
 
@@ -97,10 +103,44 @@ namespace NodeNotes_Visual {
             
             pegi.nl();
 
-            if (Application.isPlaying && selectedNode) {
-                if (selectedNode.source.Nested_Inspect().changes(ref changed)) 
+            "TEST".edit(ref test).nl();
+
+            if (Application.isPlaying && selectedNode)
+            {
+
+                var src = selectedNode.source;
+
+                if (src.Nested_Inspect().nl(ref changed))
                     selectedNode.UpdateName();
-            } else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
+
+                if (selectedNode.source == Shortcuts.CurrentNode)
+                {
+                    var gradient = perNodeGradientConfigs[src.IndexForPEGI];
+
+                    if (gradient == null)
+                    {
+                        if ("+ Gradient Cfg".Click().nl())
+                            perNodeGradientConfigs[src.IndexForPEGI] = currentNodeGradient.Encode().ToString();
+                        
+                    }
+                    else
+                    {
+                        if (icon.Delete.Click("Delete Gradient Cfg"))
+                            perNodeGradientConfigs[src.IndexForPEGI] = null;
+                        else if (currentNodeGradient.Nested_Inspect()) {
+
+                            NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
+                            perNodeGradientConfigs[src.IndexForPEGI] = currentNodeGradient.Encode().ToString();
+
+                        }
+
+                        pegi.nl();
+                    }
+                }
+
+
+            }
+            else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
 
             if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.inspectedItems == 21))) {
 
@@ -123,20 +163,26 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
+        public override CfgEncoder EncodePerBookData() => new CfgEncoder()
+               .Add("t", test)
+               .Add("bg", perNodeGradientConfigs.Encode());
+        
+
         public override bool Decode(string tg, string data)
         {
             switch (tg)
             {
-                //case "col": color = data.ToColor(); break;
+                case "t": test = data.ToInt(); break;
+                case "bg": data.DecodeInto(out perNodeGradientConfigs);
+                   // Debug.Log("Loading {0}".F(data));
+                    break;
                 default: return true;
 
             }
-           // return false;
+            return false;
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
-           // .Add("col", color)
-        ;
+        public override CfgEncoder Encode() => this.EncodeUnrecognized();
 
         #endregion
 
@@ -161,38 +207,58 @@ namespace NodeNotes_Visual {
         
         public override void SetNode(Node node) {
         
-                if (!_loopLock.Unlocked) return;
+            if (!_loopLock.Unlocked) return;
 
-                using (_loopLock.Lock())
-                {
+            using (_loopLock.Lock())
+            {
 
-                    if (Application.isPlaying && Shortcuts.CurrentNode != node)
-                    {
+                var previousN = Shortcuts.CurrentNode;
+                
+                if (Application.isPlaying && previousN != node) {
 
-                        if (node == null)
-                            return;
+                    if (node == null)
+                        return;
+                    
+                    if (previousN != null && perNodeGradientConfigs[previousN.IndexForPEGI] != null)
+                        perNodeGradientConfigs[previousN.IndexForPEGI] = currentNodeGradient.Encode().ToString();
+                    
+                    SetSelected(null);
+                    
+                    var previous = previousN?.visualRepresentation as NodeCircleController;
 
-                        SetSelected(null);
+                    Shortcuts.CurrentNode = node;
 
-                        var previousN = Shortcuts.CurrentNode;
+                    UpdateVisibility(node, previous);
 
-                        var previous = previousN?.visualRepresentation as NodeCircleController;
+                    foreach (var n in NodesPool)
+                        UpdateVisibility(n.source, previous);
 
-                        Shortcuts.CurrentNode = node;
+                    UpdateCurrentNodeGroupVisibilityAround(node, previous);
 
-                        UpdateVisibility(node, previous);
+                    _firstFree = 0;
 
-                        foreach (var n in NodesPool)
-                            UpdateVisibility(n.source, previous);
+                    Node iteration = node;
 
-                        UpdateCurrentNodeGroupVisibilityAround(node, previous);
+                    while (iteration != null) {
 
-                        _firstFree = 0;
+                        var val = perNodeGradientConfigs[iteration.IndexForPEGI];
 
+                        if (!val.IsNullOrEmpty()) {
+
+                            currentNodeGradient.Decode(val);
+
+                            NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
+
+                            break;
+                            
+                        }
+
+                        iteration = iteration.parentNode;
                     }
-                    else
-                        Shortcuts.CurrentNode = node;
                 }
+                else
+                    Shortcuts.CurrentNode = node;
+            }
             
         }
 
@@ -427,4 +493,46 @@ namespace NodeNotes_Visual {
         }
 
     }
+    
+    public class BackgroundGradient: AbstractKeepUnrecognizedCfg, IPEGI {
+
+        public Color backgroundColorUp = Color.white;
+        public Color backgroundColorCenter = Color.white;
+        public Color backgroundColorDown = Color.white;
+
+        #region Encode & Decode
+        
+        public override bool Decode(string tg, string data)
+        {
+            switch (tg)
+            {
+                case "bgUp": backgroundColorUp = data.ToColor(); break;
+                case "bgc": backgroundColorCenter = data.ToColor(); break;
+                case "bgDwn": backgroundColorDown = data.ToColor(); break;
+                default: return false;
+            }
+
+            return true;
+        }
+
+        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+            .Add("bgUp", backgroundColorUp)
+            .Add("bgc", backgroundColorCenter)
+            .Add("bgDwn", backgroundColorDown);
+        #endregion
+
+        #region Inspector
+        public override bool Inspect() {
+
+            var changed = false;
+
+            "Background Up".edit(ref backgroundColorUp).nl(ref changed);
+            "Background Center".edit(ref backgroundColorCenter).nl(ref changed);
+            "Background Down".edit(ref backgroundColorDown).nl(ref changed);
+
+            return changed;
+        }
+        #endregion
+    }
+
 }
