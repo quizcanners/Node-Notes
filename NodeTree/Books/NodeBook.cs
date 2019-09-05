@@ -155,9 +155,14 @@ namespace NodeNotes
 
         #region Encode_Decode
 
-        public void LoadPerBookBackgroundConfigs()
-        {
+        public bool loadedBgData = false;
+
+        public void LoadPerBookBackgroundConfigs() {
+            
             if (Application.isPlaying && NodesVisualLayer.Instance) {
+
+                loadedBgData = true;
+
                 foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
                     string data = "";
                     visualBackgroundsData.TryGetValue(bg.ClassTag, out data);
@@ -169,10 +174,12 @@ namespace NodeNotes
 
         public void UpdatePerBookVisualBackgroundConfigs() {
             if (Application.isPlaying && NodesVisualLayer.Instance) {
-                foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
-                    var data = bg.EncodePerBookData().ToString();
-                    visualBackgroundsData[bg.ClassTag] = data;
-                }
+
+                if (loadedBgData)
+                    foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
+                        var data = bg.EncodePerBookData().ToString();
+                        visualBackgroundsData[bg.ClassTag] = data;
+                    }
             }
         }
 
@@ -223,19 +230,28 @@ namespace NodeNotes
         public void SaveToFile() {
 
             if (AuthoringAStory) {
+                Debug.Log("Saving {0} to resources".F(BookName));
                 this.SaveToResources_Bytes(Shortcuts.ProjectName, this.BookFolder(), BookName);
                 QcUnity.RefreshAssetDatabase();
             }
             else
+            {
+                Debug.Log("Saving {0} to perisstent ".F(NameForPEGI));
                 this.SaveToPersistentPath_Json(this.BookFolder(), NameForPEGI);
+            }
         }
 
         public bool TryLoad(IBookReference reff) {
 
-            if (reff.EditedByCurrentUser() && Application.isEditor)
+            if (reff.EditedByCurrentUser() && Application.isEditor) {
+                Debug.Log("Loading {0} from resources".F(reff.BookName));
                 return this.TryLoadFromResources_Bytes(reff.BookFolder(), reff.BookName);
+            }
             else
+            {
+                Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.user.Name));
                 return this.LoadFromPersistentPath_Json(reff.BookFolder(), reff.BookName);
+            }
 
         }
 

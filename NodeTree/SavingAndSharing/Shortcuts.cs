@@ -97,7 +97,9 @@ namespace NodeNotes {
         static readonly string _usersFolder = "Users";
 
         void LoadUser(string uname) {
-            QcFile.LoadUtils.LoadJsonFromPersistentPath(_usersFolder, uname).DecodeInto(out user);
+
+            user = new CurrentUser();
+            user.Decode(QcFile.LoadUtils.LoadJsonFromPersistentPath(_usersFolder, uname));
             _tmpUserName = uname;
         }
 
@@ -179,18 +181,6 @@ namespace NodeNotes {
         static readonly string _generalItemsFolder = "General";
 
         static readonly string _generalItemsFile = "config";
-
-        public bool LoadAll() => this.LoadFromPersistentPath_Json(_generalItemsFolder, _generalItemsFile);
-
-        public void SaveAll() {
-
-            SaveUser();
-            
-            if (CurrentNode != null)
-                CurrentNode.parentBook.UpdatePerBookVisualBackgroundConfigs();
-
-            QcFile.SaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
-        }
 
         public static void AddOrReplace(NodeBook nb) {
 
@@ -381,6 +371,21 @@ namespace NodeNotes {
         #endregion
 
         #region Encode_Decode
+
+
+        public bool LoadAll() => this.LoadFromPersistentPath_Json(_generalItemsFolder, _generalItemsFile);
+
+        public void SaveAll()
+        {
+
+            SaveUser();
+
+            if (CurrentNode != null)
+                CurrentNode.parentBook.UpdatePerBookVisualBackgroundConfigs();
+
+            QcFile.SaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+        }
+
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("trigs", TriggerGroup.all)

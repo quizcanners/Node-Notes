@@ -3,19 +3,19 @@
 	Properties{
 		[PerRendererData]_MainTex("Albedo (RGB)", 2D) = "white" {}
 	}
-	Category{
-		Tags{
-			"Queue" = "Geometry"
-			"IgnoreProjector" = "True"
-			"RenderType" = "Transparent"
+		Category{
+			Tags{
+				"Queue" = "Geometry"
+				"IgnoreProjector" = "True"
+				"RenderType" = "Transparent"
 
-		}
+			}
 
-		ColorMask RGB
-		Cull Off
-		ZWrite Off
-		ZTest Off
-		Blend SrcAlpha One //MinusSrcAlpha
+			ColorMask RGB
+			Cull Off
+			ZWrite Off
+			ZTest Off
+			Blend SrcAlpha One // OneMinusSrcAlpha //One OneMinusSrcAlpha//
 
 		SubShader{
 			Pass{
@@ -76,6 +76,8 @@
 					//col.rgb *= grad.rgb;
 
 					col.a = min(col.a, 1);
+
+					//col.rgb = max(o.color.rgb, col.rgb);
 
 					return col;
 				}

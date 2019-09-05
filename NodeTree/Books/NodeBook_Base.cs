@@ -51,7 +51,8 @@ namespace NodeNotes {
 
     public static class BookClassExtensions {
 
-        public static bool EditedByCurrentUser<T>(this T reff) where T: IBookReference => Shortcuts.user.isADeveloper && Shortcuts.user.Name.Equals(reff.AuthorName);
+        public static bool EditedByCurrentUser<T>(this T reff) where T: IBookReference 
+            => Shortcuts.user.isADeveloper && Shortcuts.user.Name.Equals(reff.AuthorName);
 
         public static string BookFolder<T>(this T reff) where T: IBookReference => Path.Combine(NodeBook_Base.BooksRootFolder, reff.AuthorName);
 

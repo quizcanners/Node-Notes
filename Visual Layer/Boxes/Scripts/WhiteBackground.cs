@@ -237,23 +237,26 @@ namespace NodeNotes_Visual {
 
                     _firstFree = 0;
 
-                    Node iteration = node;
+                    if (NodeNotesGradientController.instance)  {
 
-                    while (iteration != null) {
+                        Node iteration = node;
 
-                        var val = perNodeGradientConfigs[iteration.IndexForPEGI];
+                        while (iteration != null) {
 
-                        if (!val.IsNullOrEmpty()) {
+                            var val = perNodeGradientConfigs[iteration.IndexForPEGI];
 
-                            currentNodeGradient.Decode(val);
+                            if (!val.IsNullOrEmpty()) {
 
-                            NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
+                                currentNodeGradient.Decode(val);
 
-                            break;
-                            
+                                NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
+
+                                break;
+
+                            }
+
+                            iteration = iteration.parentNode;
                         }
-
-                        iteration = iteration.parentNode;
                     }
                 }
                 else

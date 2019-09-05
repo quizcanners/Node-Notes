@@ -48,9 +48,9 @@ inline float4 DarkBrightGradient(float2 screenUV, float alpha) {
 
 	float mix = brighter * brighterB;
 
-	brighter = ((brighter * portion + brighterB * dePortion)*deAlpha * 0.25
+	brighter = ((brighter * portion + brighterB * dePortion)*deAlpha
 		
-		+ (darker * portion + darkerB * dePortion))*alpha*alpha
+		+ (darker * portion + darkerB * dePortion))*alpha
 		+ 
 		mix * mix  + dmix * dmix + 
 		(mix*dmix)*(pow(blur,10))
