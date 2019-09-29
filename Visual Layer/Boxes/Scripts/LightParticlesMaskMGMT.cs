@@ -8,16 +8,56 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
 
     public Texture2D lightParticlesTexture;
     public Texture2D darkParticlesTexture;
+    public Texture2D spiralMask;
 
     private readonly ShaderProperty.TextureValue _waterParticlesTextureGlobalLight = new ShaderProperty.TextureValue("_Global_Water_Particles_Mask_L");
     private readonly ShaderProperty.TextureValue _waterParticlesTextureGlobalDark = new ShaderProperty.TextureValue("_Global_Water_Particles_Mask_D");
+    private readonly ShaderProperty.VectorValue _mousePosition = new ShaderProperty.VectorValue("_NodeNotes_MousePosition");
+    private readonly ShaderProperty.TextureValue _spiralMask = new ShaderProperty.TextureValue("_NodeNotes_SpiralMask");
 
+    private float _mouseDownStrength = 0;
+    private bool downClickFullyShown = true;
+    private Vector2 _mouseDownPosition;
 
-   
+    void Update() {
+
+        _taravanaTime += Time.deltaTime * 0.1f;
+
+        if (_taravanaTime > resetTimer * 3)
+            _taravanaTime = 0;
+
+        _shaderTime.SetGlobal((float)_taravanaTime);
+
+        bool down = Input.GetMouseButton(0);
+
+        if (down || _mouseDownStrength > 0){
+
+            bool downThisFrame = Input.GetMouseButtonDown(0);
+
+            if (downThisFrame) {
+                _mouseDownStrength = 0;
+                downClickFullyShown = false;
+            }
+
+            _mouseDownStrength = LerpUtils.LerpBySpeed(_mouseDownStrength, downClickFullyShown ?
+                0 : (down ? 0.9f : 1f)
+                , (down) ? 5 : (downClickFullyShown ? 0.75f : 2.5f));
+
+            if (_mouseDownStrength > 0.99f)
+                downClickFullyShown = true;
+
+            if (down)
+                _mouseDownPosition = Input.mousePosition.XY() / new Vector2(Screen.width, Screen.height);
+            
+            _mousePosition.GlobalValue = _mouseDownPosition.ToVector4(_mouseDownStrength, ((float)Screen.width) / Screen.height);
+
+        }
+    }
 
     void OnEnable() {
-        _waterParticlesTextureGlobalLight.SetGlobal(lightParticlesTexture);
-        _waterParticlesTextureGlobalDark.SetGlobal(darkParticlesTexture);
+        _waterParticlesTextureGlobalLight.GlobalValue = lightParticlesTexture;
+        _waterParticlesTextureGlobalDark.GlobalValue = darkParticlesTexture;
+        _spiralMask.GlobalValue = spiralMask;
     }
 
     #region Custom Time for Shaders
@@ -35,16 +75,6 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
             _taravanaTime = 0;
     }
     
-    void Update() {
-        _taravanaTime += Time.deltaTime*0.1f;
-
-        if (_taravanaTime > resetTimer * 3)
-            _taravanaTime = 0;
-
-        _shaderTime.SetGlobal((float)_taravanaTime);
-        
-    }
-
     void OnApplicationPause(bool state)
     {
         _taravanaTime = 0;

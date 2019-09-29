@@ -15,7 +15,7 @@ using static QuizCannersUtilities.QcSharp;
 namespace NodeNotes_Visual {
 
     [TaggedType(classTag)]
-    public class TextBackgroundController : BackgroundBase, IPointerClickHandler
+    public class TextBackgroundController : BackgroundBase, IPointerClickHandler, IPointerDownHandler
     {
         #region Ecode & Decode
         const string classTag = "textRead";
@@ -23,6 +23,8 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Text MGMT
+
+        [SerializeField] protected AudioSource audioSource;
 
         [SerializeField] private Texture floatingParticles;
 
@@ -155,27 +157,41 @@ namespace NodeNotes_Visual {
             Unlink();
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-
+        private bool TryGetLinkIndex(PointerEventData eventData, out int index) {
             var c = pTextMeshPro.canvas;
 
-            int linkIndex = TMP_TextUtilities.FindIntersectingLink(pTextMeshPro, Input.mousePosition, c.renderMode == RenderMode.ScreenSpaceOverlay ? null : c.worldCamera);
-            if (linkIndex != -1) {
-                TMP_LinkInfo linkInfo = pTextMeshPro.textInfo.linkInfo[linkIndex];
+            index = TMP_TextUtilities.FindIntersectingLink(pTextMeshPro,
+                Input.mousePosition, c.renderMode == RenderMode.ScreenSpaceOverlay ? null : c.worldCamera);
 
-                //Debug.Log("Clicked " + linkIndex);
+            return index != -1;
+        }
 
-                activeTexts.ProcessClick(linkIndex);
-
+        public void OnPointerClick(PointerEventData eventData){
+            int linkIndex;
+            if (TryGetLinkIndex(eventData, out linkIndex))
+            {
+               
+                audioSource.PlayOneShot(activeTexts.ProcessClick(linkIndex) ? 
+                    Shortcuts.Instance.onMouseClickSound
+                    : Shortcuts.Instance.onMouseClickFailedSound);
             }
+        }
+
+        public void OnPointerDown(PointerEventData eventData) {
+            int linkIndex;
+            if (TryGetLinkIndex(eventData, out linkIndex))
+                audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
+
         }
 
         public override void MakeVisible(Base_Node node) { }
         
         public override void MakeHidden(Base_Node node) { }
 
-        public override void ManagedOnEnable() { }
+        public override void ManagedOnEnable()
+        {
+
+        }
 
         public override void ManagedOnDisable()
         {
@@ -235,6 +251,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
+        
         #endregion
     }
     
@@ -284,15 +301,16 @@ namespace NodeNotes_Visual {
 
         public int linkIndex = 0;
 
-        public void ProcessClick(int index) {
+        public bool ProcessClick(int index) {
 
             var ch = sortedChunks[index];
 
-            if (ch != null)
-                ch.ProcessClick(index);
+            if (ch != null)  
+                return ch.ProcessClick(index);
             else
                 Debug.LogError("No text chunks found for link "+index);
 
+            return false;
         }
 
         public static Countless<TextChunkBase> sortedChunks = new Countless<TextChunkBase>();
@@ -426,8 +444,8 @@ namespace NodeNotes_Visual {
 
                 return true;
             }
-            
-            public virtual void ProcessClick(int index) { }
+
+            public virtual bool ProcessClick(int index) => false;
 
             public abstract string GetTextFor(Node node);
 
@@ -492,9 +510,10 @@ namespace NodeNotes_Visual {
         {
             public string text;
 
-            public override void ProcessClick(int index) {
+            public override bool ProcessClick(int index) {
                 if (index == linkId)
-                    Shortcuts.TryExitCurrentNode();
+                    return Shortcuts.TryExitCurrentNode();
+                return false;
             }
 
             private int linkId;
@@ -553,11 +572,12 @@ namespace NodeNotes_Visual {
 
             public int childNodeIndex;
 
-            public override void ProcessClick(int index) {
+            public override bool ProcessClick(int index) {
                     var n = Shortcuts.CurrentNode.coreNodes.GetByIGotIndex(childNodeIndex);
                     if (n!= null)
-                        n.ExecuteInteraction();
-                
+                        return n.ExecuteInteraction();
+
+                    return false;
             }
 
             private int linkNo = 0;

@@ -15,7 +15,9 @@ namespace NodeNotes_Visual {
     public class WhiteBackground : BackgroundBase {
 
         public static WhiteBackground inst;
-        
+
+        [SerializeField] private NodeNotesGradientController gradientController;
+
         public const string classTag = "white";
 
         public override string ClassTag => classTag;
@@ -123,17 +125,15 @@ namespace NodeNotes_Visual {
                             perNodeGradientConfigs[src.IndexForPEGI] = currentNodeGradient.Encode().ToString();
                         
                     }
-                    else
-                    {
+                    else {
+                      
                         if (icon.Delete.Click("Delete Gradient Cfg"))
                             perNodeGradientConfigs[src.IndexForPEGI] = null;
                         else if (currentNodeGradient.Nested_Inspect()) {
-
                             NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
                             perNodeGradientConfigs[src.IndexForPEGI] = currentNodeGradient.Encode().ToString();
-
                         }
-
+                        
                         pegi.nl();
                     }
                 }
@@ -214,13 +214,10 @@ namespace NodeNotes_Visual {
 
                 var previousN = Shortcuts.CurrentNode;
                 
-                if (Application.isPlaying && previousN != node) {
+                if (Application.isPlaying && (previousN == null || previousN != node)) {
 
                     if (node == null)
                         return;
-                    
-                    if (previousN != null && perNodeGradientConfigs[previousN.IndexForPEGI] != null)
-                        perNodeGradientConfigs[previousN.IndexForPEGI] = currentNodeGradient.Encode().ToString();
                     
                     SetSelected(null);
                     
@@ -257,7 +254,8 @@ namespace NodeNotes_Visual {
 
                             iteration = iteration.parentNode;
                         }
-                    }
+                    } else 
+                        Debug.LogError("No Instance of background gradient");
                 }
                 else
                     Shortcuts.CurrentNode = node;
@@ -475,6 +473,8 @@ namespace NodeNotes_Visual {
         public override void ManagedOnEnable()
         {
             inst = this;
+
+            NodeNotesGradientController.instance = gradientController;
 
             if (editButton)
                 editButton.Text = "Edit";

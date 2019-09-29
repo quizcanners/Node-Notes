@@ -18,7 +18,7 @@
 			Pass{
 
 				CGPROGRAM
-
+				#include "NodeNotesShaders.cginc"
 				#include "UnityCG.cginc"
 				#pragma vertex vert
 				#pragma fragment frag
@@ -51,14 +51,16 @@
 				float4 _BG_GRAD_COL_1;
 				float4 _BG_GRAD_COL_2;
 				float4 _BG_CENTER_COL;
-				sampler2D _Global_Noise_Lookup;
 
 				float4 frag(v2f i) : COLOR{
 
+					float2 screenUV = i.screenPos.xy / i.screenPos.w;
 
-					float2 duv = i.screenPos.xy / i.screenPos.w;
+					float clickPower = PowerFromClick(screenUV);
 
-					float2 off = duv - 0.5;
+					float grad = DarkBrightGradient(screenUV, 1, clickPower);
+
+					float2 off = screenUV - 0.5;
 					off.x *= _ScreenParams.x / _ScreenParams.y;
 					off *= off;
 
@@ -70,7 +72,7 @@
 					_BG_CENTER_COL.rgb *= _BG_CENTER_COL.rgb;
 					#endif
 
-					float4 col = _BG_GRAD_COL_1 * duv.y + _BG_GRAD_COL_2 * (1 - duv.y);
+					float4 col = _BG_GRAD_COL_1 * screenUV.y + _BG_GRAD_COL_2 * (1 - screenUV.y);
 
 					//_ScreenParams.xy
 
@@ -84,17 +86,18 @@
 					col.rgb = sqrt(o.color.rgb);
 					#endif
 
+					col.rgb += grad * _BG_CENTER_COL.rgb * clickPower * _BG_CENTER_COL.a;
 
 					#if USE_NOISE_TEXTURE
 						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
 						#ifdef UNITY_COLORSPACE_GAMMA
 							col.rgb += (noise.rgb - 0.5)*0.02;
 						#else
-							col.rgb += (noise.rgb - 0.5)*0.0055;
+							col.rgb += (noise.rgb - 0.5)*0.0025;
 						#endif
 					#endif
 
-					return col;
+					return saturate(col);
 				}
 				ENDCG
 

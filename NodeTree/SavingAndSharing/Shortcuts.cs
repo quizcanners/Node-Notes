@@ -26,6 +26,12 @@ namespace NodeNotes {
         [SerializeField] protected Material _defaultMaterial = null;
         public Material GetMaterial(string name) => _defaultMaterial;
 
+        [SerializeField] public AudioClip onMouseDownButtonSound;
+        [SerializeField] public AudioClip onMouseClickSound;
+        [SerializeField] public AudioClip onMouseClickFailedSound;
+        [SerializeField] public AudioClip onMouseLeaveSound;
+        [SerializeField] public AudioClip onSwipeSound;
+
         #endregion
 
         #region Progress

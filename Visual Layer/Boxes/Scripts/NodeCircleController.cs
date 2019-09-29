@@ -25,6 +25,8 @@ namespace NodeNotes_Visual {
 
         public MeshCollider circleCollider;
 
+        public AudioSource audioSource;
+
         public Base_Node source;
         
         private bool IsCurrent => source == Shortcuts.CurrentNode;
@@ -119,8 +121,7 @@ namespace NodeNotes_Visual {
         }
 
         readonly LoopLock _loopLock = new LoopLock();
-
-        //int showDependencies = false;
+        
         public override bool Inspect() {
 
             var changed = false;
@@ -142,14 +143,14 @@ namespace NodeNotes_Visual {
                 if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
                     Shortcuts.CurrentNode = null;
 
-                if (source != null)
-                {
+                if (source != null) {
+
                     var conditionPassed = source.Conditions_isEnabled();
 
                     var nd = source.AsNode;
 
-                    if (nd != null)
-                    {
+                    if (nd != null) {
+
                         if (IsCurrent && nd.parentNode != null && icon.StateMachine.Click("Exit this Node"))
                             Shortcuts.TryExitCurrentNode(); 
                         
@@ -227,6 +228,9 @@ namespace NodeNotes_Visual {
 
                     if (!linkRenderer || seeDependencies)
                         "Link Renderer".edit(ref linkRenderer).nl(ref changed);
+
+                    if (!audioSource || seeDependencies)
+                        "Aduio Source".edit(ref audioSource).nl(ref changed);
                 }
 
                 if (inspectedItems == -1) {
@@ -329,7 +333,10 @@ namespace NodeNotes_Visual {
 
         private bool includedInLerp;
 
-        public void Portion(LerpData ld) {
+        public void Portion(LerpData ld)
+        {
+
+            lerpsFinished &= !_mouseDown;
 
             includedInLerp = (gameObject.activeSelf && !lerpsFinished && this != _dragging);
 
@@ -367,7 +374,8 @@ namespace NodeNotes_Visual {
             _textureFadeIn.targetValue = _coverImage ? 1 : 0;
             _textureFadeIn.Portion(ld);
 
-            _shadeCorners.targetValue = (this == _dragging) ? 0 : (source == Shortcuts.CurrentNode) ? 0.4f : 0.9f;
+            _shadeCorners.targetValue = (this == _dragging) ? 0 :
+               (_mouseDown ? 0.1f : ((source == Shortcuts.CurrentNode) ? 0.4f : 0.9f));
             _shadeCorners.Portion(ld);
 
             _shadeSelected.targetValue = (this == WhiteBackground.inst.selectedNode ? 1f : 0f);
@@ -399,12 +407,13 @@ namespace NodeNotes_Visual {
                 }
 
                 SetDirty();
-            }
+            } 
+                
 
             #endregion
 
             #region Lerp Visual
-            if (includedInLerp)
+                    if (includedInLerp)
             {
 
                 var ac = ActiveConfig;
@@ -519,6 +528,12 @@ namespace NodeNotes_Visual {
                 linkRenderer.LerpAlpha_DisableIfZero(0, 1);
 
             #endregion
+
+            if (_mouseDown && ((Time.time - _overDownTime) > 0.1f)) {
+                _mouseDown = false;
+                lerpsFinished = false;
+                audioSource.PlayOneShot(Shortcuts.Instance.onMouseLeaveSound);
+            }
 
         }
         
@@ -676,15 +691,45 @@ namespace NodeNotes_Visual {
                 }
             }
         }
-               
+
+        private bool _mouseDown = false;
+        private float _overDownTime;
+
         public void OnMouseOver()
         {
-            if (isFading) return;
+            if (isFading)
+                return;
+
+            bool click = false;
 
             if (Base_Node.editingNodes)
                 TryDragAndDrop();
-            else
-                source?.OnMouseOver();
+            else {
+
+                if (Input.GetMouseButtonDown(0)) {
+                   
+                    _mouseDown = true;
+                    audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
+                }
+                else if (Input.GetMouseButtonUp(0)) {
+                    if (_mouseDown) {
+                        audioSource.PlayOneShot(
+                            (source != null && source.OnMouseOver(true)) ?
+                            Shortcuts.Instance.onMouseClickSound : 
+                            Shortcuts.Instance.onMouseClickFailedSound
+                        );
+                        click = true;
+                    }
+
+                    _mouseDown = false;
+                }
+
+                if (Input.GetMouseButton(0))
+                    _overDownTime = Time.time;
+                
+                if (!click)
+                    source?.OnMouseOver(false);
+            }
         }
 
         #endregion

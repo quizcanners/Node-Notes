@@ -30,10 +30,12 @@ namespace NodeNotes {
             return false;
         }
 
-        public override void OnMouseOver()
+        public override bool OnMouseOver(bool click)
         {
-            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
-                ExecuteInteraction();
+            if (click && Conditions_isEnabled())
+                return ExecuteInteraction(); 
+            
+            return false;
         }
 
         #region Inspector

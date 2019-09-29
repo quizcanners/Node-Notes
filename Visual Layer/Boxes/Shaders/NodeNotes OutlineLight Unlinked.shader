@@ -143,9 +143,11 @@
 
 					float2 sUV = o.screenPos.xy / o.screenPos.w;
 
+					float clickPower = PowerFromClick(sUV);
+
 					alpha = saturate(alpha*1.5);
 
-					float4 grad = DarkBrightGradient(sUV, alpha);
+					float grad = DarkBrightGradient(sUV, alpha, clickPower);
 
 					#if FADE
 

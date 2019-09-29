@@ -104,9 +104,11 @@ namespace NodeNotes {
             return executed;
         }
 
-        public override void OnMouseOver() {
-            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
-                ExecuteInteraction();
+        public override bool OnMouseOver(bool click) {
+            if (click && Conditions_isEnabled())
+                return ExecuteInteraction(); 
+            
+            return false;
         }
 
         bool LinkToCurrent

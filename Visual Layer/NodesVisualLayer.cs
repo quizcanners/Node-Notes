@@ -202,7 +202,7 @@ namespace NodeNotes_Visual
                 "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
 
                 "Game Controllers".edit_List_UObj(ref gameNodeControllers).nl(ref changed);
-
+                
             }
 
             pegi.nl();

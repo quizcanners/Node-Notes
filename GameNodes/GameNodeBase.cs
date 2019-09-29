@@ -27,9 +27,14 @@ namespace NodeNotes {
 
         #region Enter & Exit
 
-        public override void OnMouseOver() {
-            if (Input.GetMouseButtonDown(0) && parentNode != null)
+        public override bool OnMouseOver(bool click) {
+            if (click && parentNode != null)
+            {
                 VisualLayer.FromNodeToGame(this);
+                return true;
+            }
+
+            return false;
         }
 
         protected virtual void OnEnter() { }

@@ -1,4 +1,5 @@
 ﻿using System;
+using NodeNotes;
 using NodeNotes_Visual;
 using PlaytimePainter;
 using QuizCannersUtilities;
@@ -17,7 +18,7 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
     public RoundedGraphic graphic;
 
     public RectTransform rectTransform;
-    
+
     public string Text { set { text.text = value; } }
 
     [NonSerialized] public int index;
@@ -25,7 +26,8 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
     public bool isHistory;
 
     public void Click() => DialogueUI.instance.Click(index);
-     
+    
+
     [NonSerialized] public bool isFirst = false;
 
     [NonSerialized] public bool isLast = false;

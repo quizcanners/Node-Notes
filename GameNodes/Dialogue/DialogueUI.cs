@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NodeNotes;
 using NodeNotes_Visual;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
@@ -13,7 +14,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     public static DialogueUI instance;
     
     private ShaderProperty.VectorValue textMeshProEdgeFading = new ShaderProperty.VectorValue("_FadeRange");
-    
+
     [SerializeField] protected Material upperText;
 
     [SerializeField] protected Material lowerText;
@@ -23,6 +24,9 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     [SerializeField] protected Graphic singlePhraseBg;
 
     [SerializeField] protected TextMeshProUGUI singlePhraseText;
+
+    [SerializeField] protected AudioSource audioSource;
+
 
     private float Separator => separatorPosition.CurrentValue;
 
@@ -90,11 +94,6 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         }
     }
 
-    public void ClickNext()
-    {
-        DialogueNode.SelectOption(0);
-    }
-
 
     [Serializable]
     public class SpeedPool : PoolSimple<DialogueUI_SpeechBox>{
@@ -142,7 +141,11 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
     LinkedLerp.FloatValue separatorPosition = new LinkedLerp.FloatValue("Separator", 0.5f, 2);
     LinkedLerp.FloatValue singlePhraseBoxHeight = new LinkedLerp.FloatValue("Single Box size", 0, 2);
-    
+
+    private bool scrollSoundPlayed = false;
+    private bool scrollSoundPlayedUp;
+
+
     public void Update() {
 
         ld.Reset();
@@ -188,6 +191,8 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
                     : ScrollingState.ScrollingOptions;
 
                 prevousMousePos = Input.mousePosition;
+
+                scrollSoundPlayed = false;
             }
         } else {
 
@@ -195,6 +200,15 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
                 state = ScrollingState.None;
             else {
                 float diff = Input.mousePosition.y - prevousMousePos.y;
+
+                bool up = diff > 0;
+
+                if ((!scrollSoundPlayed || (up != scrollSoundPlayedUp)) && Mathf.Abs(diff)>10)
+                {
+                    scrollSoundPlayedUp = up;
+                    scrollSoundPlayed = true;
+                    audioSource.PlayOneShot(Shortcuts.Instance.onSwipeSound);
+                }
 
                 (state == ScrollingState.ScrollingHistory ? historyScroll : optionsScroll).AddOffset(diff);
                 
@@ -337,10 +351,25 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         AddToHistory(options[index]);
 
         DialogueNode.SelectOption(index);
+
+        audioSource.PlayOneShot(Shortcuts.Instance.onMouseClickSound);
+
     }
 
-    public void Exit() => DialogueNode.enteredInstance?.Exit();
+    public void ClickNext()
+    {
+        DialogueNode.SelectOption(0);
+
+        audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
+    }
     
+    public void Exit()
+    {
+
+        audioSource.PlayOneShot(Shortcuts.Instance.onMouseClickSound);
+        DialogueNode.enteredInstance?.Exit();
+    }
+
     public RectTransform aboveTheLineParent;
 
     public RectTransform belowTheLineParent;

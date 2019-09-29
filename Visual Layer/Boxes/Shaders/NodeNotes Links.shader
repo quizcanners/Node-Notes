@@ -56,6 +56,8 @@
 					
 					float2 sUV = o.screenPos.xy / o.screenPos.w;
 
+					float clickPower = PowerFromClick(sUV);
+
 					float off = o.texcoord.y - 0.5;
 
 					float a = 1 - abs(off)*2;
@@ -64,14 +66,11 @@
 
 					float4 col = o.color;
 
-					
-
 					col.a *= a * (0.5 + o.texcoord.x);
 
-					float4 grad = DarkBrightGradient(sUV, col.a);
+					float grad = DarkBrightGradient(sUV, col.a, clickPower);
 
-					
-					col.rgb *= grad.rgb * (saturate(3-(col.r + col.g + col.b))); //asd0asdasd saturate(grad.rgb)*col.rgb;
+					col.rgb *= grad * (saturate(3-(col.r + col.g + col.b))); //asd0asdasd saturate(grad.rgb)*col.rgb;
 
 					//col.rgb *= grad.rgb;
 

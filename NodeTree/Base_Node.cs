@@ -64,7 +64,7 @@ namespace NodeNotes {
 
         public virtual void SetInspected() => parentNode?.SetInspectedUpTheHierarchy(this);
 
-        public virtual void OnMouseOver() { }
+        public virtual bool OnMouseOver(bool click) => false;
 
         #region Logic
 

@@ -88,17 +88,21 @@ namespace NodeNotes {
             return true;
         }
 
-        public override void OnMouseOver() {
+        public override bool OnMouseOver(bool click) {
 
-            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled()) {
+            if (click && Conditions_isEnabled()) {
                 if (this != Shortcuts.CurrentNode)
                     ExecuteInteraction();
                 else if (parentNode != null)
                     Shortcuts.CurrentNode = parentNode;
+
+                return true;
             }
 
             if (Input.GetMouseButtonDown(1))
                 SetInspectedUpTheHierarchy(null);
+
+            return false;
         }
 
         private readonly LoopLock _loopLock = new LoopLock();

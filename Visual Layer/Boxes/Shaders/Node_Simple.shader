@@ -33,6 +33,7 @@
 				CGPROGRAM
 
 				#include "UnityCG.cginc"
+					#include "NodeNotesShaders.cginc"
 
 				#pragma vertex vert
 				#pragma fragment frag
@@ -94,10 +95,14 @@
 
 					const float PI2 = 3.14159 * 2;
 
+				float2 screenUV = i.screenPos.xy / i.screenPos.w;
+
+				float clickPower = PowerFromClick(screenUV);
+
 					#if _CLAMP
 					float2 texUV = ((i.texcoord.xy - 0.5) * i.mainTexScale.xy) + 0.5;
 					#else
-					float2 screenUV = i.screenPos.xy / i.screenPos.w;
+				
 
 					float4 texelSize = _MainTex_Current_TexelSize * (1 - _Transition)
 						+ _Next_MainTex_TexelSize * _Transition;
@@ -124,12 +129,12 @@
 
 					//  Sparkle prepare
 
-					float angle = atan2(-uv.x, -uv.y) + 0.001;
+					/*float angle = atan2(-uv.x, -uv.y) + 0.001;
 					angle = saturate(max(angle,PI2 - max(0, -angle)- max(0, angle * 999999)) / PI2);
 
 					angle = abs(frac(_Time.x * 8) - angle);
 					float above = max(0, angle - 0.5);
-					angle = saturate((min(angle, 0.5 - above) - 0.25) * 4);
+					angle = saturate((min(angle, 0.5 - above) - 0.25) * 4);*/
 
 		
 					uv = abs(uv) * 2;
@@ -152,10 +157,19 @@
 					col.a +=saturate(trim + 1)*0.2;
 
 					// Sparkle 2
-					float width = max(0, rad + angle - 0.85)*max(0, 1 + angle - rad);
-					width = pow(width, 16);
 
-					return saturate(col + width * _Selected);
+					float width = max(0, rad - 0.1)*max(0, 1 - rad);
+
+					float4 grad = DarkBrightGradient(screenUV, width, clickPower);
+
+					float circle = GetCirculingSparkles(i.texcoord.xy, rad, clickPower);
+
+					//
+					//width = pow(width, 16);
+
+					circle *= (_Selected + clickPower) * width * grad * grad * 32;
+
+					return saturate(col + circle);// float4(circle* normalize(col.rgb) * 2, circle));
 
 				}
 				ENDCG

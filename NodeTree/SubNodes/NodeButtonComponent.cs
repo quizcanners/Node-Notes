@@ -9,9 +9,14 @@ namespace NodeNotes {
 
     public class NodeButtonComponent : Base_Node {
 
-        public override void OnMouseOver() {
-            if (Input.GetMouseButtonDown(0) && Conditions_isEnabled())
+        public override bool OnMouseOver(bool click) {
+            if (click && Conditions_isEnabled())
+            {
                 ExecuteInteraction();
+                return true;
+            }
+
+            return false;
         }
         
         public override CfgEncoder Encode() => this.EncodeUnrecognized()

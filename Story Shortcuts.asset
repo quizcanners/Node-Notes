@@ -21,3 +21,10 @@ MonoBehaviour:
   assetGroups: []
   _defaultMesh: {fileID: 4300000, guid: 395cce1cea808a54c8df538cf4ff0a21, type: 3}
   _defaultMaterial: {fileID: 2100000, guid: f90d3c8fe8280d043b64fa62d862113a, type: 2}
+  onMouseDownButtonSound: {fileID: 8300000, guid: 009459e794e036e40a25d4a4b8946d13,
+    type: 3}
+  onMouseClickSound: {fileID: 8300000, guid: 23429278d79f285429ac0ccaf7703531, type: 3}
+  onMouseClickFailedSound: {fileID: 8300000, guid: 9f7752530b772a74aae97aee116bfce9,
+    type: 3}
+  onMouseLeaveSound: {fileID: 8300000, guid: 08c655d28a86d9d44a91686e865b2279, type: 3}
+  onSwipeSound: {fileID: 8300000, guid: 1d4688f07df549a45a89b98b5cbdcdc4, type: 3}
