@@ -214,7 +214,7 @@ namespace NodeNotes_Visual
                 OnEnable();
             }
 
-            if (changed)
+            if (changed && SelectedVisualLayer)
                 SelectedVisualLayer.OnLogicUpdate();
 
             return changed;

@@ -51,14 +51,9 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
 
     public void Portion(LerpData ld) {
 
-        transparency.targetValue = isFadingOut ? 0 : 1;
-
-        upperEdge.targetValue = isFirst ? 0 : 1;
-        loverEdge.targetValue = isLast ? 0 : 1;
-
-        transparency.Portion(ld);
-        upperEdge.Portion(ld);
-        loverEdge.Portion(ld);
+        transparency.Portion(ld, isFadingOut ? 0 : 1);
+        upperEdge.Portion(ld, isFirst ? 0 : 1);
+        loverEdge.Portion(ld, isLast ? 0 : 1);
 
     }
 

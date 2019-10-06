@@ -14,6 +14,9 @@ using static QuizCannersUtilities.QcSharp;
 
 namespace NodeNotes_Visual {
 
+
+#pragma warning disable IDE0018 // Inline variable declaration
+
     [TaggedType(classTag)]
     public class TextBackgroundController : BackgroundBase, IPointerClickHandler, IPointerDownHandler
     {
@@ -70,11 +73,8 @@ namespace NodeNotes_Visual {
 
                     ld.Reset();
                     
-                    textColor.targetValue = activeTexts.textColor;
-                    textFade.targetValue = gotAnotherText ? 1 : 0.5f;
-
-                    textFade.Portion(ld);
-                    textColor.Portion(ld);
+                    textFade.Portion(ld, gotAnotherText ? 1 : 0.5f);
+                    textColor.Portion(ld, activeTexts.textColor);
                     
                     textColor.Lerp(ld);
                     textFade.Lerp(ld);

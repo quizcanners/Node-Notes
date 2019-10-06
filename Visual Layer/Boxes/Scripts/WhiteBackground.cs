@@ -16,7 +16,7 @@ namespace NodeNotes_Visual {
 
         public static WhiteBackground inst;
 
-        [SerializeField] private NodeNotesGradientController gradientController;
+        [SerializeField] protected NodeNotesGradientController gradientController;
 
         public const string classTag = "white";
 
@@ -56,7 +56,7 @@ namespace NodeNotes_Visual {
         {
             CreateNodeButton.showCreateButtons = val;
 
-            addButtonCourner.targetValue = CreateNodeButton.showCreateButtons ? 1 : 0;
+            addButtonCourner.TargetValue = CreateNodeButton.showCreateButtons ? 1 : 0;
 
             LogicMGMT.AddLogicVersion();
         }

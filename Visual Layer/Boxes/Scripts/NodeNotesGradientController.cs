@@ -28,14 +28,9 @@ namespace NodeNotes_Visual {
         }
 
         public void Portion(LerpData ld) {
-
-            bgColUp.targetValue = gradient.backgroundColorUp;
-            bgColCnter.targetValue = gradient.backgroundColorCenter;
-            bgColDown.targetValue = gradient.backgroundColorDown;
-
-            bgColUp.Portion(ld);
-            bgColCnter.Portion(ld);
-            bgColDown.Portion(ld);
+            bgColUp.Portion(ld, gradient.backgroundColorUp);
+            bgColCnter.Portion(ld, gradient.backgroundColorCenter);
+            bgColDown.Portion(ld, gradient.backgroundColorDown);
         }
 
         LerpData ld = new LerpData();

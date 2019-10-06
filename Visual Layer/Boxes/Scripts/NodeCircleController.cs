@@ -370,16 +370,13 @@ namespace NodeNotes_Visual {
 
             if (8f.SpeedToMinPortion(1 - _activeTextAlpha,  ld))
                 dominantParameter = "text Alpha";
-
-            _textureFadeIn.targetValue = _coverImage ? 1 : 0;
-            _textureFadeIn.Portion(ld);
-
-            _shadeCorners.targetValue = (this == _dragging) ? 0 :
-               (_mouseDown ? 0.1f : ((source == Shortcuts.CurrentNode) ? 0.4f : 0.9f));
-            _shadeCorners.Portion(ld);
-
-            _shadeSelected.targetValue = (this == WhiteBackground.inst.selectedNode ? 1f : 0f);
-            _shadeSelected.Portion(ld);
+            
+            _textureFadeIn.Portion(ld, _coverImage ? 1 : 0);
+            
+            _shadeCorners.Portion(ld, (this == _dragging) ? 0 :
+                (_mouseDown ? 0.1f : ((source == Shortcuts.CurrentNode) ? 0.4f : 0.9f)));
+            
+            _shadeSelected.Portion(ld, (this == WhiteBackground.inst.selectedNode ? 1f : 0f));
 
             _texTransition.Portion(ld);
 
@@ -638,7 +635,7 @@ namespace NodeNotes_Visual {
 
             if (textB && textA) {
 
-                var textFadePortion = (_hideLabel ? (1 - _textureFadeIn.Value) : 1f) * fadePortion;
+                var textFadePortion = (_hideLabel ? (1 - _textureFadeIn.CurrentValue) : 1f) * fadePortion;
 
                 var col = _textColor.CurrentValue;
 

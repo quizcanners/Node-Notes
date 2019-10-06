@@ -43,7 +43,7 @@ namespace NodeNotes_Visual
             if (showCreateButtons && !gameObject.activeSelf)
                    gameObject.SetActive(true);
             
-            position.targetValue = Destination;
+            position.TargetValue = Destination;
 
             position.Portion(ld);
         }

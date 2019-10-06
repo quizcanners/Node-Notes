@@ -155,14 +155,10 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         foreach (var op in optionsPool)
             activeCount += op.isFadingOut ? 0 : 1;
         
-        separatorPosition.targetValue = Mathf.Min(0.6f, 0.3f+ activeCount * 0.2f);
-
-        singlePhraseBoxHeight.targetValue = activeCount > 0 ? 0 : 1;
-
-        singlePhraseBoxHeight.Portion(ld);
+        singlePhraseBoxHeight.Portion(ld, activeCount > 0 ? 0 : 1);
         historyPool.active.Portion(ld);
         optionsPool.active.Portion(ld);
-        separatorPosition.Portion(ld);
+        separatorPosition.Portion(ld, Mathf.Min(0.6f, 0.3f + activeCount * 0.2f));
 
         historyPool.active.Lerp(ld);
         optionsPool.active.Lerp(ld);
@@ -176,7 +172,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         singlePhraseText.TrySetAlpha_DisableIfZero((curBoxFadeIn - 0.9f)*10);
         tf.sizeDelta = size;
 
-        if (separatorPosition.targetValue != separatorPosition.CurrentValue || poolsDirty) {
+        if (separatorPosition.TargetValue != separatorPosition.CurrentValue || poolsDirty) {
             poolsDirty = false;
             separatorPosition.Lerp(ld);
             UpdateCourners();
@@ -400,7 +396,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
         var sp = Separator;
         if ("Separator ".edit(ref sp, 0, 1).nl(ref changed)) {
-            separatorPosition.targetValue = sp;
+            separatorPosition.TargetValue = sp;
             separatorPosition.CurrentValue = sp;
         }
 
