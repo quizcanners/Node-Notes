@@ -238,7 +238,7 @@ MonoBehaviour:
     type: 3}
   darkParticlesTexture: {fileID: 2800000, guid: 75624246a205abf4f971120d34ab219e,
     type: 3}
-  spiralMask: {fileID: 0}
+  spiralMask: {fileID: 2800000, guid: 6125f2b5b89e4c84e82d1abbc8513391, type: 3}
 --- !u!1 &77096818
 GameObject:
   m_ObjectHideFlags: 0

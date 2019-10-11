@@ -214,7 +214,7 @@ namespace NodeNotes {
             if (pegi.Try_SearchMatch_Obj(visualRepresentation, searchString))
                 return true;
 
-            if (results.SearchMatch(searchString))
+            if (results.SearchMatch_ObjectList(searchString))
                 return true;
 
             return false;

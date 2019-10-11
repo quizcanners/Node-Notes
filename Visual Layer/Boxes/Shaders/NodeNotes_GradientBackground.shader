@@ -61,7 +61,7 @@
 					float grad = DarkBrightGradient(screenUV, 1, clickPower);
 
 					float2 off = screenUV - 0.5;
-					off.x *= _ScreenParams.x / _ScreenParams.y;
+					off.x *= _NodeNotes_MousePosition.w; // Same as _ScreenParams.x / _ScreenParams.y;
 					off *= off;
 
 					i.viewDir.xyz = normalize(i.viewDir.xyz);

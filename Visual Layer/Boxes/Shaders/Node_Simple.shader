@@ -95,9 +95,14 @@
 
 					const float PI2 = 3.14159 * 2;
 
-				float2 screenUV = i.screenPos.xy / i.screenPos.w;
+					float2 screenUV = i.screenPos.xy / i.screenPos.w;
 
-				float clickPower = PowerFromClick(screenUV);
+					float clickPower = PowerFromClick(screenUV);
+
+					float circle = GetCirculingSparkles(i.texcoord.xy, 0, clickPower);
+
+
+					_Courners = max(0, _Courners - clickPower - _Selected*(1 - circle));
 
 					#if _CLAMP
 					float2 texUV = ((i.texcoord.xy - 0.5) * i.mainTexScale.xy) + 0.5;
@@ -162,14 +167,15 @@
 
 					float4 grad = DarkBrightGradient(screenUV, width, clickPower);
 
-					float circle = GetCirculingSparkles(i.texcoord.xy, rad, clickPower);
+			
+					//return circle;
 
 					//
 					//width = pow(width, 16);
 
-					circle *= (_Selected + clickPower) * width * grad * grad * 32;
+					circle = (circle*_Selected*4 + clickPower) * width * grad;
 
-					return saturate(col + circle);// float4(circle* normalize(col.rgb) * 2, circle));
+					return saturate(col + circle*normalize(col)*16);// float4(circle* normalize(col.rgb) * 2, circle));
 
 				}
 				ENDCG

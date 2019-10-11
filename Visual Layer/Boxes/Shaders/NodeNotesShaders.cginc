@@ -13,7 +13,7 @@ sampler2D _Global_Water_Particles_Mask_L;
 sampler2D _Global_Water_Particles_Mask_D;
 sampler2D _NodeNotes_SpiralMask;
 
-float4 _NodeNotes_MousePosition;
+float4 _NodeNotes_MousePosition; // w is Screen.Width/Screen.Height
 
 
 inline float PowerFromClick(float2 screenUV) {
@@ -53,7 +53,7 @@ inline float DarkBrightGradient(float2 screenUV, float alpha, float pressPower) 
 
 	float t = _NodeNotes_Time;
 
-	screenUV.x *= 1.5;
+	screenUV.x *= _NodeNotes_MousePosition.w; // 1.5;
 
 	float val = t * 15 + screenUV.x * 3 + screenUV.y * 8;
 
