@@ -13,8 +13,7 @@ using UnityEngine;
 namespace NodeNotes_Visual.ECS {
 
     #region Unity Native Components
-
-
+    
     [TaggedType(classTag, "Local To World")]
     public class LocalToWorldCfg : ComponentCfgGeneric<LocalToWorld>, IPEGI_ListInspect
     {

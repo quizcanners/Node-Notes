@@ -78,7 +78,7 @@ namespace NodeNotes_Visual.ECS {
 
         public virtual void SetData(Entity e, T cmp) => e.Set(cmp);
 
-        public override void SetData(Entity e) { }
+        public override void SetData(Entity e) => SetData(e, new T());
 
         public override bool HasComponent(Entity e) => Manager.HasComponent<T>(e);
 

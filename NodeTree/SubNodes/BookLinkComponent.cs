@@ -9,6 +9,7 @@ using PlayerAndEditorGUI;
 namespace NodeNotes {
 
 
+    #pragma warning disable IDE0018 // Inline variable declaration
     #pragma warning disable IDE0019 // Simplify 'default' expression
 
     public class BookLinkComponent : Base_Node, IPEGI_ListInspect {
@@ -21,15 +22,15 @@ namespace NodeNotes {
         string linkedBookName;
         string bookEntryPoint;
 
-        NodeBook LoadLinkedBook => Shortcuts.TryGetLoadedBook(linkedBookName, linkedBookAuthor);
+        bool LoadLinkedBook(out NodeBook book) => Shortcuts.TryGetLoadedBook(linkedBookName, linkedBookAuthor, out book);
 
         NodeBook_Base LinkedBook => Shortcuts.TryGetBook(linkedBookName, linkedBookAuthor);
         
         Node LinkedNode  {
             get
             {
-                var book = LoadLinkedBook;
-                if (book != null)   {
+                NodeBook book;
+                if (LoadLinkedBook(out book))   {
                     var ep = book.entryPoints.GetByIGotName(bookEntryPoint);
 
                     if (ep != null)  
@@ -57,8 +58,8 @@ namespace NodeNotes {
             {
                 case BookLinkType.BookLink:
 
-                    var book = LoadLinkedBook;
-                    if (book != null) {
+                    NodeBook book;
+                    if (LoadLinkedBook(out book)) {
 
                         var ep = book.entryPoints.GetByIGotName(bookEntryPoint);
 
@@ -147,9 +148,9 @@ namespace NodeNotes {
                     if (linkedBook!= null && linkedBook.Equals(parentBook))
                         "Linking to the same book. Use Node Link.".writeWarning();
 
-                    var book = LoadLinkedBook;
+                    NodeBook book;
 
-                    if (book != null) {
+                    if (LoadLinkedBook(out book)) {
 
                         pegi.select_iGotName(ref bookEntryPoint, book.entryPoints);
 

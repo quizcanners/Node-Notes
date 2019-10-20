@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 39652738}
   - component: {fileID: 39652741}
   - component: {fileID: 39652742}
+  - component: {fileID: 39652743}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -239,6 +240,20 @@ MonoBehaviour:
   darkParticlesTexture: {fileID: 2800000, guid: 75624246a205abf4f971120d34ab219e,
     type: 3}
   spiralMask: {fileID: 2800000, guid: 6125f2b5b89e4c84e82d1abbc8513391, type: 3}
+--- !u!114 &39652743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39652737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ace4423331c69c4b81d15e8019bf212, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 39652739}
+  sensitivity: 5
 --- !u!1 &77096818
 GameObject:
   m_ObjectHideFlags: 0
@@ -3267,7 +3282,7 @@ MonoBehaviour:
         dirty: 1
         inspectedTag: 2
     fileFolderHolder: STDEncodes
-  inspectedItems: 1
+  inspectedItems: 4
   nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: 3

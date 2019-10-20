@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using QcTriggerLogic;
 using PlayerAndEditorGUI;
+using PlaytimePainter;
 
 namespace NodeNotes {
 
@@ -17,12 +18,12 @@ namespace NodeNotes {
 
         public static Shortcuts Instance => NodesVisualLayerAbstract.InstAsNodesVisualLayer.shortcuts;
 
-        [SerializeField] private List<UnityAssetGroups> assetGroups;
+        [SerializeField] protected List<UnityAssetGroups> assetGroups;
 
-        [SerializeField] protected Mesh _defaultMesh = null;
+        [SerializeField] protected Mesh _defaultMesh;
         public Mesh GetMesh(string name) => _defaultMesh;
 
-        [SerializeField] protected Material _defaultMaterial = null;
+        [SerializeField] protected Material _defaultMaterial;
         public Material GetMaterial(string name) => _defaultMaterial;
 
         [SerializeField] public AudioClip onMouseDownButtonSound;
@@ -30,6 +31,9 @@ namespace NodeNotes {
         [SerializeField] public AudioClip onMouseClickFailedSound;
         [SerializeField] public AudioClip onMouseLeaveSound;
         [SerializeField] public AudioClip onSwipeSound;
+
+        [SerializeField] public ProjectorCameraConfiguration defaultCamera;
+        [SerializeField] public ProjectorCameraConfiguration FpsCamera;
 
         #endregion
 
@@ -171,16 +175,24 @@ namespace NodeNotes {
             return null;
         }
 
-        public static NodeBook TryGetLoadedBook(IBookReference reff) => TryGetLoadedBook(reff.BookName , reff.AuthorName);
+        public static bool TryGetLoadedBook(IBookReference reff, out NodeBook nodeBook) => TryGetLoadedBook(reff.BookName , reff.AuthorName,  out nodeBook);
 
-        public static NodeBook TryGetLoadedBook(string bookName, string authorName) {
+        public static bool TryGetLoadedBook(string bookName, string authorName, out NodeBook nodeBook) { 
+           
 
             var book = TryGetBook(bookName, authorName);
-            
-            if (book != null && book.GetType() == typeof(NodeBook_OffLoaded))
+
+            if (book == null) {
+                nodeBook = null;
+                return false;
+            }
+
+            if (book.GetType() == typeof(NodeBook_OffLoaded))
                 book = books.LoadBook(book as NodeBook_OffLoaded);
 
-            return book as NodeBook;
+            nodeBook = book as NodeBook;
+
+            return nodeBook != null;
         }
 
         static readonly string _generalItemsFolder = "General";

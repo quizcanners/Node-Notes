@@ -6,11 +6,10 @@ using QcTriggerLogic;
 using System;
 using PlayerAndEditorGUI;
 
-namespace NodeNotes
-{
-
-
+namespace NodeNotes {
+    
 #pragma warning disable IDE0019 // Use pattern matching
+#pragma warning disable IDE0018 // Inline variable declaration
 
     public class CurrentUser: AbstractKeepUnrecognizedCfg, IGotName, IPEGI, IGotDisplayName {
 
@@ -81,9 +80,9 @@ namespace NodeNotes
 
             var lastB = bookMarks.Last();
 
-            var b = Shortcuts.TryGetLoadedBook(lastB);
+            NodeBook b; 
 
-            if (b == null) {
+            if (!Shortcuts.TryGetLoadedBook(lastB, out b)) {
                 Debug.LogError("No {0} book found".F(lastB));
                 return;
             }
@@ -131,15 +130,18 @@ namespace NodeNotes
 
                 BookMark bm = bookMarks[ind];
 
-                var book = Shortcuts.TryGetLoadedBook(bm);
+                NodeBook book;
 
-                if (book == null)
+                if (!Shortcuts.TryGetLoadedBook(bm, out book))
                     Debug.LogError("No book {0} found".F(bm));
                 else {
                     if (TrySetCurrentNode(book, bm.nodeIndex)) {
                         bm.gameNodesData.Decode_Dictionary(out gameNodesData_PerUser);
                         bm.values.DecodeInto(out Values.global);
-                        bookMarks = bookMarks.GetRange(0, ind);
+                        if (bookMarks.Count<=ind)
+                            Debug.LogError("Bookmark was set in Try Set current node");
+                        else 
+                            bookMarks = bookMarks.GetRange(0, ind);
                     }
                     else
                         Debug.LogError("Need to implement default (HUB) node");
@@ -235,10 +237,10 @@ namespace NodeNotes
   
             base.Decode(data);
 
-            var b = Shortcuts.TryGetLoadedBook(tmpBookName, tmpAuthorName);
+            NodeBook book;
 
-            if (b != null)
-                Shortcuts.CurrentNode = b.allBaseNodes[tmpNode] as Node;
+            if (Shortcuts.TryGetLoadedBook(tmpBookName, tmpAuthorName, out book))
+                Shortcuts.CurrentNode = book.allBaseNodes[tmpNode] as Node;
             else
                 ReturnToBookMark();
         }

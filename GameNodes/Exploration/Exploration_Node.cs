@@ -44,9 +44,14 @@ namespace NodeNotes_Visual {
             foreach (var i in entityConfigurations)
                 i.OnEnter();
 
+            NodeNotes_Camera.inst.FPS = true;
+
         }
 
         protected override void OnExit() {
+
+            NodeNotes_Camera.inst.FPS = false;
+
             foreach (var i in entityConfigurations)
                 i.OnExit();
         }
