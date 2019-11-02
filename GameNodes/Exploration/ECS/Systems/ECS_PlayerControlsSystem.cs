@@ -13,7 +13,7 @@ using Unity.Rendering;
 
 namespace NodeNotes_Visual.ECS
 {
-
+/*
     public class ECS_PlayerControlsSystem : JobComponentSystem
     {
 
@@ -30,15 +30,11 @@ namespace NodeNotes_Visual.ECS
 
 
         protected override JobHandle OnUpdate(JobHandle inputDeps) {
-
-           // if (NodeNotes_Camera.inst) {
-
-                MovementJob moveJob = new MovementJob {position = NodeNotes_Camera.inst.transform.position};
+            
+                MovementJob moveJob = new MovementJob {position = NodeNotes_Camera.inst ? NodeNotes_Camera.inst.transform.position : Vector3.zero};
 
                 return moveJob.Schedule(this, inputDeps);
-           // }
 
-            //return inputDeps;
         }
-    }
+    }*/
 }

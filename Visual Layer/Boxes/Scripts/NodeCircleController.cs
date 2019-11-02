@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using NodeNotes;
 using QcTriggerLogic;
-using UnityEditor.IMGUI.Controls;
+//using UnityEditor.IMGUI.Controls;
 
 namespace NodeNotes_Visual {
 
