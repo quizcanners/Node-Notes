@@ -474,8 +474,6 @@ namespace NodeNotes_Visual {
         {
             inst = this;
 
-            NodeNotesGradientController.instance = gradientController;
-
             if (editButton)
                 editButton.Text = "Edit";
 

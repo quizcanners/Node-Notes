@@ -16,6 +16,7 @@ namespace NodeNotes_Visual
 {
 
 
+
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteInEditMode]
@@ -23,14 +24,16 @@ namespace NodeNotes_Visual
 
         public static NodesVisualLayer Instance => inst as NodesVisualLayer;
 
-        [SerializeField] private Camera _mainCam;
+        [SerializeField] protected Camera mainCam;
+
+        [SerializeField] protected List<NodeNodesNeedEnableAbstract> forManagedOnEnable;
 
         public static Camera MainCam {
             get
             {
-                if (!Instance._mainCam)
-                    Instance._mainCam = Camera.main;
-                return Instance._mainCam;
+                if (!Instance.mainCam)
+                    Instance.mainCam = Camera.main;
+                return Instance.mainCam;
             }
         }
 
@@ -252,11 +255,14 @@ namespace NodeNotes_Visual
 
         }
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
 
             foreach (var gc in gameNodeControllers)
                 if (gc) gc.Initialize();
+
+            foreach (var script in forManagedOnEnable)
+                script.ManagedOnEnable();
+            
 
             Shortcuts.visualLayer = this;
 
@@ -352,6 +358,11 @@ namespace NodeNotes_Visual
         }
 
         public int Count => active.Count;
+    }
+
+    public abstract class NodeNodesNeedEnableAbstract : MonoBehaviour
+    {
+        public abstract void ManagedOnEnable();
     }
 
 }

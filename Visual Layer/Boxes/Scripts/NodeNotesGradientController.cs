@@ -7,7 +7,7 @@ using UnityEngine;
 namespace NodeNotes_Visual {
 
     [ExecuteAlways]
-    public class NodeNotesGradientController : MonoBehaviour, ILinkedLerping {
+    public class NodeNotesGradientController : NodeNodesNeedEnableAbstract, ILinkedLerping {
 
         public static NodeNotesGradientController instance;
 
@@ -44,10 +44,9 @@ namespace NodeNotes_Visual {
 
         }
 
-        public void OnEnable()
+        public override void ManagedOnEnable()
         {
             instance = this;
         }
-
     }
 }

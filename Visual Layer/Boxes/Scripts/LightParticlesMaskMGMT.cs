@@ -19,6 +19,12 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
     private bool downClickFullyShown = true;
     private Vector2 _mouseDownPosition;
 
+    void UpdatemousePosition()
+    {
+        _mousePosition.GlobalValue = _mouseDownPosition.ToVector4(_mouseDownStrength, ((float)Screen.width) / Screen.height);
+
+    }
+
     void Update() {
 
         _taravanaTime += Time.deltaTime * 0.1f;
@@ -48,9 +54,8 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
 
             if (down)
                 _mouseDownPosition = Input.mousePosition.XY() / new Vector2(Screen.width, Screen.height);
-            
-            _mousePosition.GlobalValue = _mouseDownPosition.ToVector4(_mouseDownStrength, ((float)Screen.width) / Screen.height);
 
+            UpdatemousePosition();
         }
     }
 
@@ -58,6 +63,7 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
         _waterParticlesTextureGlobalLight.GlobalValue = lightParticlesTexture;
         _waterParticlesTextureGlobalDark.GlobalValue = darkParticlesTexture;
         _spiralMask.GlobalValue = spiralMask;
+        UpdatemousePosition();
     }
 
     #region Custom Time for Shaders
