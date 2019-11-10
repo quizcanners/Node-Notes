@@ -10,10 +10,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Debug = UnityEngine.Debug;
-using static QuizCannersUtilities.QcSharp;
 
 namespace NodeNotes_Visual {
 
+  
 
 #pragma warning disable IDE0018 // Inline variable declaration
 
@@ -522,7 +522,7 @@ namespace NodeNotes_Visual {
                 
                 linkId = GetLinkIndex();
 
-                return HtmlTagWrap("b", HtmlTagWrap("link", HtmlTagWrap(text, inspected.linksColor)));
+                return QcSharp.HtmlTagWrap("b", QcSharp.HtmlTagWrap("link", QcSharp.HtmlTagWrap(text, inspected.linksColor)));
 
             }
 
@@ -586,7 +586,7 @@ namespace NodeNotes_Visual {
             {
                 linkNo = GetLinkIndex();
 
-                return HtmlTagWrap("b",HtmlTagWrap("link", HtmlTagWrap(text, inspected.linksColor)));
+                return QcSharp.HtmlTagWrap("b", QcSharp.HtmlTagWrap("link", QcSharp.HtmlTagWrap(text, inspected.linksColor)));
 
             }
 

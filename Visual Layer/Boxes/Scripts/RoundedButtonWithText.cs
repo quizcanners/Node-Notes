@@ -24,7 +24,7 @@ public class RoundedButtonWithText : MonoBehaviour
             float a = highlight.color.a;
 
             if (LerpUtils.IsLerpingBySpeed(ref a, graphic.ClickPossible ? 1 : 0, 8))
-                highlight.TrySetAlpha_DisableIfZero(a);
+                highlight.TrySetAlpha_DisableGameObjectIfZero(a);
             
         }
  

@@ -168,8 +168,8 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         var size = tf.sizeDelta;
         float curBoxFadeIn = singlePhraseBoxHeight.CurrentValue;
         size.y = curBoxFadeIn * 400;
-        singlePhraseBg.TrySetAlpha_DisableIfZero(curBoxFadeIn * 20);
-        singlePhraseText.TrySetAlpha_DisableIfZero((curBoxFadeIn - 0.9f)*10);
+        singlePhraseBg.TrySetAlpha_DisableGameObjectIfZero(curBoxFadeIn * 20);
+        singlePhraseText.TrySetAlpha_DisableGameObjectIfZero((curBoxFadeIn - 0.9f)*10);
         tf.sizeDelta = size;
 
         if (separatorPosition.TargetValue != separatorPosition.CurrentValue || poolsDirty) {

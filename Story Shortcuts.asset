@@ -16,7 +16,7 @@ MonoBehaviour:
   explorer:
     states: []
     fileFolderHolder: STDEncodes
-  inspectedItems: -1
+  inspectedItems: 4
   inspectedReference: -1
   assetGroups: []
   _defaultMesh: {fileID: 4300000, guid: 395cce1cea808a54c8df538cf4ff0a21, type: 3}

@@ -34,10 +34,12 @@ namespace QcTriggerLogic {
         private int _browsedBranch = -1;
         private int _browsedCondition = -1;
 
-        public string NeedAttention() {
+        public string NeedAttention()
+        {
 
-            if (_branches.NeedsAttention() || _conditions.NeedsAttention())
-                return pegi.LastNeedAttentionMessage;
+            string msg;
+            if (_branches.NeedsAttention(out msg) || _conditions.NeedsAttention(out msg))
+                return msg;
 
             return null;
         }

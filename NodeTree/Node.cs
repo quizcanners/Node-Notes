@@ -173,9 +173,11 @@ namespace NodeNotes {
         {
             if (!_loopLock.Unlocked) return "Infinite Loop Detected";
 
-            using (_loopLock.Lock()) {
-                if (coreNodes.NeedsAttention("Sub Nodes") || gameNodes.NeedsAttention("Game Nodes"))
-                    return pegi.LastNeedAttentionMessage;
+            using (_loopLock.Lock())
+            {
+                string msg;
+                if (coreNodes.NeedsAttention(out msg, "Sub Nodes") || gameNodes.NeedsAttention(out msg, "Game Nodes"))
+                    return msg;
             }
 
             return parentBook == null ? "No root detected" : null;
