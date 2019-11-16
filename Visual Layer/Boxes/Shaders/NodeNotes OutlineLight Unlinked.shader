@@ -147,7 +147,7 @@
 
 					alpha = saturate(alpha*1.5);
 
-					float grad = DarkBrightGradient(sUV, alpha, clickPower);
+					float grad = DarkBrightGradient(sUV, clickPower);
 
 					#if FADE
 

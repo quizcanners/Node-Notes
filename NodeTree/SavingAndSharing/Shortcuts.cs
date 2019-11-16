@@ -30,6 +30,7 @@ namespace NodeNotes {
         [SerializeField] public AudioClip onMouseClickSound;
         [SerializeField] public AudioClip onMouseClickFailedSound;
         [SerializeField] public AudioClip onMouseLeaveSound;
+        [SerializeField] public AudioClip onMouseHoldSound;
         [SerializeField] public AudioClip onSwipeSound;
 
         [SerializeField] public ProjectorCameraConfiguration defaultCamera;

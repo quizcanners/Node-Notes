@@ -16,7 +16,9 @@
 			"Queue" = "Geometry"
 		}
 
-				//Blend SrcAlpha OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite Off
+
 
 		SubShader{
 			Pass{
@@ -198,10 +200,11 @@
 
 					float deSmoothness = 1 - gloss;
 
-					shadow = saturate((shadow * 2 - ambientBlock));
+					//shadow = saturate((shadow * 2 - ambientBlock));
 
 					float diff = saturate(dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					diff = saturate(diff - ambientBlock * 4 * (1 - diff));
+					//diff = saturate(diff - ambientBlock * 4 * (1 - diff));
+
 
 					float3 ambientCol = ShadeSH9(float4(worldNormal, 1));
 
@@ -209,17 +212,19 @@
 
 					float deUp = (1 - nn.z);
 
-					light.rgb *= (_LightColor0.rgb * (1 + light.a - diff)
-						+ ambientCol.rgb) * deUp;
+					light.rgb *= (_LightColor0.rgb //* (1 - diff)
+						+ ambientCol.rgb) * deUp * light.a;
 
 				
 
 
 					col.rgb = (
-						col.rgb * (light.rgb * deSmoothness + _LightColor0 * diff + ambientCol)
+						col.rgb * (light.rgb * deSmoothness 							+ 
+							_LightColor0 * diff + ambientCol
+							)
 						+ light * smoothness * shadow *  deUp
 					
-						) * deBord 
+						) * (1-bord*light.a) 
 						;
 
 					float3 halfDirection = normalize(viewDir.xyz + _WorldSpaceLightPos0.xyz);

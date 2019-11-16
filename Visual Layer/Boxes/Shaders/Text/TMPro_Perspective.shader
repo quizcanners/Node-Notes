@@ -35,15 +35,15 @@
 
 			//_Fade("Fade", float) = 1
 
-			_ClipRect("Clip Rect", vector) = (-32767, -32767, 32767, 32767)
+		//	_ClipRect("Clip Rect", vector) = (-32767, -32767, 32767, 32767)
 			_MaskSoftnessX("Mask SoftnessX", float) = 0
 			_MaskSoftnessY("Mask SoftnessY", float) = 0
 
-			_StencilComp("Stencil Comparison", Float) = 8
+		/*	_StencilComp("Stencil Comparison", Float) = 8
 			_Stencil("Stencil ID", Float) = 0
 			_StencilOp("Stencil Operation", Float) = 0
 			_StencilWriteMask("Stencil Write Mask", Float) = 255
-			_StencilReadMask("Stencil Read Mask", Float) = 255
+			_StencilReadMask("Stencil Read Mask", Float) = 255*/
 
 			_ColorMask("Color Mask", Float) = 15
 	}
@@ -340,8 +340,8 @@
 
 				c.a *= c.a*2;
 
-				float3 mix = min(c.gbr + c.brg, 128);
-				c.rgb += mix * mix * dust*0.25;
+			//	float3 mix = min(c.gbr + c.brg, 128);
+				//c.rgb += mix * mix * dust*0.25;
 
 
 				#if USE_NOISE_TEXTURE

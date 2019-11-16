@@ -165,7 +165,7 @@
 
 					float width = max(0, rad - 0.1)*max(0, 1 - rad);
 
-					float4 grad = DarkBrightGradient(screenUV, width, clickPower);
+					float4 grad = DarkBrightGradient(screenUV,  clickPower);
 
 			
 					//return circle;

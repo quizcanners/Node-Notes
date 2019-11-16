@@ -678,7 +678,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &137829812
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2478,13 +2478,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1337065240}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: -0.35829514, y: -0.6162708, z: 0.37102512, w: -0.59512633}
   m_LocalPosition: {x: 16.53396, y: 5.5585175, z: 8.320669}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 62.1, y: 1172, z: 0}
 --- !u!1 &1417408134
 GameObject:
   m_ObjectHideFlags: 0
@@ -3719,7 +3719,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1910673084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3751,9 +3751,9 @@ MonoBehaviour:
   tilingY: 8
   forcedMeshCollider: 0
   autoSelectMaterialByNumberOfPointedSubMesh: 1
-  isBeingDisabled: 0
+  isBeingDisabled: 1
   textureWasChanged: 0
-  _pluginStd: 
+  _pluginStd: mdls|114|pgns|104|TilAtlsPntr|21|sm|0||iai|1|0|ar|1|1||VolTexM|0||UiMdl|0||TerCol|0||TerHeight|0||TerLight|0||TerSplat|0||||
 --- !u!64 &1910673085
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -3823,13 +3823,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1910673083}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.42261827, y: 0, z: 0, w: 0.9063079}
+  m_LocalPosition: {x: 0, y: 50, z: 6}
   m_LocalScale: {x: 70, y: 70, z: 70}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -50, y: 0, z: 0}
 --- !u!1 &1945063215
 GameObject:
   m_ObjectHideFlags: 0
@@ -4469,16 +4469,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 695423274}
     m_Modifications:
-    - target: {fileID: 2989937148123703641, guid: 293c42546d1536348b32a9d61a9b610d,
-        type: 3}
-      propertyPath: m_Name
-      value: Option
-      objectReference: {fileID: 0}
-    - target: {fileID: 2989937148123703641, guid: 293c42546d1536348b32a9d61a9b610d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2989937148123703640, guid: 293c42546d1536348b32a9d61a9b610d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4584,6 +4574,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2989937148123703641, guid: 293c42546d1536348b32a9d61a9b610d,
+        type: 3}
+      propertyPath: m_Name
+      value: Option
+      objectReference: {fileID: 0}
+    - target: {fileID: 2989937148123703641, guid: 293c42546d1536348b32a9d61a9b610d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 293c42546d1536348b32a9d61a9b610d, type: 3}
 --- !u!1001 &6899690759264319749
@@ -4593,16 +4593,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 695423274}
     m_Modifications:
-    - target: {fileID: 6899690758522091687, guid: 0cb6c6f8a893b814e8b66fed54a6929b,
-        type: 3}
-      propertyPath: m_Name
-      value: History
-      objectReference: {fileID: 0}
-    - target: {fileID: 6899690758522091687, guid: 0cb6c6f8a893b814e8b66fed54a6929b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6899690758522091686, guid: 0cb6c6f8a893b814e8b66fed54a6929b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4707,6 +4697,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6899690758522091687, guid: 0cb6c6f8a893b814e8b66fed54a6929b,
+        type: 3}
+      propertyPath: m_Name
+      value: History
+      objectReference: {fileID: 0}
+    - target: {fileID: 6899690758522091687, guid: 0cb6c6f8a893b814e8b66fed54a6929b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6899690757643553578, guid: 0cb6c6f8a893b814e8b66fed54a6929b,
         type: 3}

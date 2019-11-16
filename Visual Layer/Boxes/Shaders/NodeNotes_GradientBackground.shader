@@ -58,7 +58,7 @@
 
 					float clickPower = PowerFromClick(screenUV);
 
-					float grad = DarkBrightGradient(screenUV, 1, clickPower);
+					float grad = DarkBrightGradient(screenUV, clickPower);
 
 					float2 off = screenUV - 0.5;
 					off.x *= _NodeNotes_MousePosition.w; // Same as _ScreenParams.x / _ScreenParams.y;

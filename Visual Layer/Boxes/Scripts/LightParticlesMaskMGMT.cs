@@ -13,16 +13,18 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
     private readonly ShaderProperty.TextureValue _waterParticlesTextureGlobalLight = new ShaderProperty.TextureValue("_Global_Water_Particles_Mask_L");
     private readonly ShaderProperty.TextureValue _waterParticlesTextureGlobalDark = new ShaderProperty.TextureValue("_Global_Water_Particles_Mask_D");
     private readonly ShaderProperty.VectorValue _mousePosition = new ShaderProperty.VectorValue("_NodeNotes_MousePosition");
+    private readonly ShaderProperty.VectorValue _mousePressDerrived = new ShaderProperty.VectorValue("_NodeNotes_MouseDerrived");
     private readonly ShaderProperty.TextureValue _spiralMask = new ShaderProperty.TextureValue("_NodeNotes_SpiralMask");
 
     private float _mouseDownStrength = 0;
+    private float _mouseDownStrengthOneDirectional = 0;
     private bool downClickFullyShown = true;
     private Vector2 _mouseDownPosition;
 
     void UpdatemousePosition()
     {
         _mousePosition.GlobalValue = _mouseDownPosition.ToVector4(_mouseDownStrength, ((float)Screen.width) / Screen.height);
-
+        _mousePressDerrived.GlobalValue = new Vector4(_mouseDownStrengthOneDirectional, 0 ,0 ,0 );
     }
 
     void Update() {
@@ -42,8 +44,13 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
 
             if (downThisFrame) {
                 _mouseDownStrength = 0;
+                _mouseDownStrengthOneDirectional = 0;
                 downClickFullyShown = false;
             }
+
+            _mouseDownStrengthOneDirectional = LerpUtils.LerpBySpeed(_mouseDownStrengthOneDirectional,
+                down ? 0 : 1
+                , down ? 4f : (3f - _mouseDownStrengthOneDirectional * 3f));
 
             _mouseDownStrength = LerpUtils.LerpBySpeed(_mouseDownStrength, downClickFullyShown ?
                 0 : (down ? 0.9f : 1f)

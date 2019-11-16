@@ -15,7 +15,7 @@
 			Cull Off
 			ZWrite Off
 			ZTest Off
-			Blend SrcAlpha One // OneMinusSrcAlpha //One OneMinusSrcAlpha//
+			Blend One One // OneMinusSrcAlpha //One OneMinusSrcAlpha//
 
 		SubShader{
 			Pass{
@@ -66,15 +66,17 @@
 
 					float4 col = o.color;
 
-					col.a *= a * (0.5 + o.texcoord.x);
+					col.a *= a * (0.1 + o.texcoord.x);
 
-					float grad = DarkBrightGradient(sUV, col.a, clickPower);
+					float grad = DarkBrightGradient(sUV, clickPower);
 
-					col.rgb *= grad * (saturate(3-(col.r + col.g + col.b))); //asd0asdasd saturate(grad.rgb)*col.rgb;
+					col.rgb *= grad * (saturate(3-(col.r + col.g + col.b))) * min(col.a, 1); //asd0asdasd saturate(grad.rgb)*col.rgb;
 
-					//col.rgb *= grad.rgb;
+					col.rgb *= col.rgb * 4;
 
-					col.a = min(col.a, 1);
+				
+
+					col.a = 1;
 
 					//col.rgb = max(o.color.rgb, col.rgb);
 

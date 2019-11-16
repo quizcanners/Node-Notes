@@ -333,6 +333,8 @@ namespace NodeNotes_Visual {
 
         private bool includedInLerp;
 
+        private bool LerpPosition => !_mouseDown;
+
         public void Portion(LerpData ld)
         {
 
@@ -344,23 +346,25 @@ namespace NodeNotes_Visual {
             
             var ac = ActiveConfig;
 
-            if (!isFading || !_fadingRelation)
-                _localPos.targetValue = ac.targetLocalPosition;
-            else if (!_fadingIntoParent)
-                _localPos.targetValue = _fadingRelation.transform.localPosition
-                                        + (transform.localPosition - _fadingRelation.transform.localPosition).normalized * 50;
-            else
-                _localPos.targetValue = _fadingRelation.transform.localPosition;
-                
-            _localPos.Portion(ld);
+ 
+            if (LerpPosition) {
 
-            _localScale.targetValue = isFading ? Vector3.one : ac.targetSize;
+                if (!isFading || !_fadingRelation)
+                    _localPos.targetValue = ac.targetLocalPosition;
+                else if (!_fadingIntoParent)
+                    _localPos.targetValue = _fadingRelation.transform.localPosition
+                                            + (transform.localPosition - _fadingRelation.transform.localPosition)
+                                            .normalized * 50;
+                else
+                    _localPos.targetValue = _fadingRelation.transform.localPosition;
 
-            _localScale.Portion(ld);
+                _localPos.Portion(ld);
 
-            _textColor.targetValue = ac.targetTextColor;
+            }
 
-            _textColor.Portion(ld);
+            _localScale.Portion(ld, isFading ? Vector3.one : ac.targetSize);
+
+            _textColor.Portion(ld, ac.targetTextColor);
 
             if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(bgColor), ld))
                 dominantParameter = "color";
@@ -410,7 +414,7 @@ namespace NodeNotes_Visual {
             #endregion
 
             #region Lerp Visual
-                    if (includedInLerp)
+            if (includedInLerp)
             {
 
                 var ac = ActiveConfig;
@@ -428,7 +432,7 @@ namespace NodeNotes_Visual {
 
                     fadePortion = Mathf.Lerp(fadePortion, isFading ? 0 : 1, ld.MinPortion);
 
-                    var scale = _localScale.Value;
+                    var scale = _localScale.CurrentValue;
 
                     if (scale.x > 0)
                         _shSquare.x = scale.x > scale.y ? ((scale.x - scale.y) / scale.x) : 0;
@@ -443,7 +447,7 @@ namespace NodeNotes_Visual {
                     textB.rectTransform.sizeDelta = textSize;
                 }
 
-                if (!lerpsFinished && (this != _dragging) && ld.MinPortion == 1)
+                if (!lerpsFinished && (this != _dragging) && ld.MinPortion == 1 && LerpPosition)
                     lerpsFinished = true;
 
                 if (newText != null || _activeTextAlpha < 1)
@@ -470,7 +474,10 @@ namespace NodeNotes_Visual {
 
                 bgColor = Color.Lerp(bgColor, ac.targetColor, ld.Portion(skipLerpPossible));
                 _textColor.Lerp(ld, skipLerpPossible);
-                _localPos.Lerp(ld);
+
+                if (LerpPosition)
+                    _localPos.Lerp(ld);
+
                 _localScale.Lerp(ld, skipLerpPossible);
                 _shadeCorners.Lerp(ld, skipLerpPossible);
                 _shadeSelected.Lerp(ld, skipLerpPossible);
@@ -526,9 +533,11 @@ namespace NodeNotes_Visual {
 
             #endregion
 
-            if (_mouseDown && ((Time.time - _overDownTime) > 0.1f)) {
+            if (_mouseDown && ((Time.time - _overDownTime) > 0.2f)) {
                 _mouseDown = false;
                 lerpsFinished = false;
+                audioSource.Stop();
+                Debug.Log("Stopping on leave");
                 audioSource.PlayOneShot(Shortcuts.Instance.onMouseLeaveSound);
             }
 
@@ -539,6 +548,11 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Controls & Updates
+
+        public void Awake()
+        {
+            audioSource.playOnAwake = false;
+        }
 
         public void SetStartPositionOn(NodeCircleController previous) {
 
@@ -707,8 +721,17 @@ namespace NodeNotes_Visual {
                    
                     _mouseDown = true;
                     audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
+                    audioSource.clip = Shortcuts.Instance.onMouseHoldSound;
+                    audioSource.loop = true;
+                    audioSource.Play();
+                    Debug.Log("Starting");
                 }
                 else if (Input.GetMouseButtonUp(0)) {
+
+                    audioSource.Stop();
+
+                    Debug.Log("Stopping");
+
                     if (_mouseDown) {
                         audioSource.PlayOneShot(
                             (source != null && source.OnMouseOver(true)) ?

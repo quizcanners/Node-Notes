@@ -27,6 +27,7 @@ MonoBehaviour:
   onMouseClickFailedSound: {fileID: 8300000, guid: 9f7752530b772a74aae97aee116bfce9,
     type: 3}
   onMouseLeaveSound: {fileID: 8300000, guid: 08c655d28a86d9d44a91686e865b2279, type: 3}
+  onMouseHoldSound: {fileID: 8300000, guid: 1896f4c3d4d531c49a99cf85bfefad3c, type: 3}
   onSwipeSound: {fileID: 8300000, guid: 1d4688f07df549a45a89b98b5cbdcdc4, type: 3}
   defaultCamera:
     fieldOfView: 60
