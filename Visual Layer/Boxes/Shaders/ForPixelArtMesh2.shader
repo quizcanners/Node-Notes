@@ -135,6 +135,8 @@
 
 					float4 c = tex2Dlod(_MainTex, float4(i.perfuv.xy, 0, 0));
 
+				
+
 					float2 border = (abs(float2(bumpUV.x, bumpUV.y)) - 0.4) * 10;
 					float bord = max(0, max(border.x*i.hold.x, border.y*i.hold.y)*i.hold.w + i.hold.z*min(border.x, border.y));
 
@@ -246,6 +248,8 @@
 							col.rgb += (noise.rgb - 0.5)*0.0025;
 						#endif
 					#endif
+
+					col.a = min(1, col.a * 10);
 
 					return col;
 				}

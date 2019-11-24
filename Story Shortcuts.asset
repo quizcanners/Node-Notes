@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: Story Shortcuts
   m_EditorClassIdentifier: 
   nestedReferences: []
-  explorer:
-    states: []
-    fileFolderHolder: STDEncodes
   inspectedItems: 4
   inspectedReference: -1
   assetGroups: []

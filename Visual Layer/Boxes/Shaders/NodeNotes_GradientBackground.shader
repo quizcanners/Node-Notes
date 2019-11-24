@@ -72,11 +72,17 @@
 					_BG_CENTER_COL.rgb *= _BG_CENTER_COL.rgb;
 					#endif
 
-					float4 col = _BG_GRAD_COL_1 * screenUV.y + _BG_GRAD_COL_2 * (1 - screenUV.y);
+					float clickEffect = grad * clickPower;
+
+
+					float up = saturate((screenUV.y - 0.5) * (1 - clickEffect*0.5) + 0.5);
+
+					float4 col = _BG_GRAD_COL_1 * up + _BG_GRAD_COL_2 * (1 - up);
 
 					//_ScreenParams.xy
 
-					float center = saturate(1 - (off.x + off.y));
+				
+					float center = saturate(1 - (off.x + off.y) - clickEffect);
 
 					center = center*_BG_CENTER_COL.a;
 	
@@ -86,7 +92,7 @@
 					col.rgb = sqrt(o.color.rgb);
 					#endif
 
-					col.rgb += grad * _BG_CENTER_COL.rgb * clickPower * _BG_CENTER_COL.a;
+					//col.rgb += grad * _BG_CENTER_COL.rgb * clickPower * _BG_CENTER_COL.a;
 
 					#if USE_NOISE_TEXTURE
 						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));

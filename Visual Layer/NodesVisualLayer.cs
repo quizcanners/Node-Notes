@@ -37,7 +37,7 @@ namespace NodeNotes_Visual
             }
         }
 
-        public QcUtils.TextureDownloadManager textureDownloader = new QcUtils.TextureDownloadManager();
+        public TextureDownloadManager textureDownloader = new TextureDownloadManager();
 
         #region Game Nodes
 
