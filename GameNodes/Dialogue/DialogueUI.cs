@@ -139,8 +139,8 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
     LerpData ld = new LerpData();
 
-    LinkedLerp.FloatValue separatorPosition = new LinkedLerp.FloatValue("Separator", 0.5f, 2);
-    LinkedLerp.FloatValue singlePhraseBoxHeight = new LinkedLerp.FloatValue("Single Box size", 0, 2);
+    LinkedLerp.FloatValue separatorPosition = new LinkedLerp.FloatValue(0.5f, 2, "Separator");
+    LinkedLerp.FloatValue singlePhraseBoxHeight = new LinkedLerp.FloatValue(0, 2, "Single Box size");
 
     private bool scrollSoundPlayed = false;
     private bool scrollSoundPlayedUp;

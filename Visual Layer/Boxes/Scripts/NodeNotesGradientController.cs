@@ -17,6 +17,8 @@ namespace NodeNotes_Visual {
         private LinkedLerp.ShaderColorValueGlobal bgColCnter = new LinkedLerp.ShaderColorValueGlobal("_BG_CENTER_COL");
         private LinkedLerp.ShaderColorValueGlobal bgColDown = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_2");
 
+        public ShaderProperty.FloatValue bgTransparency = new ShaderProperty.FloatValue("_NodeNotes_Gradient_Transparency");
+
         public void SetTarget(BackgroundGradient gradient) => this.gradient = gradient;
         
         public void Lerp(LerpData ld, bool canSkipLerp) {

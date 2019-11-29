@@ -264,9 +264,11 @@ namespace NodeNotes_Visual {
         }
 
         private readonly LerpData _ld = new LerpData();
-        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue("+- courner", 0, 8);
+        private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue(0, 8);
 
-        
+
+        private float bgTransparency = 1;
+
         void Update() {
 
             _ld.Reset();
@@ -281,10 +283,14 @@ namespace NodeNotes_Visual {
 
             addButton.SetCorner(1, addButtonCourner.CurrentValue);
 
+            bgTransparency = LerpUtils.LerpBySpeed(bgTransparency, 0.05f + _ld.MinPortion * 0.95f, 1f);
+
+            NodeNotesGradientController.instance.bgTransparency.GlobalValue = bgTransparency;
+
             if (!isFading) {
                 var col = MainCamera.backgroundColor;
 
-                MainCamera.backgroundColor = col.LerpBySpeed(Color.white, 3);
+                //MainCamera.backgroundColor = col.LerpBySpeed(Color.white, 3);
             } else if (_ld.Portion() == 1)
                 gameObject.SetActive(false);
         }

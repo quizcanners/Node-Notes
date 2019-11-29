@@ -724,13 +724,13 @@ namespace NodeNotes_Visual {
                     audioSource.clip = Shortcuts.Instance.onMouseHoldSound;
                     audioSource.loop = true;
                     audioSource.Play();
-                    Debug.Log("Starting");
+                   // Debug.Log("Starting");
                 }
                 else if (Input.GetMouseButtonUp(0)) {
 
                     audioSource.Stop();
 
-                    Debug.Log("Stopping");
+                   // Debug.Log("Stopping");
 
                     if (_mouseDown) {
                         audioSource.PlayOneShot(

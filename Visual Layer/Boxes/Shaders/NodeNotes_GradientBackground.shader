@@ -13,6 +13,7 @@
 		Cull Off
 		ZWrite Off
 		ZTest Off
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		SubShader{
 			Pass{
@@ -48,6 +49,7 @@
 					return o;
 				}
 
+				float _NodeNotes_Gradient_Transparency;
 				float4 _BG_GRAD_COL_1;
 				float4 _BG_GRAD_COL_2;
 				float4 _BG_CENTER_COL;
@@ -94,14 +96,20 @@
 
 					//col.rgb += grad * _BG_CENTER_COL.rgb * clickPower * _BG_CENTER_COL.a;
 
+					col.a = _NodeNotes_Gradient_Transparency;
+
 					#if USE_NOISE_TEXTURE
 						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
 						#ifdef UNITY_COLORSPACE_GAMMA
-							col.rgb += (noise.rgb - 0.5)*0.02;
+							col.rgb += col.rgb*(noise.rgb - 0.5)*0.2 * (_NodeNotes_Gradient_Transparency + (1- _NodeNotes_Gradient_Transparency));
 						#else
-							col.rgb += (noise.rgb - 0.5)*0.0025;
+							col.rgb += col.rgb*(noise.rgb - 0.5)*0.2* (_NodeNotes_Gradient_Transparency + (1 - _NodeNotes_Gradient_Transparency));
 						#endif
+
+							//col.a += (1-col.a) * (1+noise.b)*0.05;
 					#endif
+
+						//	col.a = 0.01;
 
 					return saturate(col);
 				}

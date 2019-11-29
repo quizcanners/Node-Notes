@@ -35,7 +35,7 @@ namespace NodeNotes_Visual {
 
         ShaderProperty.TextureValue floatingParticlesProperty = new ShaderProperty.TextureValue("_FloatingParticles");
         LinkedLerp.ColorValue textColor = new LinkedLerp.ColorValue("TextColor");
-        LinkedLerp.FloatValue textFade = new LinkedLerp.FloatValue("Text Lerp", 0, 2);
+        LinkedLerp.FloatValue textFade = new LinkedLerp.FloatValue( 0, 2, "Text Lerp");
         
         private LerpData ld = new LerpData();
 

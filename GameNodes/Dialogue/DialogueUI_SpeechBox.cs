@@ -45,9 +45,9 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
 
     }
 
-    LinkedLerp.FloatValue upperEdge = new LinkedLerp.FloatValue("Upper", 0, 8);
-    LinkedLerp.FloatValue loverEdge = new LinkedLerp.FloatValue("Lower", 0 , 8);
-    LinkedLerp.FloatValue transparency = new LinkedLerp.FloatValue("Alpha", 0, 8);
+    LinkedLerp.FloatValue upperEdge = new LinkedLerp.FloatValue( 0, 8, "Upper");
+    LinkedLerp.FloatValue loverEdge = new LinkedLerp.FloatValue( 0 , 8, "Lower");
+    LinkedLerp.FloatValue transparency = new LinkedLerp.FloatValue( 0, 8, "Alpha");
 
     public void Portion(LerpData ld) {
 
