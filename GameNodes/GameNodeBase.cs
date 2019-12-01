@@ -128,15 +128,15 @@ namespace NodeNotes {
                 changed |= base.Inspect();
 
                 if (showLogic)
-                    ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref inspectedItems, 7, ref changed).SetLastUsedTrigger();
+                    ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref _inspectedItems, 7, ref changed).SetLastUsedTrigger();
                         
                 pegi.nl_ifNotEntered();
                 
                 bool current = Shortcuts.visualLayer.IsCurrentGameNode(this);
                   
-                if (GameNodeTypeName.conditional_enter(current, ref inspectedItems, 8).nl_ifNotEntered())
+                if (GameNodeTypeName.conditional_enter(current, ref _inspectedItems, 8).nl_ifNotEntered())
                     InspectGameNode();
-                else if (inspectedItems == -1 && !current && "Enter game node".Click())
+                else if (_inspectedItems == -1 && !current && "Enter game node".Click())
                     Shortcuts.visualLayer.FromNodeToGame(this);
 
             }

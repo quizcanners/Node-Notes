@@ -225,7 +225,7 @@ namespace NodeNotes_Visual
 
         public void OnGUI() {
 
-            if (!Shortcuts.showPlaytimeUI || (Application.isPlaying && !Base_Node.editingNodes))
+            if (!Shortcuts.showPlaytimeUI || (Application.isPlaying && !Shortcuts.editingNodes))
                 return;
             
             window.Render(this);

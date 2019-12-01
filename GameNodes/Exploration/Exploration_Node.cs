@@ -44,14 +44,10 @@ namespace NodeNotes_Visual {
             foreach (var i in entityConfigurations)
                 i.OnEnter();
 
-            NodeNotes_Camera.inst.FPS = true;
-
         }
 
         protected override void OnExit() {
-
-            NodeNotes_Camera.inst.FPS = false;
-
+            
             foreach (var i in entityConfigurations)
                 i.OnExit();
         }
@@ -256,7 +252,7 @@ namespace NodeNotes_Visual {
 
             ComponentCfgAbstract.inspectedEntity = instance;
 
-            if (componentsMeta.enter_List(ref entityComponents, ref inspectedItems, 1).nl(ref changed)) {
+            if (componentsMeta.enter_List(ref entityComponents, ref _inspectedItems, 1).nl(ref changed)) {
 
                 archetype = entityComponents.ToArchetype();
 

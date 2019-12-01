@@ -115,10 +115,10 @@ namespace NodeNotes_Visual {
         public override bool Inspect() {
             bool changed = false;
             
-            if (inspectedItems == -1)
+            if (_inspectedItems == -1)
                 "Description".editBig(ref description).nl(ref changed);
             
-            "Conditions".enter_Inspect(visibilityConditions, ref inspectedItems, 4).changes(ref changed);
+            "Conditions".enter_Inspect(visibilityConditions, ref _inspectedItems, 4).changes(ref changed);
 
             return changed;
         }

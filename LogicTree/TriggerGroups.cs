@@ -189,7 +189,7 @@ namespace QcTriggerLogic {
 
             var changed = false;
 
-            if (inspectedItems == -1) {
+            if (_inspectedItems == -1) {
 
 
                 changed |= "{0} : ".F(_index).edit(50, ref _name).nl();

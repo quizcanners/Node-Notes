@@ -26,7 +26,7 @@ namespace NodeNotes_Visual {
 
         public int test = 0;
 
-        protected BackgroundGradient currentNodeGradient = new BackgroundGradient();
+        public BackgroundGradient currentNodeGradient = new BackgroundGradient();
 
         public bool isFading;
 
@@ -36,13 +36,13 @@ namespace NodeNotes_Visual {
         {
             selectedNode = null;
 
-            Base_Node.editingNodes = !Base_Node.editingNodes;
+            Shortcuts.editingNodes = !Shortcuts.editingNodes;
 
             if (editButton)
-                editButton.Text = Base_Node.editingNodes ? "Play" : "Edit";
+                editButton.Text = Shortcuts.editingNodes ? "Play" : "Edit";
 
             if (addButton)
-                addButton.gameObject.SetActive(Base_Node.editingNodes);
+                addButton.gameObject.SetActive(Shortcuts.editingNodes);
 
             if (deleteButton)
                 deleteButton.gameObject.SetActive(false);
@@ -115,34 +115,10 @@ namespace NodeNotes_Visual {
                 if (src.Nested_Inspect().nl(ref changed))
                     selectedNode.UpdateName();
 
-                if (selectedNode.source == Shortcuts.CurrentNode)
-                {
-                    var gradient = perNodeGradientConfigs[src.IndexForPEGI];
-
-                    if (gradient == null)
-                    {
-                        if ("+ Gradient Cfg".Click().nl())
-                            perNodeGradientConfigs[src.IndexForPEGI] = currentNodeGradient.Encode().ToString();
-                        
-                    }
-                    else {
-                      
-                        if (icon.Delete.Click("Delete Gradient Cfg"))
-                            perNodeGradientConfigs[src.IndexForPEGI] = null;
-                        else if (currentNodeGradient.Nested_Inspect()) {
-                            NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
-                            perNodeGradientConfigs[src.IndexForPEGI] = currentNodeGradient.Encode().ToString();
-                        }
-                        
-                        pegi.nl();
-                    }
-                }
-
-
             }
             else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
 
-            if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.inspectedItems == 21))) {
+            if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.InspectingVisuals()) && (selectedNode.inspectedItems == -1))) {
 
                 if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
                     pegi.nl();
@@ -259,6 +235,8 @@ namespace NodeNotes_Visual {
                 }
                 else
                     Shortcuts.CurrentNode = node;
+
+                NodeNotesMeshObject.OnNodeChange();
             }
             
         }
@@ -397,7 +375,7 @@ namespace NodeNotes_Visual {
 
             if (node == null) return;
             
-            bool editingOrGotParent = (Base_Node.editingNodes ||
+            bool editingOrGotParent = (Shortcuts.editingNodes ||
                                        ((node.parentNode != null && node.Conditions_isVisible()) ||
                                         !Application.isPlaying));
 

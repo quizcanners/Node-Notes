@@ -25,6 +25,20 @@ namespace NodeNotes_Visual {
 
         public MeshCollider circleCollider;
 
+        [NonSerialized] private NodeNotesMeshObject _meshObject;
+
+        private NodeNotesMeshObject MeshObjectGetOrCreate()
+        {
+            if (!_meshObject)
+            {
+                _meshObject = new GameObject().AddComponent<NodeNotesMeshObject>();
+                _meshObject.gameObject.name = source.NameForPEGI + " Mesh Object";
+                _meshObject.Reset(source);
+            }
+
+            return _meshObject;
+        }
+
         public AudioSource audioSource;
 
         public Base_Node source;
@@ -172,68 +186,104 @@ namespace NodeNotes_Visual {
 
                 pegi.nl();
 
-                if (circleRenderer)
+                if ("Shape & Color".enter(ref inspectedItems, 2).nl())
                 {
-                    if (source != null)
+
+                    if (circleRenderer)
                     {
-                        var node = source.AsNode;
-
-                        if (node != null)
+                        if (source != null)
                         {
+                            var node = source.AsNode;
 
-                            var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, node.visualStyleTag);
-
-                            if (bg != null)
+                            if (node != null)
                             {
-                                if (pegi.Try_Nested_Inspect(bg).nl(ref changed))
-                                    source.visualStyleConfigs[NodesVisualLayer.SelectedVisualLayer.ClassTag] =
-                                        bg.Encode().ToString();
+
+                                var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, node.visualStyleTag);
+
+                                if (bg != null)
+                                {
+                                    if (pegi.Try_Nested_Inspect(bg).nl(ref changed))
+                                        source.visualStyleConfigs[NodesVisualLayer.SelectedVisualLayer.ClassTag] =
+                                            bg.Encode().ToString();
+                                }
                             }
                         }
-                    } else "No source node is currently linked.".writeHint();
-                }
-
-                if (source == null || (!source.InspectingTriggerItems)) {
-
-                    var altVis = PossibleOverrideVisualConfig;
-                    var act = ActiveConfig;
-
-                    if (altVis != _nodeActiveDefaultVisuals) {
-                        if ("Override visuals for {0}".F(altVis == _nodeInactiveVisuals ? "Disabled" : "Entered")
-                            .toggleIcon(ref altVis.enabled).nl()) {
-                            if (altVis.enabled)
-                                altVis.Decode(act.Encode().ToString());
-                        }
+                        else "No source node is currently linked.".writeHint();
                     }
 
-                    ActiveConfig.Nested_Inspect().changes(ref changed);
+                    if (source == null || (!source.InspectingTriggerItems))
+                    {
+
+                        var altVis = PossibleOverrideVisualConfig;
+                        var act = ActiveConfig;
+
+                        if (altVis != _nodeActiveDefaultVisuals)
+                        {
+                            if ("Override visuals for {0}".F(altVis == _nodeInactiveVisuals ? "Disabled" : "Entered")
+                                .toggleIcon(ref altVis.enabled).nl())
+                            {
+                                if (altVis.enabled)
+                                    altVis.Decode(act.Encode().ToString());
+                            }
+                        }
+
+                        ActiveConfig.Nested_Inspect().changes(ref changed);
+                    }
+
+                }
+                
+                if ("Mesh Object".enter(ref inspectedItems, 3).nl())
+                {
+                    if (!_meshObject && "Create Mesh Object".Click())
+                        MeshObjectGetOrCreate();
+
+                    if (_meshObject &&
+                        icon.Delete.ClickConfirm("dMo", "This will also erase any data of this meshobject"))
+                    {
+                        _meshObject.FadeAway();
+                        _meshObject = null;
+                    }
+
+                    _meshObject.Nested_Inspect().nl(ref changed);
                 }
 
-                if (!onPlayScreen) {
-                    pegi.nl();
+                if ("Bacground Gradient".enter(ref inspectedItems, 4).nl())
+                {
+                     var grds = WhiteBackground.inst.perNodeGradientConfigs;
 
-                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 3).nl();
+                    var gradient = grds[source.IndexForPEGI];
 
-                    if (!textA || seeDependencies)
-                        "Text A".edit(ref textA).nl(ref changed);
+                       if (gradient == null)
+                       {
+                           if ("+ Gradient Cfg".Click().nl())
+                               grds[source.IndexForPEGI] = WhiteBackground.inst.currentNodeGradient.Encode().ToString();
 
-                    if (!textB || seeDependencies)
-                        "Text B".edit(ref textB).nl(ref changed);
+                       }
+                       else {
 
-                    if (!circleRenderer || seeDependencies)
-                        "Mesh Renderer".edit(ref circleRenderer).nl(ref changed);
+                           if (icon.Delete.Click("Delete Gradient Cfg"))
+                               grds[source.IndexForPEGI] = null;
+                           else
+                           {
+                               if (source == Shortcuts.CurrentNode)
+                               {
+                                   if (WhiteBackground.inst.currentNodeGradient.Nested_Inspect())
+                                   {
+                                       NodeNotesGradientController.instance.SetTarget(WhiteBackground.inst
+                                           .currentNodeGradient);
+                                       grds[source.IndexForPEGI] =
+                                           WhiteBackground.inst.currentNodeGradient.Encode().ToString();
+                                   }
+                               } else  "Enter node to edit it's Background gradient".writeHint();
 
-                    if (!circleCollider || seeDependencies)
-                        "Collider".edit(ref circleCollider).nl(ref changed);
+                           }
 
-                    if (!linkRenderer || seeDependencies)
-                        "Link Renderer".edit(ref linkRenderer).nl(ref changed);
-
-                    if (!audioSource || seeDependencies)
-                        "Aduio Source".edit(ref audioSource).nl(ref changed);
+                           pegi.nl();
+                       }
+               
                 }
 
-                if (inspectedItems == -1) {
+                if ("Image".enter(ref inspectedItems, 5).nl()) {
 
                     if (_imageIndex != -1) {
                         if (!pegi.paintingPlayAreaGui)
@@ -275,7 +325,31 @@ namespace NodeNotes_Visual {
                         }
                     }
                 }
-                
+
+                if (!onPlayScreen)
+                {
+                    pegi.nl();
+
+                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 6).nl();
+
+                    if (!textA || seeDependencies)
+                        "Text A".edit(ref textA).nl(ref changed);
+
+                    if (!textB || seeDependencies)
+                        "Text B".edit(ref textB).nl(ref changed);
+
+                    if (!circleRenderer || seeDependencies)
+                        "Mesh Renderer".edit(ref circleRenderer).nl(ref changed);
+
+                    if (!circleCollider || seeDependencies)
+                        "Collider".edit(ref circleCollider).nl(ref changed);
+
+                    if (!linkRenderer || seeDependencies)
+                        "Link Renderer".edit(ref linkRenderer).nl(ref changed);
+
+                    if (!audioSource || seeDependencies)
+                        "Aduio Source".edit(ref audioSource).nl(ref changed);
+                }
             }
             
             if (changed)
@@ -384,6 +458,9 @@ namespace NodeNotes_Visual {
 
             _texTransition.Portion(ld);
 
+            if (_meshObject)
+                _meshObject.Portion(ld);
+
         }
 
         public void Lerp(LerpData ld, bool canSkipLerp = false) {
@@ -395,7 +472,7 @@ namespace NodeNotes_Visual {
             if (this == _dragging)
             {
 
-                if (isFading || !Base_Node.editingNodes || !Input.GetMouseButton(0))
+                if (isFading || !Shortcuts.editingNodes || !Input.GetMouseButton(0))
                     _dragging = null;
                 else
                 {
@@ -532,6 +609,9 @@ namespace NodeNotes_Visual {
                 linkRenderer.LerpAlpha_DisableIfZero(0, 1);
 
             #endregion
+
+            if (_meshObject)
+                _meshObject.Lerp(ld, false);
 
             if (_mouseDown && ((Time.time - _overDownTime) > 0.2f)) {
                 _mouseDown = false;
@@ -713,7 +793,7 @@ namespace NodeNotes_Visual {
 
             bool click = false;
 
-            if (Base_Node.editingNodes)
+            if (Shortcuts.editingNodes)
                 TryDragAndDrop();
             else {
 
@@ -766,7 +846,7 @@ namespace NodeNotes_Visual {
             _imageIndex -= 1;
             _coverImage = null;
             _hideLabel = false;
-
+            
             _nodeEnteredVisuals = new NodeVisualConfig();
             _nodeActiveDefaultVisuals = new NodeVisualConfig
             {
@@ -790,7 +870,8 @@ namespace NodeNotes_Visual {
                 case "URL": imageUrl = data; break;
                 case "imgScl": _imageScaling = data.ToFloat(); break;
                 case "imgMd": _mode = (ImageMode)data.ToInt(); break;
-                case "hidTxt": _hideLabel = data.ToBool(); break; 
+                case "hidTxt": _hideLabel = data.ToBool(); break;
+                case "m": MeshObjectGetOrCreate().Decode(data); break;
                 default: return false;
             }
 
@@ -813,7 +894,10 @@ namespace NodeNotes_Visual {
             }
 
             if (source.AsNode != null)
-                cody.Add_IfNotDefault("expVis", _nodeEnteredVisuals); 
+                cody.Add_IfNotDefault("expVis", _nodeEnteredVisuals);
+
+            if (_meshObject)
+                cody.Add("m", _meshObject);
 
             return cody;
         }
@@ -853,6 +937,11 @@ namespace NodeNotes_Visual {
             }
        
             isFading = true;
+
+            if (_meshObject) {
+                _meshObject.FadeAway();
+                _meshObject = null;
+            }
 
             if (circleCollider)
                 circleCollider.enabled = false;

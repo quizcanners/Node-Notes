@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82f0488f0a0d5eb49b364a17f29c03e5, type: 3}
+  m_Name: NodeNotes_QuizcannersAssets
+  m_EditorClassIdentifier: 
+  materials:
+  - tag: damageReciever
+    asset: {fileID: 2100000, guid: 32209160bf9ea3244ab104f68e8e1d03, type: 2}
+  - tag: tample
+    asset: {fileID: 2100000, guid: c3f44a42a8321804fa7b29439994b177, type: 2}

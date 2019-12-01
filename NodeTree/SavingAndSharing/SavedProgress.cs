@@ -51,8 +51,8 @@ namespace NodeNotes {
 
                             bool bookChanged = _currentNode != null && (value == null || (_currentNode.parentBook != value.parentBook));
 
-                            if (Application.isPlaying && bookChanged)
-                                CurrentNode.parentBook.UpdatePerBookVisualBackgroundConfigs();
+                            if (isADeveloper && Application.isPlaying && bookChanged)
+                                CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
 
                             if (value == null) {
                                 SaveBookMark();
@@ -165,7 +165,7 @@ namespace NodeNotes {
             if (_currentNode != null && _currentNode.parentBook == nextBook)
                 return;
             
-            nextBook.LoadPerBookBackgroundConfigs();
+            nextBook.LoadPresentationConfigs();
 
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
 
@@ -218,9 +218,9 @@ namespace NodeNotes {
             else if (!isADeveloper && "Turn to Developer".Click().nl())
                 isADeveloper = true;
             
-            marksMeta.enter_List(ref bookMarks, ref inspectedItems, 0).nl_ifNotEntered(ref changed);
+            marksMeta.enter_List(ref bookMarks, ref _inspectedItems, 0).nl_ifNotEntered(ref changed);
 
-            "Values ".enter_Inspect(Values.global, ref inspectedItems, 1).changes(ref changed);
+            "Values ".enter_Inspect(Values.global, ref _inspectedItems, 1).changes(ref changed);
 
             if (pegi.IsFoldedOut && Values.global.CountForInspector()>0 &&  icon.Delete.Click("Reset all triggers"))
                 Values.global.Clear();

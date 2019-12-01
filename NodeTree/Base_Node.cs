@@ -17,6 +17,15 @@ namespace NodeNotes {
         public Node parentNode;
         public NodeBook parentBook;
 
+        public bool IsDirectChildOf(Node node)
+        {
+
+            if (parentNode != null)
+                return parentNode == node;
+
+            return false;
+        }
+
         public bool IsChildOrSubChildOf(Node node) {
 
             if (parentNode != null)
@@ -130,7 +139,7 @@ namespace NodeNotes {
         .Add_String(        "n",    name)
         .Add(               "i",    index)
         .Add_IfTrue(        "visL", showLogic)
-        .Add_IfNotNegative( "is",   inspectedItems)
+        .Add_IfNotNegative( "is",   _inspectedItems)
         .Add_IfNotNegative( "icr",  _inspectedResult)
         .Add_IfNotDefault(  "cnds", _eblCondition)
         .Add_IfNotDefault(  "vcnds",_visCondition)
@@ -143,7 +152,7 @@ namespace NodeNotes {
                 case "n":       name = data; break;
                 case "i":       index = data.ToInt(); break;
                 case "visL":    showLogic = data.ToBool(); break;
-                case "is":      inspectedItems = data.ToInt(); break;
+                case "is":      _inspectedItems = data.ToInt(); break;
                 case "icr":     _inspectedResult = data.ToInt(); break;
                 case "cnds":    _eblCondition.Decode(data); break;
                 case "vcnds":   _visCondition.Decode(data); break;
@@ -163,8 +172,6 @@ namespace NodeNotes {
 
         protected virtual string InspectionHint => "Inspect Node";
         
-        public static bool editingNodes = false;
-
         private int _inspectedResult = -1;
         public bool InspectingTriggerItems => _inspectedResult != -1;
 
@@ -248,7 +255,7 @@ namespace NodeNotes {
 
                 var onPlayScreen = pegi.paintingPlayAreaGui;
 
-                if (inspectedItems == -1) {
+                if (_inspectedItems == -1) {
                     this.inspect_Name().changes(ref changed);
 
                     if ((this != Shortcuts.Cut_Paste) && icon.Cut.Click("Cut/Paste"))
@@ -264,17 +271,17 @@ namespace NodeNotes {
 
                 Inspect_AfterNamePart().nl(ref changed);
 
-                "Visual".TryEnter_Inspect(visualRepresentation, ref inspectedItems, 21).nl_ifFolded(ref changed);
+                "Visual".TryEnter_Inspect(visualRepresentation, ref _inspectedItems, 21).nl_ifFolded(ref changed);
 
                 pegi.nl();
 
-                if ( inspectedItems != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
+                if ( _inspectedItems != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
                     
-                    _visCondition.enter_Inspect(ref inspectedItems, 1).nl_ifFolded(ref changed);
+                    _visCondition.enter_Inspect(ref _inspectedItems, 1).nl_ifFolded(ref changed);
 
-                    _eblCondition.enter_Inspect(ref inspectedItems, 2).nl_ifFolded(ref changed);
+                    _eblCondition.enter_Inspect(ref _inspectedItems, 2).nl_ifFolded(ref changed);
 
-                    ResultsRole.enter_List(ref results, ref _inspectedResult, ref inspectedItems, 3, ref changed)
+                    ResultsRole.enter_List(ref results, ref _inspectedResult, ref _inspectedItems, 3, ref changed)
                         .SetLastUsedTrigger();
                 }
 

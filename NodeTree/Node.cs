@@ -188,7 +188,7 @@ namespace NodeNotes {
     
             var changed = false;
             
-            if (inspectedItems == -1 && !InspectingTriggerItems) {
+            if (_inspectedItems == -1 && !InspectingTriggerItems) {
 
                 if (InspectingSubNode) {
 
@@ -235,7 +235,7 @@ namespace NodeNotes {
 
                 _gamesNodesMeta.Inspecting = false;
 
-                var ngn = _gamesNodesMeta.enter_List(ref gameNodes, ref inspectedItems, 7, GameNodeBase.all, ref changed);
+                var ngn = _gamesNodesMeta.enter_List(ref gameNodes, ref _inspectedItems, 7, GameNodeBase.all, ref changed);
                 
                 pegi.nl_ifFoldedOut();
 
@@ -251,9 +251,9 @@ namespace NodeNotes {
             var changed = false;
             
             if (InspectingSubNode)
-                inspectedItems = -1;
+                _inspectedItems = -1;
             
-            if (!InspectingSubNode && inspectedItems ==-1)  {
+            if (!InspectingSubNode && _inspectedItems ==-1)  {
                 if (this != CurrentNode) {
                     if (parentBook.EditedByCurrentUser()) {
                         if (parentNode != null && icon.State.Click("Enter Node"))

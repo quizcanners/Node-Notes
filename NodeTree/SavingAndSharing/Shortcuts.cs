@@ -14,17 +14,56 @@ namespace NodeNotes {
 
         public const string ProjectName = "NodeNotes";
 
+        public static bool editingNodes = false;
+
+        public static bool SaveAnyChanges => user.isADeveloper;
+
         #region Assets
 
         public static Shortcuts Instance => NodesVisualLayerAbstract.InstAsNodesVisualLayer.shortcuts;
 
-        [SerializeField] protected List<UnityAssetGroups> assetGroups;
+        [SerializeField] protected List<NodeNotesAssetGroups> assetGroups;
+
 
         [SerializeField] protected Mesh _defaultMesh;
         public Mesh GetMesh(string name) => _defaultMesh;
 
+
         [SerializeField] protected Material _defaultMaterial;
-        public Material GetMaterial(string name) => _defaultMaterial;
+        [NonSerialized] private Dictionary<string, Material> filteredMaterials = new Dictionary<string, Material>();
+        [NonSerialized] private List<string> allMaterialKeys;
+
+        public List<string> GetMaterialKeys()
+        {
+            if (allMaterialKeys != null)
+                return allMaterialKeys;
+
+            allMaterialKeys = new List<string>();
+
+            foreach (var assetGroup in assetGroups)
+                foreach (var taggedMaterial in assetGroup.materials)
+                    allMaterialKeys.Add(taggedMaterial.tag);
+
+            return allMaterialKeys;
+        }
+
+        public Material GetMaterial(string key)
+        {
+            if (key.IsNullOrEmpty())
+                return _defaultMaterial;
+
+            Material mat;
+            
+            if (!filteredMaterials.TryGetValue(key, out mat))
+                foreach (var group in assetGroups)
+                    if (group.TreGetMaterial(key, out mat))
+                    {
+                        filteredMaterials[key] = mat;
+                        break;
+                    }
+            
+            return mat ? mat : _defaultMaterial;
+        }
 
         [SerializeField] public AudioClip onMouseDownButtonSound;
         [SerializeField] public AudioClip onMouseClickSound;
@@ -243,6 +282,9 @@ namespace NodeNotes {
 
             var changed = false;
             
+            if (!SaveAnyChanges)
+                "Changes will not be saved as user is not a developer".writeWarning();
+
             if (_inspectedBook == -1) {
 
                 if (inspectedItems == -1) {
@@ -399,7 +441,7 @@ namespace NodeNotes {
             SaveUser();
 
             if (CurrentNode != null)
-                CurrentNode.parentBook.UpdatePerBookVisualBackgroundConfigs();
+                CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
 
             QcFile.SaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }

@@ -42,7 +42,7 @@ namespace NodeNotes
 
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
         public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
-        public Dictionary<string, string> visualBackgroundsData = new Dictionary<string, string>();
+        public Dictionary<string, string> presentationConfigData = new Dictionary<string, string>();
         public Node subNode = new Node();
         #endregion
 
@@ -82,9 +82,9 @@ namespace NodeNotes
 
             var changed = false;
             
-            if (subNode.inspectedItems == -1 && !subNode.InspectingSubNode) {
+            if (subNode._inspectedItems == -1 && !subNode.InspectingSubNode) {
 
-                if (inspectedItems == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
+                if (_inspectedItems == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
 
                     string data = null;
                     if (this.SendReceivePegi(subNode.name, "Books", out data)) {
@@ -95,11 +95,11 @@ namespace NodeNotes
                     }
                 }
                 
-                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref inspectedItems, 1).nl(ref changed);
+                "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref _inspectedItems, 1).nl(ref changed);
 
             }
 
-            if (inspectedItems == -1) {
+            if (_inspectedItems == -1) {
 
                 "Author: {0} {1}".F(authorName, this.EditedByCurrentUser() ? "(ME)" : "").write();
 
@@ -155,30 +155,30 @@ namespace NodeNotes
 
         #region Encode_Decode
 
-        public bool loadedBgData = false;
+        public bool loadedPresentation = false;
 
-        public void LoadPerBookBackgroundConfigs() {
+        public void LoadPresentationConfigs() {
             
             if (Application.isPlaying && NodesVisualLayer.Instance) {
 
-                loadedBgData = true;
+                loadedPresentation = true;
 
                 foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
                     string data = "";
-                    visualBackgroundsData.TryGetValue(bg.ClassTag, out data);
+                    presentationConfigData.TryGetValue(bg.ClassTag, out data);
                     bg.Decode(data);
                     
                 }
             }
         }
 
-        public void UpdatePerBookVisualBackgroundConfigs() {
+        public void UpdatePerBookPresentationConfigs() {
             if (Application.isPlaying && NodesVisualLayer.Instance) {
 
-                if (loadedBgData)
+                if (loadedPresentation)
                     foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
                         var data = bg.EncodePerBookData().ToString();
-                        visualBackgroundsData[bg.ClassTag] = data;
+                        presentationConfigData[bg.ClassTag] = data;
                     }
             }
         }
@@ -190,9 +190,9 @@ namespace NodeNotes
             .Add_IfNotNegative("in", _inspectedNode)
             .Add_IfNotNegative("inE", _inspectedEntry)
             .Add_IfNotEmpty("ep", entryPoints)
-            .Add_IfNotNegative("i",inspectedItems)
+            .Add_IfNotNegative("i",_inspectedItems)
             .Add_IfNotEmpty("gn", gameNodesData)
-            .Add_IfNotEmpty("bg", visualBackgroundsData);
+            .Add_IfNotEmpty("bg", presentationConfigData);
           
         public override bool Decode(string tg, string data) {
             switch (tg) {
@@ -202,9 +202,9 @@ namespace NodeNotes
                 case "in": _inspectedNode = data.ToInt(); break;
                 case "inE": _inspectedEntry = data.ToInt(); break;
                 case "ep": data.Decode_List(out entryPoints); break;
-                case "i": inspectedItems = data.ToInt(); break;
+                case "i": _inspectedItems = data.ToInt(); break;
                 case "gn": data.Decode_Dictionary(out gameNodesData); break;
-                case "bg": data.Decode_Dictionary(out visualBackgroundsData); break;
+                case "bg": data.Decode_Dictionary(out presentationConfigData); break;
                 default: return false;
             }
             return true;
