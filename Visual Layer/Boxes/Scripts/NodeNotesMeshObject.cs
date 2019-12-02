@@ -112,12 +112,20 @@ namespace NodeNotes_Visual
             if (_painter && _painter.IsEditingThisMesh)
             {
                 if (!Shortcuts.editingNodes)
+                {
                     MeshEditorManager.Inst.StopEditingMesh();
+                }
             }
         }
 
 
         #region Transform Lerping
+
+        public static void ManagedOnDisable()
+        {
+            if (meshesParentTf)
+                meshesParentTf.gameObject.DestroyWhatever();
+        }
 
         public static void OnNodeChange()
         {
@@ -141,9 +149,14 @@ namespace NodeNotes_Visual
 
             if (!meshesParentTf)
             {
-                meshesParentTf = new GameObject("Node Notes World Root").transform;
+                Debug.Log("Creating Root Transform");
+
+                 var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                 go.name = "Node Notes World Root";
+                meshesParentTf = go.transform;
                 meshesParentTf.transform.position = Vector3.zero;
-                meshesParentTf.gameObject.hideFlags = HideFlags.DontSave;
+                _meshParentMeshRenderer = go.GetComponent<MeshRenderer>();
+                go.GetComponent<Collider>().enabled = false;
                 positionLerp = new LinkedLerp.TransformPosition(meshesParentTf, 1000);
                 scaleLerp = new LinkedLerp.TransformLocalScale(meshesParentTf, 10);
             }
@@ -197,9 +210,17 @@ namespace NodeNotes_Visual
 
         }
 
+        public static void OnEditingNodesToggle()
+        {
+            if (_meshParentMeshRenderer)
+                _meshParentMeshRenderer.enabled = Shortcuts.editingNodes;
+
+
+        }
 
         private static NodeNotesMeshObject currentCenterMesh;
         private static Transform meshesParentTf;
+        private static MeshRenderer _meshParentMeshRenderer;
             // Will also track and parent/unparant nodes that are fading away
         private static List<NodeNotesMeshObject> meshes = new List<NodeNotesMeshObject>();
 

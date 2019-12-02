@@ -1227,7 +1227,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 451316989}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 130, z: 0}
+  m_LocalPosition: {x: 0.85402244, y: 7.688231, z: -7.636767}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1868816457}
@@ -1259,7 +1259,6 @@ MonoBehaviour:
   _disableRotation: 0
   rotateWithoutRmb: 0
   simulateFlying: 0
-  advancedCamera: 1
   targetHeight:
     min: 0.1
     max: 10
@@ -3592,6 +3591,7 @@ MonoBehaviour:
   mainCam: {fileID: 39652739}
   forManagedOnEnable:
   - {fileID: 1290433479}
+  painterCamera: {fileID: 652787037}
   gameNodeControllers:
   - {fileID: 695423275}
   backgroundControllers:
@@ -3882,7 +3882,7 @@ MonoBehaviour:
   terrainCollider: {fileID: 0}
   meshCollider: {fileID: 1910673085}
   terrainHeightTexture: {fileID: 0}
-  meshEditing: 0
+  meshEditing: 1
   selectedMeshProfile: 0
   savedMeshData: 
   meshDataSavedFor: {fileID: 0}

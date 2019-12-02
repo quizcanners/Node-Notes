@@ -28,6 +28,9 @@ namespace NodeNotes_Visual
 
         [SerializeField] protected List<NodeNodesNeedEnableAbstract> forManagedOnEnable;
 
+        [SerializeField] protected PainterCamera painterCamera;
+
+
         public static Camera MainCam {
             get
             {
@@ -257,12 +260,15 @@ namespace NodeNotes_Visual
 
         public override void OnEnable() {
 
+            if (Application.isPlaying && painterCamera)
+                painterCamera.OnEnable();
+
             foreach (var gc in gameNodeControllers)
                 if (gc) gc.Initialize();
 
             foreach (var script in forManagedOnEnable)
                 script.ManagedOnEnable();
-            
+
 
             Shortcuts.visualLayer = this;
 

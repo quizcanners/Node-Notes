@@ -48,6 +48,8 @@ namespace NodeNotes_Visual {
                 deleteButton.gameObject.SetActive(false);
 
             SetShowAddButtons(false);
+
+            NodeNotesMeshObject.OnEditingNodesToggle();
         }
 
         public void ToggleShowAddButtons() => SetShowAddButtons(!CreateNodeButton.showCreateButtons);
@@ -474,6 +476,8 @@ namespace NodeNotes_Visual {
                 }
 
             NodesPool.Clear();
+
+            NodeNotesMeshObject.ManagedOnDisable();
 
         }
 
