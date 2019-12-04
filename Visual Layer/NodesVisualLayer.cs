@@ -166,6 +166,9 @@ namespace NodeNotes_Visual
             base.InspectionTabs();
         }
 
+        private int _inspectedDependency = -1;
+        private int _inspectedBackground = -1;  
+
         public override bool Inspect() {
 
             if (gameNode != null) {
@@ -196,28 +199,32 @@ namespace NodeNotes_Visual
                 "Shortcuts".edit(ref shortcuts).nl(ref changed);
             else
                if (inspectedItems == 4)
-                shortcuts.Nested_Inspect().changes(ref changed);
+                shortcuts.Nested_Inspect().nl(ref changed);
             else
                 pegi.nl();
 
-            if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
-                pegi.nl();
+            if ("Dependencies".enter(ref inspectedItems, 5).nl()) {
 
-                "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
+                "Backgrounds".enter_List_UObj(ref backgroundControllers, ref _inspectedBackground, ref _inspectedDependency, 0).nl(ref changed);
 
-                "Backgrounds".edit_Property(() => backgroundControllers, this).nl(ref changed);
+                "Game Controllers".enter_List_UObj(ref gameNodeControllers, ref _inspectedDependency, 1).nl(ref changed);
 
-                "Game Controllers".edit_List_UObj(ref gameNodeControllers).nl(ref changed);
-                
             }
 
-            pegi.nl();
+            "Textures".enter_Inspect(textureDownloader, ref inspectedItems, 6).nl_ifNotEntered(ref changed);
 
-            icon.Alpha.enter_Inspect("Textures", textureDownloader, ref inspectedItems, 6).nl_ifNotEntered(ref changed);
-            
-            if (inspectedItems == -1 && "Encode / Decode Test".Click(ref changed)) {
-                OnDisable();
-                OnEnable();
+            if ("Assets".enter(ref inspectedItems, 7).nl())
+                Shortcuts.Instance.InspectAssets().nl();
+
+
+            if (inspectedItems == -1)
+            {
+                "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
+
+                if ( "Encode / Decode Test".Click(ref changed)) {
+                    OnDisable();
+                    OnEnable();
+                }
             }
 
             if (changed && SelectedVisualLayer)

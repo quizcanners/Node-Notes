@@ -160,15 +160,14 @@ namespace NodeNotes
         public void LoadPresentationConfigs() {
             
             if (Application.isPlaying && NodesVisualLayer.Instance) {
-
-                loadedPresentation = true;
-
+                
                 foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
                     string data = "";
                     presentationConfigData.TryGetValue(bg.ClassTag, out data);
                     bg.Decode(data);
-                    
                 }
+
+                loadedPresentation = true;
             }
         }
 

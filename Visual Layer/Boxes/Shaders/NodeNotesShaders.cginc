@@ -4,8 +4,7 @@
 #include "Lighting.cginc"
 #include "AutoLight.cginc"
 
-sampler2D _Global_Noise_Lookup;
-float4 _Global_Noise_Lookup_TexelSize;
+
 
 float _NodeNotes_Time;
 

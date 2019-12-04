@@ -1,4 +1,4 @@
-﻿Shader "NodeNotes/Links"
+﻿Shader "Node Notes/Links"
 {
 	Properties{
 		[PerRendererData]_MainTex("Albedo (RGB)", 2D) = "white" {}

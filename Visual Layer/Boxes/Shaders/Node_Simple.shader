@@ -1,4 +1,4 @@
-﻿Shader "NodeNotes/UI/Node_Simple" {
+﻿Shader "Node Notes/UI/Node_Simple" {
 	Properties{
 		_MainTex_Current("Main Texture", 2D) = "white" {}
 		_Next_MainTex("Transitioning to", 2D) = "white" {}

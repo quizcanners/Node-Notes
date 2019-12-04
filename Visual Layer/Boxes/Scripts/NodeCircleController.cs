@@ -17,31 +17,42 @@ namespace NodeNotes_Visual {
     [ExecuteAlways]
     public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
 
-        private static NodesVisualLayer Mgmt => NodesVisualLayer.Instance;
-
+   
         public LineRenderer linkRenderer;
-
         public Renderer circleRenderer;
-
         public MeshCollider circleCollider;
+        public AudioSource audioSource;
+        public Base_Node source;
+        public TextMeshPro textA;
+        public TextMeshPro textB;
 
-        [NonSerialized] private NodeNotesMeshObject _meshObject;
 
+        [NonSerialized] public NodeNotesMeshObject meshObject;
         private NodeNotesMeshObject MeshObjectGetOrCreate()
         {
-            if (!_meshObject)
+            if (!meshObject)
             {
-                _meshObject = new GameObject().AddComponent<NodeNotesMeshObject>();
-                _meshObject.gameObject.name = source.NameForPEGI + " Mesh Object";
-                _meshObject.Reset(source);
+                meshObject = new GameObject().AddComponent<NodeNotesMeshObject>();
+                meshObject.gameObject.name = source.NameForPEGI + " Mesh Object";
+                meshObject.Reset(source);
             }
 
-            return _meshObject;
+            return meshObject;
         }
 
-        public AudioSource audioSource;
+        public bool IsRendering
+        {
+            set
+            {
+                linkRenderer.enabled = value;
+                circleRenderer.enabled = value;
+                textA.enabled = value;
+                textB.enabled = value;
+                circleCollider.enabled = value;
+            }
+        }
 
-        public Base_Node source;
+        private static NodesVisualLayer Mgmt => NodesVisualLayer.Instance;
         
         private bool IsCurrent => source == Shortcuts.CurrentNode;
 
@@ -88,10 +99,6 @@ namespace NodeNotes_Visual {
 
             lerpsFinished = false;
         }
-
-        public TextMeshPro textA;
-
-        public TextMeshPro textB;
 
         private bool _activeTextIsA;
 
@@ -234,17 +241,17 @@ namespace NodeNotes_Visual {
                 
                 if ("Mesh Object".enter(ref inspectedItems, 3).nl())
                 {
-                    if (!_meshObject && "Create Mesh Object".Click())
+                    if (!meshObject && "Create Mesh Object".Click())
                         MeshObjectGetOrCreate();
 
-                    if (_meshObject &&
+                    if (meshObject &&
                         icon.Delete.ClickConfirm("dMo", "This will also erase any data of this meshobject"))
                     {
-                        _meshObject.FadeAway();
-                        _meshObject = null;
+                        meshObject.FadeAway();
+                        meshObject = null;
                     }
 
-                    _meshObject.Nested_Inspect().nl(ref changed);
+                    meshObject.Nested_Inspect().nl(ref changed);
                 }
 
                 if ("Bacground Gradient".enter(ref inspectedItems, 4).nl())
@@ -458,8 +465,8 @@ namespace NodeNotes_Visual {
 
             _texTransition.Portion(ld);
 
-            if (_meshObject)
-                _meshObject.Portion(ld);
+            if (meshObject)
+                meshObject.Portion(ld);
 
         }
 
@@ -610,8 +617,8 @@ namespace NodeNotes_Visual {
 
             #endregion
 
-            if (_meshObject)
-                _meshObject.Lerp(ld, false);
+            if (meshObject)
+                meshObject.Lerp(ld, false);
 
             if (_mouseDown && ((Time.time - _overDownTime) > 0.2f)) {
                 _mouseDown = false;
@@ -896,8 +903,8 @@ namespace NodeNotes_Visual {
             if (source.AsNode != null)
                 cody.Add_IfNotDefault("expVis", _nodeEnteredVisuals);
 
-            if (_meshObject)
-                cody.Add("m", _meshObject);
+            if (meshObject)
+                cody.Add("m", meshObject);
 
             return cody;
         }
@@ -938,9 +945,9 @@ namespace NodeNotes_Visual {
        
             isFading = true;
 
-            if (_meshObject) {
-                _meshObject.FadeAway();
-                _meshObject = null;
+            if (meshObject) {
+                meshObject.FadeAway();
+                meshObject = null;
             }
 
             if (circleCollider)

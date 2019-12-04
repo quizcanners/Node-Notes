@@ -20,18 +20,24 @@ namespace NodeNotes_Visual
         [NonSerialized] private PlaytimePainter _painter;
         [NonSerialized] private MeshFilter _meshFilter;
         [NonSerialized] private MeshRenderer _meshRenderer;
-        [NonSerialized] private string materialTag;
+        [NonSerialized] private string _materialTag;
 
         private Base_Node source;
 
         private Vector3 relativePosition;
         private float relativeZoom = 1f;
 
-        private void UpdateMaterial() => _painter.Material = Shortcuts.Instance.GetMaterial(materialTag);
+        private void UpdateMaterial() => _painter.Material = Shortcuts.Instance.GetMaterial(_materialTag);
 
+        #region Encode & Decode
         public override void Decode(string data)
         {
             base.Decode(data);
+
+            if (_painter.SavedEditableMesh.IsNullOrEmpty())
+                _painter.SharedMesh = Instantiate(Shortcuts.Instance.GetMesh(""));
+            else 
+                _painter.SharedMesh = new Mesh();
 
             var mc = new MeshConstructor(_painter);
 
@@ -45,7 +51,7 @@ namespace NodeNotes_Visual
                 .Add("pos", relativePosition)
                 .Add("s", relativeZoom)
                 .Add("m", _painter.EncodeMeshStuff)
-                .Add_IfNotEmpty("mat", materialTag);
+                .Add_IfNotEmpty("mat", _materialTag);
          
         public override bool Decode(string tg, string data)
         {
@@ -54,13 +60,15 @@ namespace NodeNotes_Visual
                 case "pos": relativePosition = data.ToVector3(); break;
                 case "s": relativeZoom = data.ToFloat(); break;
                 case "m": _painter.Decode(data); break;
-                case "mat": materialTag = data; break;
+                case "mat": _materialTag = data; break;
                 default: return false;
             }
 
             return true;
         }
-        
+
+        #endregion
+
         public void Reset(Base_Node node)
         {
             source = node;
@@ -77,7 +85,7 @@ namespace NodeNotes_Visual
                 _painter = gameObject.AddComponent<PlaytimePainter>();
                 _painter.Reset();
                 meshes.Add(this);
-                
+                _painter.SharedMesh = Shortcuts.Instance.GetMesh("");
             }
 
           
@@ -95,7 +103,7 @@ namespace NodeNotes_Visual
 
             this.ClickHighlight().nl();
             
-            if ("Mat".select(40, ref materialTag, Shortcuts.Instance.GetMaterialKeys()).nl())
+            if ("Mat".select(40, ref _materialTag, Shortcuts.Instance.GetMaterialKeys()).nl())
                 UpdateMaterial();
 
             "Relative Pos".edit(ref relativePosition).nl();
@@ -149,16 +157,15 @@ namespace NodeNotes_Visual
 
             if (!meshesParentTf)
             {
-                Debug.Log("Creating Root Transform");
-
                  var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                 go.name = "Node Notes World Root";
+                 go.name = "WORLD ROOT";
                 meshesParentTf = go.transform;
                 meshesParentTf.transform.position = Vector3.zero;
                 _meshParentMeshRenderer = go.GetComponent<MeshRenderer>();
                 go.GetComponent<Collider>().enabled = false;
                 positionLerp = new LinkedLerp.TransformPosition(meshesParentTf, 1000);
                 scaleLerp = new LinkedLerp.TransformLocalScale(meshesParentTf, 10);
+                OnEditingNodesToggle();
             }
             else
                 UnparentAll();
@@ -175,14 +182,22 @@ namespace NodeNotes_Visual
 
                 Debug.Log("Got zooming "+ (zoomingIn ? "In" : "Out"));
 
-                float scaleCoefficient =
-                    (zoomingIn ? (1f / newCenterMesh.relativeZoom) : currentCenterMesh.relativeZoom) / meshesParentTf.localScale.x;
-                
+                //Zoomin out is wrong
+
+                float previousZoom = meshesParentTf.localScale.x;
+
+                float newZoom =
+                    (zoomingIn ? (1f / newCenterMesh.relativeZoom) : 
+                        currentCenterMesh.relativeZoom // zooming out
+                        ) / previousZoom;
+
+                Vector3 currentCenter = meshesParentTf.position;
+
                 meshesParentTf.position = zoomingIn ?
                     newCenterMesh.transform.position :
-                    (meshesParentTf.TransformPoint(-currentCenterMesh.relativePosition));
+                    (currentCenter - currentCenterMesh.relativePosition * newZoom); // New mesh doesn't exist yet
 
-                meshesParentTf.localScale = Vector3.one * scaleCoefficient;
+                meshesParentTf.localScale = Vector3.one * newZoom;
 
             }
             else

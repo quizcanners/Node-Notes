@@ -1,4 +1,4 @@
-﻿Shader "Playtime Painter/Effects/GradientBackground" {
+﻿Shader "Node Notes/Effects/GradientBackground" {
 	Properties{
 	}
 	
@@ -53,6 +53,8 @@
 				float4 _BG_GRAD_COL_1;
 				float4 _BG_GRAD_COL_2;
 				float4 _BG_CENTER_COL;
+				sampler2D _Global_Noise_Lookup;
+				float4 _Global_Noise_Lookup_TexelSize;
 
 				float4 frag(v2f i) : COLOR{
 

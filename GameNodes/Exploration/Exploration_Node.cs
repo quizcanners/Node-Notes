@@ -35,9 +35,9 @@ namespace NodeNotes_Visual {
 
         protected override void OnEnter() {
 
-            if (World.Active == null)
+            if (World.DefaultGameObjectInjectionWorld == null)
             { 
-                World.Active = new World("Node Notes");
+                World.DefaultGameObjectInjectionWorld = new World("Node Notes");
                 Debug.LogError("Recreating world");
             }
 

@@ -1,4 +1,4 @@
-﻿Shader "Playtime Painter/Pixel Art/ForPixelArtMesh2"{
+﻿Shader "Node Notes/Pixel Art/ForPixelArtMesh2"{
 	Properties{
 		_MainTex("_MainTex", 2D) = "white" {}
 		[NoScaleOffset]_Bump("_bump", 2D) = "bump" {}

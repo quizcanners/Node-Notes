@@ -277,7 +277,20 @@ namespace NodeNotes {
 
         private NodeBook _replaceReceived;
         private bool _inspectReplacementOption;
-        
+
+        public bool InspectAssets()
+        {
+            var changed = false;
+
+            if ("Refresh Materials".Click())
+                filteredMaterials.Clear();
+
+            if (changed)
+                this.SetToDirty();
+
+            return changed;
+        }
+
         public override bool Inspect() {
 
             var changed = false;

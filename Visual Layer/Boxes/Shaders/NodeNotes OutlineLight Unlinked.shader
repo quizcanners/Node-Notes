@@ -1,4 +1,4 @@
-﻿Shader "NodeNotes/UI/Rounded Unlinked Outline Light"
+﻿Shader "Node Notes/UI/Rounded Unlinked Outline Light"
 {
 	Properties{
 		[PerRendererData]_MainTex("Albedo (RGB)", 2D) = "black" {}

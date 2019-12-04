@@ -24,12 +24,24 @@ namespace NodeNotes_Visual {
 
         public Countless<string> perNodeGradientConfigs = new Countless<string>();
 
-        public int test = 0;
-
         public BackgroundGradient currentNodeGradient = new BackgroundGradient();
 
         public bool isFading;
 
+        private bool _isRendering = true;
+
+        protected bool IsRendering
+        {
+            set
+            {
+                _isRendering = value;
+
+                foreach (var node in NodesPool)
+                    node.IsRendering = value;
+            }
+            get { return _isRendering; }
+        }
+        
         #region Click Events
 
         public void RightTopButton()
@@ -37,6 +49,8 @@ namespace NodeNotes_Visual {
             selectedNode = null;
 
             Shortcuts.editingNodes = !Shortcuts.editingNodes;
+
+            IsRendering = true;
 
             if (editButton)
                 editButton.Text = Shortcuts.editingNodes ? "Play" : "Edit";
@@ -62,7 +76,7 @@ namespace NodeNotes_Visual {
 
             LogicMGMT.AddLogicVersion();
         }
-
+        
         public void AddNode() => MakeVisible(Shortcuts.CurrentNode.Add<Node>());
 
         public void AddLink() => MakeVisible(Shortcuts.CurrentNode.Add<NodeLinkComponent>());
@@ -98,72 +112,262 @@ namespace NodeNotes_Visual {
 
         public RoundedGraphic deleteButton;
         #endregion
+        
+        #region Node MGMT
 
-        #region Inspector
-        public string NameForPEGIdisplay => "White Background";
+        public override void SetNode(Node node)
+        {
 
-        public override bool Inspect() {
-            bool changed = false;
-            
-            pegi.nl();
+            if (!_loopLock.Unlocked) return;
 
-            "TEST".edit(ref test).nl();
-
-            if (Application.isPlaying && selectedNode)
+            using (_loopLock.Lock())
             {
 
-                var src = selectedNode.source;
+                IsRendering = true;
 
-                if (src.Nested_Inspect().nl(ref changed))
-                    selectedNode.UpdateName();
+                var previousN = Shortcuts.CurrentNode;
 
+                if (Application.isPlaying && (previousN == null || previousN != node))
+                {
+
+                    if (node == null)
+                        return;
+
+                    SetSelected(null);
+
+                    var previous = previousN?.visualRepresentation as NodeCircleController;
+
+                    Shortcuts.CurrentNode = node;
+
+                    UpdateVisibility(node, previous);
+
+                    foreach (var n in NodesPool)
+                        UpdateVisibility(n.source, previous);
+
+                    UpdateCurrentNodeGroupVisibilityAround(node, previous);
+
+                    _firstFree = 0;
+
+                    if (NodeNotesGradientController.instance)
+                    {
+
+                        Node iteration = node;
+
+                        while (iteration != null)
+                        {
+
+                            var val = perNodeGradientConfigs[iteration.IndexForPEGI];
+
+                            if (!val.IsNullOrEmpty())
+                            {
+
+                                currentNodeGradient.Decode(val);
+
+                                NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
+
+                                break;
+
+                            }
+
+                            iteration = iteration.parentNode;
+                        }
+                    }
+                    else
+                        Debug.LogError("No Instance of background gradient");
+                }
+                else
+                    Shortcuts.CurrentNode = node;
+
+                NodeNotesMeshObject.OnNodeChange();
             }
-            else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
 
-            if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.InspectingVisuals()) && (selectedNode.inspectedItems == -1))) {
+        }
 
-                if (icon.Create.enter("Dependencies", ref inspectedItems, 5)) {
-                    pegi.nl();
-                    "Edit Button".edit(90, ref editButton).nl(ref changed);
-                    "Add Button".edit(90, ref addButton).nl(ref changed);
-                    "Delete Button".edit(90, ref deleteButton).nl(ref changed);
+        [NonSerialized] private readonly List<NodeCircleController> NodesPool = new List<NodeCircleController>();
+        [NonSerialized] private int _firstFree = 0;
 
-                    "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
+        public void HideAll()
+        {
+            foreach (var node in NodesPool)
+                if (!node.isFading)
+                    MakeHidden(node.source);
+        }
 
-                    "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
+        public void Deactivate(NodeCircleController n)
+        {
+            if (isFading)
+                Delete(n);
+            else
+            {
+                n.gameObject.SetActive(false);
+                _firstFree = Mathf.Min(_firstFree, n.IndexForPEGI);
+            }
+        }
+
+        private void Delete(NodeCircleController ctr)
+        {
+            var ind = NodesPool.IndexOf(ctr);
+            NodesPool.RemoveAt(ind);
+            _firstFree = Mathf.Min(_firstFree, ind);
+            ctr.gameObject.DestroyWhatever();
+        }
+
+        private void MakeVisible(Base_Node node, NodeCircleController centerNode = null)
+        {
+
+            NodeCircleController nnp = null;
+
+            if (!centerNode)
+                centerNode = node.parentNode?.visualRepresentation as NodeCircleController;
+
+            var reusing = false;
+
+            if (node.previousVisualRepresentation != null)
+            {
+                var tmp = node.previousVisualRepresentation as NodeCircleController;
+                if (tmp && tmp.isFading && node == tmp.myLastLinkedNode)
+                {
+                    nnp = tmp;
+                    if (tmp.gameObject.activeSelf)
+                        reusing = true;
+
                 }
             }
 
-            return changed;
-        }
-  
-        #endregion
-
-        #region Encode & Decode
-
-        public override CfgEncoder EncodePerBookData() => new CfgEncoder()
-               .Add("t", test)
-               .Add("bg", perNodeGradientConfigs.Encode());
-        
-
-        public override bool Decode(string tg, string data)
-        {
-            switch (tg)
+            if (!nnp)
             {
-                case "t": test = data.ToInt(); break;
-                case "bg": data.DecodeInto(out perNodeGradientConfigs);
-                   // Debug.Log("Loading {0}".F(data));
-                    break;
-                default: return true;
+                while (_firstFree < NodesPool.Count)
+                {
+                    var np = NodesPool[_firstFree];
+
+                    if (!np.gameObject.activeSelf)
+                    {
+                        nnp = np;
+                        break;
+                    }
+                    else _firstFree++;
+                }
+            }
+
+            if (!nnp)
+            {
+
+                if (!circlePrefab)
+                    return;
+
+                nnp = Instantiate(circlePrefab);
+                nnp.IndexForPEGI = NodesPool.Count;
+                NodesPool.Add(nnp);
 
             }
-            return false;
+
+            nnp.LinkTo(node);
+
+            if (!reusing)
+                nnp.SetStartPositionOn(centerNode);
+
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized();
+        private void MakeHidden(Base_Node node, NodeCircleController previous = null)
+        {
+            var ncc = node.visualRepresentation as NodeCircleController;
+
+            if (!ncc)
+                return;
+
+            ncc.Unlink();
+
+            if (!Application.isPlaying)
+                Delete(ncc);
+            else
+                ncc.SetFadeAwayRelation(previous);
+
+        }
+
+        private void UpdateVisibility(Base_Node node, NodeCircleController previous = null)
+        {
+
+            if (node == null) return;
+
+            bool editingOrGotParent = (Shortcuts.editingNodes ||
+                                       ((node.parentNode != null && node.Conditions_isVisible()) ||
+                                        !Application.isPlaying));
+
+            bool currentNodeContains = (Shortcuts.CurrentNode != null && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
+
+            var shouldBeVisible = editingOrGotParent && currentNodeContains;
+
+            if (node.visualRepresentation == null)
+            {
+                if (shouldBeVisible)
+                    MakeVisible(node, previous);
+            }
+            else
+            if (!shouldBeVisible)
+                MakeHidden(node, previous);
+
+            if (node.visualRepresentation != null)
+                (node.visualRepresentation as NodeCircleController).SetDirty();
+        }
+
+        public void UpdateCurrentNodeGroupVisibilityAround(Node newCenter = null, NodeCircleController previousCenter = null)
+        {
+
+            if (!Application.isPlaying)
+                return;
+
+            if (newCenter == null)
+                return;
+
+            if (previousCenter == null)
+                previousCenter = newCenter.visualRepresentation as NodeCircleController;
+
+            UpdateVisibility(newCenter, previousCenter);
+            foreach (var sub in newCenter)
+                UpdateVisibility(sub, previousCenter);
+
+        }
+
+        [NonSerialized] public NodeCircleController selectedNode;
+
+        public void SetSelected(NodeCircleController node)
+        {
+            if (selectedNode)
+                selectedNode.SetDirty();
+
+            selectedNode = node;
+
+            if (node)
+                node.SetDirty();
+
+            if (deleteButton)
+                deleteButton.gameObject.SetActive(selectedNode);
+        }
+
+        public override void MakeVisible(Base_Node node)
+        {
+
+        }
+
+        public override void MakeHidden(Base_Node node)
+        {
+
+        }
+
+        public override void OnLogicUpdate()
+        {
+            var node = Shortcuts.CurrentNode;
+
+            UpdateVisibility(node);
+
+            foreach (var n in NodesPool)
+                UpdateVisibility(n.source);
+
+            UpdateCurrentNodeGroupVisibilityAround(node);
+        }
 
         #endregion
-
+        
         public override void FadeAway() {
 
             HideAll();
@@ -183,69 +387,8 @@ namespace NodeNotes_Visual {
         
         private readonly LoopLock _loopLock = new LoopLock();
         
-        public override void SetNode(Node node) {
-        
-            if (!_loopLock.Unlocked) return;
-
-            using (_loopLock.Lock())
-            {
-
-                var previousN = Shortcuts.CurrentNode;
-                
-                if (Application.isPlaying && (previousN == null || previousN != node)) {
-
-                    if (node == null)
-                        return;
-                    
-                    SetSelected(null);
-                    
-                    var previous = previousN?.visualRepresentation as NodeCircleController;
-
-                    Shortcuts.CurrentNode = node;
-
-                    UpdateVisibility(node, previous);
-
-                    foreach (var n in NodesPool)
-                        UpdateVisibility(n.source, previous);
-
-                    UpdateCurrentNodeGroupVisibilityAround(node, previous);
-
-                    _firstFree = 0;
-
-                    if (NodeNotesGradientController.instance)  {
-
-                        Node iteration = node;
-
-                        while (iteration != null) {
-
-                            var val = perNodeGradientConfigs[iteration.IndexForPEGI];
-
-                            if (!val.IsNullOrEmpty()) {
-
-                                currentNodeGradient.Decode(val);
-
-                                NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
-
-                                break;
-
-                            }
-
-                            iteration = iteration.parentNode;
-                        }
-                    } else 
-                        Debug.LogError("No Instance of background gradient");
-                }
-                else
-                    Shortcuts.CurrentNode = node;
-
-                NodeNotesMeshObject.OnNodeChange();
-            }
-            
-        }
-
         private readonly LerpData _ld = new LerpData();
         private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue(0, 8);
-
 
         private float bgTransparency = 1;
 
@@ -275,187 +418,6 @@ namespace NodeNotes_Visual {
                 gameObject.SetActive(false);
         }
 
-        #region Node MGMT
-        [NonSerialized] private readonly List<NodeCircleController> NodesPool = new List<NodeCircleController>();
-        [NonSerialized] private int _firstFree = 0;
-
-        public void HideAll() {
-            foreach (var node in NodesPool) 
-                if (!node.isFading)
-                    MakeHidden(node.source);
-        }
-
-        public void Deactivate(NodeCircleController n) {
-            if (isFading)
-                Delete(n);
-            else {
-                n.gameObject.SetActive(false);
-                _firstFree = Mathf.Min(_firstFree, n.IndexForPEGI);
-            }
-        }
-
-        private void Delete(NodeCircleController ctr)
-        {
-            var ind = NodesPool.IndexOf(ctr);
-            NodesPool.RemoveAt(ind);
-            _firstFree = Mathf.Min(_firstFree, ind);
-            ctr.gameObject.DestroyWhatever();
-        }
-
-        private void MakeVisible(Base_Node node, NodeCircleController centerNode = null)
-        {
-
-            NodeCircleController nnp = null;
-
-            if (!centerNode)
-                centerNode = node.parentNode?.visualRepresentation as NodeCircleController;
-
-            var reusing = false;
-
-            if (node.previousVisualRepresentation != null)
-            {
-                var tmp = node.previousVisualRepresentation as NodeCircleController;
-                if (tmp && tmp.isFading && node == tmp.myLastLinkedNode) {
-                    nnp = tmp;
-                    if (tmp.gameObject.activeSelf)
-                        reusing = true;
-                    
-                }
-            }
-
-            if (!nnp)
-            {
-                while (_firstFree < NodesPool.Count)
-                {
-                    var np = NodesPool[_firstFree];
-
-                    if (!np.gameObject.activeSelf)
-                    {
-                        nnp = np;
-                        break;
-                    }
-                    else _firstFree++;
-                }
-            }
-
-            if (!nnp)
-            {
-
-                if (!circlePrefab)
-                    return;
-
-                nnp = Instantiate(circlePrefab);
-                nnp.IndexForPEGI = NodesPool.Count;
-                NodesPool.Add(nnp);
-                
-            }
-
-            nnp.LinkTo(node);
-
-            if (!reusing)
-                nnp.SetStartPositionOn(centerNode);
-
-        }
-        
-        private void MakeHidden(Base_Node node, NodeCircleController previous = null)
-        {
-            var ncc = node.visualRepresentation as NodeCircleController;
-
-            if (!ncc)
-                return;
-
-            ncc.Unlink();
-
-            if (!Application.isPlaying)
-                Delete(ncc);
-            else
-                ncc.SetFadeAwayRelation(previous);
-
-        }
-        
-        private void UpdateVisibility(Base_Node node, NodeCircleController previous = null)  {
-
-            if (node == null) return;
-            
-            bool editingOrGotParent = (Shortcuts.editingNodes ||
-                                       ((node.parentNode != null && node.Conditions_isVisible()) ||
-                                        !Application.isPlaying));
-
-            bool currentNodeContains = (Shortcuts.CurrentNode != null && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
-
-            var shouldBeVisible = editingOrGotParent && currentNodeContains;
-
-            if (node.visualRepresentation == null)
-            {
-                if (shouldBeVisible)
-                    MakeVisible(node, previous);
-            }
-            else
-            if (!shouldBeVisible)
-                MakeHidden(node, previous);
-
-            if (node.visualRepresentation != null)
-                (node.visualRepresentation as NodeCircleController).SetDirty();
-        }
-
-        public void UpdateCurrentNodeGroupVisibilityAround(Node newCenter = null, NodeCircleController previousCenter = null)
-        {
-        
-            if (!Application.isPlaying)
-                return;
-
-            if (newCenter == null)
-                return;
-
-            if (previousCenter == null)
-                previousCenter = newCenter.visualRepresentation as NodeCircleController;
-
-            UpdateVisibility(newCenter, previousCenter);
-            foreach (var sub in newCenter)
-                UpdateVisibility(sub, previousCenter);
-            
-        }
-
-        [NonSerialized] public NodeCircleController selectedNode;
-
-        public void SetSelected(NodeCircleController node)
-        {
-            if (selectedNode)
-                selectedNode.SetDirty();
-
-            selectedNode = node;
-            
-            if (node)
-                node.SetDirty();
-
-            if (deleteButton)
-                deleteButton.gameObject.SetActive(selectedNode);
-        }
-
-        public override void MakeVisible(Base_Node node)
-        {
-
-        }
-        
-        public override void MakeHidden(Base_Node node)
-        {
-
-        }
-
-        public override void OnLogicUpdate()
-        {
-            var node = Shortcuts.CurrentNode;
-
-            UpdateVisibility(node);
-
-            foreach (var n in NodesPool)
-                UpdateVisibility(n.source);
-
-            UpdateCurrentNodeGroupVisibilityAround(node);
-        }
-        
-        #endregion
-
         public override void ManagedOnEnable()
         {
             inst = this;
@@ -480,9 +442,83 @@ namespace NodeNotes_Visual {
             NodeNotesMeshObject.ManagedOnDisable();
 
         }
+        
+        #region Inspector
+        public string NameForPEGIdisplay => "White Background";
+
+        public override bool Inspect()
+        {
+            bool changed = false;
+
+            pegi.nl();
+
+
+            if (!IsRendering && "Reenable Nodes Rending".Click())
+                IsRendering = true;
+
+            if (Application.isPlaying && selectedNode)
+            {
+
+                var src = selectedNode.source;
+
+                if (selectedNode.meshObject && IsRendering && "Disable Renderers For Nodes".Click().nl())
+                    IsRendering = false;
+
+                if (src.Nested_Inspect().nl(ref changed) && selectedNode)
+                    selectedNode.UpdateName();
+
+            }
+            else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
+
+            if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.InspectingVisuals()) && (selectedNode.inspectedItems == -1)))
+            {
+
+                if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
+                {
+                    pegi.nl();
+                    "Edit Button".edit(90, ref editButton).nl(ref changed);
+                    "Add Button".edit(90, ref addButton).nl(ref changed);
+                    "Delete Button".edit(90, ref deleteButton).nl(ref changed);
+
+                    "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
+
+                    "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
+
+                    "Gradient Configs: {0}".F(perNodeGradientConfigs.CountForInspector());
+
+                }
+            }
+
+            return changed;
+        }
+
+        #endregion
+
+        #region Encode & Decode
+
+        public override CfgEncoder EncodePerBookData() => new CfgEncoder()
+               .Add("bg", perNodeGradientConfigs.Encode());
+
+
+        public override bool Decode(string tg, string data)
+        {
+            switch (tg)
+            {
+                case "bg":
+                    data.DecodeInto(out perNodeGradientConfigs);
+                    break;
+                default: return true;
+
+            }
+            return false;
+        }
+
+        public override CfgEncoder Encode() => this.EncodeUnrecognized();
+
+        #endregion
 
     }
-    
+
     public class BackgroundGradient: AbstractKeepUnrecognizedCfg, IPEGI {
 
         public Color backgroundColorUp = Color.white;
