@@ -117,7 +117,7 @@ namespace QcTriggerLogic
                     {
 
                         var tmp = "";
-                        if ("Paste Messaged STD data".edit(140, ref tmp) || StdExtensions.LoadOnDrop(out tmp)) {
+                        if ("Paste Messaged STD data".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp)) {
 
                             var group = new TriggerGroup();
                             group.DecodeFromExternal(tmp);

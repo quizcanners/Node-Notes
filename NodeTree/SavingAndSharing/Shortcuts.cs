@@ -148,14 +148,14 @@ namespace NodeNotes {
         void LoadUser(string uname) {
 
             user = new CurrentUser();
-            user.Decode(QcFile.LoadUtils.LoadJsonFromPersistentPath(_usersFolder, uname));
+            user.Decode(QcFile.LoadUtils.LoadFromPersistentPath(_usersFolder, uname));
             _tmpUserName = uname;
         }
 
         void SaveUser() {
             if (!users.Contains(user.Name))
                 users.Add(user.Name);
-            user.SaveToPersistentPath_Json(_usersFolder, user.Name);
+            user.SaveToPersistentPath(_usersFolder, user.Name);
         }
 
         void DeleteUser()
@@ -168,7 +168,7 @@ namespace NodeNotes {
         }
         
         void DeleteUser_File(string uname) {
-            QcFile.DeleteUtils.Delete_PersistentFolder_Json(_usersFolder, uname);
+            QcFile.DeleteUtils.DeleteFromPersistentFolder(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -422,7 +422,7 @@ namespace NodeNotes {
                     else  {
 
                         string tmp = "";
-                        if ("Paste Messaged Book".edit(140, ref tmp) || StdExtensions.LoadOnDrop(out tmp)) {
+                        if ("Paste Messaged Book".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp)) {
                             var book = new NodeBook();
                             book.DecodeFromExternal(tmp);
                             if (books.GetByIGotName(book.NameForPEGI) == null)
@@ -446,7 +446,7 @@ namespace NodeNotes {
         #region Encode_Decode
 
 
-        public bool LoadAll() => this.LoadFromPersistentPath_Json(_generalItemsFolder, _generalItemsFile);
+        public bool Initialize() => this.LoadFromPersistentPath(_generalItemsFolder, _generalItemsFile);
 
         public void SaveAll()
         {
@@ -456,7 +456,7 @@ namespace NodeNotes {
             if (CurrentNode != null)
                 CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
 
-            QcFile.SaveUtils.SaveJsonToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+            QcFile.SaveUtils.SaveToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
 

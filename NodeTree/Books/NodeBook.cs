@@ -139,7 +139,7 @@ namespace NodeNotes
             }
             else NameForDisplayPEGI().write();
 
-            if (icon.Book.ClickUnFocus("Inspect book").changes(ref changed))
+            if (icon.Enter.ClickUnFocus("Inspect book").changes(ref changed))
                 edited = ind;
 
             if (icon.Save.Click("Save book (Also offloads RAM)"))
@@ -230,13 +230,13 @@ namespace NodeNotes
 
             if (AuthoringAStory) {
                 Debug.Log("Saving {0} to resources".F(BookName));
-                this.SaveToResources_Bytes(Shortcuts.ProjectName, this.BookFolder(), BookName);
+                this.SaveToResources(Shortcuts.ProjectName, this.BookFolder(), BookName);
                 QcUnity.RefreshAssetDatabase();
             }
             else
             {
                 Debug.Log("Saving {0} to perisstent ".F(NameForPEGI));
-                this.SaveToPersistentPath_Json(this.BookFolder(), NameForPEGI);
+                this.SaveToPersistentPath(this.BookFolder(), NameForPEGI);
             }
         }
 
@@ -244,12 +244,12 @@ namespace NodeNotes
 
             if (reff.EditedByCurrentUser() && Application.isEditor) {
                 Debug.Log("Loading {0} from resources".F(reff.BookName));
-                return this.TryLoadFromResources_Bytes(reff.BookFolder(), reff.BookName);
+                return this.TryLoadFromResources(reff.BookFolder(), reff.BookName);
             }
             else
             {
                 Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.user.Name));
-                return this.LoadFromPersistentPath_Json(reff.BookFolder(), reff.BookName);
+                return this.LoadFromPersistentPath(reff.BookFolder(), reff.BookName);
             }
 
         }
@@ -261,7 +261,7 @@ namespace NodeNotes
                 QcUnity.RefreshAssetDatabase();
             }
             else 
-                QcFile.DeleteUtils.Delete_PersistentFolder_Json(this.BookFolder(), bookName);
+                QcFile.DeleteUtils.DeleteFromPersistentFolder(this.BookFolder(), bookName);
         }
 
         public void TryRename(string newName) {

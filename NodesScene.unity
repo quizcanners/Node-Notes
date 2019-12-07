@@ -652,7 +652,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.6, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 199.99902, y: -100}
+  m_AnchoredPosition: {x: 200, y: -100}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &137829813
@@ -1613,7 +1613,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 179.99902, y: 225}
+  m_AnchoredPosition: {x: 180, y: 225}
   m_SizeDelta: {x: 180, y: 75}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &737095456
@@ -1823,7 +1823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &808421425
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1905,18 +1905,7 @@ MonoBehaviour:
   _inspectedModule: 0
   OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1274019441}
-        m_MethodName: RightTopButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   maxHoldForClick: 0.3
   maxMousePositionPixOffsetForClick: 20
   _modulesStd: 
@@ -2069,7 +2058,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.22125, y: 0.114754684}
-  m_AnchoredPosition: {x: -13.599548, y: 0}
+  m_AnchoredPosition: {x: -13.599609, y: 0}
   m_SizeDelta: {x: -13.6, y: 0.00022125}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1235906090
@@ -2186,7 +2175,6 @@ MonoBehaviour:
   inspectedItems: -1
   nestedReferences: []
   gradientController: {fileID: 1290433479}
-  test: 0
   isFading: 1
   slidingButtons:
   - {fileID: 1417408137}
@@ -2542,7 +2530,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 179.99902, y: 75}
+  m_AnchoredPosition: {x: 180, y: 75}
   m_SizeDelta: {x: 180, y: 75}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1417408136
@@ -2663,7 +2651,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 179.99902, y: 150}
+  m_AnchoredPosition: {x: 180, y: 150}
   m_SizeDelta: {x: 180, y: 75}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1419288878

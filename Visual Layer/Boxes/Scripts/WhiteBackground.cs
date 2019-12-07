@@ -418,18 +418,23 @@ namespace NodeNotes_Visual {
                 gameObject.SetActive(false);
         }
 
-        public override void ManagedOnEnable()
+        public override void ManagedOnInitialize()
         {
             inst = this;
 
             if (editButton)
                 editButton.Text = "Edit";
 
+            if (Application.isPlaying)
+                editButton.graphic.OnClick.AddListener(RightTopButton);
+
             if (addButton)
                 addButton.gameObject.SetActive(false);
+
+           
         }
 
-        public override void ManagedOnDisable()  {
+        public override void ManagedOnDeInitialize()  {
             
             foreach (var e in NodesPool)
                 if (e) {

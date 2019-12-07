@@ -259,7 +259,7 @@ namespace NodeNotes_Visual
             base.OnDisable();
 
             foreach (var bg in backgroundControllers)
-                bg.ManagedOnDisable();
+                bg.ManagedOnDeInitialize();
 
             textureDownloader.Dispose();
 
@@ -281,10 +281,10 @@ namespace NodeNotes_Visual
 
             base.OnEnable();
             
-            shortcuts.LoadAll();
+            shortcuts.Initialize();
             
             foreach (var bg in backgroundControllers)
-                bg.ManagedOnEnable();
+                bg.ManagedOnInitialize();
 
         }
 

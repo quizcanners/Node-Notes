@@ -188,12 +188,12 @@ namespace NodeNotes_Visual {
         
         public override void MakeHidden(Base_Node node) { }
 
-        public override void ManagedOnEnable()
+        public override void ManagedOnInitialize()
         {
 
         }
 
-        public override void ManagedOnDisable()
+        public override void ManagedOnDeInitialize()
         {
             Unlink();
         }

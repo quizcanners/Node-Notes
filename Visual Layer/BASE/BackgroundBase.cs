@@ -28,14 +28,15 @@ namespace NodeNotes_Visual {
 
         public abstract void MakeHidden(Base_Node node);
 
-        public abstract void ManagedOnEnable();
+        public abstract void ManagedOnInitialize();
 
+        public abstract void ManagedOnDeInitialize();
+        
         public abstract void OnLogicUpdate();
         
         public abstract void SetNode(Node node);
 
-        public abstract void ManagedOnDisable();
-        
+
         public virtual CfgEncoder EncodePerBookData() => new CfgEncoder();
 
     }

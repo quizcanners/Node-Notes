@@ -41,8 +41,13 @@ namespace NodeNotes_Visual
 
             var mc = new MeshConstructor(_painter);
 
-            mc.Construct(_painter);
+            var m = mc.Construct();
 
+            if (m)
+                _painter.SharedMesh = m;
+
+            _painter.UpdateMeshCollider(_painter.SharedMesh);
+            
             UpdateMaterial();
 
         }
@@ -86,10 +91,8 @@ namespace NodeNotes_Visual
                 _painter.Reset();
                 meshes.Add(this);
                 _painter.SharedMesh = Shortcuts.Instance.GetMesh("");
+                _painter.UpdateMeshCollider(_painter.SharedMesh);
             }
-
-          
-
 
         }
 
@@ -100,6 +103,14 @@ namespace NodeNotes_Visual
             var changed = false;
 
             "Mesh object".write();
+
+            if ("Edit".Click())
+            {
+
+                MeshEditorManager.Inst.EditMesh(_painter, true);
+                QcUnity.FocusOn(_painter);
+            }
+
 
             this.ClickHighlight().nl();
             
@@ -239,7 +250,18 @@ namespace NodeNotes_Visual
             // Will also track and parent/unparant nodes that are fading away
         private static List<NodeNotesMeshObject> meshes = new List<NodeNotesMeshObject>();
 
-        private static void UnparentAll() {
+        private static void ClearDestroyed()
+        {
+            for(int i=meshes.Count-1; i>=0; i--)
+                if (!meshes[i])
+                    meshes.RemoveAt(i);
+        }
+
+        private static void UnparentAll()
+        {
+
+            ClearDestroyed();
+
             foreach (var m in meshes)
                 m.transform.parent = null;
         }
