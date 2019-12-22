@@ -15,7 +15,7 @@ namespace NodeNotes_Visual.ECS {
     public static class NodeNotesECSManager
     {
 
-        public static EntityManager Manager => World.DefaultGameObjectInjectionWorld?.EntityManager;
+        public static EntityManager Manager => World.Active?.EntityManager;
 
         #region Entity MGMT
         public static Entity Instantiate(GameObject prefab)
@@ -200,16 +200,16 @@ namespace NodeNotes_Visual.ECS {
             }
             else{
 
-                if (World.DefaultGameObjectInjectionWorld == null) {
+                if (World.Active == null) {
                     "Active World is null".writeWarning();
 
                     foreach (var world in World.AllWorlds) {
                         if (world.Name.Click().nl())
-                            World.DefaultGameObjectInjectionWorld = world;
+                            World.Active = world;
                     }
                     
                     if ("Create".Click())
-                        World.DefaultGameObjectInjectionWorld = new World("Node Notes");
+                        World.Active = new World("Node Notes");
                 } 
 
             }

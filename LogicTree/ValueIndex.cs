@@ -108,32 +108,37 @@ namespace QcTriggerLogic
 
             bool changed = false;
 
-                focusName = "{0}{1}_{2}".F(prefix,index,groupIndex);
+            focusName = "{0}{1}_{2}".F(prefix,index,groupIndex);
 
-                pegi.NameNext(focusName);
+            pegi.NameNext(focusName);
 
-                string tmpname = Trigger.name;
+            string tmpname = Trigger.name;
 
-                if (Trigger.focusIndex == index)
-                    changed |= pegi.edit(ref Trigger.searchField);
-                else
-                    changed |= pegi.edit(ref tmpname);
+            if (Trigger.focusIndex == index)
+                changed |= pegi.edit(ref Trigger.searchField);
+            else
+                changed |= pegi.edit(ref tmpname);
 
             return changed;
         }
 
-        public bool SearchAndAdd_Triggers_PEGI(int index) {
+        public bool SearchAndAdd_Triggers_PEGI(int index)
+        {
             bool changed = false;
 
             Trigger t = Trigger;
 
             if (this == edited)
-                changed |= t.Inspect();
+                t.Inspect().changes(ref changed);
 
-            if ((pegi.FocusedName == (focusName)) && (this != edited)) {
+
+
+            if (pegi.FocusedName.Equals(focusName) && (this != edited))
+            {
                 selected = this;
 
-                if (Trigger.focusIndex != index) {
+                if (Trigger.focusIndex != index)
+                {
                     Trigger.focusIndex = index;
                     Trigger.searchField = Trigger.name;
                 }
@@ -144,9 +149,14 @@ namespace QcTriggerLogic
                 selectedTrig = Trigger;
 
             }
-            else if (index == Trigger.focusIndex) Trigger.focusIndex = -2;
+            else
+            {
+                Debug.Log("Focused {0}, foucsed name {1}".F(pegi.FocusedName, focusName));
 
-            if (this == selected)
+                if (index == Trigger.focusIndex) Trigger.focusIndex = -2;
+            }
+        
+        if (this == selected)
                 changed |= TriggerGroup.AddTrigger_PEGI(this);
 
             return changed;

@@ -33,7 +33,7 @@ namespace NodeNotes_Visual.ECS {
             if (ECS_ObjectsToArray.enabled) {
 
                 MovementJob moveJob = new MovementJob {
-                    deltaTime = Time.DeltaTime,
+                    deltaTime = Time.deltaTime,
                     previousArray = ECS_ObjectsToArray.previousPositions,
                 };
 
@@ -107,7 +107,7 @@ namespace NodeNotes_Visual.ECS {
                     Initialize();
 
                 MovementJob moveJob = new MovementJob {
-                    deltaTime = Time.DeltaTime,
+                    deltaTime = Time.deltaTime,
                     previousArray = previousPositions,
                     currentArray = currentPositions
                 };

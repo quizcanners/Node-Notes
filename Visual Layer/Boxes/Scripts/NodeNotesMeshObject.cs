@@ -24,8 +24,8 @@ namespace NodeNotes_Visual
 
         private Base_Node source;
 
-        private Vector3 relativePosition;
-        private float relativeZoom = 1f;
+        private Vector3 relativePosition = new Vector3(-1, 0, 2);
+        private float relativeZoom = 3f;
 
         private void UpdateMaterial() => _painter.Material = Shortcuts.Instance.GetMaterial(_materialTag);
 
@@ -92,6 +92,7 @@ namespace NodeNotes_Visual
                 meshes.Add(this);
                 _painter.SharedMesh = Shortcuts.Instance.GetMesh("");
                 _painter.UpdateMeshCollider(_painter.SharedMesh);
+                
             }
 
         }
@@ -182,13 +183,10 @@ namespace NodeNotes_Visual
                 UnparentAll();
 
             var currentCenterNode = currentCenterMesh ? currentCenterMesh.source.AsNode : null;
-
-
+            
             if (currentCenterMesh && (newCenterNode.IsDirectChildOf(currentCenterNode) ||
                                       currentCenterNode.IsDirectChildOf(newCenterNode))) {
-
-             
-
+                
                 bool zoomingIn = newCenterNode.IsDirectChildOf(currentCenterNode);
 
                 Debug.Log("Got zooming "+ (zoomingIn ? "In" : "Out"));
@@ -305,10 +303,6 @@ namespace NodeNotes_Visual
 
            return true;
         }
-
-
-
-
 
     }
 
