@@ -13,6 +13,7 @@ namespace NodeNotes_Visual
 {
     using PlayerAndEditorGUI;
     using PlaytimePainter;
+    using PlaytimePainter.MeshEditing;
 
     public class NodeNotesMeshObject : ComponentCfg, IManageFading, ILinkedLerping
     {

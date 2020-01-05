@@ -1,4 +1,4 @@
-﻿Shader "NodeNotes/UI/TextMesh_Perspective" {
+﻿Shader "Node Notes/UI/TextMesh_Perspective" {
 
 	Properties{
 		_FaceColor("Face Color", Color) = (1,1,1,1)
