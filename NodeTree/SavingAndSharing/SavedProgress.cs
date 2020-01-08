@@ -138,10 +138,11 @@ namespace NodeNotes {
                     if (TrySetCurrentNode(book, bm.nodeIndex)) {
                         bm.gameNodesData.Decode_Dictionary(out gameNodesData_PerUser);
                         bm.values.DecodeInto(out Values.global);
-                        if (bookMarks.Count<=ind)
-                            Debug.LogError("Bookmark was set in Try Set current node");
-                        else 
+                        if (bookMarks.Count>ind)
                             bookMarks = bookMarks.GetRange(0, ind);
+                        //else
+                        //Debug.LogError("Bookmark was set in Try Set current node");
+                     
                     }
                     else
                         Debug.LogError("Need to implement default (HUB) node");

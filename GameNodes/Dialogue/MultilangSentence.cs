@@ -14,18 +14,11 @@ namespace NodeNotes {
 
     public enum Languages { note = 0, en = 1, uk = 2, tr = 3, ru = 4 }
     
-    public class SentenceAttribute : AbstractWithTaggedTypes {
-        public override TaggedTypesCfg TaggedTypes => Sentence.all;
-    }
-
-    [Sentence]
     public abstract class Sentence: AbstractKeepUnrecognizedCfg, IGotClassTag, IGotName, IPEGI {
 
         #region Tagged Types MGMT
         public abstract string ClassTag { get; }
-        
         public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(Sentence));
-        public TaggedTypesCfg AllTypes => all;
         #endregion
 
         public override string ToString() => NameForPEGI;
@@ -215,7 +208,7 @@ namespace NodeNotes {
         public virtual bool InspectInList(IList list, int ind, ref int edited) {
             var changed = this.inspect_Name();
 
-            if (this.Click_Enter_Attention(icon.Hint, currentLanguage.GetNameForInspector()))
+            if (this.Click_Enter_Attention(hint: currentLanguage.GetNameForInspector()))
                 edited = ind;
             return changed;
         }
@@ -223,14 +216,18 @@ namespace NodeNotes {
         public override bool Inspect() {
             string tmp = NameForPEGI;
 
-            "Show only one language".toggleIcon(ref singleView);
+
+            "Show only one language".toggleIcon(ref singleView, true);
             if (singleView)  {
                 LanguageSelector_PEGI();
                 if (pegi.editBig(ref tmp)) {
                     NameForPEGI = tmp;
                     return true;
                 }
-            } else {
+            } else
+            {
+
+                pegi.nl();
 
                 "Translations".edit_Dictionary_Values(texts, LanguageCodes);
 

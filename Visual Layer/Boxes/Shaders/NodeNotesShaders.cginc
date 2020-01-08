@@ -18,7 +18,12 @@ float4 _NodeNotes_MouseDerrived; // x - One Directional Speed
 inline float PowerFromClick(float2 screenUV) {
 	float2 fromMouse = (screenUV - _NodeNotes_MousePosition.xy);
 	fromMouse.x *= _NodeNotes_MousePosition.w;
-	return saturate((1 - length(fromMouse) * 6) * _NodeNotes_MousePosition.z);
+
+	float radius = max(0 , 1 - length(fromMouse) * 4);
+
+	radius *= radius;
+
+	return saturate(radius * radius * _NodeNotes_MousePosition.z);
 }
 
 inline float GetCirculingSparkles(float2 uv, float offset, float pressPower) {
@@ -63,7 +68,7 @@ inline float DarkBrightGradient(float2 screenUV, float pressPower) {
 
 	//return length(clickOff);
 
-	float2 clickOff1 = clickOff * power * _NodeNotes_MouseDerrived.x * 0.3f;
+	float2 clickOff1 = clickOff * power * _NodeNotes_MouseDerrived.x * 0.3;
 
 	float val = t * 15 + screenUV.x * 3 + screenUV.y * 8;
 

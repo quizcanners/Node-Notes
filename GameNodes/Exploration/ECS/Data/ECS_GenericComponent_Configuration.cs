@@ -12,17 +12,17 @@ namespace NodeNotes_Visual.ECS {
 
 
     #region Generic Entity Config
-    public class ComponentSTDAttributeAttribute : AbstractWithTaggedTypes {
+ /*   public class ComponentSTDAttributeAttribute : AbstractWithTaggedTypes {
         public override TaggedTypesCfg TaggedTypes => ComponentCfgAbstract.all;
     }
 
-    [ComponentSTDAttribute]
+    [ComponentSTDAttribute]*/
     public abstract class ComponentCfgAbstract : AbstractKeepUnrecognizedCfg, IGotClassTag
     {
         #region Tagged Types
         public abstract string ClassTag { get; }
         public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(ComponentCfgAbstract));
-        public TaggedTypesCfg AllTypes => all;
+        //public TaggedTypesCfg AllTypes => all;
         #endregion
 
         #region Component MGMT

@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace NodeNotes {
 
-    public class GameNodeAttribute : AbstractWithTaggedTypes
+    /*public class GameNodeAttribute : AbstractWithTaggedTypes
     {
         public override TaggedTypesCfg TaggedTypes => GameNodeBase.all;
     }
 
-    [GameNode]
+    [GameNode]*/
     [DerivedList()]
     public abstract class GameNodeBase : Base_Node, IGotClassTag
     {
@@ -22,7 +22,7 @@ namespace NodeNotes {
         public override GameNodeBase AsGameNode => this;
         public abstract string ClassTag { get;  } 
         public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(GameNodeBase));
-        public TaggedTypesCfg AllTypes => all;
+        //public TaggedTypesCfg AllTypes => all;
         #endregion
 
         #region Enter & Exit

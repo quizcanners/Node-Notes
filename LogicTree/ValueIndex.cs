@@ -151,7 +151,7 @@ namespace QcTriggerLogic
             }
             else
             {
-                Debug.Log("Focused {0}, foucsed name {1}".F(pegi.FocusedName, focusName));
+               // Debug.Log("Focused {0}, foucsed name {1}".F(pegi.FocusedName, focusName));
 
                 if (index == Trigger.focusIndex) Trigger.focusIndex = -2;
             }

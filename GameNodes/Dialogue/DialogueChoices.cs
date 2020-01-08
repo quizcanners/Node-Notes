@@ -279,11 +279,13 @@ namespace NodeNotes_Visual {
 
             "After choice texts".enter_Inspect(text2, ref _inspectedItems, 4).nl_ifNotEntered(ref changed);
 
-            if (!nextOne.IsNullOrEmpty() && icon.Delete.Click("Remove any followups"))
-                nextOne = "";
-
             if (_inspectedItems == -1)
-                "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
+            {
+                if (!nextOne.IsNullOrEmpty() && icon.Delete.Click("Remove any followups"))
+                    nextOne = "";
+                
+                    "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
+            }
 
             return changed;
         }

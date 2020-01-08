@@ -203,7 +203,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
                 {
                     scrollSoundPlayedUp = up;
                     scrollSoundPlayed = true;
-                    audioSource.PlayOneShot(Shortcuts.Instance.onSwipeSound);
+                   // audioSource.PlayOneShot(Shortcuts.Instance.onSwipeSound);
                 }
 
                 (state == ScrollingState.ScrollingHistory ? historyScroll : optionsScroll).AddOffset(diff);

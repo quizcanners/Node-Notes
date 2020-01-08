@@ -404,14 +404,10 @@ namespace NodeNotes_Visual {
 
         #region Text Chunks
 
-        public class TextChunkAttribute : AbstractWithTaggedTypes { public override TaggedTypesCfg TaggedTypes => TextChunkBase.all; }
-
-        [TextChunk]
         public abstract class TextChunkBase : AbstractKeepUnrecognizedCfg, IGotClassTag, IGotDisplayName  {
             #region Tagged Types MGMT
             public abstract string ClassTag { get; }
             public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(TextChunkBase));
-            public TaggedTypesCfg AllTypes => all;
             #endregion
 
  

@@ -526,9 +526,9 @@ namespace NodeNotes_Visual {
 
     public class BackgroundGradient: AbstractKeepUnrecognizedCfg, IPEGI {
 
-        public Color backgroundColorUp = Color.white;
-        public Color backgroundColorCenter = Color.white;
-        public Color backgroundColorDown = Color.white;
+        public Color backgroundColorUp = Color.black;
+        public Color backgroundColorCenter = Color.black;
+        public Color backgroundColorDown = Color.black;
 
         #region Encode & Decode
         
