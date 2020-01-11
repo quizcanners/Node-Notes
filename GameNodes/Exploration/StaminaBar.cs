@@ -130,7 +130,7 @@ namespace NodeNotes_Visual {
                 
             }
 
-            StaminaCurve = 1 + Mathf.Pow(Mathf.Clamp01(_staminaLine * 2),2) * 5;
+            //StaminaCurve = 1 + Mathf.Pow(Mathf.Clamp01(_staminaLine * 2),2) * 5;
 
             _staminaLineInShader.GlobalValue = _staminaLine;
             

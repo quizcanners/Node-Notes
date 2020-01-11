@@ -760,7 +760,7 @@ namespace NodeNotes_Visual {
             }
         }
 
-        private readonly ShaderProperty.ColorValue _color = new ShaderProperty.ColorValue("_Color");
+        private readonly ShaderProperty.ColorFloat4Value _color = new ShaderProperty.ColorFloat4Value("_Color");
         private readonly ShaderProperty.VectorValue _projPos = new ShaderProperty.VectorValue("_ProjTexPos");
         private readonly ShaderProperty.VectorValue _stretch = new ShaderProperty.VectorValue("_Stretch");
         private readonly ShaderProperty.FloatValue _blur = new ShaderProperty.FloatValue("_Blur");

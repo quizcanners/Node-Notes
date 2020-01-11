@@ -63,10 +63,11 @@
 
 			float4 frag(v2f o) : COLOR{
 
-				float2 off = abs(o.texcoord.xy - 0.5)*2;
+				float2 off = o.texcoord.xy - 0.5;
 
-			
+				clip(off.y);
 
+				off = abs(off) * 2;
 
 				float2 duv = o.screenPos.xy / o.screenPos.w;
 
