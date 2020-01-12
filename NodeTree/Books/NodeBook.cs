@@ -210,8 +210,8 @@ namespace NodeNotes
         }
     
         public override void Decode(string data) {
-            
-           data.DecodeTagsFor(this);
+
+            this.DecodeTagsFrom(data);
 
             if (subNode == null)
                 subNode = new Node();

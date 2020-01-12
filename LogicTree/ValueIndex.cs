@@ -18,7 +18,7 @@ namespace QcTriggerLogic
 
     
         #region Encode & Decode
-        public void Decode(string data) => data.DecodeTagsFor(this);
+        public void Decode(string data) => this.DecodeTagsFrom(data);
 
         public abstract CfgEncoder Encode();
         public abstract bool Decode(string tg, string data);
