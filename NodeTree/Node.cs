@@ -176,7 +176,7 @@ namespace NodeNotes {
             using (_loopLock.Lock())
             {
                 string msg;
-                if (coreNodes.NeedsAttention(out msg, "Sub Nodes") || gameNodes.NeedsAttention(out msg, "Game Nodes"))
+                if (pegi.NeedsAttention(coreNodes, out msg, "Sub Nodes") || pegi.NeedsAttention(gameNodes, out msg, "Game Nodes"))
                     return msg;
             }
 

@@ -148,7 +148,7 @@ namespace NodeNotes {
         void LoadUser(string uname) {
 
             user = new CurrentUser();
-            user.Decode(QcFile.LoadUtils.LoadFromPersistentPath(_usersFolder, uname));
+            user.Decode(QcFile.Loading.FromPersistentPath(_usersFolder, uname));
             _tmpUserName = uname;
         }
 
@@ -168,7 +168,7 @@ namespace NodeNotes {
         }
         
         void DeleteUser_File(string uname) {
-            QcFile.DeleteUtils.DeleteFromPersistentFolder(_usersFolder, uname);
+            QcFile.Delete.FromPersistentFolder(_usersFolder, uname);
             if (users.Contains(uname))
                 users.Remove(uname);
         }
@@ -339,13 +339,13 @@ namespace NodeNotes {
                     if (Application.isEditor) {
 
                         if (icon.Folder.Click("Open Save files folder").nl())
-                            QcFile.ExplorerUtils.OpenPersistentFolder(NodeBook_Base.BooksRootFolder);
+                            QcFile.Explorer.OpenPersistentFolder(NodeBook_Base.BooksRootFolder);
                         
-                        var authorFolders = QcFile.ExplorerUtils.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
+                        var authorFolders = QcFile.Explorer.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
 
                         foreach (var authorFolder in authorFolders) {
 
-                            var fls = QcFile.ExplorerUtils.GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
+                            var fls = QcFile.Explorer.GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
 
                             foreach (var bookFile in fls) {
 
@@ -456,7 +456,7 @@ namespace NodeNotes {
             if (CurrentNode != null)
                 CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
 
-            QcFile.SaveUtils.SaveToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+            QcFile.Saving.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
 

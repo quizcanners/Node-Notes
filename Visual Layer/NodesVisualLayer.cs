@@ -142,7 +142,7 @@ namespace NodeNotes_Visual
 
         #region Inspector
 
-        pegi.WindowPositionData_PEGI_GUI window = new pegi.WindowPositionData_PEGI_GUI();
+        pegi.GameView.Window _playtimeInspectorWindowOnGui = new pegi.GameView.Window();
 
         protected override void ResetInspector()
         {
@@ -238,7 +238,7 @@ namespace NodeNotes_Visual
             if (!Shortcuts.showPlaytimeUI || (Application.isPlaying && !Shortcuts.editingNodes))
                 return;
             
-            window.Render(this);
+            _playtimeInspectorWindowOnGui.Render(this);
         }
         
         #endregion

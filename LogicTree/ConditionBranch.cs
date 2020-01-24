@@ -38,7 +38,7 @@ namespace QcTriggerLogic {
         {
 
             string msg;
-            if (_branches.NeedsAttention(out msg) || _conditions.NeedsAttention(out msg))
+            if (pegi.NeedsAttention(_branches, out msg) || pegi.NeedsAttention(_conditions, out msg))
                 return msg;
 
             return null;

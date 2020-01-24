@@ -103,7 +103,7 @@ namespace NodeNotes_Visual {
 
         public string NeedAttention() {
 
-            var na = choices.NeedAttentionMessage();
+            var na = pegi.NeedAttentionMessage(choices);
 
             return na;
         }

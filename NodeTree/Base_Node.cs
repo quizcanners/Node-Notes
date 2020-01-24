@@ -253,7 +253,7 @@ namespace NodeNotes {
             if (inspectionLock.Unlocked)
             using (inspectionLock.Lock()) {
 
-                var onPlayScreen = pegi.paintingPlayAreaGui;
+                var onPlayScreen = pegi.PaintingGameViewUI;
 
                 if (_inspectedItems == -1) {
                     this.inspect_Name().changes(ref changed);

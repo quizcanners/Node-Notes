@@ -159,7 +159,7 @@ namespace NodeNotes_Visual {
 
             } else {
                 
-                var onPlayScreen = pegi.paintingPlayAreaGui;
+                var onPlayScreen = pegi.PaintingGameViewUI;
 
                 if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
                     Shortcuts.CurrentNode = null;
@@ -293,7 +293,7 @@ namespace NodeNotes_Visual {
                 if ("Image".enter(ref inspectedItems, 5).nl()) {
 
                     if (_imageIndex != -1) {
-                        if (!pegi.paintingPlayAreaGui)
+                        if (!pegi.PaintingGameViewUI)
                             "Downloading {0} [1]".F(imageUrl, _imageIndex).write();
                     }  else  {
                         if ("Image".edit("Will not be saved", 40, ref _coverImage).nl())
@@ -326,7 +326,7 @@ namespace NodeNotes_Visual {
                         else
                             "Hide Label".toggleIcon(ref _hideLabel).nl(ref changed);
 
-                            if (!pegi.paintingPlayAreaGui)
+                            if (!pegi.PaintingGameViewUI)
                                 _coverImage.write(200); pegi.nl();
 
                         }
