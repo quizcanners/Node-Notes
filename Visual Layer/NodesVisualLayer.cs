@@ -366,7 +366,7 @@ namespace NodeNotes_Visual
         }
 
         public PoolSimple (string name) {
-            activeList = new ListMetaData(name, true, true, allowCreating: false);
+            activeList = new ListMetaData(name, true, true, showAddButton: false);
 
         }
 

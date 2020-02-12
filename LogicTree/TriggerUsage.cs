@@ -64,7 +64,7 @@ namespace QcTriggerLogic
             if (pegi.editDelayed(ref before, 150 - (HasMoreTriggerOptions ? 30 : 0)).changes(ref changed)) {
                 Trigger.searchField = before;
                 t.name = before;
-                pegi.FocusControl("none");
+                pegi.UnFocus();
             }
             return changed;
         }

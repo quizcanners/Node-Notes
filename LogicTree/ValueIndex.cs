@@ -130,9 +130,7 @@ namespace QcTriggerLogic
 
             if (this == edited)
                 t.Inspect().changes(ref changed);
-
-
-
+            
             if (pegi.FocusedName.Equals(focusName) && (this != edited))
             {
                 selected = this;
@@ -171,14 +169,14 @@ namespace QcTriggerLogic
             Trigger.searchMatchesFound = 0;
 
             if (KeyCode.Return.IsDown().nl(ref changed))
-                pegi.FocusControl("none");
+                pegi.UnFocus();
 
             int searchMax = 20;
 
             current.GetNameForInspector().write();
 
             if (icon.Done.Click().nl(ref changed))
-                pegi.FocusControl("none");
+                pegi.UnFocus();
             else foreach (var gb in TriggerGroup.all) {
                     var lst = gb.GetFilteredList(ref searchMax,
                         !SearchTriggerSameType || IsBoolean ,
