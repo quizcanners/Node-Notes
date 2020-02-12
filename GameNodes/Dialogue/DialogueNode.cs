@@ -70,7 +70,7 @@ namespace NodeNotes_Visual {
                     DistantUpdate();
                     pegi.nl();
                     for (var i = 0; i < OptText.Count; i++)
-                        if (OptText[i].Click(13).nl()) {
+                        if (OptText[i].ClickText(13).nl()) {
                             SelectOption(i);
                             DistantUpdate();
                         }
