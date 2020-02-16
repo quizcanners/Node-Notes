@@ -28,7 +28,7 @@ namespace QcTriggerLogic
             if (_realTimeOnStartUp == 0)
                 _realTimeOnStartUp = (int)((DateTime.Now.Ticks - 733000 * TimeSpan.TicksPerDay) / TimeSpan.TicksPerSecond);
 
-            return _realTimeOnStartUp + (int)Time.realtimeSinceStartup;
+            return _realTimeOnStartUp + (int)QcUnity.TimeSinceStartup();
         }
         
         public override CfgEncoder Encode() =>this.EncodeUnrecognized();
