@@ -257,7 +257,7 @@ namespace NodeNotes
         public void DeleteFile(string bookName) {
 
             if (AuthoringAStory) {
-                QcFile.Delete.Resource_Bytes(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
+                QcFile.Delete.FromResources(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));
                 QcUnity.RefreshAssetDatabase();
             }
             else 
