@@ -193,7 +193,7 @@
 
 					float3 worldNormal = i.normal.xyz;
 
-					applyTangent(worldNormal, nn, i.wTangent);
+					ApplyTangent(worldNormal, nn, i.wTangent);
 
 					float dotprod = max(0, dot(worldNormal, viewDir.xyz));
 					float fernel = 1.5 - dotprod;
