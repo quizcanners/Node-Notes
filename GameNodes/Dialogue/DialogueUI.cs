@@ -158,11 +158,18 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         singlePhraseBoxHeight.Portion(ld, activeCount > 0 ? 0 : 1);
         historyPool.active.Portion(ld);
         optionsPool.active.Portion(ld);
-        separatorPosition.Portion(ld, Mathf.Min(0.6f, 0.3f + activeCount * 0.2f));
 
-        historyPool.active.Lerp(ld);
-        optionsPool.active.Lerp(ld);
-        singlePhraseBoxHeight.Lerp(ld);
+        bool lerpSeparator = false;
+
+
+        if (separatorPosition.TargetValue != separatorPosition.CurrentValue || poolsDirty)
+        {
+            lerpSeparator = true;
+            poolsDirty = false;
+            separatorPosition.Portion(ld, Mathf.Min(0.6f, 0.3f + activeCount * 0.2f));
+        }
+
+        ld.LerpAndReset();
 
         var tf = singlePhraseBg.rectTransform;
         var size = tf.sizeDelta;
@@ -171,13 +178,10 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
         singlePhraseBg.TrySetAlpha_DisableGameObjectIfZero(curBoxFadeIn * 20);
         singlePhraseText.TrySetAlpha_DisableGameObjectIfZero((curBoxFadeIn - 0.9f)*10);
         tf.sizeDelta = size;
-
-        if (separatorPosition.TargetValue != separatorPosition.CurrentValue || poolsDirty) {
-            poolsDirty = false;
-            separatorPosition.Lerp(ld);
+        
+        if (lerpSeparator)
             UpdateCourners();
-        }
-
+       
         const float scrollbackSpeed = 1000;
 
         if (state == ScrollingState.None) {
@@ -203,7 +207,6 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
                 {
                     scrollSoundPlayedUp = up;
                     scrollSoundPlayed = true;
-                   // audioSource.PlayOneShot(Shortcuts.Instance.onSwipeSound);
                 }
 
                 (state == ScrollingState.ScrollingHistory ? historyScroll : optionsScroll).AddOffset(diff);
@@ -295,7 +298,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
             }
 
             historyPool.active[0].isLast = true;
-            historyPool.active.Last().isFirst = true;
+            historyPool.active.TryGetLast().isFirst = true; //Last().isFirst = true;
         }
 
         if (optionsPool.Count > 0) {
@@ -308,7 +311,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
             }
 
             optionsPool.active[0].isFirst = true;
-            optionsPool.active.Last().isLast = true;
+            optionsPool.active.TryGetLast().isLast = true;
         }
 
 

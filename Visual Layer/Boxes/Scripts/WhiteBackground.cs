@@ -394,16 +394,12 @@ namespace NodeNotes_Visual {
 
         void Update() {
 
-            _ld.Reset();
-
             addButtonCourner.Portion(_ld);
             NodesPool.Portion(_ld);
             slidingButtons.Portion(_ld);
 
-            addButtonCourner.Lerp(_ld);
-            NodesPool.Lerp(_ld);
-            slidingButtons.Lerp(_ld);
-
+            _ld.LerpAndReset();
+            
             addButton.SetCorner(1, addButtonCourner.CurrentValue);
 
             bgTransparency = LerpUtils.LerpBySpeed(bgTransparency, 0.05f + _ld.MinPortion * 0.95f, 1f);

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
@@ -34,7 +33,21 @@ namespace QcTriggerLogic
 
             if (searchField.Length == 0 || searchField.IsSubstringOf(name)) return true; // Regex.IsMatch(name, searchField, RegexOptions.IgnoreCase)) return true;
 
-            return (searchField.Contains(" ")) && searchField.Split(' ').All(sub => sub.IsSubstringOf(name) || sub.IsSubstringOf(groupName));
+            if (!searchField.Contains(" "))
+                return false;
+
+            var spl = searchField.Split(' ');
+
+            if (spl.Length == 0)
+                return false;
+
+            foreach (var s in spl)
+            {
+                if (!s.IsSubstringOf(name) && !s.IsSubstringOf(groupName))
+                    return false;
+            }
+
+            return true;
         }
 
         #region Encode & Decode

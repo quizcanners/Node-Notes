@@ -78,7 +78,7 @@ namespace NodeNotes {
                 return;
             }
 
-            var lastB = bookMarks.Last();
+            var lastB = bookMarks.TryGetLast();
 
             NodeBook b; 
 
