@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using NodeNotes;
-using QuizCannersUtilities;
+﻿using QuizCannersUtilities;
 using UnityEngine;
 
 namespace NodeNotes_Visual {

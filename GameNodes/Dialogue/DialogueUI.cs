@@ -142,7 +142,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     LinkedLerp.FloatValue separatorPosition = new LinkedLerp.FloatValue(0.5f, 2, "Separator");
     LinkedLerp.FloatValue singlePhraseBoxHeight = new LinkedLerp.FloatValue(0, 2, "Single Box size");
 
-    private bool scrollSoundPlayed = false;
+    private bool scrollSoundPlayed;
     private bool scrollSoundPlayedUp;
 
 
@@ -161,8 +161,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
         bool lerpSeparator = false;
 
-
-        if (separatorPosition.TargetValue != separatorPosition.CurrentValue || poolsDirty)
+        if (Math.Abs(separatorPosition.TargetValue - separatorPosition.CurrentValue) > 0.00001f || poolsDirty)
         {
             lerpSeparator = true;
             poolsDirty = false;
@@ -375,7 +374,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
     private string tmpText;
 
-    private bool scrollHistoryUpRequested = false;
+    private bool scrollHistoryUpRequested;
 
     public bool Inspect() {
 

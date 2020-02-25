@@ -1,24 +1,20 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using NodeNotes;
+using PlayerAndEditorGUI;
+using PlaytimePainter.MeshEditing;
 using QuizCannersUtilities;
 using UnityEngine;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace NodeNotes_Visual
 {
-    using PlayerAndEditorGUI;
-    using PlaytimePainter;
-    using PlaytimePainter.MeshEditing;
-
     public class NodeNotesMeshObject : ComponentCfg, IManageFading, ILinkedLerping
     {
 
-        [NonSerialized] private PlaytimePainter _painter;
+        [NonSerialized] private PlaytimePainter.PlaytimePainter _painter;
         [NonSerialized] private MeshFilter _meshFilter;
         [NonSerialized] private MeshRenderer _meshRenderer;
         [NonSerialized] private string _materialTag;
@@ -88,7 +84,7 @@ namespace NodeNotes_Visual
 
             if (!_painter)
             {
-                _painter = gameObject.AddComponent<PlaytimePainter>();
+                _painter = gameObject.AddComponent<PlaytimePainter.PlaytimePainter>();
                 _painter.Reset();
                 meshes.Add(this);
                 _painter.SharedMesh = Shortcuts.Instance.GetMesh("");
@@ -286,8 +282,8 @@ namespace NodeNotes_Visual
         {
             if (this == currentCenterMesh)
             {
-                positionLerp.Lerp(ld, false);
-                scaleLerp.Lerp(ld, false);
+                positionLerp.Lerp(ld);
+                scaleLerp.Lerp(ld);
             }
         }
 

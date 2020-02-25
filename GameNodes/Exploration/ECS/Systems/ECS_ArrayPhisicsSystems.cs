@@ -1,15 +1,9 @@
-﻿using Unity.Collections;
+﻿using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
-using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using Unity.Burst;
-using QuizCannersUtilities;
-using Unity.Collections.LowLevel.Unsafe;
-
-using Unity.Rendering;
-
 
 namespace NodeNotes_Visual.ECS {
     
@@ -34,7 +28,7 @@ namespace NodeNotes_Visual.ECS {
 
                 MovementJob moveJob = new MovementJob {
                     deltaTime = Time.DeltaTime,
-                    previousArray = ECS_ObjectsToArray.previousPositions,
+                    previousArray = ECS_ObjectsToArray.previousPositions
                 };
 
                 jh = moveJob.Schedule(this, inputDeps);

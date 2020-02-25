@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using NodeNotes;
-using NodeNotes_Visual.ECS;
-using UnityEngine;
+﻿using NodeNotes;
 using PlayerAndEditorGUI;
-using PlaytimePainter;
 using QuizCannersUtilities;
-using Unity.Entities;
-using Unity.Transforms;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -73,7 +66,7 @@ namespace NodeNotes_Visual {
         }
 
         public float speed = 10;
-        private bool _fps = false;
+        private bool _fps;
         public float sensitivity = 5;
         private float _rotationY;
         private Vector3 centeredPosition = Vector3.zero;

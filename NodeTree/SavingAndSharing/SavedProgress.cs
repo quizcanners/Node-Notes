@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
-using QcTriggerLogic;
-using System;
+﻿using System.Collections.Generic;
 using PlayerAndEditorGUI;
+using QcTriggerLogic;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace NodeNotes {
     
@@ -17,7 +15,7 @@ namespace NodeNotes {
         public string Name = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
         ListMetaData marksMeta = new ListMetaData("Book Marks", true, false, false, false);
-        public bool isADeveloper = false;
+        public bool isADeveloper;
 
         private static int tmpNode;
         private string tmpBookName;
@@ -98,7 +96,7 @@ namespace NodeNotes {
 
                 if (currentBook != null) {
 
-                    bookMarks.Add(new BookMark()
+                    bookMarks.Add(new BookMark
                     {
                         BookName = currentBook.NameForPEGI,
                         AuthorName = currentBook.authorName,

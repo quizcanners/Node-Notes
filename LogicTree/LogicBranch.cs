@@ -1,6 +1,6 @@
-﻿using PlayerAndEditorGUI;
+﻿using System.Collections.Generic;
+using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using System.Collections.Generic;
 
 namespace QcTriggerLogic
 {

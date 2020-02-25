@@ -21,7 +21,7 @@ namespace QcTriggerLogic
             set { _myCategories = value;  }
         }
 
-        private int _usage = 0;
+        private int _usage;
 
         public TriggerUsage Usage { get { return TriggerUsage.Get(_usage); }  set { _usage = value.index; } }
 

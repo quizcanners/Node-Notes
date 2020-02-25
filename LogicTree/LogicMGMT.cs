@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
+using UnityEngine;
 
 namespace QcTriggerLogic
 {
@@ -148,9 +148,9 @@ namespace QcTriggerLogic
 
                 if (inspectedTriggerGroup == -1) {
                     "At Index: ".edit(60, ref tmpIndex);
-                    if (tmpIndex >= 0 && ExtensionsForGenericCountless.TryGet(TriggerGroup.all, tmpIndex) == null && icon.Add.ClickUnFocus("Create New Group"))
+                    if (tmpIndex >= 0 && TriggerGroup.all.TryGet(tmpIndex) == null && icon.Add.ClickUnFocus("Create New Group"))
                     {
-                        TriggerGroup.all[tmpIndex].NameForPEGI = "Group " + tmpIndex.ToString();
+                        TriggerGroup.all[tmpIndex].NameForPEGI = "Group " + tmpIndex;
                         tmpIndex++;
                     }
                     pegi.nl();

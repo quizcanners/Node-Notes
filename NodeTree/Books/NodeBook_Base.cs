@@ -1,6 +1,6 @@
-﻿using QuizCannersUtilities;
-using System.IO;
+﻿using System.IO;
 using PlayerAndEditorGUI;
+using QuizCannersUtilities;
 
 namespace NodeNotes {
 

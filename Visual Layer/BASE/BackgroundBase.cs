@@ -1,7 +1,6 @@
-﻿using QuizCannersUtilities;
+﻿using NodeNotes;
 using PlayerAndEditorGUI;
-using NodeNotes;
-using PlaytimePainter;
+using QuizCannersUtilities;
 using UnityEngine;
 
 namespace NodeNotes_Visual {

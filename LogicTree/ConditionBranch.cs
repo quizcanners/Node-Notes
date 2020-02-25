@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
 using PlayerAndEditorGUI;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace QcTriggerLogic {
 
@@ -194,20 +194,18 @@ namespace QcTriggerLogic {
 
                 return toTrue || anyApplied;
 
-            } else {
-
-                foreach (var c in _conditions)
-                    if (c.TryForceConditionValue(values, toTrue))
-                        return true;
-                
-                foreach (var b in _branches)
-                    if (b.TryForceTo(values, toTrue))
-                        return true;
-
-                return toTrue; 
-
             }
-            
+
+            foreach (var c in _conditions)
+                if (c.TryForceConditionValue(values, toTrue))
+                    return true;
+                
+            foreach (var b in _branches)
+                if (b.TryForceTo(values, toTrue))
+                    return true;
+
+            return toTrue;
+
         }
         
         public ConditionBranch() { }

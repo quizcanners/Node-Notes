@@ -1,9 +1,8 @@
 ﻿using System;
-using QcTriggerLogic;
-using UnityEngine;
-using QuizCannersUtilities;
 using PlayerAndEditorGUI;
-using System.Collections.Generic;
+using QcTriggerLogic;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace NodeNotes {
     
@@ -19,7 +18,7 @@ namespace NodeNotes {
 
         public abstract void OnNodeSet(Node node);
         
-        [NonSerialized] protected GameNodeBase gameNode = null;
+        [NonSerialized] protected GameNodeBase gameNode;
 
         protected LoopLock loopLockEnt = new LoopLock();
 
@@ -49,7 +48,7 @@ namespace NodeNotes {
 
                     if (CurrentNode != null)
                     {
-                        if (CurrentNode as Node != null)
+                        if (CurrentNode != null)
                             preGameNode = CurrentNode;
                         else
                         {

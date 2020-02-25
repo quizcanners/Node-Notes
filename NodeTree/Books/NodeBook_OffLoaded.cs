@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
-using PlayerAndEditorGUI;
 
 namespace NodeNotes {
     public class NodeBook_OffLoaded : NodeBook_Base, IPEGI_ListInspect, IGotDisplayName {
@@ -70,7 +70,8 @@ namespace NodeNotes {
                 list[ind] = off;
                 return off;
             }
-            else Debug.LogError("List does not contain the book you are unloading");
+
+            Debug.LogError("List does not contain the book you are unloading");
             return null;
         }
 

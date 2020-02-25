@@ -1,10 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
-using System;
-using QcTriggerLogic;
 using PlayerAndEditorGUI;
+using QcTriggerLogic;
+using QuizCannersUtilities;
 
 namespace NodeNotes {
 
@@ -13,7 +10,7 @@ namespace NodeNotes {
 
     public class NodeLinkComponent : Base_Node, IPEGI_ListInspect {
 
-        public int linkedNodeIndex = 0;
+        public int linkedNodeIndex;
 
         public override bool ExecuteInteraction() {
 

@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
-using PlayerAndEditorGUI;
 using System.IO;
 using NodeNotes_Visual;
+using PlayerAndEditorGUI;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace NodeNotes
 {
@@ -155,7 +155,7 @@ namespace NodeNotes
 
         #region Encode_Decode
 
-        public bool loadedPresentation = false;
+        public bool loadedPresentation;
 
         public void LoadPresentationConfigs() {
             
@@ -246,11 +246,9 @@ namespace NodeNotes
                 Debug.Log("Loading {0} from resources".F(reff.BookName));
                 return this.TryLoadFromResources(reff.BookFolder(), reff.BookName);
             }
-            else
-            {
-                Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.user.Name));
-                return this.LoadFromPersistentPath(reff.BookFolder(), reff.BookName);
-            }
+
+            Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.user.Name));
+            return this.LoadFromPersistentPath(reff.BookFolder(), reff.BookName);
 
         }
 

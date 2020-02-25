@@ -1,13 +1,11 @@
 ﻿using System;
-using UnityEngine;
-using PlayerAndEditorGUI;
-using QuizCannersUtilities;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using NodeNotes;
-using TMPro;
+using PlayerAndEditorGUI;
 using PlaytimePainter;
 using QcTriggerLogic;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace NodeNotes_Visual {
 
@@ -184,7 +182,7 @@ namespace NodeNotes_Visual {
         }
 
         [NonSerialized] private readonly List<NodeCircleController> NodesPool = new List<NodeCircleController>();
-        [NonSerialized] private int _firstFree = 0;
+        [NonSerialized] private int _firstFree;
 
         public void HideAll()
         {
@@ -245,7 +243,8 @@ namespace NodeNotes_Visual {
                         nnp = np;
                         break;
                     }
-                    else _firstFree++;
+
+                    _firstFree++;
                 }
             }
 

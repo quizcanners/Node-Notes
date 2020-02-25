@@ -1,8 +1,6 @@
 ﻿using System;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -88,8 +86,7 @@ namespace NodeNotes_Visual.ECS {
             var ipl = dta as IPEGI;
             if (ipl != null)
                 return ipl.Inspect();
-            else
-                return false;
+            return false;
         }
 
         public override bool Inspect() {
@@ -150,8 +147,7 @@ namespace NodeNotes_Visual.ECS {
             var ipl = dta as IPEGI;
             if (ipl != null)
                 return ipl.Inspect();
-            else
-                return false;
+            return false;
         }
 
         public override bool Inspect() {

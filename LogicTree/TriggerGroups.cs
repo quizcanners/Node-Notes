@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
+using UnityEngine;
 
 namespace QcTriggerLogic {
 
@@ -42,7 +42,8 @@ namespace QcTriggerLogic {
 
                     return ready;
                 }
-                else return null;
+
+                return null;
             }
         }
 
@@ -150,26 +151,22 @@ namespace QcTriggerLogic {
 
             if (!_listDirty && _lastFilteredString.SameAs(Trigger.searchField))
                 return _filteredList;
-            else  {
+            _filteredList.Clear();
+            foreach (var t in _triggers)
+                if ((t.IsBoolean ? showBooleans : showInts) && t.SearchWithGroupName(_name)) {
+                    showMax--;
 
-                _filteredList.Clear();
-                foreach (var t in _triggers)
-                    if ((t.IsBoolean ? showBooleans : showInts) && t.SearchWithGroupName(_name)) {
-                        showMax--;
+                    Trigger.searchMatchesFound++;
 
-                        Trigger.searchMatchesFound++;
+                    _filteredList.Add(t);
 
-                        _filteredList.Add(t);
+                    if (showMax < 0)
+                        break;
+                }
 
-                        if (showMax < 0)
-                            break;
-                    }
+            _lastFilteredString = Trigger.searchField;
 
-                _lastFilteredString = Trigger.searchField;
-
-                _listDirty = false;
-
-            }
+            _listDirty = false;
             return _filteredList;
         }
 

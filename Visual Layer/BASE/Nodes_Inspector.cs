@@ -1,6 +1,5 @@
-﻿using PlayerAndEditorGUI;
-
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
+using PlayerAndEditorGUI;
 using UnityEditor;
 
 namespace NodeNotes_Visual

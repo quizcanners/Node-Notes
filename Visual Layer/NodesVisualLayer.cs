@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
-using PlayerAndEditorGUI;
 using NodeNotes;
+using PlayerAndEditorGUI;
 using PlaytimePainter;
+using QuizCannersUtilities;
+using UnityEngine;
 using Object = UnityEngine.Object;
-
 
 namespace NodeNotes_Visual
 {

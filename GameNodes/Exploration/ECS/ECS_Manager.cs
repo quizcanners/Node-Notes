@@ -1,7 +1,6 @@
-﻿using PlayerAndEditorGUI;
+﻿using System.Collections.Generic;
+using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -79,7 +78,7 @@ namespace NodeNotes_Visual.ECS {
             Manager.HasComponent<T>(ent);
 
 
-        public static NativeArray<ComponentType> GetComponentTypes(this Entity ent) => Manager.GetComponentTypes(ent, Allocator.Temp);
+        public static NativeArray<ComponentType> GetComponentTypes(this Entity ent) => Manager.GetComponentTypes(ent);
         
 
         #endregion
@@ -99,8 +98,7 @@ namespace NodeNotes_Visual.ECS {
 
             if (Manager!= null)
                 return Manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
-            else 
-                Debug.LogError("Manager is null");
+            Debug.LogError("Manager is null");
 
             return new EntityArchetype();
         }
@@ -181,7 +179,7 @@ namespace NodeNotes_Visual.ECS {
 
             if (Manager != null) {
 
-                NativeArray<Entity> all = Manager.GetAllEntities(Allocator.Temp);
+                NativeArray<Entity> all = Manager.GetAllEntities();
 
                 GameObject go = null;
 
@@ -277,7 +275,7 @@ namespace NodeNotes_Visual.ECS {
 
         public static T Edit_Array<T>(ref NativeArray<T> array, ref int inspected, ref bool changed, ListMetaData metaDatas = null) where T : struct
         {
-            T added = default(T);
+            T added = default;
 
             if (array == null)
             {

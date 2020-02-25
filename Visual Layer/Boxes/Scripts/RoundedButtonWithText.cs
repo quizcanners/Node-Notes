@@ -1,10 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using PlaytimePainter;
+﻿using PlaytimePainter;
 using QuizCannersUtilities;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class RoundedButtonWithText : MonoBehaviour

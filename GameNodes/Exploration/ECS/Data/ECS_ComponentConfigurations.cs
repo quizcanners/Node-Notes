@@ -1,14 +1,9 @@
-﻿using PlayerAndEditorGUI;
-using QuizCannersUtilities;
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using NodeNotes;
+using PlayerAndEditorGUI;
+using QuizCannersUtilities;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
-using Unity.Transforms;
-using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
 
@@ -105,7 +100,7 @@ namespace NodeNotes_Visual.ECS {
 
         #region Set Data
 
-        public override void SetData(Entity e) => e.Set(new PhisicsArrayDynamic_Component() {phisixIndex = 0});
+        public override void SetData(Entity e) => e.Set(new PhisicsArrayDynamic_Component {phisixIndex = 0});
 
         #endregion
         

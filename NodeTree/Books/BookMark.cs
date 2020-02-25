@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using QuizCannersUtilities;
 using PlayerAndEditorGUI;
+using QuizCannersUtilities;
 
 namespace NodeNotes
 {

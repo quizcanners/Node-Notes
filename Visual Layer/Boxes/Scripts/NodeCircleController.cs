@@ -1,12 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using NodeNotes;
+using PlayerAndEditorGUI;
+using QcTriggerLogic;
+using QuizCannersUtilities;
 using TMPro;
 using UnityEngine;
-using QuizCannersUtilities;
-using PlayerAndEditorGUI;
-using System;
-using System.Collections.Generic;
-using NodeNotes;
-using QcTriggerLogic;
+
 //using UnityEditor.IMGUI.Controls;
 
 namespace NodeNotes_Visual {
@@ -790,7 +790,7 @@ namespace NodeNotes_Visual {
             }
         }
 
-        private bool _mouseDown = false;
+        private bool _mouseDown;
         private float _overDownTime;
 
         public void OnMouseOver()
@@ -966,7 +966,7 @@ namespace NodeNotes_Visual {
             _textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10, circleRenderer);
             _localPos = new LinkedLerp.TransformLocalPosition(transform, 50);
             _localScale = new LinkedLerp.TransformLocalScale(circleRenderer.transform, 40);
-            _texTransition = new LinkedLerp.RendererMaterialTextureTransition(circleRenderer, 1);
+            _texTransition = new LinkedLerp.RendererMaterialTextureTransition(circleRenderer);
 
         }
 

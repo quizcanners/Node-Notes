@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using QcTriggerLogic;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
+using QcTriggerLogic;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace NodeNotes {
 
@@ -129,7 +129,7 @@ namespace NodeNotes {
             }
         }
 
-        static bool expectingLoopCall = false;
+        static bool expectingLoopCall;
 
         public static NodesVisualLayerAbstract visualLayer;
 
@@ -148,7 +148,7 @@ namespace NodeNotes {
         void LoadUser(string uname) {
 
             user = new CurrentUser();
-            user.Decode(QcFile.Loading.FromPersistentPath(_usersFolder, uname));
+            user.Decode(QcFile.Load.FromPersistentPath(_usersFolder, uname));
             _tmpUserName = uname;
         }
 
@@ -260,7 +260,7 @@ namespace NodeNotes {
         
         private int _inspectedBook = -1;
         
-        public static bool showPlaytimeUI = false;
+        public static bool showPlaytimeUI;
         
         public override void ResetInspector() {
             _inspectReplacementOption = false;
@@ -456,7 +456,7 @@ namespace NodeNotes {
             if (CurrentNode != null)
                 CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
 
-            QcFile.Saving.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+            QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
 

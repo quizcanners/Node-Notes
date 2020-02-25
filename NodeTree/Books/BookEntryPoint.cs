@@ -1,10 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
 using PlayerAndEditorGUI;
-using System;
-using QcTriggerLogic;
+using QuizCannersUtilities;
 
 namespace NodeNotes
 {

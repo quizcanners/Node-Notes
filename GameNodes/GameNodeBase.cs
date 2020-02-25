@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using QuizCannersUtilities;
+﻿using System.Collections;
+using System.Collections.Generic;
 using PlayerAndEditorGUI;
 using QcTriggerLogic;
-using System.Collections;
+using QuizCannersUtilities;
 using UnityEngine;
 
 namespace NodeNotes {
@@ -13,7 +13,7 @@ namespace NodeNotes {
     }
 
     [GameNode]*/
-    [DerivedList()]
+    [DerivedList]
     public abstract class GameNodeBase : Base_Node, IGotClassTag
     {
         private List<Result> _onExitResults = new List<Result>();
@@ -87,7 +87,7 @@ namespace NodeNotes {
 
                    // Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.parentBook.gameNodesData[ClassTag]));
 
-                    VisualLayer.FromGameToNode(false);
+                    VisualLayer.FromGameToNode();
 
                     _onExitResults.Apply();
                 }

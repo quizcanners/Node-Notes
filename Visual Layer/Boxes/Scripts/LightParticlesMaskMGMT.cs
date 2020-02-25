@@ -1,6 +1,4 @@
 ﻿using QuizCannersUtilities;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -16,8 +14,8 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
     private readonly ShaderProperty.VectorValue _mousePressDerrived = new ShaderProperty.VectorValue("_NodeNotes_MouseDerrived");
     private readonly ShaderProperty.TextureValue _spiralMask = new ShaderProperty.TextureValue("_NodeNotes_SpiralMask");
 
-    private float _mouseDownStrength = 0;
-    private float _mouseDownStrengthOneDirectional = 0;
+    private float _mouseDownStrength;
+    private float _mouseDownStrengthOneDirectional;
     private bool downClickFullyShown = true;
     private Vector2 _mouseDownPosition;
 

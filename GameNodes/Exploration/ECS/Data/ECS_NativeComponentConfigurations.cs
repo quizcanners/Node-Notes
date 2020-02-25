@@ -1,9 +1,7 @@
-﻿using PlayerAndEditorGUI;
-using QuizCannersUtilities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using NodeNotes;
+using PlayerAndEditorGUI;
+using QuizCannersUtilities;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -186,11 +184,11 @@ namespace NodeNotes_Visual.ECS {
     #region Extensions 
     public static class ECS_STD_Extensions {
 
-        public static Entity Set_Mesh(this Entity e, Mesh Mesh, Material mat) => e.SetShared(new RenderMesh() { mesh = Mesh, material = mat });
+        public static Entity Set_Mesh(this Entity e, Mesh Mesh, Material mat) => e.SetShared(new RenderMesh { mesh = Mesh, material = mat });
 
-        public static Entity Set_Position(this Entity e, Vector3 pos) => e.Set(new Translation() { Value = new float3(pos.x, pos.y, pos.z) });
+        public static Entity Set_Position(this Entity e, Vector3 pos) => e.Set(new Translation { Value = new float3(pos.x, pos.y, pos.z) });
 
-        public static Entity Set_Rotation(this Entity e, Quaternion qt) => e.Set(new Rotation() { Value = new quaternion() { value = new float4(qt.x, qt.y, qt.z, qt.w) } });
+        public static Entity Set_Rotation(this Entity e, Quaternion qt) => e.Set(new Rotation { Value = new quaternion { value = new float4(qt.x, qt.y, qt.z, qt.w) } });
     }
 
     #endregion

@@ -1,11 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System;
-using QuizCannersUtilities;
-using UnityEngine;
 using PlayerAndEditorGUI;
-using UnityEngine.UIElements;
 using QcTriggerLogic;
+using QuizCannersUtilities;
+using Random = UnityEngine.Random;
 
 namespace NodeNotes {
 
@@ -40,7 +39,7 @@ namespace NodeNotes {
 
         protected string text = "";
 
-        protected bool sentOne = false;
+        protected bool sentOne;
 
         public override void Reset() => sentOne = false;
 
@@ -108,7 +107,7 @@ namespace NodeNotes {
 
         public override string NameForPEGI { get { return this[currentLanguage]; } set { this[currentLanguage] = value; } }
 
-        protected bool sentOne = false;
+        protected bool sentOne;
 
         public override void Reset() => sentOne = false;
 
@@ -150,16 +149,13 @@ namespace NodeNotes {
 
                 if (texts.TryGetValue(ind, out text))
                     return text;
-                else
+                if (lang == Languages.en)
                 {
-                    if (lang == Languages.en)
-                    {
-                        text = "English Text";
-                        texts[ind] = text;
-                    }
-                    else
-                        text = this[Languages.en];
+                    text = "English Text";
+                    texts[ind] = text;
                 }
+                else
+                    text = this[Languages.en];
 
                 return text;
             }
@@ -254,7 +250,7 @@ namespace NodeNotes {
 
         public override string ClassTag => classTag;
 
-        public bool pickedOne = false;
+        public bool pickedOne;
 
         public override bool GotNextText => !pickedOne || Current.GotNextText;
 
@@ -266,7 +262,7 @@ namespace NodeNotes {
         public override string GetNext() {
            
             if (!pickedOne)
-                index = UnityEngine.Random.Range(0, options.Count);
+                index = Random.Range(0, options.Count);
 
             pickedOne = true;
 
@@ -304,7 +300,7 @@ namespace NodeNotes {
 
         protected Sentence Current => options.TryGet(index);
 
-        protected int index = 0;
+        protected int index;
 
         public override void Reset() {
             foreach (var o in options)

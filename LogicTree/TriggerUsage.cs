@@ -30,7 +30,7 @@ namespace QcTriggerLogic
             var t = (int)r;
 
             if (!resultUsages.ContainsKey(t)) {
-                if (icon.Warning.Click("Is " + r.ToString() + ". Click to FIX ", ref changed))
+                if (icon.Warning.Click("Is " + r + ". Click to FIX ", ref changed))
                     r = (ResultType)(resultUsages.First().Key);
             }
             else
@@ -120,7 +120,7 @@ namespace QcTriggerLogic
         public override bool Inspect(Result r) {
             if (r.IsBoolean) return pegi.toggleIcon(ref r.updateValue);
             
-            if (icon.Warning.Click("Wrong Type:" + r.type.ToString() + ". Change To Bool"))
+            if (icon.Warning.Click("Wrong Type:" + r.type + ". Change To Bool"))
             {
                 r.type = ResultType.SetBool;
                 return true;
@@ -154,13 +154,13 @@ namespace QcTriggerLogic
             { ((int)ConditionType.Equals), "==" },
             { ((int)ConditionType.Above), ">" },
             { ((int)ConditionType.Below), "<" },
-            { ((int)ConditionType.NotEquals), "!=" },
+            { ((int)ConditionType.NotEquals), "!=" }
         };
 
         public static readonly Dictionary<int, string> ResultUsages = new Dictionary<int, string> {
             {(int)ResultType.Set, ResultType.Set.GetText()},
             {(int)ResultType.Add, ResultType.Add.GetText()},
-            {(int)ResultType.Subtract, ResultType.Subtract.GetText()},
+            {(int)ResultType.Subtract, ResultType.Subtract.GetText()}
         };
 
         #region Inspector
@@ -253,7 +253,7 @@ namespace QcTriggerLogic
 
         private static readonly Dictionary<int, string> ConditionUsages = new Dictionary<int, string> {
             { ((int)ConditionType.VirtualTimePassedAbove), "Game_Time passed > " },
-            { ((int)ConditionType.VirtualTimePassedBelow), "Game_Time passed < " },
+            { ((int)ConditionType.VirtualTimePassedBelow), "Game_Time passed < " }
         };
 
         #region Inspector
@@ -289,7 +289,7 @@ namespace QcTriggerLogic
             {(int)ResultType.SetTimeGame, ResultType.SetTimeGame.GetText()},
             {(int)ResultType.Add, ResultType.Add.GetText()},
             {(int)ResultType.Subtract, ResultType.Subtract.GetText()},
-            {(int)ResultType.Set, ResultType.Set.GetText()},
+            {(int)ResultType.Set, ResultType.Set.GetText()}
         };
 
         public UsageGameTimeStamp(int index) : base(index) { }
@@ -301,7 +301,7 @@ namespace QcTriggerLogic
 
         private static readonly Dictionary<int, string> ConditionUsages = new Dictionary<int, string> {
             { ((int)ConditionType.RealTimePassedAbove), "Real_Time passed > " },
-            { ((int)ConditionType.RealTimePassedBelow), "Real_Time passed < " },
+            { ((int)ConditionType.RealTimePassedBelow), "Real_Time passed < " }
         };
 
         #region Inspector
@@ -336,7 +336,7 @@ namespace QcTriggerLogic
         private static readonly Dictionary<int, string> ResultUsages = new Dictionary<int, string> {
             {(int)ResultType.SetTimeReal, ResultType.SetTimeReal.GetText()},
             {(int)ResultType.Add, ResultType.Add.GetText()},
-            {(int)ResultType.Subtract, ResultType.Subtract.GetText()},
+            {(int)ResultType.Subtract, ResultType.Subtract.GetText()}
         };
 
       

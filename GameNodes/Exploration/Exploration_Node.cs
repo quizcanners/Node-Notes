@@ -1,14 +1,11 @@
-﻿using NodeNotes;
-using QuizCannersUtilities;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using PlayerAndEditorGUI;
-using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
-using Unity.Collections;
+using NodeNotes;
 using NodeNotes_Visual.ECS;
+using PlayerAndEditorGUI;
+using QuizCannersUtilities;
+using Unity.Entities;
+using UnityEngine;
 
 namespace NodeNotes_Visual {
 
@@ -159,7 +156,7 @@ namespace NodeNotes_Visual {
     public class Exploration_ECSinstance : Exploration_Element, IPEGI_ListInspect, IGotName, IPEGI {
         string name = "Unnamed";
         string instanceConfig;
-        bool instanciated = false;
+        bool instanciated;
 
         List<ComponentCfgAbstract> entityComponents = new List<ComponentCfgAbstract>();
         ListMetaData componentsMeta = new ListMetaData("Components");
@@ -185,7 +182,7 @@ namespace NodeNotes_Visual {
                 if (!archetype.Valid)
                     archetype = entityComponents.ToArchetype();
 
-                instance = NodeNotesECSManager.Instantiate(entityComponents);
+                instance = entityComponents.Instantiate();
                 instanciated = true;
             } else 
                 Debug.LogError("Manager is null");

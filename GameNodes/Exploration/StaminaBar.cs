@@ -1,9 +1,8 @@
 ﻿using PlayerAndEditorGUI;
+using QuizCannersUtilities;
 using TMPro;
 using UnityEngine;
-using QuizCannersUtilities;
 using UnityEngine.UI;
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -30,7 +29,7 @@ namespace NodeNotes_Visual {
         ShaderProperty.FloatValue _previousStaminaLineInShader = new ShaderProperty.FloatValue("_NodeNotesStaminaPortion_Prev");
         private float _previousStaminaLine = 1f;
 
-        private float showPreviousTimer = 0;
+        private float showPreviousTimer;
 
         private ShaderProperty.FloatValue _staminaCurve = new ShaderProperty.FloatValue("_NodeNotes_StaminaCurve");
         [SerializeField] private float _staminaCurveValue = 3;

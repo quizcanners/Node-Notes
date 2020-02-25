@@ -1,5 +1,4 @@
 ﻿using System;
-using NodeNotes;
 using NodeNotes_Visual;
 using PlaytimePainter;
 using QuizCannersUtilities;
@@ -13,7 +12,7 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
 
     private NodesVisualLayer VisualMgmt => NodesVisualLayer.Instance;
 
-    public TextMeshProUGUI text = null;
+    public TextMeshProUGUI text;
 
     public RoundedGraphic graphic;
 
@@ -32,7 +31,7 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
 
     [NonSerialized] public bool isLast = false;
     
-    public bool deformingFinished = false;
+    public bool deformingFinished;
 
     public void Update() {
 
@@ -81,7 +80,7 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
 
     }
 
-    public bool isFadingOut = false;
+    public bool isFadingOut;
 
     public void FadeAway() => isFadingOut = true;
 

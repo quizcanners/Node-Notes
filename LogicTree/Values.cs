@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using System.Collections.Generic;
-using PlayerAndEditorGUI;
+﻿using PlayerAndEditorGUI;
 using QuizCannersUtilities;
+using UnityEngine;
 
 namespace QcTriggerLogic {
 

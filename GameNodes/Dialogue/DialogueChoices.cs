@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using QuizCannersUtilities;
+using NodeNotes;
 using PlayerAndEditorGUI;
 using QcTriggerLogic;
-using NodeNotes;
+using QuizCannersUtilities;
 
 namespace NodeNotes_Visual {
  
@@ -103,7 +103,7 @@ namespace NodeNotes_Visual {
 
         public string NeedAttention() {
 
-            var na = pegi.NeedAttentionMessage(choices);
+            var na = pegi.NeedsAttention(choices);
 
             return na;
         }
@@ -284,7 +284,7 @@ namespace NodeNotes_Visual {
                 if (!nextOne.IsNullOrEmpty() && icon.Delete.Click("Remove any followups"))
                     nextOne = "";
                 
-                    "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
+                "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
             }
 
             return changed;

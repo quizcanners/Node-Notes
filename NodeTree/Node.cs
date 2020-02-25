@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using QuizCannersUtilities;
 using PlayerAndEditorGUI;
-using QcTriggerLogic;
+using QuizCannersUtilities;
+using UnityEngine;
 
 namespace NodeNotes {
 
@@ -328,8 +327,8 @@ namespace NodeNotes {
                     return cody;
                 }
             }
-            else
-                Debug.LogError("Infinite loop detected at {0}. Node is probably became a child of itself. ".F(NameForPEGI));
+
+            Debug.LogError("Infinite loop detected at {0}. Node is probably became a child of itself. ".F(NameForPEGI));
 
             return new CfgEncoder();
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using NodeNotes;
 using PlayerAndEditorGUI;
@@ -9,7 +8,6 @@ using QuizCannersUtilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Debug = UnityEngine.Debug;
 
 namespace NodeNotes_Visual {
 
@@ -39,7 +37,7 @@ namespace NodeNotes_Visual {
         
         private LerpData ld = new LerpData();
 
-        bool dirty = false;
+        bool dirty;
 
         public void Update()
         {
@@ -130,7 +128,7 @@ namespace NodeNotes_Visual {
         public TextMeshProUGUI pTextMeshPro;
         #endregion
 
-        public bool isFadingAway = false;
+        public bool isFadingAway;
 
         public override bool TryFadeIn() {
 
@@ -226,11 +224,11 @@ namespace NodeNotes_Visual {
 
         #region Inspector
 
-        public static bool skipLerpForEditor = false;
+        public static bool skipLerpForEditor;
 
         public static TextBackgroundController instance;
 
-        private bool showDependencies = false;
+        private bool showDependencies;
 
         public override bool Inspect() {
 
@@ -299,7 +297,7 @@ namespace NodeNotes_Visual {
         
         public static TextConfiguration inspected;
 
-        public int linkIndex = 0;
+        public int linkIndex;
 
         public bool ProcessClick(int index) {
 
@@ -307,8 +305,7 @@ namespace NodeNotes_Visual {
 
             if (ch != null)  
                 return ch.ProcessClick(index);
-            else
-                Debug.LogError("No text chunks found for link "+index);
+            Debug.LogError("No text chunks found for link "+index);
 
             return false;
         }
@@ -422,9 +419,9 @@ namespace NodeNotes_Visual {
                 return linkId;
             }
 
-            public bool preNewLine = false;
+            public bool preNewLine;
 
-            public bool postNewLine = false;
+            public bool postNewLine;
 
             public override CfgEncoder Encode() => new CfgEncoder()
                 .Add_IfTrue("pre", preNewLine)
@@ -576,7 +573,7 @@ namespace NodeNotes_Visual {
                     return false;
             }
 
-            private int linkNo = 0;
+            private int linkNo;
 
             public override string GetTextFor(Node node)
             {
