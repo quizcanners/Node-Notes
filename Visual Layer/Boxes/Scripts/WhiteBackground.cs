@@ -393,12 +393,17 @@ namespace NodeNotes_Visual {
 
         void Update() {
 
+            _ld.Reset();
+
             addButtonCourner.Portion(_ld);
             NodesPool.Portion(_ld);
             slidingButtons.Portion(_ld);
 
-            _ld.LerpAndReset();
-            
+
+            addButtonCourner.Lerp(_ld);
+            NodesPool.Lerp(_ld);
+            slidingButtons.Lerp(_ld);
+
             addButton.SetCorner(1, addButtonCourner.CurrentValue);
 
             bgTransparency = LerpUtils.LerpBySpeed(bgTransparency, 0.05f + _ld.MinPortion * 0.95f, 1f);
@@ -408,7 +413,6 @@ namespace NodeNotes_Visual {
             if (!isFading) {
                 var col = MainCamera.backgroundColor;
 
-                //MainCamera.backgroundColor = col.LerpBySpeed(Color.white, 3);
             } else if (_ld.Portion() == 1)
                 gameObject.SetActive(false);
         }
@@ -468,9 +472,15 @@ namespace NodeNotes_Visual {
                     selectedNode.UpdateName();
 
             }
-            else "Node will be shown during play when selected (when Edit is enabled)".writeHint();
+            else
+            {
+                "Node will be shown during play when selected (when Edit is enabled)".writeHint();
 
-            if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.InspectingVisuals()) && (selectedNode.inspectedItems == -1)))
+                _ld.Nested_Inspect().nl(ref changed);
+
+            }
+        
+        if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.InspectingVisuals()) && (selectedNode.inspectedItems == -1)))
             {
 
                 if (icon.Create.enter("Dependencies", ref inspectedItems, 5))

@@ -333,11 +333,18 @@ namespace NodeNotes_Visual {
                     }
                 }
 
+                if ("Lerp Debug".enter(ref inspectedItems, 6).nl())
+                {
+                    "Is Lerping: {0}".F(lerpsFinished).nl();
+                    "Fade portion: {0}".F(fadePortion).nl();
+                    "Fading: {0}".F(isFading).nl();
+                }
+
                 if (!onPlayScreen)
                 {
                     pegi.nl();
 
-                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 6).nl();
+                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 7).nl();
 
                     if (!textA || seeDependencies)
                         "Text A".edit(ref textA).nl(ref changed);
