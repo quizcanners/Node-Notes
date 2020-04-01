@@ -168,7 +168,18 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
             separatorPosition.Portion(ld, Mathf.Min(0.6f, 0.3f + activeCount * 0.2f));
         }
 
-        ld.LerpAndReset();
+        // LERP:
+
+        singlePhraseBoxHeight.Lerp(ld);
+        historyPool.active.Lerp(ld);
+        optionsPool.active.Lerp(ld);
+
+        if (lerpSeparator)
+        {
+            separatorPosition.Lerp(ld);
+        }
+
+        //ld.LerpAndReset();
 
         var tf = singlePhraseBg.rectTransform;
         var size = tf.sizeDelta;

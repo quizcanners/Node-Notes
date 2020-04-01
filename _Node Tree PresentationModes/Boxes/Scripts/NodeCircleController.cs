@@ -205,7 +205,7 @@ namespace NodeNotes_Visual {
                             if (node != null)
                             {
 
-                                var bg = TaggedTypes.TryGetByTag(Mgmt.backgroundControllers, node.visualStyleTag);
+                                var bg = TaggedTypes.TryGetByTag(Mgmt.presentationControllers, node.visualStyleTag);
 
                                 if (bg != null)
                                 {
@@ -256,14 +256,14 @@ namespace NodeNotes_Visual {
 
                 if ("Bacground Gradient".enter(ref inspectedItems, 4).nl())
                 {
-                     var grds = WhiteBackground.inst.perNodeGradientConfigs;
+                     var grds = BoxButtons.inst.perNodeGradientConfigs;
 
                     var gradient = grds[source.IndexForPEGI];
 
                        if (gradient == null)
                        {
                            if ("+ Gradient Cfg".Click().nl())
-                               grds[source.IndexForPEGI] = WhiteBackground.inst.currentNodeGradient.Encode().ToString();
+                               grds[source.IndexForPEGI] = BoxButtons.inst.currentNodeGradient.Encode().ToString();
 
                        }
                        else {
@@ -274,12 +274,12 @@ namespace NodeNotes_Visual {
                            {
                                if (source == Shortcuts.CurrentNode)
                                {
-                                   if (WhiteBackground.inst.currentNodeGradient.Nested_Inspect())
+                                   if (BoxButtons.inst.currentNodeGradient.Nested_Inspect())
                                    {
-                                       NodeNotesGradientController.instance.SetTarget(WhiteBackground.inst
+                                       NodeNotesGradientController.instance.SetTarget(BoxButtons.inst
                                            .currentNodeGradient);
                                        grds[source.IndexForPEGI] =
-                                           WhiteBackground.inst.currentNodeGradient.Encode().ToString();
+                                           BoxButtons.inst.currentNodeGradient.Encode().ToString();
                                    }
                                } else  "Enter node to edit it's Background gradient".writeHint();
 
@@ -468,7 +468,7 @@ namespace NodeNotes_Visual {
             _shadeCorners.Portion(ld, (this == _dragging) ? 0 :
                 (_mouseDown ? 0.1f : ((source == Shortcuts.CurrentNode) ? 0.4f : 0.9f)));
             
-            _shadeSelected.Portion(ld, (this == WhiteBackground.inst.selectedNode ? 1f : 0f));
+            _shadeSelected.Portion(ld, (this == BoxButtons.inst.selectedNode ? 1f : 0f));
 
             _texTransition.Portion(ld);
 
@@ -580,7 +580,7 @@ namespace NodeNotes_Visual {
 
 
                 if (fadePortion == 0 && isFading && Application.isPlaying)
-                    WhiteBackground.inst.Deactivate(this);
+                    BoxButtons.inst.Deactivate(this);
 
             }
             #endregion
@@ -786,7 +786,7 @@ namespace NodeNotes_Visual {
                // if (gn != null)
                  //   Shortcuts.visualLayer.FromNodeToGame(gn);
                 //else
-                WhiteBackground.inst.SetSelected(this);
+                BoxButtons.inst.SetSelected(this);
 
                 Vector3 pos;
                 if (UpPlane.MouseToPlane(out pos, MainCamera))
@@ -879,7 +879,7 @@ namespace NodeNotes_Visual {
                 case "expVis": data.DecodeInto(out _nodeEnteredVisuals); break;
                 case "subVis": data.DecodeInto(out _nodeActiveDefaultVisuals); break;
                 case "disVis": data.DecodeInto(out _nodeInactiveVisuals); break;
-                case "bg_cfg": source.visualStyleConfigs[WhiteBackground.classTag] = data; break;
+                case "bg_cfg": source.visualStyleConfigs[BoxButtons.classTag] = data; break;
                 case "bg_cfgs": data.Decode_Dictionary(out source.visualStyleConfigs); break;
                 case "URL": imageUrl = data; break;
                 case "imgScl": _imageScaling = data.ToFloat(); break;

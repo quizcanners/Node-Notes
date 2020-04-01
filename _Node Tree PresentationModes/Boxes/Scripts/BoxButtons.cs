@@ -10,9 +10,9 @@ using UnityEngine;
 namespace NodeNotes_Visual {
 
     [TaggedType(classTag)]
-    public class WhiteBackground : BackgroundBase {
+    public class BoxButtons : PresentationMode {
 
-        public static WhiteBackground inst;
+        public static BoxButtons inst;
 
         [SerializeField] protected NodeNotesGradientController gradientController;
 

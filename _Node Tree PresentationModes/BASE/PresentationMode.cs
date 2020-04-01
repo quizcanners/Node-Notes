@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
 
-    public abstract class BackgroundBase : ComponentCfg, INodeNotesVisualStyle, IManageFading, IPEGI, IGotClassTag
+    public abstract class PresentationMode : ComponentCfg, INodeNotesVisualStyle, IManageFading, IPEGI, IGotClassTag
     {
         #region Tagged Types MGMT
         public abstract string ClassTag { get;  }
-        public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(BackgroundBase));
+        public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(PresentationMode));
         #endregion
 
         public static Camera MainCamera => NodesVisualLayer.MainCam;

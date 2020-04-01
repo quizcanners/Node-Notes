@@ -23,6 +23,8 @@ namespace NodeNotes_Visual
 
         [SerializeField] protected List<NodeNodesNeedEnableAbstract> forManagedOnEnable;
 
+        [SerializeField] protected Canvas canvas;
+
         [SerializeField] protected PainterCamera painterCamera;
 
 
@@ -76,11 +78,11 @@ namespace NodeNotes_Visual
 
         #region BG MGMT
 
-        public List<BackgroundBase> backgroundControllers = new List<BackgroundBase>();
+        public List<PresentationMode> presentationControllers = new List<PresentationMode>();
 
-        public static BackgroundBase _selectedController;
+        public static PresentationMode _selectedController;
 
-        public static BackgroundBase SelectedVisualLayer {
+        public static PresentationMode SelectedVisualLayer {
             get {
                 if (!_selectedController)
                     SetBackground(null);
@@ -94,7 +96,7 @@ namespace NodeNotes_Visual
         public static void SetBackground(Node source)
         {
 
-            var bgc = Instance.backgroundControllers;
+            var bgc = Instance.presentationControllers;
             
             if (source == null) {
 
@@ -129,7 +131,7 @@ namespace NodeNotes_Visual
         }
 
         public override void HideAllBackgrounds() {
-            foreach (var bc in Instance.backgroundControllers)
+            foreach (var bc in Instance.presentationControllers)
                 bc.FadeAway();
         }
 
@@ -200,7 +202,7 @@ namespace NodeNotes_Visual
 
             if ("Dependencies".enter(ref inspectedItems, 5).nl()) {
 
-                "Backgrounds".enter_List_UObj(ref backgroundControllers, ref _inspectedBackground, ref _inspectedDependency, 0).nl(ref changed);
+                "Backgrounds".enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDependency, 0).nl(ref changed);
 
                 "Game Controllers".enter_List_UObj(ref gameNodeControllers, ref _inspectedDependency, 1).nl(ref changed);
 
@@ -253,7 +255,7 @@ namespace NodeNotes_Visual
 
             base.OnDisable();
 
-            foreach (var bg in backgroundControllers)
+            foreach (var bg in presentationControllers)
                 bg.ManagedOnDeInitialize();
 
             textureDownloader.Dispose();
@@ -278,7 +280,7 @@ namespace NodeNotes_Visual
             
             shortcuts.Initialize();
             
-            foreach (var bg in backgroundControllers)
+            foreach (var bg in presentationControllers)
                 bg.ManagedOnInitialize();
 
         }
@@ -287,7 +289,7 @@ namespace NodeNotes_Visual
 
             var changed = false;
 
-            if (BackgroundBase.all.selectTypeTag(ref node.visualStyleTag).nl(ref changed))
+            if (PresentationMode.all.selectTypeTag(ref node.visualStyleTag).nl(ref changed))
                 SetBackground(node);
 
             return changed;

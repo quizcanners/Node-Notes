@@ -16,7 +16,7 @@ namespace NodeNotes_Visual {
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [TaggedType(classTag)]
-    public class TextBackgroundController : BackgroundBase, IPointerClickHandler, IPointerDownHandler
+    public class ClickableText : PresentationMode, IPointerClickHandler, IPointerDownHandler
     {
         #region Ecode & Decode
         const string classTag = "textRead";
@@ -226,7 +226,7 @@ namespace NodeNotes_Visual {
 
         public static bool skipLerpForEditor;
 
-        public static TextBackgroundController instance;
+        public static ClickableText instance;
 
         private bool showDependencies;
 
@@ -255,7 +255,7 @@ namespace NodeNotes_Visual {
     
     public class TextConfiguration : AbstractKeepUnrecognizedCfg, IPEGI
     {
-        private Node Node => TextBackgroundController.instance.currentNode;
+        private Node Node => ClickableText.instance.currentNode;
 
         public Color linksColor = Color.blue;
         
@@ -320,7 +320,7 @@ namespace NodeNotes_Visual {
 
             sortedChunks.Clear();
 
-            var sb = TextBackgroundController.instance.stringBuilder;
+            var sb = ClickableText.instance.stringBuilder;
 
             sb.Clear();
 
@@ -391,7 +391,7 @@ namespace NodeNotes_Visual {
             "Texts".edit_List(ref textChunks, ref enteredText).nl(ref changed);
 
             if (changed)
-                TextBackgroundController.skipLerpForEditor = true;
+                ClickableText.skipLerpForEditor = true;
 
 
 

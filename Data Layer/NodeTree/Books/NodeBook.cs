@@ -161,7 +161,7 @@ namespace NodeNotes
             
             if (Application.isPlaying && NodesVisualLayer.Instance) {
                 
-                foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
+                foreach (var bg in NodesVisualLayer.Instance.presentationControllers) {
                     string data = "";
                     presentationConfigData.TryGetValue(bg.ClassTag, out data);
                     bg.Decode(data);
@@ -175,7 +175,7 @@ namespace NodeNotes
             if (Application.isPlaying && NodesVisualLayer.Instance) {
 
                 if (loadedPresentation)
-                    foreach (var bg in NodesVisualLayer.Instance.backgroundControllers) {
+                    foreach (var bg in NodesVisualLayer.Instance.presentationControllers) {
                         var data = bg.EncodePerBookData().ToString();
                         presentationConfigData[bg.ClassTag] = data;
                     }
