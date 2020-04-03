@@ -72,9 +72,6 @@ namespace NodeNotes {
         [SerializeField] public AudioClip onMouseHoldSound;
         [SerializeField] public AudioClip onSwipeSound;
 
-        [SerializeField] public ProjectorCameraConfiguration defaultCamera;
-        [SerializeField] public ProjectorCameraConfiguration FpsCamera;
-
         #endregion
 
         #region Progress

@@ -8,10 +8,10 @@ using UnityEditor;
 
 namespace NodeNotes_Visual {
 
-    public class NodeNotes_Camera : MonoBehaviour, IPEGI
+    public class NodeNotes_UI_Camera : MonoBehaviour, IPEGI
     {
 
-        public static NodeNotes_Camera inst;
+        public static NodeNotes_UI_Camera inst;
 
         [SerializeField] private Camera _camera;
 
@@ -21,6 +21,8 @@ namespace NodeNotes_Visual {
         public bool Inspect() {
 
             var changed = false;
+
+            pegi.toggleDefaultInspector(this).nl();
 
             var inst = Shortcuts.Instance;
 
@@ -33,18 +35,7 @@ namespace NodeNotes_Visual {
 
             if (!inst)
                 "No Shortcuts".writeWarning();
-            else {
-
-
-
-
-                "FPS camera".enter_Inspect(inst.FpsCamera, ref _inspectedStuff, 0).nl(ref changed);
-                "Default Camera".enter_Inspect(inst.defaultCamera, ref _inspectedStuff, 1).nl(ref changed);
-
-                
-            }
-
-            if (changed)
+            else if (changed)
                 inst.SetToDirty();
 
             return changed;
@@ -52,30 +43,16 @@ namespace NodeNotes_Visual {
 
         #endregion
 
-
-        public bool FPS {
-
-            set {
-
-                var scts = Shortcuts.Instance;
-
-                (value ? scts.FpsCamera : scts.defaultCamera).To(_camera);
-
-                _fps = value;
-            }
-        }
-
-        public float speed = 10;
-        private bool _fps;
+       /* public float speed = 10;
         public float sensitivity = 5;
         private float _rotationY;
         private Vector3 centeredPosition = Vector3.zero;
 
-        public Vector3 relativePosition = Vector3.zero;
+        public Vector3 relativePosition = Vector3.zero;*/
 
         public void Update() {
 
-            if (_fps)
+          /*  if (_fps)
             {
 
                 transform.position = centeredPosition;
@@ -103,7 +80,7 @@ namespace NodeNotes_Visual {
 
                 tf.localEulerAngles = new Vector3(_rotationY, rotationX, 0);
 
-            }
+            }*/
 
         }
 
@@ -112,10 +89,11 @@ namespace NodeNotes_Visual {
             inst = this;
         }
 
+   
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(NodeNotes_Camera))]
-    public class NodeNotes_CameraDrawer : PEGI_Inspector_Mono<NodeNotes_Camera> { }
+    [CustomEditor(typeof(NodeNotes_UI_Camera))]
+    public class NodeNotes_CameraDrawer : PEGI_Inspector_Mono<NodeNotes_UI_Camera> { }
 #endif
 }

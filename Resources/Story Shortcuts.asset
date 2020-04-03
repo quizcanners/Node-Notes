@@ -27,15 +27,3 @@ MonoBehaviour:
   onMouseLeaveSound: {fileID: 8300000, guid: 08c655d28a86d9d44a91686e865b2279, type: 3}
   onMouseHoldSound: {fileID: 8300000, guid: 1896f4c3d4d531c49a99cf85bfefad3c, type: 3}
   onSwipeSound: {fileID: 8300000, guid: 1d4688f07df549a45a89b98b5cbdcdc4, type: 3}
-  defaultCamera:
-    fieldOfView: 60
-    position: {x: 0, y: 130, z: 0}
-    rotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-    nearPlane: 0.3
-    farPlane: 1000
-  FpsCamera:
-    fieldOfView: 90
-    position: {x: 0, y: 130, z: 0}
-    rotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-    nearPlane: 0.3
-    farPlane: 1000

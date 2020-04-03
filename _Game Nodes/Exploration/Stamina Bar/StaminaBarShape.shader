@@ -56,6 +56,7 @@
 				o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
 				o.viewDir.xyz = WorldSpaceViewDir(v.vertex);
 				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+				o.texcoord.y = 1 - o.texcoord.y;
 				o.screenPos = ComputeScreenPos(o.pos);
 				o.color = v.color;
 				return o;

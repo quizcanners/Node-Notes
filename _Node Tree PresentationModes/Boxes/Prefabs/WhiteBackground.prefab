@@ -749,7 +749,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 28
+  m_fontSize: 30.55
   m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -944,7 +944,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2640360523645601911}
   - component: {fileID: 2640360523645601908}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: WhiteBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -69,6 +69,7 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
         graphic.SetCorner(3, loverEdge.CurrentValue);
 
         graphic.TrySetAlpha(transparency.CurrentValue);
+        text.TrySetAlpha(transparency.CurrentValue);
 
         if (isFadingOut && ld.Portion() == 1f) {
             if (isHistory)
