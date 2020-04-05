@@ -1,5 +1,6 @@
 ﻿using NodeNotes;
 using PlayerAndEditorGUI;
+using PlaytimePainter.Examples;
 using QuizCannersUtilities;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -8,15 +9,43 @@ using UnityEditor;
 
 namespace NodeNotes_Visual {
 
-    public class NodeNotes_UI_Camera : MonoBehaviour, IPEGI
+    public class NodeNotes_Scene_Camera : MonoBehaviour, IPEGI, ICfg
     {
 
-        public static NodeNotes_UI_Camera inst;
+        public static NodeNotes_Scene_Camera inst;
 
-        [SerializeField] private Camera _camera;
+        [SerializeField] private GodMode _camera;
+
+        public void Decode(string data)
+        {
+            new CfgDecoder(data).DecodeTagsFor(this);
+        }
+
+        public bool Decode(string tg, string data)
+        {
+            switch (tg)
+            {
+                case "tf": data.DecodeInto(transform); break;
+
+                default: return false;
+            }
+
+            return true;
+        }
+
+        public CfgEncoder Encode()
+        {
+            var cody = new CfgEncoder()
+                .Add("tf", transform);
+
+
+
+            return cody;
+
+        }
 
         #region Inspector
-        private int _inspectedStuff = -1;
+        //  private int _inspectedStuff = -1;
 
         public bool Inspect() {
 
@@ -93,7 +122,7 @@ namespace NodeNotes_Visual {
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(NodeNotes_UI_Camera))]
-    public class NodeNotes_CameraDrawer : PEGI_Inspector_Mono<NodeNotes_UI_Camera> { }
+    [CustomEditor(typeof(NodeNotes_Scene_Camera))]
+    public class NodeNotes_CameraDrawer : PEGI_Inspector_Mono<NodeNotes_Scene_Camera> { }
 #endif
 }
