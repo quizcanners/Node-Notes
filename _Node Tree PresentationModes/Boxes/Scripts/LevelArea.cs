@@ -2,58 +2,107 @@
 using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
-using PlaytimePainter.MeshEditing;
 using QuizCannersUtilities;
 using UnityEngine;
+using System.Collections;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace NodeNotes_Visual
 {
-    public class NodeNotesMeshObject : ComponentCfg, IManageFading, ILinkedLerping
+    public class LevelArea : ComponentCfg, IManageFading, ILinkedLerping
     {
 
-        [NonSerialized] private PlaytimePainter.PlaytimePainter _painter;
-        [NonSerialized] private MeshFilter _meshFilter;
-        [NonSerialized] private MeshRenderer _meshRenderer;
-        [NonSerialized] private string _materialTag;
+        [NonSerialized] public List<SdfObjCfg> objects = new List<SdfObjCfg>();
+
+        public void Reinstantiate(SdfObjCfg obj)
+        {
+          
+            obj.Destroy();
+
+            SDFobject pfab;
+
+            Shortcuts.Instance.Get(tag, out pfab);
+
+            if (pfab)
+            {
+                var inst = Instantiate(pfab, transform);
+                obj.OnInstantiate(inst);
+            }
+
+        }
+
+        public class SdfObjCfg : ICfg, IPEGI_ListInspect
+        {
+            public string tag;
+
+            [NonSerialized] private SDFobject instance;
+
+            public void Destroy()
+            {
+                if (instance)
+                    instance.gameObject.DestroyWhatever();
+            }
+
+            public void OnInstantiate(SDFobject newInstance)
+            {
+                instance = newInstance;
+
+            }
+
+            public void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
+            
+            public bool Decode(string tg, string data)
+            {
+                switch (tg)
+                {
+                    case "tg": tag = data; break;
+                    default: return false;
+                }
+
+                return true;
+            }
+
+            public CfgEncoder Encode() =>
+                new CfgEncoder()
+                    .Add_String("tg", tag);
+
+            public bool InspectInList(IList list, int ind, ref int edited)
+            {
+                var changed = false;
+
+                var keys = Shortcuts.Instance.GetSdfObjectsKeys();
+
+                if (pegi.select(ref tag, keys))
+                {
+                    inspected.Reinstantiate(this);
+                }
+
+                return changed;
+            }
+        }
+
+      //  [NonSerialized] private PlaytimePainter.PlaytimePainter _painter;
+       // [NonSerialized] private MeshFilter _meshFilter;
+      //  [NonSerialized] private MeshRenderer _meshRenderer;
+     //   [NonSerialized] private string _materialTag;
 
         private Base_Node source;
 
         private Vector3 relativePosition = new Vector3(-1, 0, 2);
         private float relativeZoom = 3f;
 
-        private void UpdateMaterial() => _painter.Material = Shortcuts.Instance.GetMaterial(_materialTag);
+        // private void UpdateMaterial() => _painter.Material = Shortcuts.Instance.GetMaterial(_materialTag);
 
         #region Encode & Decode
-        public override void Decode(string data)
-        {
-            base.Decode(data);
 
-            if (_painter.SavedEditableMesh.IsNullOrEmpty())
-                _painter.SharedMesh = Instantiate(Shortcuts.Instance.GetMesh(""));
-            else 
-                _painter.SharedMesh = new Mesh();
-
-            var mc = new MeshConstructor(_painter);
-
-            var m = mc.Construct();
-
-            if (m)
-                _painter.SharedMesh = m;
-
-            _painter.UpdateMeshCollider(_painter.SharedMesh);
-            
-            UpdateMaterial();
-
-        }
 
         public override CfgEncoder Encode() => base.Encode()
                 .Add("pos", relativePosition)
-                .Add("s", relativeZoom)
-                .Add("m", _painter.EncodeMeshStuff)
-                .Add_IfNotEmpty("mat", _materialTag);
+                .Add("s", relativeZoom);
+               // .Add("m", _painter.EncodeMeshStuff)
+               // .Add_IfNotEmpty("mat", _materialTag);
          
         public override bool Decode(string tg, string data)
         {
@@ -61,8 +110,8 @@ namespace NodeNotes_Visual
             {
                 case "pos": relativePosition = data.ToVector3(); break;
                 case "s": relativeZoom = data.ToFloat(); break;
-                case "m": _painter.Decode(data); break;
-                case "mat": _materialTag = data; break;
+                //case "m": _painter.Decode(data); break;
+                //case "mat": _materialTag = data; break;
                 default: return false;
             }
 
@@ -76,7 +125,7 @@ namespace NodeNotes_Visual
             source = node;
             gameObject.hideFlags = HideFlags.DontSave;
             
-            if (!_meshFilter)
+           /* if (!_meshFilter)
                 _meshFilter = gameObject.AddComponent<MeshFilter>();
 
             if (!_meshRenderer)
@@ -90,30 +139,39 @@ namespace NodeNotes_Visual
                 _painter.SharedMesh = Shortcuts.Instance.GetMesh("");
                 _painter.UpdateMeshCollider(_painter.SharedMesh);
                 
-            }
+            }*/
+
+           foreach (var obj in objects)
+           {
+               Reinstantiate(obj);
+           }
 
         }
 
         #region Inspector
 
+        protected static LevelArea inspected;
+
         public override bool Inspect()
         {
             var changed = false;
 
+            inspected = this;
+
             "Mesh object".write();
 
-            if ("Edit".Click())
+           /* if ("Edit".Click())
             {
 
                 MeshEditorManager.Inst.EditMesh(_painter, true);
                 QcUnity.FocusOn(_painter);
-            }
+            }*/
 
 
             this.ClickHighlight().nl();
             
-            if ("Mat".select(40, ref _materialTag, Shortcuts.Instance.GetMaterialKeys()).nl())
-                UpdateMaterial();
+           //if ("Mat".select(40, ref _materialTag, Shortcuts.Instance.GetMaterialKeys()).nl())
+              //  UpdateMaterial();
 
             "Relative Pos".edit(ref relativePosition).nl();
 
@@ -126,13 +184,13 @@ namespace NodeNotes_Visual
         
         void Update()
         {
-            if (_painter && _painter.IsEditingThisMesh)
+           /* if (_painter && _painter.IsEditingThisMesh)
             {
                 if (!Shortcuts.editingNodes)
                 {
                     MeshEditorManager.Inst.StopEditingMesh();
                 }
-            }
+            }*/
         }
 
 
@@ -152,9 +210,9 @@ namespace NodeNotes_Visual
             if (newCenterNode == null)
                 return;
 
-            NodeNotesMeshObject newCenterMesh = null;
+            LevelArea newCenterMesh = null;
 
-            foreach (var m in meshes)
+            foreach (var m in allAreas)
                 if (m.source == newCenterNode)
                 {
                     newCenterMesh = m;
@@ -211,13 +269,11 @@ namespace NodeNotes_Visual
                 meshesParentTf.position = Vector3.zero;
                 meshesParentTf.localScale = Vector3.one;
             }
-
-
-
+            
            // currentCenterNode = newCenterNode;
             ParentAll();
 
-            foreach (var m in meshes)
+            foreach (var m in allAreas)
                 if (m == newCenterMesh) {
                     currentCenterMesh = m;
                     m.transform.localPosition = Vector3.zero;
@@ -228,28 +284,25 @@ namespace NodeNotes_Visual
                     m.transform.localPosition = m.relativePosition;
                     m.transform.localScale = Vector3.one;
                 }
-
         }
 
         public static void OnEditingNodesToggle()
         {
             if (_meshParentMeshRenderer)
                 _meshParentMeshRenderer.enabled = Shortcuts.editingNodes;
-
-
         }
 
-        private static NodeNotesMeshObject currentCenterMesh;
+        private static LevelArea currentCenterMesh;
         private static Transform meshesParentTf;
         private static MeshRenderer _meshParentMeshRenderer;
             // Will also track and parent/unparant nodes that are fading away
-        private static List<NodeNotesMeshObject> meshes = new List<NodeNotesMeshObject>();
+        private static List<LevelArea> allAreas = new List<LevelArea>();
 
         private static void ClearDestroyed()
         {
-            for(int i=meshes.Count-1; i>=0; i--)
-                if (!meshes[i])
-                    meshes.RemoveAt(i);
+            for(int i=allAreas.Count-1; i>=0; i--)
+                if (!allAreas[i])
+                    allAreas.RemoveAt(i);
         }
 
         private static void UnparentAll()
@@ -257,12 +310,12 @@ namespace NodeNotes_Visual
 
             ClearDestroyed();
 
-            foreach (var m in meshes)
+            foreach (var m in allAreas)
                 m.transform.parent = null;
         }
 
         private static void ParentAll() {
-            foreach (var m in meshes)
+            foreach (var m in allAreas)
                 m.transform.parent = meshesParentTf;
         }
 
@@ -291,7 +344,13 @@ namespace NodeNotes_Visual
 
         public void FadeAway()
         {
-            meshes.Remove(this);
+
+            foreach (var o in objects)
+            {
+                o.Destroy();
+            }
+
+            allAreas.Remove(this);
             gameObject.DestroyWhatever();
         }
 
@@ -304,8 +363,8 @@ namespace NodeNotes_Visual
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(NodeNotesMeshObject))]
-    public class NodeNotesMeshObjectDrawer : PEGI_Inspector_Mono<NodeNotesMeshObject> { }
+    [CustomEditor(typeof(LevelArea))]
+    public class NodeNotesMeshObjectDrawer : PEGI_Inspector_Mono<LevelArea> { }
 #endif
 
 }

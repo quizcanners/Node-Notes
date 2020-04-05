@@ -7,11 +7,8 @@ using QuizCannersUtilities;
 using TMPro;
 using UnityEngine;
 
-//using UnityEditor.IMGUI.Controls;
-
 namespace NodeNotes_Visual {
-
-
+    
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteAlways]
@@ -27,17 +24,17 @@ namespace NodeNotes_Visual {
         public TextMeshPro textB;
 
 
-        [NonSerialized] public NodeNotesMeshObject meshObject;
-        private NodeNotesMeshObject MeshObjectGetOrCreate()
+        [NonSerialized] public LevelArea LevelArea;
+        private LevelArea MeshObjectGetOrCreate()
         {
-            if (!meshObject)
+            if (!LevelArea)
             {
-                meshObject = new GameObject().AddComponent<NodeNotesMeshObject>();
-                meshObject.gameObject.name = source.NameForPEGI + " Mesh Object";
-                meshObject.Reset(source);
+                LevelArea = new GameObject().AddComponent<LevelArea>();
+                LevelArea.gameObject.name = source.NameForPEGI + " Mesh Object";
+                LevelArea.Reset(source);
             }
 
-            return meshObject;
+            return LevelArea;
         }
 
         public bool IsRendering
@@ -241,17 +238,17 @@ namespace NodeNotes_Visual {
                 
                 if ("Mesh Object".enter(ref inspectedItems, 3).nl())
                 {
-                    if (!meshObject && "Create Mesh Object".Click())
+                    if (!LevelArea && "Create Mesh Object".Click())
                         MeshObjectGetOrCreate();
 
-                    if (meshObject &&
+                    if (LevelArea &&
                         icon.Delete.ClickConfirm("dMo", "This will also erase any data of this meshobject"))
                     {
-                        meshObject.FadeAway();
-                        meshObject = null;
+                        LevelArea.FadeAway();
+                        LevelArea = null;
                     }
 
-                    meshObject.Nested_Inspect().nl(ref changed);
+                    LevelArea.Nested_Inspect().nl(ref changed);
                 }
 
                 if ("Bacground Gradient".enter(ref inspectedItems, 4).nl())
@@ -472,8 +469,8 @@ namespace NodeNotes_Visual {
 
             _texTransition.Portion(ld);
 
-            if (meshObject)
-                meshObject.Portion(ld);
+            if (LevelArea)
+                LevelArea.Portion(ld);
 
         }
 
@@ -624,8 +621,8 @@ namespace NodeNotes_Visual {
 
             #endregion
 
-            if (meshObject)
-                meshObject.Lerp(ld, false);
+            if (LevelArea)
+                LevelArea.Lerp(ld, false);
 
             if (_mouseDown && ((Time.time - _overDownTime) > 0.2f)) {
                 _mouseDown = false;
@@ -910,8 +907,8 @@ namespace NodeNotes_Visual {
             if (source.AsNode != null)
                 cody.Add_IfNotDefault("expVis", _nodeEnteredVisuals);
 
-            if (meshObject)
-                cody.Add("m", meshObject);
+            if (LevelArea)
+                cody.Add("m", LevelArea);
 
             return cody;
         }
@@ -952,9 +949,9 @@ namespace NodeNotes_Visual {
        
             isFading = true;
 
-            if (meshObject) {
-                meshObject.FadeAway();
-                meshObject = null;
+            if (LevelArea) {
+                LevelArea.FadeAway();
+                LevelArea = null;
             }
 
             if (circleCollider)

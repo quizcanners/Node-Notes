@@ -31,7 +31,7 @@
 			#pragma target 2.0
 
 			#include "Assets/Tools/Playtime Painter/Shaders/quizcanners_cg.cginc"
-			#include "Assets/NodeNotes/Visual Layer/Boxes/Shaders/NodeNotesShaders.cginc"
+			#include "Assets/NodeNotes/NodeNotesShaders.cginc"
 
 			#pragma shader_feature  ___ _qcPp_UV_ATLASED
 			#pragma shader_feature  ___ _qcPp_UV_PROJECTED

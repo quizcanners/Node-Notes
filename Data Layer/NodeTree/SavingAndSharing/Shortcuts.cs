@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NodeNotes_Visual;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
 using QcTriggerLogic;
 using QuizCannersUtilities;
+using UnityEditor;
 using UnityEngine;
+using static NodeNotes.NodeNotesAssetGroups;
 
 namespace NodeNotes {
 
@@ -22,48 +25,92 @@ namespace NodeNotes {
 
         public static Shortcuts Instance => NodesVisualLayerAbstract.InstAsNodesVisualLayer.shortcuts;
 
-        [SerializeField] protected List<NodeNotesAssetGroups> assetGroups;
-
-
+        [SerializeField] public List<NodeNotesAssetGroups> assetGroups;
+        
+        // MESHES
         [SerializeField] protected Mesh _defaultMesh;
         public Mesh GetMesh(string name) => _defaultMesh;
-
-
-        [SerializeField] protected Material _defaultMaterial;
-        [NonSerialized] private Dictionary<string, Material> filteredMaterials = new Dictionary<string, Material>();
-        [NonSerialized] private List<string> allMaterialKeys;
-
-        public List<string> GetMaterialKeys()
+        
+        // MATERIALS
+        [Serializable]
+        private class FilteredMaterials : FilteredAssetGroup<Material>
         {
-            if (allMaterialKeys != null)
-                return allMaterialKeys;
+            public FilteredMaterials(Func<NodeNotesAssetGroups, TaggedAssetsList<Material>> getOne) : base(getOne) { }
+        }
 
-            allMaterialKeys = new List<string>();
+        [SerializeField] private FilteredMaterials Materials = new FilteredMaterials((NodeNotesAssetGroups grp) => { return grp.materials; });
+        public bool Get(string key, out Material mat)
+        {
+            mat = Materials.Get(key, assetGroups);
+            return mat;
+        }
+        
+        // SDF Objects
+        [Serializable]
+        public class FilteredSdfObjects : FilteredAssetGroup<SDFobject>
+        {
+            public FilteredSdfObjects(Func<NodeNotesAssetGroups, TaggedAssetsList<SDFobject>> getOne) : base(getOne) { }
+        }
 
-            foreach (var assetGroup in assetGroups)
-                foreach (var taggedMaterial in assetGroup.materials)
+        public bool Get(string key, out SDFobject sdf)
+        {
+            sdf = SdfObjects.Get(key, assetGroups);
+            return sdf;
+        }
+
+        public List<string> GetSdfObjectsKeys() => SdfObjects.GetAllKeysKeys(assetGroups);
+
+        private FilteredSdfObjects SdfObjects = new FilteredSdfObjects((NodeNotesAssetGroups grp) => { return grp.sdfObjects; });
+        
+
+        [Serializable]
+        public abstract class FilteredAssetGroup<T> where T: UnityEngine.Object
+        {
+            [SerializeField] protected T _defaultMaterial;
+            [NonSerialized] private Dictionary<string, T> filteredMaterials = new Dictionary<string, T>();
+            [NonSerialized] private List<string> allMaterialKeys;
+
+            private Func<NodeNotesAssetGroups, TaggedAssetsList<T>> _getOne;
+
+            public List<string> GetAllKeysKeys(List<NodeNotesAssetGroups> assetGroups)
+            {
+                if (allMaterialKeys != null)
+                    return allMaterialKeys;
+
+                allMaterialKeys = new List<string>();
+
+                foreach (var assetGroup in assetGroups)
+                foreach (var taggedMaterial in assetGroup.materials.taggedList)
                     allMaterialKeys.Add(taggedMaterial.tag);
 
-            return allMaterialKeys;
-        }
+                return allMaterialKeys;
+            }
 
-        public Material GetMaterial(string key)
-        {
-            if (key.IsNullOrEmpty())
-                return _defaultMaterial;
+            public T Get(string key, List<NodeNotesAssetGroups> assetGroups)
+            {
+                if (key.IsNullOrEmpty())
+                    return _defaultMaterial;
 
-            Material mat;
-            
-            if (!filteredMaterials.TryGetValue(key, out mat))
-                foreach (var group in assetGroups)
-                    if (group.TreGetMaterial(key, out mat))
-                    {
-                        filteredMaterials[key] = mat;
-                        break;
-                    }
-            
-            return mat ? mat : _defaultMaterial;
+                T mat;
+
+                if (!filteredMaterials.TryGetValue(key, out mat))
+                    foreach (var group in assetGroups)
+                        if (_getOne(group).TreGet(key, out mat))
+                        {
+                            filteredMaterials[key] = mat;
+                            break;
+                        }
+
+                return mat ? mat : _defaultMaterial;
+            }
+
+            public FilteredAssetGroup(Func<NodeNotesAssetGroups, TaggedAssetsList<T>> getOne)
+            {
+                _getOne = getOne;
+            }
+
         }
+        
 
         [SerializeField] public AudioClip onMouseDownButtonSound;
         [SerializeField] public AudioClip onMouseClickSound;
@@ -279,9 +326,7 @@ namespace NodeNotes {
         {
             var changed = false;
 
-            if ("Refresh Materials".Click())
-                filteredMaterials.Clear();
-
+     
             if (changed)
                 this.SetToDirty();
 

@@ -25,7 +25,7 @@ namespace NodeNotes_Visual {
         {
             switch (tg)
             {
-                case "tf": data.DecodeInto(transform); break;
+                case "gm": _camera.Decode(data); break;
 
                 default: return false;
             }
@@ -36,7 +36,7 @@ namespace NodeNotes_Visual {
         public CfgEncoder Encode()
         {
             var cody = new CfgEncoder()
-                .Add("tf", transform);
+                .Add("gm", _camera);
 
 
 
@@ -45,7 +45,7 @@ namespace NodeNotes_Visual {
         }
 
         #region Inspector
-        //  private int _inspectedStuff = -1;
+
 
         public bool Inspect() {
 
@@ -58,7 +58,7 @@ namespace NodeNotes_Visual {
             "Camera".edit(ref _camera).changes(ref changed);
 
             if (!_camera && icon.Search.Click())
-                _camera = GetComponent<Camera>();
+                _camera = GetComponent<GodMode>();
 
             pegi.nl();
 
@@ -71,47 +71,6 @@ namespace NodeNotes_Visual {
         }
 
         #endregion
-
-       /* public float speed = 10;
-        public float sensitivity = 5;
-        private float _rotationY;
-        private Vector3 centeredPosition = Vector3.zero;
-
-        public Vector3 relativePosition = Vector3.zero;*/
-
-        public void Update() {
-
-          /*  if (_fps)
-            {
-
-                transform.position = centeredPosition;
-
-                var add = Vector3.zero;
-
-                var tf = transform;
-
-                if (Input.GetKey(KeyCode.W)) add += tf.forward;
-                if (Input.GetKey(KeyCode.A)) add -= tf.right;
-                if (Input.GetKey(KeyCode.S)) add -= tf.forward;
-                if (Input.GetKey(KeyCode.D)) add += tf.right;
-
-                relativePosition += add * speed * Time.deltaTime * (Input.GetKey(KeyCode.LeftShift) ? 3f : 1f);
-                
-                var eul = tf.localEulerAngles;
-
-                var rotationX = eul.y;
-                _rotationY = eul.x;
-
-                rotationX += Input.GetAxis("Mouse X") * sensitivity;
-                _rotationY -= Input.GetAxis("Mouse Y") * sensitivity;
-
-                _rotationY = _rotationY < 120 ? Mathf.Min(_rotationY, 85) : Mathf.Max(_rotationY, 270);
-
-                tf.localEulerAngles = new Vector3(_rotationY, rotationX, 0);
-
-            }*/
-
-        }
 
         private void OnEnable()
         {

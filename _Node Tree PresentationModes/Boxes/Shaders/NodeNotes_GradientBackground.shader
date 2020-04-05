@@ -19,7 +19,7 @@
 			Pass{
 
 				CGPROGRAM
-				#include "NodeNotesShaders.cginc"
+					#include "Assets/NodeNotes/NodeNotesShaders.cginc"
 				#include "UnityCG.cginc"
 				#pragma vertex vert
 				#pragma fragment frag

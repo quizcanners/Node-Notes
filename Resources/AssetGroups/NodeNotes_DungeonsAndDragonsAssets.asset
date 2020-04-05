@@ -10,17 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82f0488f0a0d5eb49b364a17f29c03e5, type: 3}
-  m_Name: NodeNotes_QuizcannersAssets
+  m_Name: NodeNotes_DungeonsAndDragonsAssets
   m_EditorClassIdentifier: 
   materials:
     taggedList:
     - tag: 
       asset: {fileID: 0}
+    - tag: 
+      asset: {fileID: 0}
   sdfObjects:
-    taggedList:
-    - tag: cube
-      asset: {fileID: 5892080856996665378, guid: 80ce4b327f0f7ab4da97343f3397e057,
-        type: 3}
-    - tag: sphere
-      asset: {fileID: 6941661268866573706, guid: 64ae4672e2a3e9c4282a7bd478b4d2b6,
-        type: 3}
+    taggedList: []

@@ -61,7 +61,7 @@ namespace NodeNotes_Visual {
 
             SetShowAddButtons(false);
 
-            NodeNotesMeshObject.OnEditingNodesToggle();
+            LevelArea.OnEditingNodesToggle();
         }
 
         public void ToggleShowAddButtons() => SetShowAddButtons(!CreateNodeButton.showCreateButtons);
@@ -176,7 +176,7 @@ namespace NodeNotes_Visual {
                 else
                     Shortcuts.CurrentNode = node;
 
-                NodeNotesMeshObject.OnNodeChange();
+                LevelArea.OnNodeChange();
             }
 
         }
@@ -443,7 +443,7 @@ namespace NodeNotes_Visual {
 
             NodesPool.Clear();
 
-            NodeNotesMeshObject.ManagedOnDisable();
+            LevelArea.ManagedOnDisable();
 
         }
         
@@ -465,7 +465,7 @@ namespace NodeNotes_Visual {
 
                 var src = selectedNode.source;
 
-                if (selectedNode.meshObject && IsRendering && "Disable Renderers For Nodes".Click().nl())
+                if (selectedNode.LevelArea && IsRendering && "Disable Renderers For Nodes".Click().nl())
                     IsRendering = false;
 
                 if (src.Nested_Inspect().nl(ref changed) && selectedNode)

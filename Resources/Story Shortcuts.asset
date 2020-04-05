@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Story Shortcuts
   m_EditorClassIdentifier: 
   nestedReferences: []
-  inspectedItems: -1
-  inspectedReference: -1
   assetGroups:
+  - {fileID: 11400000, guid: 5e404342dfb325548bf5043f66800aee, type: 2}
   - {fileID: 11400000, guid: 020ae3e0609201c468ca0f76c0e5c501, type: 2}
   _defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  _defaultMaterial: {fileID: 2100000, guid: f90d3c8fe8280d043b64fa62d862113a, type: 2}
+  Materials:
+    _defaultMaterial: {fileID: 2100000, guid: 5cb93a33baa05f24281e5e8cc2f8ff6a, type: 2}
   onMouseDownButtonSound: {fileID: 8300000, guid: 009459e794e036e40a25d4a4b8946d13,
     type: 3}
   onMouseClickSound: {fileID: 8300000, guid: 23429278d79f285429ac0ccaf7703531, type: 3}

@@ -44,7 +44,13 @@ namespace NodeNotes_Visual.ECS {
         public string mesh;
         public string mat;
 
-        public override void SetData(Entity e) => e.Set_Mesh(Shortcuts.Instance.GetMesh(mesh), Shortcuts.Instance.GetMaterial(mat));
+        public override void SetData(Entity e)
+        {
+            Material mtrl;
+            Shortcuts.Instance.Get(mat, out mtrl);
+
+            e.Set_Mesh(Shortcuts.Instance.GetMesh(mesh), mtrl);
+        }
 
         #region Inspector
 

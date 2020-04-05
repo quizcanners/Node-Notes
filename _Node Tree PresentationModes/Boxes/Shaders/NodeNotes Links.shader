@@ -23,7 +23,7 @@
 				CGPROGRAM
 
 			
-				#include "NodeNotesShaders.cginc"
+					#include "Assets/NodeNotes/NodeNotesShaders.cginc"
 
 				#pragma vertex vert
 				#pragma fragment frag
