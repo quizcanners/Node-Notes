@@ -201,7 +201,7 @@ namespace NodeNotes_Visual.ECS {
                 if (World.DefaultGameObjectInjectionWorld == null) {
                     "Active World is null".writeWarning();
 
-                    foreach (var world in World.AllWorlds) {
+                    foreach (var world in World.All) {
                         if (world.Name.Click().nl())
                             World.DefaultGameObjectInjectionWorld = world;
                     }

@@ -10,31 +10,43 @@ namespace NodeNotes_Visual.ECS {
     [ExecuteInEditMode]
     public class ECS_WeightlessObjects : JobComponentSystem {
 
+        /*
         [BurstCompile]
-        struct MovementJob : IJobForEach<Translation, PhisicsArrayDynamic_Component> {
+        struct MovementJob : IJobForEach<Translation, PhisicsArrayDynamic_Component>
+        {
             public float deltaTime;
             [ReadOnly] public NativeArray<int> previousArray;
 
             public void Execute(ref Translation pos, ref PhisicsArrayDynamic_Component dta) {
                 dta.testValue += previousArray[0] * deltaTime;
             }
-        }
+        }*/
 
-        public static JobHandle jh;
+        //public static JobHandle jh;
+
+        [ReadOnly] public NativeArray<int> previousArray;
 
         protected override JobHandle OnUpdate(JobHandle inputDeps) {
 
             if (ECS_ObjectsToArray.enabled) {
 
-                MovementJob moveJob = new MovementJob {
+                Entities.ForEach((Entity entity, ref Translation pos, ref PhisicsArrayDynamic_Component dta) =>
+                {
+                   // var deltaTime = Time.DeltaTime;
+                    dta.testValue += 0.1f;//previousArray[0] * deltaTime;
+                    //rotation.Value = math.mul(math.normalize(rotation.Value),
+                       // quaternion.AxisAngle(math.up(), rotationSpeed.RadiansPerSecond * deltaTime));
+                }).Run();
+
+                /*MovementJob moveJob = new MovementJob {
                     deltaTime = Time.DeltaTime,
                     previousArray = ECS_ObjectsToArray.previousPositions
-                };
+                };*/
 
-                jh = moveJob.Schedule(this, inputDeps);
+               // jh = moveJob.Schedule(this, inputDeps);
             }
 
-            return jh;
+            return inputDeps;
         }
     }
 
@@ -47,8 +59,8 @@ namespace NodeNotes_Visual.ECS {
 
             if (ECS_ObjectsToArray.enabled) {
 
-                ECS_ObjectsToArray.jh.Complete();
-                ECS_WeightlessObjects.jh.Complete();
+                //ECS_ObjectsToArray.jh.Complete();
+               // ECS_WeightlessObjects.jh.Complete();
                 ECS_ObjectsToArray.currentPositions.CopyTo(ECS_ObjectsToArray.previousPositions);
 
                 ECS_ObjectsToArray.staticPositions.CopyTo(ECS_ObjectsToArray.currentPositions);
@@ -75,7 +87,7 @@ namespace NodeNotes_Visual.ECS {
         public static NativeArray<int> staticPositions;
         #endregion
 
-        [BurstCompile]
+       /* [BurstCompile]
         struct MovementJob : IJobForEach<Translation, PhisicsArrayDynamic_Component> {
             public float deltaTime;
             [ReadOnly]
@@ -89,9 +101,9 @@ namespace NodeNotes_Visual.ECS {
 
                 currentArray[0] = previousArray[0] + 1;
             }
-        }
+        }*/
 
-        public static JobHandle jh;
+       // public static JobHandle jh;
 
         protected override JobHandle OnUpdate(JobHandle inputDeps) {
 
@@ -100,16 +112,21 @@ namespace NodeNotes_Visual.ECS {
                 if (!initialized)
                     Initialize();
 
-                MovementJob moveJob = new MovementJob {
+                Entities.ForEach((Translation pos, PhisicsArrayDynamic_Component dta) =>
+                {
+                    dta.testValue += 0.1f;
+                }).Run();
+
+              /*  MovementJob moveJob = new MovementJob {
                     deltaTime = Time.DeltaTime,
                     previousArray = previousPositions,
                     currentArray = currentPositions
-                };
+                };*/
 
-                jh = moveJob.Schedule(this, inputDeps);
+                //  jh = moveJob.Schedule(this, inputDeps);
             }
 
-            return jh;
+            return inputDeps;
         }
 
         protected void Initialize()
