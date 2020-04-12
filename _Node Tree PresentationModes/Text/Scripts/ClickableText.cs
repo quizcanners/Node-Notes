@@ -10,9 +10,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace NodeNotes_Visual {
-
-  
-
+    
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [TaggedType(classTag)]
@@ -100,6 +98,7 @@ namespace NodeNotes_Visual {
             
 
         }
+
 
         public void UpdateText()
         {

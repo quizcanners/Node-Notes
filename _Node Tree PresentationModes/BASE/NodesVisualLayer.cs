@@ -329,6 +329,17 @@ namespace NodeNotes_Visual
             disabled.Add(obj);
         }
 
+        public void Disable(bool disableFirst = true)
+        {
+            if (active.Count > 0)
+            {
+                if (disableFirst)
+                    Disable(active[0]); 
+                else
+                    Disable(active[active.Count - 1]); 
+            }
+        }
+
         public T GetOne(Transform parent, bool insertFirst = false) {
 
             T toReturn;

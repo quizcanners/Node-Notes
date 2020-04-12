@@ -30,18 +30,32 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
     private float Separator => separatorPosition.CurrentValue;
 
+    Coroutine _singleTextCoro;
+    private string _singleText = "";
+
     public string SingleText {
         set {
             
             if (!SingleText.IsNullOrEmpty())
                 AddToHistory(SingleText);
-            
-            singlePhraseText.text = value;
-            
+
+            _singleText = value;
+            //singlePhraseText.text = value;
+
+            if (_singleTextCoro != null)
+            {
+                StopCoroutine(_singleTextCoro);
+            }
+
+            _singleTextCoro = StartCoroutine(QcSharp.TextAnimation(_singleText, text =>
+            {
+                singlePhraseText.text = text;
+            }, characterFadeInSpeed: 50f));
+
             ClearOptions();
 
         }
-        get { return singlePhraseText.text; }
+        get { return _singleText; }
     }
     
     private void AddToOptions(string text, int index)
@@ -59,7 +73,10 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
     public void AddToHistory(string text) {
 
-        var newH = historyPool.GetOne(aboveTheLineParent, true);
+        if (historyPool.Count>8)
+            historyPool.Disable(disableFirst: false);
+
+        var newH = historyPool.GetOne(aboveTheLineParent, insertFirst: true);
         newH.Text = text;
         newH.TryFadeIn();
 
@@ -426,11 +443,11 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     }
 
     public bool TryFadeIn()   {
-        SingleText = "";
+       
         optionsPool.DeleteAll();
         historyPool.DeleteAll();
-      
         gameObject.SetActive(true);
+        SingleText = "";
         return true;
     }
 }
