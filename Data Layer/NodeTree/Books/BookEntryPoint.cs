@@ -51,6 +51,11 @@ namespace NodeNotes
             "On Node".select_iGotIndex_SameClass<Base_Node, Node>(60, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
             
             "Can Be A Game Start".toggle(ref startPoint).nl();
+            
+            if (Shortcuts.CurrentNode == null && "Start Here".ClickConfirm("stSt", "Are ou sure? This will let this Book as origin of this character."))
+            {
+                Shortcuts.CurrentNode = NodeBook.inspected.allBaseNodes[nodeIndex].AsNode;
+            }
 
             return changed;
         }

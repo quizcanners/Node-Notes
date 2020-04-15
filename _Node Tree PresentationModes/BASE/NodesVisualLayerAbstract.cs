@@ -16,7 +16,7 @@ namespace NodeNotes {
 
         public abstract Node CurrentNode { get; }
 
-        public abstract void OnNodeSet(Node node);
+        public abstract void OnBeforeNodeSet(Node node);
         
         [NonSerialized] protected GameNodeBase gameNode;
 
@@ -88,7 +88,7 @@ namespace NodeNotes {
                     gameNode = null;
 
                     if (failed)
-                        Shortcuts.user.ReturnToBookMark();
+                        Shortcuts.users.current.ReturnToBookMark();
                     else
                     {
                         if (preGameNode != null)

@@ -19,9 +19,9 @@ namespace NodeNotes {
         string linkedBookName;
         string bookEntryPoint;
 
-        bool LoadLinkedBook(out NodeBook book) => Shortcuts.TryGetLoadedBook(linkedBookName, linkedBookAuthor, out book);
+        bool LoadLinkedBook(out NodeBook book) => Shortcuts.books.TryGetLoadedBook(linkedBookName, linkedBookAuthor, out book);
 
-        NodeBook_Base LinkedBook => Shortcuts.TryGetBook(linkedBookName, linkedBookAuthor);
+        NodeBook_Base LinkedBook => Shortcuts.books.TryGetBook(linkedBookName, linkedBookAuthor);
         
         Node LinkedNode  {
             get
@@ -38,7 +38,7 @@ namespace NodeNotes {
         }
         
         public override bool Conditions_isVisible() {
-            if (type == BookLinkType.BookExit && Shortcuts.user.bookMarks.Count == 0)
+            if (type == BookLinkType.BookExit && Shortcuts.users.current.bookMarks.Count == 0)
                 return false;
 
             if (type == BookLinkType.BookLink && LinkToCurrent) return false;
@@ -84,9 +84,9 @@ namespace NodeNotes {
                     return executed;
                 case BookLinkType.BookExit:
 
-                    if (Shortcuts.user.bookMarks.Count != 0) {
+                    if (Shortcuts.users.current.bookMarks.Count != 0) {
 
-                        Shortcuts.user.ExitCurrentBook();
+                        Shortcuts.users.current.ExitCurrentBook();
                         executed = true;
                     }
 
@@ -135,9 +135,9 @@ namespace NodeNotes {
 
                 case BookLinkType.BookLink:
 
-                    var linkedBook = Shortcuts.TryGetBook(linkedBookName, linkedBookAuthor);
+                    var linkedBook = Shortcuts.books.TryGetBook(linkedBookName, linkedBookAuthor);
 
-                    if (pegi.select(ref linkedBook, Shortcuts.books).changes(ref changed)) {
+                    if (pegi.select(ref linkedBook, Shortcuts.books.all).changes(ref changed)) {
                         linkedBookName = linkedBook.NameForPEGI;
                         linkedBookAuthor = linkedBook.authorName;
                     }

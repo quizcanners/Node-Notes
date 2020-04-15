@@ -12,6 +12,9 @@ using static NodeNotes.NodeNotesAssetGroups;
 
 namespace NodeNotes {
 
+
+#pragma warning disable IDE0018 // Inline variable declaration
+
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
     public class Shortcuts : CfgReferencesHolder {
 
@@ -19,8 +22,12 @@ namespace NodeNotes {
 
         public static bool editingNodes = false;
 
-        public static bool SaveAnyChanges => user.isADeveloper;
+        public static bool SaveAnyChanges => users.current.isADeveloper;
 
+        public static UsersData users = new UsersData();
+
+        public static NodeBooksService books = new NodeBooksService();
+        
         #region Assets
 
         public static Shortcuts Instance => NodesVisualLayerAbstract.InstAsNodesVisualLayer.shortcuts;
@@ -70,7 +77,7 @@ namespace NodeNotes {
             [NonSerialized] private Dictionary<string, T> filteredMaterials = new Dictionary<string, T>();
             [NonSerialized] private List<string> allMaterialKeys;
 
-            private Func<NodeNotesAssetGroups, TaggedAssetsList<T>> _getOne;
+            private readonly Func<NodeNotesAssetGroups, TaggedAssetsList<T>> _getOne;
 
             public List<string> GetAllKeysKeys(List<NodeNotesAssetGroups> assetGroups)
             {
@@ -140,7 +147,7 @@ namespace NodeNotes {
         public static Node CurrentNode
         {
 
-            get { return user.CurrentNode; }
+            get { return users.current.CurrentNode; }
 
             set   {
 
@@ -151,7 +158,7 @@ namespace NodeNotes {
 
                         try
                         {
-                            visualLayer.OnNodeSet(value);
+                            visualLayer.OnBeforeNodeSet(value);
                         }
                         catch (Exception ex)
                         {
@@ -160,14 +167,14 @@ namespace NodeNotes {
 
                         if (expectingLoopCall) {
                             expectingLoopCall = false;
-                            user.CurrentNode = value;
+                            users.current.CurrentNode = value;
                         }
                     }
                 }
                 else
                 {
                     expectingLoopCall = false;
-                    user.CurrentNode = value;
+                    users.current.CurrentNode = value;
                 }
 
             }
@@ -181,147 +188,19 @@ namespace NodeNotes {
 
         #endregion
 
-        #region Users
-
-        [NonSerialized] public static List<string> users = new List<string>();
-
-        public static CurrentUser user = new CurrentUser();
-
-        static readonly string _usersFolder = "Users";
-
-        void LoadUser(string uname) {
-
-            user = new CurrentUser();
-            user.Decode(QcFile.Load.FromPersistentPath(_usersFolder, uname));
-            _tmpUserName = uname;
-        }
-
-        void SaveUser() {
-            if (!users.Contains(user.Name))
-                users.Add(user.Name);
-            user.SaveToPersistentPath(_usersFolder, user.Name);
-        }
-
-        void DeleteUser()
-        {
-            CurrentNode = null;
-
-            DeleteUser_File(user.Name);
-            if (users.Count > 0)
-                LoadUser(users[0]);
-        }
         
-        void DeleteUser_File(string uname) {
-            QcFile.Delete.FromPersistentFolder(_usersFolder, uname);
-            if (users.Contains(uname))
-                users.Remove(uname);
-        }
-
-        void CreateUser(string uname)
-        {
-            if (!users.Contains(uname))
-            {
-                SaveUser();
-
-                user = new CurrentUser
-                {
-                    Name = uname
-                };
-
-                users.Add(uname);
-            }
-            else Debug.LogError("User {0} already exists".F(uname));
-        }
-
-        void RenameUser (string uname) {
-
-            DeleteUser();
-
-            user.Name = uname;
-
-            SaveUser();
-        }
-
-        #endregion
-
-        #region Books
-        [NonSerialized] public static List<NodeBook_Base> books = new List<NodeBook_Base>();
-
-        public static NodeBook_Base TryGetBook(IBookReference reff) => TryGetBook(reff.BookName, reff.AuthorName);
-
-        public static NodeBook_Base TryGetBook(string bookName, string authorName)
-        {
- 
-            foreach (var b in books)
-                if (b.NameForPEGI.Equals(bookName) && b.authorName.Equals(authorName))
-                    return b;
-
-            return null;
-        }
-
-        public static bool TryGetLoadedBook(IBookReference reff, out NodeBook nodeBook) => TryGetLoadedBook(reff.BookName , reff.AuthorName,  out nodeBook);
-
-        public static bool TryGetLoadedBook(string bookName, string authorName, out NodeBook nodeBook) { 
-           
-
-            var book = TryGetBook(bookName, authorName);
-
-            if (book == null) {
-                nodeBook = null;
-                return false;
-            }
-
-            if (book.GetType() == typeof(NodeBook_OffLoaded))
-                book = books.LoadBook(book as NodeBook_OffLoaded);
-
-            nodeBook = book as NodeBook;
-
-            return nodeBook != null;
-        }
-
-        static readonly string _generalItemsFolder = "General";
-
-        static readonly string _generalItemsFile = "config";
-
-        public static void AddOrReplace(NodeBook nb) {
-
-            var el = books.GetByIGotName(nb);
-
-            if (el != null) {
-                if (CurrentNode != null && CurrentNode.parentBook == el)
-                    CurrentNode = null;
-                books[books.IndexOf(el)] = nb;
-            }
-            else
-                books.Add(nb);
-        }
-
-        #endregion
 
         #region Inspector
         
-        private string _tmpUserName;
-        
-        private int _inspectedBook = -1;
-        
+ 
         public static bool showPlaytimeUI;
         
         public override void ResetInspector() {
-            _inspectReplacementOption = false;
-            _tmpUserName = "";
-            _replaceReceived = null;
-            _inspectedBook = -1;
             base.ResetInspector();
-
-            foreach (var b in books)
-                b.ResetInspector();
-            
-             user.ResetInspector();
+            users.ResetInspector();
+            books.ResetInspector();         
         }
-
-        private NodeBook _replaceReceived;
-        private bool _inspectReplacementOption;
-
+        
         public bool InspectAssets()
         {
             var changed = false;
@@ -333,6 +212,8 @@ namespace NodeNotes {
             return changed;
         }
 
+        private enum InspectedItems { InspectUser = 4, editUser = 6  }
+
         public override bool Inspect() {
 
             var changed = false;
@@ -340,42 +221,10 @@ namespace NodeNotes {
             if (!SaveAnyChanges)
                 "Changes will not be saved as user is not a developer".writeWarning();
 
-            if (_inspectedBook == -1) {
-
-                if (inspectedItems == -1) {
-                    if (users.Count > 1 && icon.Delete.ClickConfirm("delUsr","Are you sure you want to delete this User?"))
-                        DeleteUser();
-
-                    string usr = user.Name;
-                    if (pegi.select(ref usr, users)) {
-                        SaveUser();
-                        LoadUser(usr);
-                    }
-                }
-
-                if (icon.Enter.enter(ref inspectedItems, 4, "Inspect user"))
-                    user.Nested_Inspect().changes(ref changed);
-
-                if (icon.Edit.enter(ref inspectedItems, 6, "Edit or Add user")) {
-
-                    "Name:".edit(60, ref _tmpUserName);
-
-                    if (_tmpUserName.Length <= 3)
-                        "Too short".writeHint();
-                    else if (users.Contains(_tmpUserName))
-                        "Name exists".writeHint();
-                    else{
-                        if (icon.Add.Click("Add new user"))
-                            CreateUser(_tmpUserName);
-
-                        if (icon.Replace.ClickConfirm("rnUsr" ,"Do you want to rename a user {0}? This may break links between his books.".F(user.Name)))
-                            RenameUser(_tmpUserName);
-                    }
-                }
-
+            if (books._inspectedBook == -1) {
+                
                 if (inspectedItems == -1)
                 {
-
                     pegi.nl();
 
                     if (Application.isEditor) {
@@ -391,13 +240,13 @@ namespace NodeNotes {
 
                             foreach (var bookFile in fls) {
 
-                                var loaded = TryGetBook(bookFile, authorFolder);
+                                var loaded = books.TryGetBook(bookFile, authorFolder);
 
                                 if (loaded == null) {
                                     "{0} by {1}".F(bookFile, authorFolder).write();
 
                                     if (icon.Insert.Click("Add current book to list"))
-                                            books.Add(new NodeBook_OffLoaded(bookFile, authorFolder));
+                                        books.all.Add(new NodeBook_OffLoaded(bookFile, authorFolder));
 
                                     pegi.nl();
                                 }
@@ -428,72 +277,26 @@ namespace NodeNotes {
             }
             else inspectedItems = -1;
 
-            if (inspectedItems == -1) {
-
-                var newBook = "Books ".edit_List(ref books, ref _inspectedBook, ref changed);
-
-                if (newBook != null)
-                    newBook.authorName = user.Name;
-                
-
-                if (_inspectedBook == -1)
-                {
-
-                    #region Paste Options
-
-                    if (_replaceReceived != null)
-                    {
-
-                        if (_replaceReceived.NameForPEGI.enter(ref _inspectReplacementOption))
-                            _replaceReceived.Nested_Inspect();
-                        else
-                        {
-                            if (icon.Done.ClickUnFocus()) {
-
-                                var el = books.GetByIGotName(_replaceReceived);
-                                if (el != null)
-                                    books[books.IndexOf(el)] = _replaceReceived;
-                                else books.Add(_replaceReceived);
-                                
-                                _replaceReceived = null;
-                            }
-                            if (icon.Close.ClickUnFocus())
-                                _replaceReceived = null;
-                        }
-                    }
-                    else  {
-
-                        string tmp = "";
-                        if ("Paste Messaged Book".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp)) {
-                            var book = new NodeBook();
-                            book.DecodeFromExternal(tmp);
-                            if (books.GetByIGotName(book.NameForPEGI) == null)
-                                books.Add(book);
-                            else
-                                _replaceReceived = book;
-                        }
-                    }
-                    pegi.nl();
-
-                    #endregion
-
-                }
-
-            }
+            if (inspectedItems == -1) 
+                books.Nested_Inspect(ref changed);
+            
             return changed;
-            }
+        }
 
         #endregion
 
         #region Encode_Decode
 
+        static readonly string _generalItemsFolder = "General";
+
+        static readonly string _generalItemsFile = "config";
 
         public bool Initialize() => this.LoadFromPersistentPath(_generalItemsFolder, _generalItemsFile);
 
         public void SaveAll()
         {
 
-            SaveUser();
+            users.SaveUser();
 
             if (CurrentNode != null)
                 CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
@@ -504,19 +307,22 @@ namespace NodeNotes {
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("trigs", TriggerGroup.all)
-            .Add("books", books, this)
+            .Add("bkSrv", books)
+            //.Add("books", nodeBookService.books, this) 
             .Add_IfTrue("ptUI", showPlaytimeUI)
-            .Add("us", users)
-            .Add_String("curUser", user.Name);
+            .Add("us", users.users)
+            .Add_String("curUser", users.current.Name);
         
         public override bool Decode(string tg, string data)
         {
             switch (tg)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
-                case "books": data.Decode_List(out books, this); break;
                 case "ptUI": showPlaytimeUI = data.ToBool(); break;
-                case "us": data.Decode_List(out users); break;
-                case "curUser": LoadUser(data); break;
+                case "us": data.Decode_List(out users.users); break;
+                case "curUser": users.LoadUser(data); break;
+                case "bkSrv": books.Decode(data); break; 
+                // DEPRECATED
+                case "books": data.Decode_List(out books.all, this); break;
                 default: return false;
             }
             return true;

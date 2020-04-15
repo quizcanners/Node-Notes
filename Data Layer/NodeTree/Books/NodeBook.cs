@@ -91,7 +91,7 @@ namespace NodeNotes
 
                         var tmp = new NodeBook();
                         tmp.Decode(data);
-                        if (tmp.NameForPEGI == NameForPEGI) Shortcuts.AddOrReplace(tmp);
+                        if (tmp.NameForPEGI == NameForPEGI) Shortcuts.books.AddOrReplace(tmp);
                     }
                 }
                 
@@ -105,13 +105,13 @@ namespace NodeNotes
 
                 if (!subNode.InspectingSubNode) {
 
-                    "Change".select(ref replacingAuthor, Shortcuts.users);
+                    "Change".select(ref replacingAuthor, Shortcuts.users.users);
 
-                    if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.Count &&
-                        !Shortcuts.users[replacingAuthor].Equals(authorName)
+                    if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.users.Count &&
+                        !Shortcuts.users.users[replacingAuthor].Equals(authorName)
                         && icon.Replace.ClickConfirm("repAu",
                             "Changing an author may break links to this book from other books."))
-                        authorName = Shortcuts.users[replacingAuthor];
+                        authorName = Shortcuts.users.users[replacingAuthor];
                 }
 
                 pegi.nl();
@@ -147,7 +147,7 @@ namespace NodeNotes
                 edited = ind;
 
             if (icon.Save.Click("Save book (Also offloads RAM)"))
-                Shortcuts.books.Offload(this);
+                Shortcuts.books.all.Offload(this);
 
             if (icon.Email.Click("Send this Book to somebody via email."))
                 this.EmailData("Book {0} ".F(subNode), "Take a look at my Node Book");
@@ -247,11 +247,11 @@ namespace NodeNotes
         public bool TryLoad(IBookReference reff) {
 
             if (reff.EditedByCurrentUser() && Application.isEditor) {
-                Debug.Log("Loading {0} from resources".F(reff.BookName));
+                //Debug.Log("Loading {0} from resources".F(reff.BookName));
                 return this.TryLoadFromResources(reff.BookFolder(), reff.BookName);
             }
 
-            Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.user.Name));
+            //Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.usersData.current.Name));
             return this.LoadFromPersistentPath(reff.BookFolder(), reff.BookName);
 
         }
@@ -276,7 +276,7 @@ namespace NodeNotes
                 return;
             }
 
-            if (Shortcuts.books.GetByIGotName(newName) != null) {
+            if (Shortcuts.books.all.GetByIGotName(newName) != null) {
                 Debug.LogError("Book with this name already exists");
                 return;
             }

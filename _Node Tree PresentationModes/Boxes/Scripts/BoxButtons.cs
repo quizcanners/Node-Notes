@@ -113,7 +113,7 @@ namespace NodeNotes_Visual {
         
         #region Node MGMT
 
-        public override void SetNode(Node node)
+        public override void OnBeforeNodeSet(Node node)
         {
 
             if (!_loopLock.Unlocked) return;

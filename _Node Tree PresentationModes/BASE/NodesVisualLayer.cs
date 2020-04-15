@@ -9,9 +9,7 @@ using Object = UnityEngine.Object;
 
 namespace NodeNotes_Visual
 {
-
-
-
+    
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteInEditMode]
@@ -55,14 +53,20 @@ namespace NodeNotes_Visual
 
         public override Node CurrentNode => Shortcuts.CurrentNode; 
         
-        public override void OnNodeSet(Node node) {
+        public override void OnBeforeNodeSet(Node node) {
 
             SetBackground(node);
 
             if (Application.isPlaying)
                 node?.SetInspected();
 
-            SelectedVisualLayer.SetNode(node);
+            if (!SelectedVisualLayer)
+            {
+                if (CurrentNode != null)
+                    Debug.LogError("Selected Visual Layer is null");
+            }
+            else 
+                SelectedVisualLayer.OnBeforeNodeSet(node);
         }
 
         public override void OnLogicVersionChange() {
@@ -147,23 +151,27 @@ namespace NodeNotes_Visual
             base.ResetInspector();
         }
 
+        private enum InspectedItem { CurrentNode = 2, Books = 4, Users = 5}
+
         protected override void InspectionTabs()
         {
             var cn = Shortcuts.CurrentNode;
 
             if (cn != null) {
-                icon.Active.toggle("[{0}] Current: {1} - {2}".
-                    F(Shortcuts.user.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector()), ref inspectedItems, 2);
+                icon.State.toggle("[{0}] Current: {1} - {2}".
+                    F(Shortcuts.users.current.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector()), ref inspectedItems, (int)InspectedItem.CurrentNode);
             }
             else icon.InActive.write("No Active Node");
 
-            icon.Book.toggle("Node Books", ref inspectedItems, 4);
+            icon.Book.toggle("Node Books", ref inspectedItems, (int)InspectedItem.Books);
+
+            icon.User.toggle("Users", ref inspectedItems, (int)InspectedItem.Users);
 
             base.InspectionTabs();
         }
-
-        private int _inspectedDependency = -1;
-        private int _inspectedBackground = -1;  
+        
+        private int _inspectedBackground = -1;
+        private int _inspectedDebugItem = -1;
 
         public override bool Inspect() {
 
@@ -181,45 +189,44 @@ namespace NodeNotes_Visual
                 else
                     return gameNode.Nested_Inspect();
             }
-            
+
             bool changed = base.Inspect();
             
-            if (inspectedItems == 2)
+            if (inspectedItems == (int)InspectedItem.CurrentNode)
                 SelectedVisualLayer.Nested_Inspect().changes(ref changed);
-
-            var cn = Shortcuts.CurrentNode;
             
             pegi.nl();
 
             if (!shortcuts)
                 "Shortcuts".edit(ref shortcuts).nl(ref changed);
-            else
-               if (inspectedItems == 4)
+            else if (inspectedItems == (int)InspectedItem.Books)
                 shortcuts.Nested_Inspect().nl(ref changed);
-            else
-                pegi.nl();
 
-            if ("Dependencies".enter(ref inspectedItems, 5).nl()) {
-
-                "Backgrounds".enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDependency, 0).nl(ref changed);
-
-                "Game Controllers".enter_List_UObj(ref gameNodeControllers, ref _inspectedDependency, 1).nl(ref changed);
-
-            }
-
-            "Textures".enter_Inspect(textureDownloader, ref inspectedItems, 6).nl_ifNotEntered(ref changed);
-
-            if ("Assets".enter(ref inspectedItems, 7).nl())
-                Shortcuts.Instance.InspectAssets().nl();
-
+            if (inspectedItems == (int)InspectedItem.Users)
+                Shortcuts.users.Nested_Inspect(ref changed);
 
             if (inspectedItems == -1)
             {
-                "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
+                "Backgrounds"
+                    .enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDebugItem, 0)
+                    .nl(ref changed);
 
-                if ( "Encode / Decode Test".Click(ref changed)) {
-                    OnDisable();
-                    OnEnable();
+                "Game Controllers".enter_List_UObj(ref gameNodeControllers, ref _inspectedDebugItem, 1).nl(ref changed);
+
+                "Textures".enter_Inspect(textureDownloader, ref _inspectedDebugItem, 2).nl_ifNotEntered(ref changed);
+
+                if ("Assets".enter(ref _inspectedDebugItem, 3).nl())
+                    Shortcuts.Instance.InspectAssets().nl();
+
+                if (_inspectedDebugItem == -1)
+                {
+                    "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
+
+                    if ("Encode / Decode Test".Click(ref changed))
+                    {
+                        OnDisable();
+                        OnEnable();
+                    }
                 }
             }
 

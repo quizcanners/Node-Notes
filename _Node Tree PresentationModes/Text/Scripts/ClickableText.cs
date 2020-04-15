@@ -204,7 +204,7 @@ namespace NodeNotes_Visual {
 
         public Node currentNode;
 
-        public override void SetNode(Node node)
+        public override void OnBeforeNodeSet(Node node)
         {
             Unlink();
             

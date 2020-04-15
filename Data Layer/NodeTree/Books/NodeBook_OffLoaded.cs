@@ -36,7 +36,7 @@ namespace NodeNotes {
             this.GetNameForInspector().write();
 
             if (icon.Load.Click())
-                Shortcuts.books.LoadBook(this);
+                Shortcuts.books.all.LoadBook(this);
 
             return false;
         }

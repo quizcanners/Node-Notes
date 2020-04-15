@@ -74,6 +74,8 @@ namespace QcTriggerLogic
         protected virtual void InspectionTabs() {
             icon.Condition.toggle("Trigger groups", ref inspectedItems, 1);
             icon.Close.toggle("Close All", ref inspectedItems, -1);
+
+            pegi.nl();
         }
 
 

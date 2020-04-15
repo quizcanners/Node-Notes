@@ -48,7 +48,7 @@ namespace NodeNotes {
             if (loopLock.Unlocked)
                 using (loopLock.Lock()) {
 
-                    var data = Shortcuts.user.gameNodesData_PerUser.TryGet(ClassTag);
+                    var data = Shortcuts.users.current.gameNodesData_PerUser.TryGet(ClassTag);
                     if (data != null)
                         Decode(data);
                     
@@ -81,8 +81,8 @@ namespace NodeNotes {
                 using (loopLock.Lock()) {
 
                     OnExit();
-                    
-                    Shortcuts.user.gameNodesData_PerUser[ClassTag] = Encode_PerUserData().ToString();
+
+                    Shortcuts.users.current.gameNodesData_PerUser[ClassTag] = Encode_PerUserData().ToString();
                     parentNode.parentBook.gameNodesData[ClassTag] = Encode_PerBookStaticData().ToString();
 
                    // Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.parentBook.gameNodesData[ClassTag]));

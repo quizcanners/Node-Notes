@@ -128,7 +128,7 @@ namespace QcTriggerLogic {
 
             
             
-            if (this.Click_Enter_Attention(icon.Condition, "Explore Condition branch", false))
+            if (this.Click_Enter_Attention(icon.Enter, "Explore Condition branch", false))
                 edited = ind;
             
             return changed;

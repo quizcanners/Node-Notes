@@ -28,7 +28,7 @@ namespace NodeNotes_Visual {
         
         public abstract void OnLogicUpdate();
         
-        public abstract void SetNode(Node node);
+        public abstract void OnBeforeNodeSet(Node node);
         
         public virtual CfgEncoder EncodePerBookData() => new CfgEncoder();
 

@@ -270,10 +270,13 @@ namespace NodeNotes {
                 var onPlayScreen = pegi.PaintingGameViewUI;
 
                 if (_inspectedItems == -1) {
-                    this.inspect_Name().changes(ref changed);
-
-                    if ((this != Shortcuts.Cut_Paste) && icon.Cut.Click("Cut/Paste"))
-                        Shortcuts.Cut_Paste = this;
+                    if (parentNode != null)
+                    {
+                        this.inspect_Name().changes(ref changed);
+                            
+                        if ((this != Shortcuts.Cut_Paste) && icon.Cut.Click("Cut/Paste"))
+                            Shortcuts.Cut_Paste = this;
+                    }
                 }
 
                 pegi.nl();
