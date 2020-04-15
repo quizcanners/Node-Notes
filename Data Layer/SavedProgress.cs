@@ -11,15 +11,13 @@ namespace NodeNotes {
 
     public class CurrentUser: AbstractKeepUnrecognizedCfg, IGotName, IPEGI, IGotDisplayName {
 
-        public string startingPoint = "";
+        //public string startingPoint = "";
         public string Name = "Unknown";
         public List<BookMark> bookMarks = new List<BookMark>();
         ListMetaData marksMeta = new ListMetaData("Book Marks", true, false, false, false);
         public bool isADeveloper;
 
-        private static int tmpNode;
-        private string tmpBookName;
-        private string tmpAuthorName;
+
         
         #region GameNodes
         public Dictionary<string, string> gameNodesData_PerUser = new Dictionary<string, string>();
@@ -154,12 +152,12 @@ namespace NodeNotes {
             if (nextBook == null)
                 Debug.LogError("Next book is null");
             
-            if (bookMarks.Count == 0) {
+           /* if (bookMarks.Count == 0) {
                 if (_currentNode != null)
                     startingPoint = _currentNode.parentBook.NameForPEGI;
                 else 
                     startingPoint = nextBook.NameForPEGI;
-            }
+            }*/
 
             if (_currentNode != null && _currentNode.parentBook == nextBook)
                 return;
@@ -204,7 +202,7 @@ namespace NodeNotes {
         #region Inspector
 
         public string NameForDisplayPEGI()=>
-            "{0} FROM {1}".F(Name, startingPoint);
+            "{0} FROM {1}".F(Name, bookMarks.Count>0 ? "{0} by {1}".F(bookMarks[0].BookName, bookMarks[0].AuthorName) : "NO STORY");
         
         public override bool Inspect() {
 
@@ -227,10 +225,14 @@ namespace NodeNotes {
 
             return changed;
         }
-   
+
         #endregion
 
         #region Encoding_Decoding
+
+        private int _tmpNode;
+        private string _tmpBookName;
+        private string _tmpAuthorName;
 
         public override void Decode(string data) {
   
@@ -238,8 +240,8 @@ namespace NodeNotes {
 
             NodeBook book;
 
-            if (Shortcuts.TryGetLoadedBook(tmpBookName, tmpAuthorName, out book))
-                Shortcuts.CurrentNode = book.allBaseNodes[tmpNode] as Node;
+            if (Shortcuts.TryGetLoadedBook(_tmpBookName, _tmpAuthorName, out book))
+                Shortcuts.CurrentNode = book.allBaseNodes[_tmpNode] as Node;
             else
                 ReturnToBookMark();
         }
@@ -248,12 +250,12 @@ namespace NodeNotes {
             switch (tg) {
                 case "bm": data.Decode_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
-                case "cur": tmpNode = data.ToInt(); break;
-                case "curB": tmpBookName = data; break;
-                case "curA": tmpAuthorName = data; break;;
+                case "cur": _tmpNode = data.ToInt(); break;
+                case "curB": _tmpBookName = data; break;
+                case "curA": _tmpAuthorName = data; break;;
                 case "dev": isADeveloper = data.ToBool(); break;
                 case "n": Name = data; break;
-                case "start": startingPoint = data; break;
+                //case "start": startingPoint = data; break;
                 case "pgnd": data.Decode_Dictionary(out gameNodesData_PerUser); break;
                 default: return false;
             }
@@ -267,7 +269,7 @@ namespace NodeNotes {
             .Add("vals", Values.global)
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", Name)
-            .Add_String("start", startingPoint)
+            //.Add_String("start", startingPoint)
             .Add_IfNotEmpty("pgnd", gameNodesData_PerUser);
 
             var cur = Shortcuts.CurrentNode;

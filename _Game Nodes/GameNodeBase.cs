@@ -127,7 +127,7 @@ namespace NodeNotes {
 
                 changed |= base.Inspect();
 
-                if (showLogic)
+                if (_inspectedItems == (int)InspectItems.Logic)
                     ExitResultRole.enter_List(ref _onExitResults, ref _editedExitResult, ref _inspectedItems, 7, ref changed).SetLastUsedTrigger();
                         
                 pegi.nl_ifNotEntered();

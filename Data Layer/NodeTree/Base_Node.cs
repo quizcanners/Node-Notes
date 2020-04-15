@@ -43,6 +43,16 @@ namespace NodeNotes {
             parentBook = other.parentBook;
             visualRepresentation = other.visualRepresentation;
             previousVisualRepresentation = other.previousVisualRepresentation;
+
+            if (!QcUnity.IsNullOrDestroyed_Obj(visualRepresentation))
+            {
+                pegi.GameView.ShowNotification("Changing Node Type");
+                visualRepresentation.OnSourceNodeChange(this);
+            }
+            else
+            {
+                pegi.GameView.ShowNotification("Source Node was empty, couldn't change");
+            }
         }
 
         int index;
@@ -55,8 +65,8 @@ namespace NodeNotes {
 
         protected static NodesVisualLayerAbstract VisualLayer => Shortcuts.visualLayer;
 
-        public ICfg visualRepresentation;
-        public ICfg previousVisualRepresentation;
+        public INodeVisualPresentation visualRepresentation;
+        public INodeVisualPresentation previousVisualRepresentation;
         public string configForVisualRepresentation;
 
         public virtual GameNodeBase AsGameNode => null;
@@ -137,7 +147,6 @@ namespace NodeNotes {
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
         .Add_String(        "n",    name)
         .Add(               "i",    index)
-        .Add_IfTrue(        "visL", showLogic)
         .Add_IfNotNegative( "is",   _inspectedItems)
         .Add_IfNotNegative( "icr",  _inspectedResult)
         .Add_IfNotDefault(  "cnds", _eblCondition)
@@ -150,7 +159,6 @@ namespace NodeNotes {
             switch (tg) {
                 case "n":       name = data; break;
                 case "i":       index = data.ToInt(); break;
-                case "visL":    showLogic = data.ToBool(); break;
                 case "is":      _inspectedItems = data.ToInt(); break;
                 case "icr":     _inspectedResult = data.ToInt(); break;
                 case "cnds":    _eblCondition.Decode(data); break;
@@ -172,9 +180,8 @@ namespace NodeNotes {
         protected virtual string InspectionHint => "Inspect Node";
         
         private int _inspectedResult = -1;
+        private int inspectedLogic = -1;
         public bool InspectingTriggerItems => _inspectedResult != -1;
-
-        protected bool showLogic;
 
         public virtual bool InspectInList(IList list, int ind, ref int edited)
         {
@@ -244,6 +251,14 @@ namespace NodeNotes {
 
         protected virtual bool Inspect_AfterNamePart() => false;
 
+        public bool InspectingVisuals() => _inspectedItems == 21;
+
+        protected enum InspectItems
+        {
+            Logic = 1,
+            Node = 10,
+        } 
+
         public override bool Inspect() {
       
 
@@ -259,39 +274,45 @@ namespace NodeNotes {
 
                     if ((this != Shortcuts.Cut_Paste) && icon.Cut.Click("Cut/Paste"))
                         Shortcuts.Cut_Paste = this;
-                    if (visualRepresentation != null && icon.Show.Click("Visible. Click To Hide Visual Representation."))
-                        Shortcuts.visualLayer.Hide(this);
-                    if (visualRepresentation == null && icon.Hide.Click("Hidden. Click to show visual representation."))
-                        Shortcuts.visualLayer.Show(this);
-
                 }
 
                 pegi.nl();
-
+                    
                 Inspect_AfterNamePart().nl(ref changed);
 
+                if (_inspectedItems == -1)
+                {
+                    if (visualRepresentation == null)
+                    {
+                        "Node is not currently visualized".write();
+
+                        if ("Show".Click("Hidden. Click to show visual representation."))
+                        {
+                            Shortcuts.visualLayer.Show(this);
+                        }
+                    } else if ("Hide".Click("Visible. Click To Hide Visual Representation."))
+                        Shortcuts.visualLayer.Hide(this);
+                }
+            
+
                 "Visual".TryEnter_Inspect(visualRepresentation, ref _inspectedItems, 21).nl_ifFolded(ref changed);
-
-                pegi.nl();
-
-                if ( _inspectedItems != -1 || "Conditions & Results".foldout(ref showLogic).nl()) {
                     
-                    _visCondition.enter_Inspect(ref _inspectedItems, 1).nl_ifFolded(ref changed);
+                if ("Conditions & Results".enter(ref _inspectedItems, (int)InspectItems.Logic).nl())
+                {
 
-                    _eblCondition.enter_Inspect(ref _inspectedItems, 2).nl_ifFolded(ref changed);
+                    _visCondition.enter_Inspect(ref inspectedLogic, 0).nl_ifFolded(ref changed);
 
-                    ResultsRole.enter_List(ref results, ref _inspectedResult, ref _inspectedItems, 3, ref changed)
-                        .SetLastUsedTrigger();
+                    _eblCondition.enter_Inspect(ref inspectedLogic, 1).nl_ifFolded(ref changed);
+
+                    ResultsRole.enter_List(ref results, ref _inspectedResult, ref inspectedLogic, 2, ref changed).SetLastUsedTrigger();
                 }
 
                 pegi.nl_ifFolded();
-
+                    
                 if (changed)
                     _logicVersion = -1;
             }
-
-         
-
+            
             return changed;
         }
         
@@ -299,7 +320,7 @@ namespace NodeNotes {
 
         #region MGMT
 
-        public virtual string LinkTo(ICfg visualLayer)
+        public virtual string LinkTo(INodeVisualPresentation visualLayer)
         {
             if (visualRepresentation != null)
                 Debug.LogError("Visual representation is not null", visualLayer as Object);

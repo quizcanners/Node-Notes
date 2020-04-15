@@ -115,6 +115,10 @@ namespace NodeNotes
                 }
 
                 pegi.nl();
+
+                if (!subNode.InspectingSubNode)
+                    "ROOT NODE:".nl(PEGI_Styles.ListLabel);
+
                 subNode.Nested_Inspect().nl(ref changed);
 
             }
@@ -229,13 +233,13 @@ namespace NodeNotes
         public void SaveToFile() {
 
             if (AuthoringAStory) {
-                Debug.Log("Saving {0} to resources".F(BookName));
+                //Debug.Log("Saving {0} to resources".F(BookName));
                 this.SaveToResources(Shortcuts.ProjectName, this.BookFolder(), BookName);
                 QcUnity.RefreshAssetDatabase();
             }
             else
             {
-                Debug.Log("Saving {0} to perisstent ".F(NameForPEGI));
+                //Debug.Log("Saving {0} to perisstent ".F(NameForPEGI));
                 this.SaveToPersistentPath(this.BookFolder(), NameForPEGI);
             }
         }

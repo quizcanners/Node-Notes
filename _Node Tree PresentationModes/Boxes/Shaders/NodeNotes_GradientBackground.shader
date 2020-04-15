@@ -93,7 +93,7 @@
 					col.rgb = col.rgb * (1 - center) + _BG_CENTER_COL.rgb*center;
 
 					#ifdef UNITY_COLORSPACE_GAMMA
-					col.rgb = sqrt(o.color.rgb);
+					col.rgb = sqrt(col.rgb);
 					#endif
 
 					//col.rgb += grad * _BG_CENTER_COL.rgb * clickPower * _BG_CENTER_COL.a;
@@ -103,7 +103,7 @@
 					#if USE_NOISE_TEXTURE
 						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
 						#ifdef UNITY_COLORSPACE_GAMMA
-						col.rgb += col.rgb*(noise.rgb - 0.5)*0.2;// *(_NodeNotes_Gradient_Transparency + (1 - _NodeNotes_Gradient_Transparency));
+						col.rgb += col.rgb*(noise.rgb - 0.5)*0.05;// *(_NodeNotes_Gradient_Transparency + (1 - _NodeNotes_Gradient_Transparency));
 						#else
 						col.rgb += col.rgb*(noise.rgb - 0.5)*0.2;//*(_NodeNotes_Gradient_Transparency + (1 - _NodeNotes_Gradient_Transparency));
 						#endif

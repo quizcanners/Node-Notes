@@ -460,27 +460,26 @@ namespace NodeNotes_Visual {
             if (!IsRendering && "Reenable Nodes Rending".Click())
                 IsRendering = true;
 
+            Base_Node inspectedNode;
+
             if (Application.isPlaying && selectedNode)
             {
 
-                var src = selectedNode.source;
+                inspectedNode = selectedNode.source;
 
                 if (selectedNode.LevelArea && IsRendering && "Disable Renderers For Nodes".Click().nl())
                     IsRendering = false;
 
-                if (src.Nested_Inspect().nl(ref changed) && selectedNode)
-                    selectedNode.UpdateName();
-
             }
             else
             {
-                "Node will be shown during play when selected (when Edit is enabled)".writeHint();
-
-                _ld.Nested_Inspect().nl(ref changed);
-
+                inspectedNode = Shortcuts.CurrentNode;
             }
-        
-        if (selectedNode == null || ((selectedNode.source == Shortcuts.CurrentNode) && (selectedNode.source.InspectingVisuals()) && (selectedNode.inspectedItems == -1)))
+
+            if (inspectedNode != null && inspectedNode.Nested_Inspect().nl(ref changed) && selectedNode)
+                selectedNode.UpdateNameNow();
+
+            if (inspectedNode == null || (inspectedNode._inspectedItems == -1 && (inspectedNode.AsNode == null || !inspectedNode.AsNode.InspectingSubNode)))
             {
 
                 if (icon.Create.enter("Dependencies", ref inspectedItems, 5))

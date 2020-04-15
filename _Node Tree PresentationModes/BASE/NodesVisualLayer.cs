@@ -152,9 +152,8 @@ namespace NodeNotes_Visual
             var cn = Shortcuts.CurrentNode;
 
             if (cn != null) {
-                icon.Active.toggle("{0} -> [{1}] Current: {2} - {3}"
-                    .F(Shortcuts.user.startingPoint, Shortcuts.user.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector())
-                    , ref inspectedItems, 2);
+                icon.Active.toggle("[{0}] Current: {1} - {2}".
+                    F(Shortcuts.user.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector()), ref inspectedItems, 2);
             }
             else icon.InActive.write("No Active Node");
 
@@ -288,6 +287,8 @@ namespace NodeNotes_Visual
         public override bool InspectBackgroundTag(Node node) {
 
             var changed = false;
+
+            "Style (Inside)".write(110);
 
             if (PresentationMode.all.selectTypeTag(ref node.visualStyleTag).nl(ref changed))
                 SetBackground(node);

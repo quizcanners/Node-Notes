@@ -202,7 +202,7 @@ namespace NodeNotes_Visual {
 
         public bool Inspect()
         {
-            pegi.Lock_UnlockWindowClick(this);
+            pegi.EditorView.Lock_UnlockClick(gameObject);
             pegi.toggleDefaultInspector(this).nl();
 
             var curve = StaminaCurve;

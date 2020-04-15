@@ -110,9 +110,9 @@ namespace NodeNotes {
 
     }
 
-    public interface INodeNotesVisualStyle
+    public interface INodeVisualPresentation : ICfg
     {
-
+        void OnSourceNodeChange(Base_Node node);
     }
 
 }

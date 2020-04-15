@@ -14,7 +14,7 @@ namespace NodeNotes_Visual {
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [TaggedType(classTag)]
-    public class ClickableText : PresentationMode, IPointerClickHandler, IPointerDownHandler
+    public class ClickableText : PresentationMode, IPointerClickHandler, IPointerDownHandler, INodeVisualPresentation
     {
         #region Ecode & Decode
         const string classTag = "textRead";
@@ -221,6 +221,12 @@ namespace NodeNotes_Visual {
 
         public override void OnLogicUpdate() => UpdateText();
 
+        public void OnSourceNodeChange(Base_Node node)
+        {
+            currentNode = node.AsNode;
+        }
+
+
         #region Inspector
 
         public static bool skipLerpForEditor;
@@ -248,11 +254,12 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-        
+
+     
         #endregion
     }
     
-    public class TextConfiguration : AbstractKeepUnrecognizedCfg, IPEGI
+    public class TextConfiguration : AbstractKeepUnrecognizedCfg, IPEGI, INodeVisualPresentation
     {
         private Node Node => ClickableText.instance.currentNode;
 
@@ -396,7 +403,9 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-        
+
+        public void OnSourceNodeChange(Base_Node node) { }
+
 
         #region Text Chunks
 
@@ -541,6 +550,8 @@ namespace NodeNotes_Visual {
             public bool InspectInList(IList list, int ind, ref int edited) {
 
                 var changed = false;
+
+                "[BACK]".write(80);
 
                 pegi.edit(ref text).changes(ref changed);
 

@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace NodeNotes {
 
+#pragma warning disable IDE0018 // Inline variable declaration
+
     public class Node : Base_Node {
 
         public string visualStyleTag = "";
@@ -15,7 +17,7 @@ namespace NodeNotes {
 
         public List<Base_Node> coreNodes = new List<Base_Node>();
 
-        private ListMetaData _gamesNodesMeta = new ListMetaData("Game Nodes", keepTypeData: true, enterIcon: icon.Discord);
+        private ListMetaData _gamesNodesMeta = new ListMetaData("Game Nodes", keepTypeData: true);
 
         public List<GameNodeBase> gameNodes = new List<GameNodeBase>();  // Can be entered, but can't have subnodes, can be stored with unrecognized
 
@@ -187,13 +189,11 @@ namespace NodeNotes {
     
             var changed = false;
             
-            if (_inspectedItems == -1 && !InspectingTriggerItems) {
+            if (_inspectedItems == -1 && InspectingSubNode) {
 
-                if (InspectingSubNode) {
+                    var node = coreNodes.TryGet(_coreNodesMeta);
 
-                    var n = coreNodes.TryGet(_coreNodesMeta);
-
-                    if (n == null)
+                    if (node == null)
                         InspectingSubNode = false;
                     else if (!Application.isPlaying || (Shortcuts.CurrentNode == this || IsChildOrSubChildOf(Shortcuts.CurrentNode))) {
 
@@ -214,23 +214,18 @@ namespace NodeNotes {
                     }
 
                     if (InspectingSubNode)
-                        pegi.Try_Nested_Inspect(n).changes(ref changed);
-                }
+                        pegi.Try_Nested_Inspect(node).changes(ref changed);
+            }
 
-                if (!InspectingSubNode)  {
-
-                    NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this).changes(ref changed);
-                    
+            if (!InspectingSubNode) {
+                
+                if (_inspectedItems == -1)
+                {
                     pegi.nl();
                     var newNode = _coreNodesMeta.edit_List(ref coreNodes, ref changed);
 
                     newNode?.CreatedFor(this);
                 }
-
-
-            }
-
-            if (!InspectingSubNode) {
 
                 _gamesNodesMeta.Inspecting = false;
 
@@ -239,6 +234,11 @@ namespace NodeNotes {
                 pegi.nl_ifFoldedOut();
 
                 ngn?.CreatedFor(this);
+
+                pegi.nl();
+
+                if (_inspectedItems == -1)
+                    NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this).nl(ref changed);
             }
 
             return changed;
@@ -255,11 +255,11 @@ namespace NodeNotes {
             if (!InspectingSubNode && _inspectedItems ==-1)  {
                 if (this != CurrentNode) {
                     if (parentBook.EditedByCurrentUser()) {
-                        if (parentNode != null && icon.State.Click("Enter Node"))
+                        if (parentNode != null && icon.Play.Click("Enter Node"))
                             CurrentNode = this;
                     } else if (CurrentNode != null && CurrentNode == parentNode) {
                         if (Conditions_isEnabled()) {
-                            if (icon.State.Click("Enter node"))
+                            if (icon.Play.Click("Enter node"))
                                 ExecuteInteraction();
                         } else (Conditions_isVisible() ? icon.Share : icon.Hide).write(Conditions_isVisible() ? "Visible" : "Hidden Node");
                     }

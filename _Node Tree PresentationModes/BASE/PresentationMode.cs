@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
 
-    public abstract class PresentationMode : ComponentCfg, INodeNotesVisualStyle, IManageFading, IPEGI, IGotClassTag
+    public abstract class PresentationMode : ComponentCfg, IManageFading, IPEGI, IGotClassTag
     {
         #region Tagged Types MGMT
         public abstract string ClassTag { get;  }

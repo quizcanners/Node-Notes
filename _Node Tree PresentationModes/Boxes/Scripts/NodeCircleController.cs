@@ -12,9 +12,9 @@ namespace NodeNotes_Visual {
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteAlways]
-    public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping {
-
-   
+    public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping, INodeVisualPresentation
+    {
+        
         public LineRenderer linkRenderer;
         public Renderer circleRenderer;
         public MeshCollider circleCollider;
@@ -22,8 +22,7 @@ namespace NodeNotes_Visual {
         public Base_Node source;
         public TextMeshPro textA;
         public TextMeshPro textB;
-
-
+        
         [NonSerialized] public LevelArea LevelArea;
         private LevelArea MeshObjectGetOrCreate()
         {
@@ -76,7 +75,7 @@ namespace NodeNotes_Visual {
 
         #region TEXT
 
-        public void UpdateName()
+        public void UpdateNameNow()
         {
             if (source != null)
             {
@@ -88,7 +87,7 @@ namespace NodeNotes_Visual {
                     ActiveText.text = source.name;
                     gameObject.name = source.name;
                     PassiveText.text = "";
-                    UpdateView();
+                    OnShaderParametersChanged();
                 }
                 else
                     newText = source.name;
@@ -134,7 +133,7 @@ namespace NodeNotes_Visual {
             {
                 source.name = value;
 
-                UpdateName();
+                UpdateNameNow();
             }
         }
 
@@ -158,8 +157,8 @@ namespace NodeNotes_Visual {
                 
                 var onPlayScreen = pegi.PaintingGameViewUI;
 
-                if (source != null && source.parentNode == null && icon.Exit.Click("Exit story"))
-                    Shortcuts.CurrentNode = null;
+                /*if (source != null && source.parentNode == null && icon.Close.Click("Exit story"))
+                    Shortcuts.CurrentNode = null;*/
 
                 if (source != null) {
 
@@ -169,7 +168,7 @@ namespace NodeNotes_Visual {
 
                     if (nd != null) {
 
-                        if (IsCurrent && nd.parentNode != null && icon.StateMachine.Click("Exit this Node"))
+                        if (IsCurrent && nd.parentNode != null && icon.Back.Click("Exit this Node"))
                             Shortcuts.TryExitCurrentNode(); 
                         
                         if (!IsCurrent && icon.Enter.Click("Enter this Node"))
@@ -189,6 +188,11 @@ namespace NodeNotes_Visual {
                 }
 
                 pegi.nl();
+
+                if (source == null)
+                {
+                    "No source node is currently linked.".writeHint();
+                }
 
                 if ("Shape & Color".enter(ref inspectedItems, 2).nl())
                 {
@@ -212,7 +216,7 @@ namespace NodeNotes_Visual {
                                 }
                             }
                         }
-                        else "No source node is currently linked.".writeHint();
+                        //else "No source node is currently linked.".writeHint();
                     }
 
                     if (source == null || (!source.InspectingTriggerItems))
@@ -367,7 +371,7 @@ namespace NodeNotes_Visual {
             {
                 SetDirty();
                 bgColor = ActiveConfig.targetColor;
-                UpdateView();
+                OnShaderParametersChanged();
             }
 
             return changed;
@@ -573,7 +577,7 @@ namespace NodeNotes_Visual {
                 _texTransition.Lerp(ld, skipLerpPossible);
 
                 if (needShaderUpdate)
-                    UpdateView();
+                    OnShaderParametersChanged();
 
 
                 if (fadePortion == 0 && isFading && Application.isPlaying)
@@ -736,7 +740,7 @@ namespace NodeNotes_Visual {
 
         private static Camera MainCamera => NodesVisualLayer.MainCam;
         
-        private void UpdateView() {
+        private void OnShaderParametersChanged() {
 
             if (textB && textA) {
 
@@ -940,6 +944,12 @@ namespace NodeNotes_Visual {
 
         }
 
+        public void OnSourceNodeChange(Base_Node node)
+        {
+            source = node;
+            SetDirty();
+        }
+
         public void Unlink()
         {
             if (source != null) {
@@ -973,6 +983,8 @@ namespace NodeNotes_Visual {
             _texTransition = new LinkedLerp.RendererMaterialTextureTransition(circleRenderer);
 
         }
+
+   
 
         #endregion
     }
