@@ -229,9 +229,13 @@ namespace NodeNotes {
 
                     if (Application.isEditor) {
 
-                        if (icon.Folder.Click("Open Save files folder").nl())
+                        if (icon.Folder.Click("Open Save files folder"))
                             QcFile.Explorer.OpenPersistentFolder(NodeBook_Base.BooksRootFolder);
-                        
+
+                        users.current.NameForPEGI.write();
+
+                        pegi.nl();
+
                         var authorFolders = QcFile.Explorer.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
 
                         foreach (var authorFolder in authorFolders) {

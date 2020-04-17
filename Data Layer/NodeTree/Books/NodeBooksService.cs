@@ -35,7 +35,7 @@ namespace NodeNotes
             }
 
             if (book.GetType() == typeof(NodeBook_OffLoaded))
-                book = all.LoadBook(book as NodeBook_OffLoaded);
+                book = (book as NodeBook_OffLoaded).LoadBook();
 
             nodeBook = book as NodeBook;
 

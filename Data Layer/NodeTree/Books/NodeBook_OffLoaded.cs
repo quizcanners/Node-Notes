@@ -36,7 +36,7 @@ namespace NodeNotes {
             this.GetNameForInspector().write();
 
             if (icon.Load.Click())
-                Shortcuts.books.all.LoadBook(this);
+                this.LoadBook();
 
             return false;
         }
@@ -75,7 +75,11 @@ namespace NodeNotes {
             return null;
         }
 
-        public static NodeBook LoadBook (this List<NodeBook_Base> list, NodeBook_OffLoaded offloaded) {
+        public static NodeBook LoadBook (this NodeBook_OffLoaded offloaded) {
+
+           
+
+            var list = Shortcuts.books.all; //List<NodeBook_Base> list,
 
             if (offloaded != null && list.Contains(offloaded)) {
                 var ind = list.IndexOf(offloaded);
@@ -83,6 +87,7 @@ namespace NodeNotes {
 
                 if (book.TryLoad(offloaded)) {
                     list[ind] = book;
+                   // Debug.Log("Loading {0}".F(book.NameForPEGI));
                     return book;
                 }
 
