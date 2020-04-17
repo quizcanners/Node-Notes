@@ -5,6 +5,7 @@ using PlayerAndEditorGUI;
 using PlaytimePainter;
 using QuizCannersUtilities;
 using UnityEngine;
+using UnityEngine.Networking;
 using Object = UnityEngine.Object;
 
 namespace NodeNotes_Visual
@@ -218,6 +219,60 @@ namespace NodeNotes_Visual
                 if ("Assets".enter(ref _inspectedDebugItem, 3).nl())
                     Shortcuts.Instance.InspectAssets().nl();
 
+                if ("Test Web Requests".enter(ref _inspectedDebugItem, 4).nl())
+                {
+                    if (testRequest == null)
+                    {
+                        "Test URL".edit(90, ref _testUrl).nl();
+                        if ("Get".Click())
+                        {
+                            testRequest = UnityWebRequest.Get(_testUrl);
+                            testRequest.SendWebRequest();
+                        }
+                    }
+                    else
+                    {
+
+                        if ("Dispose Request".Click().nl())
+                        {
+                            testRequest.Abort();
+                            testRequest.Dispose();
+                            testRequest = null;
+                        }
+                        else
+                        {
+
+                            if (testRequest.isNetworkError)
+                            {
+                                "Error".nl(PEGI_Styles.ListLabel);
+                                pegi.writeBig(testRequest.error);
+                            }
+                            else
+                            {
+                                if (!testRequest.isDone)
+                                    "Progress: {0}".F(testRequest.downloadProgress).nl();
+                                else
+                                {
+                                    "Done".write();
+
+                                    if ("Read Content".Click().nl())
+                                        _testDownloadedCode = testRequest.downloadHandler.text;
+
+                                }
+                            }
+                        }
+                    }
+
+                    if (!_testDownloadedCode.IsNullOrEmpty())
+                    {
+                        if ("Clear".Click().nl())
+                            _testDownloadedCode = null;
+                        else
+                            pegi.editBig(ref _testDownloadedCode);
+                    }
+                }
+
+
                 if (_inspectedDebugItem == -1)
                 {
                     "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
@@ -227,6 +282,9 @@ namespace NodeNotes_Visual
                         OnDisable();
                         OnEnable();
                     }
+
+                    pegi.nl();
+                    
                 }
             }
 
@@ -236,9 +294,15 @@ namespace NodeNotes_Visual
             return changed;
         }
 
+        private string _testDownloadedCode;
+
+        private UnityWebRequest testRequest;
+
+        private string _testUrl;
+
         public void OnGUI() {
 
-            if (!Shortcuts.showPlaytimeUI || (Application.isPlaying && !Shortcuts.editingNodes))
+            if (!Shortcuts.showPlaytimeUI || !Application.isPlaying || !Shortcuts.editingNodes)
                 return;
             
             _playtimeInspectorWindowOnGui.Render(this);

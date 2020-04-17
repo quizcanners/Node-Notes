@@ -83,7 +83,7 @@ namespace NodeNotes {
             current.ResetInspector();
         }
 
-        private string _tmpUserName;
+        private string _tmpUserName = "";
 
 
 
