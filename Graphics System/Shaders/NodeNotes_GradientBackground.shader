@@ -5,7 +5,6 @@
 	Category{
 		Tags{
 			"Queue" = "Background"
-			"IgnoreProjector" = "True"
 			"RenderType" = "Opaque"
 		}
 
@@ -13,14 +12,13 @@
 		Cull Off
 		ZWrite Off
 		ZTest Off
-		Blend SrcAlpha OneMinusSrcAlpha
+		Blend One Zero//SrcAlpha OneMinusSrcAlpha
 
 		SubShader{
 			Pass{
 
 				CGPROGRAM
-					#include "Assets/NodeNotes/NodeNotesShaders.cginc"
-				#include "UnityCG.cginc"
+				#include "Assets/NodeNotes/NodeNotesShaders.cginc"
 				#pragma vertex vert
 				#pragma fragment frag
 				#pragma multi_compile_fwdbase
