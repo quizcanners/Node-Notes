@@ -152,6 +152,9 @@ namespace NodeNotes {
         public void SetInspectedUpTheHierarchy(Base_Node node)
         {
 
+            if (node == null)
+                return;
+
             var gn = node.AsGameNode;
 
             if (gn != null) {

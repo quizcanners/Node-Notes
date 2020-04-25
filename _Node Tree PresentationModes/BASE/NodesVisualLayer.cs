@@ -25,8 +25,7 @@ namespace NodeNotes_Visual
         [SerializeField] protected Canvas canvas;
 
         [SerializeField] protected PainterCamera painterCamera;
-
-
+        
         public static Camera MainCam {
             get
             {
@@ -173,6 +172,7 @@ namespace NodeNotes_Visual
         
         private int _inspectedBackground = -1;
         private int _inspectedDebugItem = -1;
+        private int _inspectedSingleton = -1;
 
         public override bool Inspect() {
 
@@ -208,18 +208,20 @@ namespace NodeNotes_Visual
 
             if (inspectedItems == -1)
             {
-                "Backgrounds"
+                "Presentation Modes [For Node Tree]"
                     .enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDebugItem, 0)
                     .nl(ref changed);
 
                 "Game Controllers".enter_List_UObj(ref gameNodeControllers, ref _inspectedDebugItem, 1).nl(ref changed);
 
-                "Textures".enter_Inspect(textureDownloader, ref _inspectedDebugItem, 2).nl_ifNotEntered(ref changed);
+                "Singletons [For managed OnEnable]".enter_List_UObj(ref forManagedOnEnable, ref _inspectedSingleton, ref _inspectedDebugItem, 2).nl(ref changed);
 
-                if ("Assets".enter(ref _inspectedDebugItem, 3).nl())
+                "Textures".enter_Inspect(textureDownloader, ref _inspectedDebugItem, 3).nl_ifNotEntered(ref changed);
+
+                if ("Assets".enter(ref _inspectedDebugItem, 4).nl())
                     Shortcuts.Instance.InspectAssets().nl();
 
-                if ("Test Web Requests".enter(ref _inspectedDebugItem, 4).nl())
+                if ("Test Web Requests".enter(ref _inspectedDebugItem, 5).nl())
                 {
                     if (testRequest == null)
                     {
@@ -271,8 +273,7 @@ namespace NodeNotes_Visual
                             pegi.editBig(ref _testDownloadedCode);
                     }
                 }
-
-
+                
                 if (_inspectedDebugItem == -1)
                 {
                     "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();

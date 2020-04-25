@@ -1,4 +1,5 @@
 ﻿using QuizCannersUtilities;
+using RayMarching;
 using UnityEngine;
 
 namespace NodeNotes_Visual {
@@ -17,7 +18,9 @@ namespace NodeNotes_Visual {
         public ShaderProperty.FloatValue bgTransparency = new ShaderProperty.FloatValue("_NodeNotes_Gradient_Transparency");
 
         public void SetTarget(BackgroundGradient gradient) => this.gradient = gradient;
-        
+
+        #region Linked Lerp
+        LerpData ld = new LerpData();
         public void Lerp(LerpData ld, bool canSkipLerp) {
 
             bgColUp.Lerp(ld);
@@ -31,8 +34,8 @@ namespace NodeNotes_Visual {
             bgColCnter.Portion(ld, gradient.backgroundColorCenter);
             bgColDown.Portion(ld, gradient.backgroundColorDown);
         }
+        #endregion
 
-        LerpData ld = new LerpData();
 
         public void Update() {
             ld.Reset();
@@ -42,6 +45,7 @@ namespace NodeNotes_Visual {
             Lerp(ld, false);
 
         }
+
 
         public override void ManagedOnEnable()
         {

@@ -5,6 +5,7 @@ using PlayerAndEditorGUI;
 using PlaytimePainter;
 using QcTriggerLogic;
 using QuizCannersUtilities;
+using RayMarching;
 using UnityEngine;
 
 namespace NodeNotes_Visual {
@@ -21,6 +22,7 @@ namespace NodeNotes_Visual {
         public override string ClassTag => classTag;
 
         public Countless<string> perNodeGradientConfigs = new Countless<string>();
+        public Countless<string> perNodeRtxConfigs = new Countless<string>();
 
         public BackgroundGradient currentNodeGradient = new BackgroundGradient();
 
@@ -146,32 +148,39 @@ namespace NodeNotes_Visual {
 
                     _firstFree = 0;
 
-                    if (NodeNotesGradientController.instance)
+                    var grad = NodeNotesGradientController.instance;
+                    if (grad)
                     {
-
                         Node iteration = node;
-
                         while (iteration != null)
                         {
-
                             var val = perNodeGradientConfigs[iteration.IndexForPEGI];
-
                             if (!val.IsNullOrEmpty())
                             {
-
                                 currentNodeGradient.Decode(val);
-
-                                NodeNotesGradientController.instance.SetTarget(currentNodeGradient);
-
+                                grad.SetTarget(currentNodeGradient);
                                 break;
-
                             }
-
                             iteration = iteration.parentNode;
                         }
                     }
-                    else
-                        Debug.LogError("No Instance of background gradient");
+
+                    var rtx = RayRenderingManager.instance;
+                    if (rtx)
+                    {
+                        Node iteration = node;
+                        while (iteration != null)
+                        {
+                            var val = perNodeRtxConfigs[iteration.IndexForPEGI];
+                            if (!val.IsNullOrEmpty())
+                            {
+                                rtx.Decode(val);
+                                break;
+                            }
+                            iteration = iteration.parentNode;
+                        }
+                    }
+
                 }
                 else
                     Shortcuts.CurrentNode = node;
@@ -494,7 +503,7 @@ namespace NodeNotes_Visual {
                     "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
 
                     "Gradient Configs: {0}".F(perNodeGradientConfigs.CountForInspector());
-
+                    "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector());
                 }
             }
 
@@ -506,16 +515,16 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
 
         public override CfgEncoder EncodePerBookData() => new CfgEncoder()
-               .Add("bg", perNodeGradientConfigs.Encode());
+               .Add("bg", perNodeGradientConfigs.Encode())
+               .Add("rtx", perNodeRtxConfigs.Encode());
 
 
         public override bool Decode(string tg, string data)
         {
             switch (tg)
             {
-                case "bg":
-                    data.DecodeInto(out perNodeGradientConfigs);
-                    break;
+                case "bg": data.DecodeInto(out perNodeGradientConfigs); break;
+                case "rtx": data.DecodeInto(out perNodeRtxConfigs); break;
                 default: return true;
 
             }

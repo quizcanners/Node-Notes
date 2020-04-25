@@ -21,9 +21,7 @@ namespace NodeNotes
 
         [Serializable] public class TaggedSdfObject : TaggedAssetsList<SDFobject> { }
         public TaggedSdfObject sdfObjects;
-
-
-
+        
         protected static bool TryGetAsset<T, G>(string tag, out T asset, List<G> list, Dictionary<string, T> lookup) where G: TaggedAssetGeneric where T : Object
         {
             if (lookup.TryGetValue(tag, out asset))

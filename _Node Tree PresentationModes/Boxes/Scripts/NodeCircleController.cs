@@ -4,6 +4,7 @@ using NodeNotes;
 using PlayerAndEditorGUI;
 using QcTriggerLogic;
 using QuizCannersUtilities;
+using RayMarching;
 using TMPro;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace NodeNotes_Visual {
         public Base_Node source;
         public TextMeshPro textA;
         public TextMeshPro textB;
-        
+
         [NonSerialized] public LevelArea LevelArea;
         private LevelArea MeshObjectGetOrCreate()
         {
@@ -237,7 +238,6 @@ namespace NodeNotes_Visual {
 
                         ActiveConfig.Nested_Inspect().changes(ref changed);
                     }
-
                 }
                 
                 if ("Mesh Object".enter(ref inspectedItems, 3).nl())
@@ -261,37 +261,73 @@ namespace NodeNotes_Visual {
 
                     var gradient = grds[source.IndexForPEGI];
 
-                       if (gradient == null)
+                   if (gradient == null)
+                   {
+                       if ("+ Gradient Cfg".Click().nl())
+                           grds[source.IndexForPEGI] = BoxButtons.inst.currentNodeGradient.Encode().ToString();
+                   }
+                   else
+                   {
+                       if (icon.Delete.Click("Delete Gradient Cfg"))
+                           grds[source.IndexForPEGI] = null;
+                       else
                        {
-                           if ("+ Gradient Cfg".Click().nl())
-                               grds[source.IndexForPEGI] = BoxButtons.inst.currentNodeGradient.Encode().ToString();
-
-                       }
-                       else {
-
-                           if (icon.Delete.Click("Delete Gradient Cfg"))
-                               grds[source.IndexForPEGI] = null;
-                           else
+                           if (source == Shortcuts.CurrentNode)
                            {
-                               if (source == Shortcuts.CurrentNode)
+                               if (BoxButtons.inst.currentNodeGradient.Nested_Inspect())
                                {
-                                   if (BoxButtons.inst.currentNodeGradient.Nested_Inspect())
-                                   {
-                                       NodeNotesGradientController.instance.SetTarget(BoxButtons.inst
-                                           .currentNodeGradient);
-                                       grds[source.IndexForPEGI] =
-                                           BoxButtons.inst.currentNodeGradient.Encode().ToString();
-                                   }
-                               } else  "Enter node to edit it's Background gradient".writeHint();
-
+                                   NodeNotesGradientController.instance.SetTarget(BoxButtons.inst.currentNodeGradient);
+                                   grds[source.IndexForPEGI] = BoxButtons.inst.currentNodeGradient.Encode().ToString();
+                               }
                            }
-
-                           pegi.nl();
+                           else
+                               "Enter node to edit it's Background gradient".writeHint();
                        }
-               
+                       pegi.nl();
+                   }
                 }
 
-                if ("Image".enter(ref inspectedItems, 5).nl()) {
+                if ("RTX image".enter(ref inspectedItems, 5).nl())
+                {
+
+                    var rtxMGMT = RayRenderingManager.instance;
+
+                    if (!rtxMGMT)
+                        "No Ray-Rendering Engine".writeWarning();
+                    else
+                    {
+                        var grds = BoxButtons.inst.perNodeRtxConfigs;
+
+                        var rayTracingConfig = grds[source.IndexForPEGI];
+
+                        if (rayTracingConfig.IsNullOrEmpty())
+                        {
+                            if ((source == Shortcuts.CurrentNode ? "Create New config" : "Copy current config").Click().nl())
+                                grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+                        }
+                        else
+                        {
+                            if (source == Shortcuts.CurrentNode)
+                            {
+                                "SAVE AFTER CHANGING".write();
+                                if (icon.Save.Click().nl())
+                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+
+                                rtxMGMT.Nested_Inspect().nl();
+                            }
+                            else
+                            {
+                                if ("Override config with current".ClickConfirm("ovrRTX").nl())
+                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+
+                                if ("Load Now".Click().nl())
+                                    rtxMGMT.Decode(rayTracingConfig);
+                            }
+                        }
+                    }
+                }
+
+                if ("Image".enter(ref inspectedItems, 6).nl()) {
 
                     if (_imageIndex != -1) {
                         if (!pegi.PaintingGameViewUI)
@@ -322,10 +358,10 @@ namespace NodeNotes_Visual {
                             if ("Img Mode".editEnum(50, ref _mode).nl())
                                 SetImage();
 
-                        if (_mode == ImageMode.Tile)
-                            "Image Scale".edit(70, ref _imageScaling, 1, 10).nl(ref changed);
-                        else
-                            "Hide Label".toggleIcon(ref _hideLabel).nl(ref changed);
+                            if (_mode == ImageMode.Tile)
+                                "Image Scale".edit(70, ref _imageScaling, 1, 10).nl(ref changed);
+                            else
+                                "Hide Label".toggleIcon(ref _hideLabel).nl(ref changed);
 
                             if (!pegi.PaintingGameViewUI)
                                 _coverImage.write(200); pegi.nl();
@@ -334,7 +370,7 @@ namespace NodeNotes_Visual {
                     }
                 }
 
-                if ("Lerp Debug".enter(ref inspectedItems, 6).nl())
+                if ("Lerp Debug".enter(ref inspectedItems, 7).nl())
                 {
                     "Is Lerping: {0}".F(lerpsFinished).nl();
                     "Fade portion: {0}".F(fadePortion).nl();
@@ -345,7 +381,7 @@ namespace NodeNotes_Visual {
                 {
                     pegi.nl();
 
-                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 7).nl();
+                    var seeDependencies = "Dependencies".enter(ref inspectedItems, 8).nl();
 
                     if (!textA || seeDependencies)
                         "Text A".edit(ref textA).nl(ref changed);
@@ -861,7 +897,7 @@ namespace NodeNotes_Visual {
             _imageIndex -= 1;
             _coverImage = null;
             _hideLabel = false;
-            
+
             _nodeEnteredVisuals = new NodeVisualConfig();
             _nodeActiveDefaultVisuals = new NodeVisualConfig
             {
@@ -887,6 +923,7 @@ namespace NodeNotes_Visual {
                 case "imgMd": _mode = (ImageMode)data.ToInt(); break;
                 case "hidTxt": _hideLabel = data.ToBool(); break;
                 case "m": MeshObjectGetOrCreate().Decode(data); break;
+                
                 default: return false;
             }
 

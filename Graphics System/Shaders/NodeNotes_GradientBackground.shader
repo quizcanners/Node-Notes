@@ -47,12 +47,13 @@
 					return o;
 				}
 
-				float _NodeNotes_Gradient_Transparency;
-				float4 _BG_GRAD_COL_1;
-				float4 _BG_GRAD_COL_2;
-				float4 _BG_CENTER_COL;
-				sampler2D _Global_Noise_Lookup;
-				float4 _Global_Noise_Lookup_TexelSize;
+				uniform float _NodeNotes_Gradient_Transparency;
+				uniform float4 _BG_GRAD_COL_1;
+				uniform float4 _BG_GRAD_COL_2;
+				uniform float4 _BG_CENTER_COL;
+				uniform sampler2D _Global_Noise_Lookup;
+				uniform float4 _Global_Noise_Lookup_TexelSize;
+				uniform sampler2D _RayTracing_TargetBuffer;
 
 				float4 frag(v2f i) : COLOR{
 
@@ -76,15 +77,16 @@
 
 					float clickEffect = grad * clickPower;
 
-
 					float up = saturate((screenUV.y - 0.5) * (1 - clickEffect*0.5) + 0.5);
 
 					float4 col = _BG_GRAD_COL_1 * up + _BG_GRAD_COL_2 * (1 - up);
 
-					//_ScreenParams.xy
-
-				
 					float center = saturate(1 - (off.x + off.y) - clickEffect);
+
+					float4 rayTrace = tex2Dlod(_RayTracing_TargetBuffer, float4(screenUV, 0, 0));
+					rayTrace *= 0.001;
+
+					col *= rayTrace * center + col * (1 - center);
 
 					center *= center*_BG_CENTER_COL.a;
 	
@@ -94,22 +96,16 @@
 					col.rgb = sqrt(col.rgb);
 					#endif
 
-					//col.rgb += grad * _BG_CENTER_COL.rgb * clickPower * _BG_CENTER_COL.a;
-
-					//col.a = _NodeNotes_Gradient_Transparency;
+				
 
 					#if USE_NOISE_TEXTURE
 						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
 						#ifdef UNITY_COLORSPACE_GAMMA
-						col.rgb += col.rgb*(noise.rgb - 0.5)*0.05;// *(_NodeNotes_Gradient_Transparency + (1 - _NodeNotes_Gradient_Transparency));
+						col.rgb += col.rgb*(noise.rgb - 0.5)*0.05;
 						#else
-						col.rgb += col.rgb*(noise.rgb - 0.5)*0.2;//*(_NodeNotes_Gradient_Transparency + (1 - _NodeNotes_Gradient_Transparency));
+						col.rgb += col.rgb*(noise.rgb - 0.5)*0.2;
 						#endif
-
-							//col.a += (1-col.a) * (1+noise.b)*0.05;
 					#endif
-
-						//	col.a = 0.01;
 
 					return saturate(col);
 				}
