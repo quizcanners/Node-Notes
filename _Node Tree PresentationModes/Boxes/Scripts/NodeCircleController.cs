@@ -443,7 +443,7 @@ namespace NodeNotes_Visual {
         
         #region Lerping
 
-        private LinkedLerp.ColorValue _textColor = new LinkedLerp.ColorValue("Text Color");
+        private LinkedLerp.ColorValue _textColor = new LinkedLerp.ColorValue("Text Color", speed: 10);
 
         private Color bgColor;
         private Vector4 _shSquare = Vector4.zero;
@@ -470,8 +470,7 @@ namespace NodeNotes_Visual {
             if  (!includedInLerp) return;
             
             var ac = ActiveConfig;
-
- 
+            
             if (LerpPosition) {
 
                 if (!isFading || !_fadingRelation)
@@ -491,14 +490,14 @@ namespace NodeNotes_Visual {
 
             _textColor.Portion(ld, ac.targetTextColor);
 
-            if (12f.SpeedToMinPortion(ac.targetColor.DistanceRgb(bgColor), ld))
-                dominantParameter = "color";
+            if (16f.SpeedToMinPortion(ac.targetColor.DistanceRgb(bgColor), ld))
+                dominantParameter = "Box Bttn BG Color";
 
             if (4f.SpeedToMinPortion(fadePortion - (isFading ? 0f : 1f),  ld))
-                dominantParameter = "fade";
+                dominantParameter = "Box Button Fade";
 
             if (8f.SpeedToMinPortion(1 - _activeTextAlpha,  ld))
-                dominantParameter = "text Alpha";
+                dominantParameter = "Box Button Text Alpha";
             
             _textureFadeIn.Portion(ld, _coverImage ? 1 : 0);
             
@@ -1012,11 +1011,11 @@ namespace NodeNotes_Visual {
                     circleRenderer = GetComponent<MeshRenderer>();
             }
 
-            _shadeCorners = new LinkedLerp.MaterialFloat("_Courners", 0, 4, circleRenderer);
+            _shadeCorners = new LinkedLerp.MaterialFloat("_Courners", startingValue: 0, startingSpeed: 10, circleRenderer);
             _shadeSelected = new LinkedLerp.MaterialFloat("_Selected", 0, 4, circleRenderer);
             _textureFadeIn = new LinkedLerp.MaterialFloat("_TextureFadeIn", 0, 10, circleRenderer);
-            _localPos = new LinkedLerp.TransformLocalPosition(transform, 50);
-            _localScale = new LinkedLerp.TransformLocalScale(circleRenderer.transform, 40);
+            _localPos = new LinkedLerp.TransformLocalPosition(transform, 90);
+            _localScale = new LinkedLerp.TransformLocalScale(circleRenderer.transform, 120);
             _texTransition = new LinkedLerp.RendererMaterialTextureTransition(circleRenderer);
 
         }

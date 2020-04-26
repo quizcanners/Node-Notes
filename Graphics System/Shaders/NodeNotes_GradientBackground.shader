@@ -22,7 +22,7 @@
 				#pragma vertex vert
 				#pragma fragment frag
 				#pragma multi_compile_fwdbase
-				#pragma multi_compile ___ USE_NOISE_TEXTURE
+				#pragma multi_compile __ RT_MOTION_TRACING
 
 				struct v2f {
 					float4 pos : SV_POSITION;
@@ -54,6 +54,8 @@
 				uniform sampler2D _Global_Noise_Lookup;
 				uniform float4 _Global_Noise_Lookup_TexelSize;
 				uniform sampler2D _RayTracing_TargetBuffer;
+				uniform float4 _RayTracing_TargetBuffer_ScreenFillAspect;
+				uniform float _RayTraceTransparency;
 
 				float4 frag(v2f i) : COLOR{
 
@@ -69,11 +71,13 @@
 
 					i.viewDir.xyz = normalize(i.viewDir.xyz);
 
+					
 					#ifdef UNITY_COLORSPACE_GAMMA
 					_BG_GRAD_COL_1.rgb *= _BG_GRAD_COL_1.rgb;
 					_BG_GRAD_COL_2.rgb *= _BG_GRAD_COL_2.rgb;
 					_BG_CENTER_COL.rgb *= _BG_CENTER_COL.rgb;
 					#endif
+					
 
 					float clickEffect = grad * clickPower;
 
@@ -83,30 +87,52 @@
 
 					float center = saturate(1 - (off.x + off.y) - clickEffect);
 
-					float4 rayTrace = tex2Dlod(_RayTracing_TargetBuffer, float4(screenUV, 0, 0));
-					rayTrace *= 0.001;
+					
 
-					col *= rayTrace * center + col * (1 - center);
+#if RT_MOTION_TRACING
+					float2 pixOff = _RayTracing_TargetBuffer_ScreenFillAspect.zw * 1.5;
+
+					float4 rayTrace = 0;
+					float4 blur;
+					float same;
+
+					#define R(kernel) blur = tex2Dlod( _RayTracing_TargetBuffer, float4(screenUV + kernel* pixOff  ,0,0)); same = 1 - min(1, abs(blur.a - col.a)*0.01); rayTrace.rgb = max(rayTrace.rgb, blur.rgb * same * 0.55)
+
+					//float4 blur =	
+					R(float2(-1, 0));
+					R(float2(1, 0));
+					R(float2(0, -1));
+					R(float2(0, 1));
+					R(float2(1, 1));
+					R(float2(-1, -1));
+					R(float2(1, -1));
+					R(float2(-1, 1)); //col;
+
+					//col.rgb = blur /= 9;
+#else
+					float4 rayTrace = tex2Dlod(_RayTracing_TargetBuffer, float4(screenUV, 0, 0));
+#endif
+
+					float rt = (1 - _RayTraceTransparency*0.9) * center;
+					col = rayTrace * rt +col * (1 - rt);
 
 					center *= center*_BG_CENTER_COL.a;
 	
 					col.rgb = col.rgb * (1 - center) + _BG_CENTER_COL.rgb*center;
 
+					
 					#ifdef UNITY_COLORSPACE_GAMMA
 					col.rgb = sqrt(col.rgb);
 					#endif
-
-				
-
-					#if USE_NOISE_TEXTURE
-						float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
-						#ifdef UNITY_COLORSPACE_GAMMA
-						col.rgb += col.rgb*(noise.rgb - 0.5)*0.05;
-						#else
-						col.rgb += col.rgb*(noise.rgb - 0.5)*0.2;
-						#endif
+					
+					
+					float4 noise = tex2Dlod(_Global_Noise_Lookup, float4(i.texcoord.xy * 13.5 + float2(_SinTime.w, _CosTime.w) * 32, 0, 0));
+					#ifdef UNITY_COLORSPACE_GAMMA
+					col.rgb += col.rgb*(noise.rgb - 0.5)*0.06;
+					#else
+					col.rgb += col.rgb*(noise.rgb - 0.5)*0.2;
 					#endif
-
+				
 					return saturate(col);
 				}
 				ENDCG

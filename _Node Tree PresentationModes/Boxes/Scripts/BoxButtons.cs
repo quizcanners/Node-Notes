@@ -175,6 +175,7 @@ namespace NodeNotes_Visual {
                             if (!val.IsNullOrEmpty())
                             {
                                 rtx.Decode(val);
+                                rtx.playLerpAnimation = false;
                                 break;
                             }
                             iteration = iteration.parentNode;
@@ -375,7 +376,39 @@ namespace NodeNotes_Visual {
         }
 
         #endregion
-        
+
+        public override void ManagedOnInitialize()
+        {
+            inst = this;
+
+            if (editButton)
+                editButton.Text = "Edit";
+
+            if (Application.isPlaying)
+                editButton.graphic.OnClick.AddListener(RightTopButton);
+
+            if (addButton)
+                addButton.gameObject.SetActive(false);
+
+
+        }
+
+        public override void ManagedOnDeInitialize()
+        {
+
+            foreach (var e in NodesPool)
+                if (e)
+                {
+                    e.Unlink();
+                    e.gameObject.DestroyWhatever();
+                }
+
+            NodesPool.Clear();
+
+            LevelArea.ManagedOnDisable();
+
+        }
+
         public override void FadeAway() {
 
             HideAll();
@@ -395,23 +428,28 @@ namespace NodeNotes_Visual {
         
         private readonly LoopLock _loopLock = new LoopLock();
         
+        private float bgTransparency = 1;
+
+        #region Lerping
+
         private readonly LerpData _ld = new LerpData();
         private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue(0, 8);
 
-        private float bgTransparency = 1;
-
         void Update() {
 
+            var rtx = RayRenderingManager.instance;
             _ld.Reset();
 
             addButtonCourner.Portion(_ld);
             NodesPool.Portion(_ld);
             slidingButtons.Portion(_ld);
+            rtx.Portion(_ld);
 
 
             addButtonCourner.Lerp(_ld);
             NodesPool.Lerp(_ld);
             slidingButtons.Lerp(_ld);
+            rtx.Lerp(_ld, false);
 
             addButton.SetCorner(1, addButtonCourner.CurrentValue);
 
@@ -426,35 +464,7 @@ namespace NodeNotes_Visual {
                 gameObject.SetActive(false);
         }
 
-        public override void ManagedOnInitialize()
-        {
-            inst = this;
-
-            if (editButton)
-                editButton.Text = "Edit";
-
-            if (Application.isPlaying)
-                editButton.graphic.OnClick.AddListener(RightTopButton);
-
-            if (addButton)
-                addButton.gameObject.SetActive(false);
-
-           
-        }
-
-        public override void ManagedOnDeInitialize()  {
-            
-            foreach (var e in NodesPool)
-                if (e) {
-                    e.Unlink();
-                    e.gameObject.DestroyWhatever();
-                }
-
-            NodesPool.Clear();
-
-            LevelArea.ManagedOnDisable();
-
-        }
+        #endregion
         
         #region Inspector
         public string NameForPEGIdisplay => "White Background";
@@ -490,20 +500,24 @@ namespace NodeNotes_Visual {
 
             if (inspectedNode == null || (inspectedNode._inspectedItems == -1 && (inspectedNode.AsNode == null || !inspectedNode.AsNode.InspectingSubNode)))
             {
-
-                if (icon.Create.enter("Dependencies", ref inspectedItems, 5))
+                if ("Dependencies".enter(ref inspectedItems, 5).nl())
                 {
-                    pegi.nl();
-                    "Edit Button".edit(90, ref editButton).nl(ref changed);
-                    "Add Button".edit(90, ref addButton).nl(ref changed);
-                    "Delete Button".edit(90, ref deleteButton).nl(ref changed);
-
-                    "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
+                    if (!Application.isPlaying)
+                    {
+                        "Edit Button".edit(90, ref editButton).nl(ref changed);
+                        "Add Button".edit(90, ref addButton).nl(ref changed);
+                        "Delete Button".edit(90, ref deleteButton).nl(ref changed);
+                        "Circles Prefab".edit(90, ref circlePrefab).nl(ref changed);
+                    }
 
                     "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
 
-                    "Gradient Configs: {0}".F(perNodeGradientConfigs.CountForInspector());
-                    "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector());
+                    "Lerp Data dom:{0}".F(_ld.dominantParameter).nl();
+
+                    "Gradient Configs: {0}".F(perNodeGradientConfigs.CountForInspector()).nl();
+                    "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector()).nl();
+
+
                 }
             }
 
