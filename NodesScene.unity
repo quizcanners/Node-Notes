@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -280,6 +280,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: f1dc0affdc946514ba551afea66882b3, type: 2}
   m_Color: {r: 0, g: 0.9413085, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -371,6 +372,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -636,6 +638,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: 65265d90277f08f46b970e1f3de205c6, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 0.6023646}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1126,6 +1129,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1281,6 +1285,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1742,7 +1747,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 805314327
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 8400000, guid: 12c21df7634ccb24288293a7eae9e699, type: 2}
+  m_TargetTexture: {fileID: 8400000, guid: f154d97feee8e9941af4e8cf03a66be4, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1

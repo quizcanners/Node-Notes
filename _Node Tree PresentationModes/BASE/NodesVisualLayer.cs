@@ -454,9 +454,35 @@ namespace NodeNotes_Visual
         public int Count => active.Count;
     }
 
-    public abstract class NodeNodesNeedEnableAbstract : MonoBehaviour
+    public abstract class NodeNodesNeedEnableAbstract : MonoBehaviour, ICfg
     {
+
+        public Countless<string> perNodeGradientConfigs = new Countless<string>();
+
         public abstract void ManagedOnEnable();
+
+        public void LoadConfigFor(Node node)
+        {
+            Node iteration = node;
+            while (iteration != null)
+            {
+                var val = perNodeGradientConfigs[iteration.IndexForPEGI];
+                if (!val.IsNullOrEmpty())
+                {
+                    Decode(val);
+                    break;
+                }
+                iteration = iteration.parentNode;
+            }
+        }
+
+        public abstract CfgEncoder Encode();
+
+        public virtual void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
+        
+        public abstract bool Decode(string tg, string data);
+        
+        
     }
 
 }

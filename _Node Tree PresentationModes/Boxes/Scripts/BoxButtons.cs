@@ -20,12 +20,10 @@ namespace NodeNotes_Visual {
         public const string classTag = "white";
 
         public override string ClassTag => classTag;
-
-        public Countless<string> perNodeGradientConfigs = new Countless<string>();
+        
         public Countless<string> perNodeRtxConfigs = new Countless<string>();
 
-        public BackgroundGradient currentNodeGradient = new BackgroundGradient();
-
+ 
         public bool isFading;
 
         private bool _isRendering = true;
@@ -148,22 +146,7 @@ namespace NodeNotes_Visual {
 
                     _firstFree = 0;
 
-                    var grad = NodeNotesGradientController.instance;
-                    if (grad)
-                    {
-                        Node iteration = node;
-                        while (iteration != null)
-                        {
-                            var val = perNodeGradientConfigs[iteration.IndexForPEGI];
-                            if (!val.IsNullOrEmpty())
-                            {
-                                currentNodeGradient.Decode(val);
-                                grad.SetTarget(currentNodeGradient);
-                                break;
-                            }
-                            iteration = iteration.parentNode;
-                        }
-                    }
+                    NodeNotesGradientController.instance.LoadConfigFor(node);
 
                     var rtx = RayRenderingManager.instance;
                     if (rtx)
@@ -474,8 +457,7 @@ namespace NodeNotes_Visual {
             bool changed = false;
 
             pegi.nl();
-
-
+            
             if (!IsRendering && "Reenable Nodes Rending".Click())
                 IsRendering = true;
 
@@ -514,10 +496,8 @@ namespace NodeNotes_Visual {
 
                     "Lerp Data dom:{0}".F(_ld.dominantParameter).nl();
 
-                    "Gradient Configs: {0}".F(perNodeGradientConfigs.CountForInspector()).nl();
+                    "Gradient Configs: {0}".F(NodeNotesGradientController.instance.perNodeGradientConfigs.CountForInspector()).nl();
                     "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector()).nl();
-
-
                 }
             }
 
@@ -529,7 +509,7 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
 
         public override CfgEncoder EncodePerBookData() => new CfgEncoder()
-               .Add("bg", perNodeGradientConfigs.Encode())
+               .Add("bg", NodeNotesGradientController.instance.perNodeGradientConfigs.Encode())
                .Add("rtx", perNodeRtxConfigs.Encode());
 
 
@@ -537,7 +517,7 @@ namespace NodeNotes_Visual {
         {
             switch (tg)
             {
-                case "bg": data.DecodeInto(out perNodeGradientConfigs); break;
+                case "bg": data.DecodeInto(out NodeNotesGradientController.instance.perNodeGradientConfigs); break;
                 case "rtx": data.DecodeInto(out perNodeRtxConfigs); break;
                 default: return true;
 

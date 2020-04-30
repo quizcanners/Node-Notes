@@ -146,7 +146,6 @@ namespace NodeNotes {
 
         public static Node CurrentNode
         {
-
             get { return users.current.CurrentNode; }
 
             set   {
@@ -176,7 +175,6 @@ namespace NodeNotes {
                     expectingLoopCall = false;
                     users.current.CurrentNode = value;
                 }
-
             }
         }
 

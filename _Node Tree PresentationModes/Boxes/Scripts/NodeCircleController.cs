@@ -153,13 +153,9 @@ namespace NodeNotes_Visual {
                         Shortcuts.visualLayer.OnLogicVersionChange();
                     }
                 }
-
             } else {
                 
                 var onPlayScreen = pegi.PaintingGameViewUI;
-
-                /*if (source != null && source.parentNode == null && icon.Close.Click("Exit story"))
-                    Shortcuts.CurrentNode = null;*/
 
                 if (source != null) {
 
@@ -255,39 +251,12 @@ namespace NodeNotes_Visual {
                     LevelArea.Nested_Inspect().nl(ref changed);
                 }
 
-                if ("Bacground Gradient".enter(ref inspectedItems, 4).nl())
+                if ("Gradient BG".enter(ref inspectedItems, 4).nl())
                 {
-                     var grds = BoxButtons.inst.perNodeGradientConfigs;
-
-                    var gradient = grds[source.IndexForPEGI];
-
-                   if (gradient == null)
-                   {
-                       if ("+ Gradient Cfg".Click().nl())
-                           grds[source.IndexForPEGI] = BoxButtons.inst.currentNodeGradient.Encode().ToString();
-                   }
-                   else
-                   {
-                       if (icon.Delete.Click("Delete Gradient Cfg"))
-                           grds[source.IndexForPEGI] = null;
-                       else
-                       {
-                           if (source == Shortcuts.CurrentNode)
-                           {
-                               if (BoxButtons.inst.currentNodeGradient.Nested_Inspect())
-                               {
-                                   NodeNotesGradientController.instance.SetTarget(BoxButtons.inst.currentNodeGradient);
-                                   grds[source.IndexForPEGI] = BoxButtons.inst.currentNodeGradient.Encode().ToString();
-                               }
-                           }
-                           else
-                               "Enter node to edit it's Background gradient".writeHint();
-                       }
-                       pegi.nl();
-                   }
+                    NodeNotesGradientController.instance.InspectNode(source);
                 }
 
-                if ("RTX image".enter(ref inspectedItems, 5).nl())
+                if ("RTX BG".enter(ref inspectedItems, 5).nl())
                 {
 
                     var rtxMGMT = RayRenderingManager.instance;
