@@ -6,7 +6,9 @@ using UnityEngine;
 namespace NodeNotes_Visual {
 
     [ExecuteAlways]
-    public class NodeNotesGradientController : NodeNodesNeedEnableAbstract, ILinkedLerping {
+    public class NodeNotesGradientController : NodeNodesNeedEnableAbstract, ILinkedLerping
+    {
+        public override string ClassTag => "GradCntrl";
 
         public static NodeNotesGradientController instance;
 
@@ -18,10 +20,16 @@ namespace NodeNotes_Visual {
 
         public ShaderProperty.FloatValue bgTransparency = new ShaderProperty.FloatValue("_NodeNotes_Gradient_Transparency");
 
-        public void SetTarget(BackgroundGradient gradient) => targetGradient = gradient;
+        public void SetTarget(BackgroundGradient gradient)
+        {
+            targetGradient = gradient;
+            _lerpDone = false;
+        }
 
         #region Linked Lerp
         LerpData ld = new LerpData();
+
+  
         public void Lerp(LerpData ld, bool canSkipLerp) {
 
             bgColUp.Lerp(ld);
@@ -36,13 +44,22 @@ namespace NodeNotes_Visual {
             bgColDown.Portion(ld, targetGradient.backgroundColorDown);
         }
         #endregion
-        
+
+        private bool _lerpDone;
+
         public void Update() {
-            ld.Reset();
 
-            Portion(ld);
+            if (!_lerpDone)
+            {
+                ld.Reset();
 
-            Lerp(ld, false);
+                Portion(ld);
+
+                Lerp(ld, false);
+
+                if (ld.MinPortion > 0.999f)
+                    _lerpDone = true;
+            }
 
         }
         
@@ -57,13 +74,13 @@ namespace NodeNotes_Visual {
         {
             var changed = false;
 
-            var grds = perNodeGradientConfigs;
+            var grds = perNodeConfigs;
 
             var gradient = grds[source.IndexForPEGI];
 
             if (gradient == null)
             {
-                if ("+ Gradient Cfg".Click().nl())
+                if ("+ Gradient Cfg".Click().nl(ref changed))
                     grds[source.IndexForPEGI] = targetGradient.Encode().ToString();
             }
             else
@@ -76,7 +93,7 @@ namespace NodeNotes_Visual {
                     {
                         var crntGrad = targetGradient;
 
-                        if (crntGrad.Nested_Inspect())
+                        if (crntGrad.Nested_Inspect(ref changed))
                         {
                             SetTarget(crntGrad);
                             grds[source.IndexForPEGI] = crntGrad.Encode().ToString();
@@ -88,24 +105,30 @@ namespace NodeNotes_Visual {
                 pegi.nl();
             }
 
+            if (changed)
+                _lerpDone = false;
+
             return changed;
         }
 
+        #endregion
+
+        #region Encode & Decode
         public override CfgEncoder Encode()
         {
-           return new CfgEncoder();
+           return new CfgEncoder(); // For Gradient you can edit gradient config while not being inside a node. Maybe should change it at some point.
         }
 
         public override void Decode(string data)
         {
             targetGradient.Decode(data);
+            _lerpDone = false;
         }
 
         public override bool Decode(string tg, string data)
         {
             return false;
         }
-
         #endregion
 
     }

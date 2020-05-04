@@ -16,12 +16,17 @@ namespace NodeNotes
     public class NodeNotesAssetGroups : ScriptableObject, IPEGI
     {
 
+        [Serializable] public class TaggedAudioClips : TaggedAssetsList<AudioClip> { }
+        public TaggedAudioClips audioClips;
+
         [Serializable] public class TaggedMaterials : TaggedAssetsList<Material> { }
         public TaggedMaterials materials;
 
         [Serializable] public class TaggedSdfObject : TaggedAssetsList<SDFobject> { }
         public TaggedSdfObject sdfObjects;
-        
+
+
+
         protected static bool TryGetAsset<T, G>(string tag, out T asset, List<G> list, Dictionary<string, T> lookup) where G: TaggedAssetGeneric where T : Object
         {
             if (lookup.TryGetValue(tag, out asset))
@@ -47,9 +52,14 @@ namespace NodeNotes
 
         public bool Inspect()
         {
+            pegi.toggleDefaultInspector(this).nl();
+            
+            audioClips.Nested_Inspect();
+
             materials.Nested_Inspect();
             
             sdfObjects.Nested_Inspect();
+
             
             return false;
         }

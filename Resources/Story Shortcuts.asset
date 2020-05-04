@@ -15,7 +15,6 @@ MonoBehaviour:
   nestedReferences: []
   assetGroups:
   - {fileID: 11400000, guid: 5e404342dfb325548bf5043f66800aee, type: 2}
-  - {fileID: 11400000, guid: 020ae3e0609201c468ca0f76c0e5c501, type: 2}
   _defaultMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   Materials:
     _defaultMaterial: {fileID: 2100000, guid: 5cb93a33baa05f24281e5e8cc2f8ff6a, type: 2}

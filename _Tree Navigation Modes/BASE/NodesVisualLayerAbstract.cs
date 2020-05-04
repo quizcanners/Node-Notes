@@ -106,8 +106,6 @@ namespace NodeNotes {
            // Shortcuts.CurrentNode = null;
         }
 
-
-
     }
 
     public interface INodeVisualPresentation : ICfg

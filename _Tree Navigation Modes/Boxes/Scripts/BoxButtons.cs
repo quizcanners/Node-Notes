@@ -15,15 +15,12 @@ namespace NodeNotes_Visual {
 
         public static BoxButtons inst;
 
-        [SerializeField] protected NodeNotesGradientController gradientController;
-
         public const string classTag = "white";
 
         public override string ClassTag => classTag;
         
-        public Countless<string> perNodeRtxConfigs = new Countless<string>();
-
- 
+       // public Countless<string> perNodeRtxConfigs = new Countless<string>();
+        
         public bool isFading;
 
         private bool _isRendering = true;
@@ -147,9 +144,14 @@ namespace NodeNotes_Visual {
                     _firstFree = 0;
 
                     NodeNotesGradientController.instance.LoadConfigFor(node);
+                    AmbientSoundsMixerMgmt.instance.LoadConfigFor(node);
+                    RayRenderingManager.instance.LoadConfigFor(node);
 
                     var rtx = RayRenderingManager.instance;
-                    if (rtx)
+
+                    rtx.playLerpAnimation = false;
+
+                    /*if (rtx)
                     {
                         Node iteration = node;
                         while (iteration != null)
@@ -158,12 +160,12 @@ namespace NodeNotes_Visual {
                             if (!val.IsNullOrEmpty())
                             {
                                 rtx.Decode(val);
-                                rtx.playLerpAnimation = false;
+                              
                                 break;
                             }
                             iteration = iteration.parentNode;
                         }
-                    }
+                    }*/
 
                 }
                 else
@@ -496,8 +498,8 @@ namespace NodeNotes_Visual {
 
                     "Lerp Data dom:{0}".F(_ld.dominantParameter).nl();
 
-                    "Gradient Configs: {0}".F(NodeNotesGradientController.instance.perNodeGradientConfigs.CountForInspector()).nl();
-                    "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector()).nl();
+                  //  "Gradient Configs: {0}".F(NodeNotesGradientController.instance.perNodeGradientConfigs.CountForInspector()).nl();
+                   // "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector()).nl();
                 }
             }
 
@@ -508,19 +510,18 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public override CfgEncoder EncodePerBookData() => new CfgEncoder()
-               .Add("bg", NodeNotesGradientController.instance.perNodeGradientConfigs.Encode())
-               .Add("rtx", perNodeRtxConfigs.Encode());
-
-
+        public override CfgEncoder EncodePerBookData() => new CfgEncoder();
+               //.Add("bg", NodeNotesGradientController.instance.perNodeGradientConfigs.Encode())
+               //.Add("rtx", perNodeRtxConfigs.Encode());
+        
         public override bool Decode(string tg, string data)
         {
             switch (tg)
             {
-                case "bg": data.DecodeInto(out NodeNotesGradientController.instance.perNodeGradientConfigs); break;
-                case "rtx": data.DecodeInto(out perNodeRtxConfigs); break;
+                // DEPRECATED
+                case "rtx": data.DecodeInto(out RayRenderingManager.instance.perNodeConfigs); break;
+                case "bg": data.DecodeInto(out NodeNotesGradientController.instance.perNodeConfigs); break;
                 default: return true;
-
             }
             return false;
         }

@@ -52,7 +52,7 @@ namespace NodeNotes {
                     if (data != null)
                         Decode(data);
                     
-                    data = parentNode.parentBook.gameNodesData.TryGet(ClassTag);
+                    data = parentNode.parentBook.gameNodesConfigs.TryGet(ClassTag);
                     if (data != null)  
                         Decode(data);
                     else
@@ -83,9 +83,7 @@ namespace NodeNotes {
                     OnExit();
 
                     Shortcuts.users.current.gameNodesData_PerUser[ClassTag] = Encode_PerUserData().ToString();
-                    parentNode.parentBook.gameNodesData[ClassTag] = Encode_PerBookStaticData().ToString();
-
-                   // Debug.Log("Saving Data of Game Node {0} : {1}".F(ClassTag, parentNode.parentBook.gameNodesData[ClassTag]));
+                    parentNode.parentBook.gameNodesConfigs[ClassTag] = Encode_PerBookStaticData().ToString();
 
                     VisualLayer.FromGameToNode();
 

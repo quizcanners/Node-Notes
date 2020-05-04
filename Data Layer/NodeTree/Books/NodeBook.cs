@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using NodeNotes_Visual;
+using NodeNotes_Visual; // TODO: Move configs to visual layer
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
@@ -41,8 +41,11 @@ namespace NodeNotes
         }
 
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
-        public Dictionary<string, string> gameNodesData = new Dictionary<string, string>();
-        public Dictionary<string, string> presentationConfigData = new Dictionary<string, string>();
+        public Dictionary<string, string> gameNodesConfigs = new Dictionary<string, string>();
+        public Dictionary<string, string> presentationModesConfigs = new Dictionary<string, string>();
+
+        private string _visualLayerConfig;
+
         public Node subNode = new Node();
         #endregion
 
@@ -161,28 +164,31 @@ namespace NodeNotes
 
         public bool loadedPresentation;
 
-        public void LoadPresentationConfigs() {
+        public void LoadPerBookConfigs() {
             
             if (Application.isPlaying && NodesVisualLayer.Instance) {
                 
                 foreach (var bg in NodesVisualLayer.Instance.presentationControllers) {
                     string data = "";
-                    presentationConfigData.TryGetValue(bg.ClassTag, out data);
+                    presentationModesConfigs.TryGetValue(bg.ClassTag, out data);
                     bg.Decode(data);
                 }
+
+                NodesVisualLayerAbstract.inst.Decode(_visualLayerConfig);
 
                 loadedPresentation = true;
             }
         }
 
-        public void UpdatePerBookPresentationConfigs() {
+        public void UpdatePerBookConfigs() {
             if (Application.isPlaying && NodesVisualLayer.Instance) {
-
                 if (loadedPresentation)
                     foreach (var bg in NodesVisualLayer.Instance.presentationControllers) {
                         var data = bg.EncodePerBookData().ToString();
-                        presentationConfigData[bg.ClassTag] = data;
+                        presentationModesConfigs[bg.ClassTag] = data;
                     }
+
+                _visualLayerConfig = NodesVisualLayerAbstract.inst.Encode().ToString();
             }
         }
 
@@ -194,8 +200,9 @@ namespace NodeNotes
             .Add_IfNotNegative("inE", _inspectedEntry)
             .Add_IfNotEmpty("ep", entryPoints)
             .Add_IfNotNegative("i",_inspectedItems)
-            .Add_IfNotEmpty("gn", gameNodesData)
-            .Add_IfNotEmpty("bg", presentationConfigData);
+            .Add_IfNotEmpty("gn", gameNodesConfigs)
+            .Add_IfNotEmpty("bg", presentationModesConfigs)
+            .Add_IfNotEmpty("visLr", _visualLayerConfig);
           
         public override bool Decode(string tg, string data) {
             switch (tg) {
@@ -206,8 +213,9 @@ namespace NodeNotes
                 case "inE": _inspectedEntry = data.ToInt(); break;
                 case "ep": data.Decode_List(out entryPoints); break;
                 case "i": _inspectedItems = data.ToInt(); break;
-                case "gn": data.Decode_Dictionary(out gameNodesData); break;
-                case "bg": data.Decode_Dictionary(out presentationConfigData); break;
+                case "gn": data.Decode_Dictionary(out gameNodesConfigs); break;
+                case "bg": data.Decode_Dictionary(out presentationModesConfigs); break;
+                case "visLr": _visualLayerConfig = data; break;
                 default: return false;
             }
             return true;

@@ -30,10 +30,12 @@ namespace QcTriggerLogic
 
             return _realTimeOnStartUp + (int)QcUnity.TimeSinceStartup();
         }
-        
+
+        #region Encode & Decode
         public override CfgEncoder Encode() =>this.EncodeUnrecognized();
 
         public override bool Decode(string tg, string data) => false;
+        #endregion
 
         public virtual void OnEnable()  =>  inst = this;
         

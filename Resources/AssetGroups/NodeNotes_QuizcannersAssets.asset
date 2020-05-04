@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82f0488f0a0d5eb49b364a17f29c03e5, type: 3}
   m_Name: NodeNotes_QuizcannersAssets
   m_EditorClassIdentifier: 
+  audioClips:
+    taggedList: []
   materials:
     taggedList:
     - tag: 

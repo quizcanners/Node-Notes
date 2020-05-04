@@ -265,7 +265,7 @@ namespace NodeNotes_Visual {
                         "No Ray-Rendering Engine".writeWarning();
                     else
                     {
-                        var grds = BoxButtons.inst.perNodeRtxConfigs;
+                        var grds = rtxMGMT.perNodeConfigs; //BoxButtons.inst.perNodeRtxConfigs;
 
                         var rayTracingConfig = grds[source.IndexForPEGI];
 

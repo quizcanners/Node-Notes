@@ -26,7 +26,7 @@ namespace NodeNotes {
 
         public static UsersData users = new UsersData();
 
-        public static NodeBooksService books = new NodeBooksService();
+        public static NodeStoryBooks books = new NodeStoryBooks();
         
         #region Assets
 
@@ -185,9 +185,7 @@ namespace NodeNotes {
         [NonSerialized] public static Base_Node Cut_Paste;
 
         #endregion
-
         
-
         #region Inspector
         
  
@@ -301,7 +299,7 @@ namespace NodeNotes {
             users.SaveUser();
 
             if (CurrentNode != null)
-                CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
+                CurrentNode.parentBook.UpdatePerBookConfigs();
 
             QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
@@ -310,7 +308,6 @@ namespace NodeNotes {
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("trigs", TriggerGroup.all)
             .Add("bkSrv", books)
-            //.Add("books", nodeBookService.books, this) 
             .Add_IfTrue("ptUI", showPlaytimeUI)
             .Add("us", users.users)
             .Add_String("curUser", users.current.Name);
@@ -319,12 +316,11 @@ namespace NodeNotes {
         {
             switch (tg)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
+                case "bkSrv": books.Decode(data); break;
                 case "ptUI": showPlaytimeUI = data.ToBool(); break;
                 case "us": data.Decode_List(out users.users); break;
                 case "curUser": users.LoadUser(data); break;
-                case "bkSrv": books.Decode(data); break; 
-                // DEPRECATED
-                case "books": data.Decode_List(out books.all, this); break;
+               // case "books": data.Decode_List(out books.all, this); break;
                 default: return false;
             }
             return true;

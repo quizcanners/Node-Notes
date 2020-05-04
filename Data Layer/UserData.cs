@@ -175,7 +175,7 @@ namespace NodeNotes {
                             bool bookChanged = _currentNode != null && (value == null || (_currentNode.parentBook != value.parentBook));
 
                             if (isADeveloper && Application.isPlaying && bookChanged)
-                                CurrentNode.parentBook.UpdatePerBookPresentationConfigs();
+                                CurrentNode.parentBook.UpdatePerBookConfigs();
 
                             if (value == null) {
                                 SaveBookMark();
@@ -292,7 +292,7 @@ namespace NodeNotes {
             if (_currentNode != null && _currentNode.parentBook == nextBook)
                 return;
             
-            nextBook.LoadPresentationConfigs();
+            nextBook.LoadPerBookConfigs();
 
             var bMarkForNextBook = bookMarks.GetByIGotName(nextBook.NameForPEGI);
 

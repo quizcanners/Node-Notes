@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace NodeNotes
 {
-    public class NodeBooksService : ICfg, IPEGI
+    public class NodeStoryBooks : ICfg, IPEGI
     {
 
         public List<NodeBook_Base> all = new List<NodeBook_Base>();

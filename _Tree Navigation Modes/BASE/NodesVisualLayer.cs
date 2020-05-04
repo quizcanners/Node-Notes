@@ -4,6 +4,7 @@ using NodeNotes;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
 using QuizCannersUtilities;
+using RayMarching;
 using UnityEngine;
 using UnityEngine.Networking;
 using Object = UnityEngine.Object;
@@ -20,7 +21,13 @@ namespace NodeNotes_Visual
 
         [SerializeField] protected Camera mainCam;
 
+        #region Graphic Systems
+
         [SerializeField] protected List<NodeNodesNeedEnableAbstract> forManagedOnEnable;
+        public Dictionary<string, string> presentationSystemsConfigs = new Dictionary<string, string>();
+
+
+        #endregion
 
         [SerializeField] protected Canvas canvas;
 
@@ -80,7 +87,7 @@ namespace NodeNotes_Visual
 
         #endregion
 
-        #region BG MGMT
+        #region Presentation Modes
 
         public List<PresentationMode> presentationControllers = new List<PresentationMode>();
 
@@ -308,7 +315,62 @@ namespace NodeNotes_Visual
             
             _playtimeInspectorWindowOnGui.Render(this);
         }
-        
+
+        #endregion
+
+        #region Encode & Decode
+
+        private void DECODEPresentationSystem(NodeNodesNeedEnableAbstract system)
+        {
+            string data;
+            if (system && presentationSystemsConfigs.TryGetValue(system.ClassTag, out data))
+                data.DecodeInto(out system.perNodeConfigs);
+        }
+
+        private void EncodePresentationSystem(NodeNodesNeedEnableAbstract system)
+        {
+            if (system)
+                presentationSystemsConfigs[system.ClassTag] = system.perNodeConfigs.Encode().ToString();
+        }
+
+        public override CfgEncoder Encode()
+        {
+            EncodePresentationSystem(NodeNotesGradientController.instance);
+            EncodePresentationSystem(AmbientSoundsMixerMgmt.instance);
+            EncodePresentationSystem(RayRenderingManager.instance);
+
+            var cody = this.EncodeUnrecognized()
+                .Add("b", base.Encode())
+                .Add_IfNotEmpty("gSys", presentationSystemsConfigs);
+
+            return cody;
+
+        }
+
+        public override bool Decode(string tg, string data)
+        {
+            switch (tg)
+            {
+                case "b": base.Decode(data); break;
+                case "gSys": data.Decode_Dictionary(out presentationSystemsConfigs); break;
+                default: return false;
+            }
+
+            return true;
+        }
+
+        public override void Decode(string data)
+        {
+            presentationSystemsConfigs.Clear();
+            base.Decode(data);
+
+            DECODEPresentationSystem(NodeNotesGradientController.instance);
+            DECODEPresentationSystem(AmbientSoundsMixerMgmt.instance);
+            DECODEPresentationSystem(RayRenderingManager.instance);
+
+        }
+
+
         #endregion
 
         protected override void DerivedUpdate() {
@@ -454,10 +516,13 @@ namespace NodeNotes_Visual
         public int Count => active.Count;
     }
 
-    public abstract class NodeNodesNeedEnableAbstract : MonoBehaviour, ICfg
+    // Change this to interface and create wrapper classes to plug others in
+    public abstract class NodeNodesNeedEnableAbstract : MonoBehaviour, ICfg, IGotClassTag
     {
 
-        public Countless<string> perNodeGradientConfigs = new Countless<string>();
+        public Countless<string> perNodeConfigs = new Countless<string>();
+
+        public abstract string ClassTag { get; }
 
         public abstract void ManagedOnEnable();
 
@@ -466,7 +531,7 @@ namespace NodeNotes_Visual
             Node iteration = node;
             while (iteration != null)
             {
-                var val = perNodeGradientConfigs[iteration.IndexForPEGI];
+                var val = perNodeConfigs[iteration.IndexForPEGI];
                 if (!val.IsNullOrEmpty())
                 {
                     Decode(val);
