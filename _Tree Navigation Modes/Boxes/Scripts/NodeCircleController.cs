@@ -147,6 +147,7 @@ namespace NodeNotes_Visual {
             if (_loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
                 using (_loopLock.Lock()) {
                     if (pegi.Try_Nested_Inspect(source).changes(ref changed)) {
+
                         if (name != source.name)
                             NameForPEGI = source.name;
                         
@@ -180,40 +181,32 @@ namespace NodeNotes_Visual {
                     if (IsCurrent) 
                         source.name.write(PEGI_Styles.ListLabel);
                     else
-                        source.name.write("Lerp parameter {0}".F(dominantParameter), conditionPassed ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);
-                        
+                        source.name.write("Lerp parameter {0}".F(dominantParameter), conditionPassed ? PEGI_Styles.EnterLabel : PEGI_Styles.ExitLabel);     
                 }
 
                 pegi.nl();
 
                 if (source == null)
-                {
                     "No source node is currently linked.".writeHint();
-                }
-
+                
                 if ("Shape & Color".enter(ref inspectedItems, 2).nl())
                 {
+                    if (circleRenderer && source != null) {
 
-                    if (circleRenderer)
-                    {
-                        if (source != null)
+                        var node = source.AsNode;
+
+                        if (node != null)
                         {
-                            var node = source.AsNode;
+                            var bg = TaggedTypes.TryGetByTag(Mgmt.presentationControllers, node.visualStyleTag);
 
-                            if (node != null)
+                            if (bg != null)
                             {
-
-                                var bg = TaggedTypes.TryGetByTag(Mgmt.presentationControllers, node.visualStyleTag);
-
-                                if (bg != null)
-                                {
-                                    if (pegi.Try_Nested_Inspect(bg).nl(ref changed))
-                                        source.visualStyleConfigs[NodesVisualLayer.SelectedVisualLayer.ClassTag] =
-                                            bg.Encode().ToString();
-                                }
+                                if (pegi.Try_Nested_Inspect(bg).nl(ref changed))
+                                    source.visualStyleConfigs[NodesVisualLayer.SelectedVisualLayer.ClassTag] =
+                                        bg.Encode().ToString();
                             }
                         }
-                        //else "No source node is currently linked.".writeHint();
+                        
                     }
 
                     if (source == null || (!source.InspectingTriggerItems))
@@ -235,14 +228,13 @@ namespace NodeNotes_Visual {
                         ActiveConfig.Nested_Inspect().changes(ref changed);
                     }
                 }
-                
+
                 if ("Mesh Object".enter(ref inspectedItems, 3).nl())
                 {
                     if (!LevelArea && "Create Mesh Object".Click())
                         MeshObjectGetOrCreate();
 
-                    if (LevelArea &&
-                        icon.Delete.ClickConfirm("dMo", "This will also erase any data of this meshobject"))
+                    if (LevelArea && icon.Delete.ClickConfirm("dMo", "This will also erase any data of this meshobject"))
                     {
                         LevelArea.FadeAway();
                         LevelArea = null;
@@ -251,52 +243,7 @@ namespace NodeNotes_Visual {
                     LevelArea.Nested_Inspect().nl(ref changed);
                 }
 
-                if ("Gradient BG".enter(ref inspectedItems, 4).nl())
-                {
-                    NodeNotesGradientController.instance.InspectNode(source);
-                }
-
-                if ("RTX BG".enter(ref inspectedItems, 5).nl())
-                {
-
-                    var rtxMGMT = RayRenderingManager.instance;
-
-                    if (!rtxMGMT)
-                        "No Ray-Rendering Engine".writeWarning();
-                    else
-                    {
-                        var grds = rtxMGMT.perNodeConfigs; //BoxButtons.inst.perNodeRtxConfigs;
-
-                        var rayTracingConfig = grds[source.IndexForPEGI];
-
-                        if (rayTracingConfig.IsNullOrEmpty())
-                        {
-                            if ((source == Shortcuts.CurrentNode ? "Create New config" : "Copy current config").Click().nl())
-                                grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
-                        }
-                        else
-                        {
-                            if (source == Shortcuts.CurrentNode)
-                            {
-                                "SAVE AFTER CHANGING".write();
-                                if (icon.Save.Click().nl())
-                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
-
-                                rtxMGMT.Nested_Inspect().nl();
-                            }
-                            else
-                            {
-                                if ("Override config with current".ClickConfirm("ovrRTX").nl())
-                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
-
-                                if ("Load Now".Click().nl())
-                                    rtxMGMT.Decode(rayTracingConfig);
-                            }
-                        }
-                    }
-                }
-
-                if ("Image".enter(ref inspectedItems, 6).nl()) {
+                if ("Image".enter(ref inspectedItems, 4).nl()) {
 
                     if (_imageIndex != -1) {
                         if (!pegi.PaintingGameViewUI)
@@ -339,7 +286,7 @@ namespace NodeNotes_Visual {
                     }
                 }
 
-                if ("Lerp Debug".enter(ref inspectedItems, 7).nl())
+                if ("Lerp Debug".enter(ref inspectedItems, 5).nl())
                 {
                     "Is Lerping: {0}".F(lerpsFinished).nl();
                     "Fade portion: {0}".F(fadePortion).nl();

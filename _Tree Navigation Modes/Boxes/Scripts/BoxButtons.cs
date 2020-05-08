@@ -498,8 +498,6 @@ namespace NodeNotes_Visual {
 
                     "Lerp Data dom:{0}".F(_ld.dominantParameter).nl();
 
-                  //  "Gradient Configs: {0}".F(NodeNotesGradientController.instance.perNodeGradientConfigs.CountForInspector()).nl();
-                   // "RTX configs: {0}".F(perNodeRtxConfigs.CountForInspector()).nl();
                 }
             }
 

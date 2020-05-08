@@ -13,7 +13,17 @@ MonoBehaviour:
   m_Name: NodeNotes_QuizcannersAssets
   m_EditorClassIdentifier: 
   audioClips:
-    taggedList: []
+    taggedList:
+    - tag: rainDrops
+      asset: {fileID: 8300000, guid: 1ecc606dd080c904998ebb8297f8df20, type: 3}
+    - tag: heavyCity
+      asset: {fileID: 8300000, guid: 32bcae5a9e589be46947762edaa8705c, type: 3}
+    - tag: CalmCity
+      asset: {fileID: 8300000, guid: 180bf54be292da94c8bf33574a3f89e5, type: 3}
+    - tag: guitar
+      asset: {fileID: 8300000, guid: 267ef2e1ff0ba12478e47cf324b9e491, type: 3}
+    - tag: skate
+      asset: {fileID: 8300000, guid: 6a97b48b848621148b7f8df14de6d04e, type: 3}
   materials:
     taggedList:
     - tag: 

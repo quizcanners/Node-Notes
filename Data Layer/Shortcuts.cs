@@ -45,7 +45,7 @@ namespace NodeNotes {
             public FilteredMaterials(Func<NodeNotesAssetGroups, TaggedAssetsList<Material>> getOne) : base(getOne) { }
         }
 
-        [SerializeField] private FilteredMaterials Materials = new FilteredMaterials((NodeNotesAssetGroups grp) => { return grp.materials; });
+        [SerializeField] private FilteredMaterials Materials = new FilteredMaterials((NodeNotesAssetGroups grp) => grp.materials);
         public bool Get(string key, out Material mat)
         {
             mat = Materials.Get(key, assetGroups);
@@ -67,30 +67,59 @@ namespace NodeNotes {
 
         public List<string> GetSdfObjectsKeys() => SdfObjects.GetAllKeysKeys(assetGroups);
 
-        private FilteredSdfObjects SdfObjects = new FilteredSdfObjects((NodeNotesAssetGroups grp) => { return grp.sdfObjects; });
-        
+        private FilteredSdfObjects SdfObjects = new FilteredSdfObjects((NodeNotesAssetGroups grp) => grp.sdfObjects);
+
+        // Audio Clips
+        [Serializable]
+        public class FilteredAudioClips : FilteredAssetGroup<AudioClip> {
+            public FilteredAudioClips(Func<NodeNotesAssetGroups, TaggedAssetsList<AudioClip>> getOne) : base(getOne) { }
+        }
+
+        private FilteredAudioClips AudioClips = new FilteredAudioClips((NodeNotesAssetGroups grp) => grp.audioClips);
+
+        public bool Get(string key, out AudioClip sdf) {
+            sdf = AudioClips.Get(key, assetGroups);
+            return sdf;
+        }
+
+        public List<string> GetAudioClipObjectsKeys() => AudioClips.GetAllKeysKeys(assetGroups);
+
+
+        private void RefreshAssetGroups()
+        {
+            AudioClips.Refresh();
+            SdfObjects.Refresh();
+            Materials.Refresh();
+        }
+
 
         [Serializable]
         public abstract class FilteredAssetGroup<T> where T: UnityEngine.Object
         {
             [SerializeField] protected T _defaultMaterial;
-            [NonSerialized] private Dictionary<string, T> filteredMaterials = new Dictionary<string, T>();
-            [NonSerialized] private List<string> allMaterialKeys;
+            [NonSerialized] private Dictionary<string, T> filteredOnjects = new Dictionary<string, T>();
+            [NonSerialized] private List<string> allObjectKeys;
+
+            public void Refresh()
+            {
+                filteredOnjects.Clear();
+                allObjectKeys = null;
+            }
 
             private readonly Func<NodeNotesAssetGroups, TaggedAssetsList<T>> _getOne;
 
             public List<string> GetAllKeysKeys(List<NodeNotesAssetGroups> assetGroups)
             {
-                if (allMaterialKeys != null)
-                    return allMaterialKeys;
+                if (allObjectKeys != null)
+                    return allObjectKeys;
 
-                allMaterialKeys = new List<string>();
+                allObjectKeys = new List<string>();
 
                 foreach (var assetGroup in assetGroups)
-                foreach (var taggedMaterial in assetGroup.materials.taggedList)
-                    allMaterialKeys.Add(taggedMaterial.tag);
+                foreach (var taggedObject in _getOne(assetGroup).taggedList)//assetGroup.materials.taggedList)
+                    allObjectKeys.Add(taggedObject.tag);
 
-                return allMaterialKeys;
+                return allObjectKeys;
             }
 
             public T Get(string key, List<NodeNotesAssetGroups> assetGroups)
@@ -100,11 +129,11 @@ namespace NodeNotes {
 
                 T mat;
 
-                if (!filteredMaterials.TryGetValue(key, out mat))
+                if (!filteredOnjects.TryGetValue(key, out mat))
                     foreach (var group in assetGroups)
                         if (_getOne(group).TreGet(key, out mat))
                         {
-                            filteredMaterials[key] = mat;
+                            filteredOnjects[key] = mat;
                             break;
                         }
 
@@ -196,14 +225,22 @@ namespace NodeNotes {
             users.ResetInspector();
             books.ResetInspector();         
         }
-        
+
+        private int _inspectedGroup;
         public bool InspectAssets()
         {
             var changed = false;
 
-     
+            if ("Refresh".Click().nl())
+                RefreshAssetGroups();
+
+            "Asset Groups".edit_List_SO(ref assetGroups, ref _inspectedGroup).nl(ref changed);
+
             if (changed)
+            {
+               RefreshAssetGroups();
                 this.SetToDirty();
+            }
 
             return changed;
         }

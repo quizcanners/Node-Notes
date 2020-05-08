@@ -180,7 +180,8 @@ namespace NodeNotes_Visual
         private int _inspectedBackground = -1;
         private int _inspectedDebugItem = -1;
         private int _inspectedSingleton = -1;
-
+        private int _inspectedNodeStuff = -1;
+       
         public override bool Inspect() {
 
             if (gameNode != null) {
@@ -199,10 +200,61 @@ namespace NodeNotes_Visual
             }
 
             bool changed = base.Inspect();
-            
-            if (inspectedItems == (int)InspectedItem.CurrentNode)
-                SelectedVisualLayer.Nested_Inspect().changes(ref changed);
-            
+
+            if (inspectedItems == (int) InspectedItem.CurrentNode)
+            {
+                if ("Visual Mode".conditional_enter(SelectedVisualLayer, ref _inspectedNodeStuff, 0).nl())
+                    SelectedVisualLayer.Nested_Inspect().changes(ref changed);
+
+                var source = CurrentNode;
+                
+                if ("Gradient BG".enter(ref _inspectedNodeStuff, 1).nl())
+                    NodeNotesGradientController.instance.InspectNode(source);
+                
+                if ("RTX BG".enter(ref _inspectedNodeStuff, 2).nl())
+                {
+                    var rtxMGMT = RayRenderingManager.instance;
+
+                    if (!rtxMGMT)
+                        "No Ray-Rendering Engine".writeWarning();
+                    else
+                    {
+                        var grds = rtxMGMT.perNodeConfigs; //BoxButtons.inst.perNodeRtxConfigs;
+
+                        var rayTracingConfig = grds[source.IndexForPEGI];
+
+                        if (rayTracingConfig.IsNullOrEmpty())
+                        {
+                            if ((source == Shortcuts.CurrentNode ? "Create New config" : "Copy current config").Click().nl())
+                                grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+                        }
+                        else
+                        {
+                            if (source == Shortcuts.CurrentNode)
+                            {
+                                "SAVE AFTER CHANGING".write();
+                                if (icon.Save.Click().nl())
+                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+
+                                rtxMGMT.Nested_Inspect().nl();
+                            }
+                            else
+                            {
+                                if ("Override config with current".ClickConfirm("ovrRTX").nl())
+                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+
+                                if ("Load Now".Click().nl())
+                                    rtxMGMT.Decode(rayTracingConfig);
+                            }
+                        }
+                    }
+                }
+
+                if ("Music".enter(ref _inspectedNodeStuff, 3).nl())
+                    AmbientSoundsMixerMgmt.instance.Nested_Inspect().nl();
+                
+            }
+
             pegi.nl();
 
             if (!shortcuts)
@@ -369,8 +421,7 @@ namespace NodeNotes_Visual
             DECODEPresentationSystem(RayRenderingManager.instance);
 
         }
-
-
+        
         #endregion
 
         protected override void DerivedUpdate() {
