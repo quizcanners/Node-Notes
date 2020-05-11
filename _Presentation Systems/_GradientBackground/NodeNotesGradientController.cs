@@ -6,7 +6,7 @@ using UnityEngine;
 namespace NodeNotes_Visual {
 
     [ExecuteAlways]
-    public class NodeNotesGradientController : NodeNodesNeedEnableAbstract, ILinkedLerping
+    public class NodeNotesGradientController : PresentationSystemsAbstract, ILinkedLerping
     {
         public override string ClassTag => "GradCntrl";
 
@@ -70,46 +70,22 @@ namespace NodeNotes_Visual {
         
         #region Inspector
 
-        public bool InspectNode(Base_Node source)
+        public override bool Inspect()
         {
             var changed = false;
+            
+            var crntGrad = targetGradient;
 
-            var grds = perNodeConfigs;
-
-            var gradient = grds[source.IndexForPEGI];
-
-            if (gradient == null)
-            {
-                if ("+ Gradient Cfg".Click().nl(ref changed))
-                    grds[source.IndexForPEGI] = targetGradient.Encode().ToString();
-            }
-            else
-            {
-                if (icon.Delete.Click("Delete Gradient Cfg"))
-                    grds[source.IndexForPEGI] = null;
-                else
-                {
-                    if (source == Shortcuts.CurrentNode)
-                    {
-                        var crntGrad = targetGradient;
-
-                        if (crntGrad.Nested_Inspect(ref changed))
-                        {
-                            SetTarget(crntGrad);
-                            grds[source.IndexForPEGI] = crntGrad.Encode().ToString();
-                        }
-                    }
-                    else
-                        "Enter node to edit it's Background gradient".writeHint();
-                }
-                pegi.nl();
-            }
-
+            if (crntGrad.Nested_Inspect(ref changed))
+                SetTarget(crntGrad);
+                
             if (changed)
                 _lerpDone = false;
 
             return changed;
         }
+
+        public override string NameForDisplayPEGI() => "Gradient Background";
 
         #endregion
 
@@ -129,6 +105,7 @@ namespace NodeNotes_Visual {
         {
             return false;
         }
+
         #endregion
 
     }

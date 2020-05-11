@@ -10,7 +10,7 @@ using UnityEngine.Audio;
 namespace NodeNotes_Visual
 {
 
-    public class AmbientSoundsMixerMgmt : NodeNodesNeedEnableAbstract, IPEGI
+    public class AmbientSoundsMixerMgmt : PresentationSystemsAbstract, IPEGI
     {
         public static AmbientSoundsMixerMgmt instance;
 
@@ -140,49 +140,25 @@ namespace NodeNotes_Visual
             .Add_IfNotEmpty("m", targetMusic)
             .Add("tr", (int)transitionType)
             .Add("len", _transitionLength);
+
         #endregion
         
         #region Inspect
-        public bool Inspect()
+
+        public override bool Inspect()
         {
             var changed = false;
 
-            var source = Shortcuts.CurrentNode;
+            "Ambient".select(60, ref targetMusic, Shortcuts.Instance.GetAudioClipObjectsKeys()).nl(ref changed);
 
-            string cfg;
+            "Transition type".editEnum(100, ref transitionType).nl(ref changed);
 
-            if (perNodeConfigs.TryGet(source.IndexForPEGI, out cfg))
-            {
-                if ("Clear Music Config".ClickConfirm("clM").nl())
-                    perNodeConfigs[source.IndexForPEGI] = null;
-                else
-                {
-                    "Ambient".select(60, ref targetMusic, Shortcuts.Instance.GetAudioClipObjectsKeys()).changes(ref changed);
-                      
-                    if (!cfg.IsNullOrEmpty() && icon.Refresh.Click())
-                        Decode(cfg);
-                    
-                    pegi.nl();
-
-                    "Transition type".editEnum(100, ref transitionType).nl(ref changed);
-
-                    "_Length".edit(90, ref _transitionLength, 0.1f, 10f).nl(ref changed);
-
-                    if (changed)
-                        perNodeConfigs[source.IndexForPEGI] = Encode().ToString();
-
-                }
-            }
-            else
-            {
-                if ("+ Set Song for {0} ".F(source.NameForPEGI).Click().nl())
-                {
-                    perNodeConfigs[source.IndexForPEGI] = "";
-                }
-            }
+            "_Length".edit(90, ref _transitionLength, 0.1f, 10f).nl(ref changed);
 
             return changed;
         }
+
+        public override string NameForDisplayPEGI() => "Ambient Sound";
         #endregion
     }
 }

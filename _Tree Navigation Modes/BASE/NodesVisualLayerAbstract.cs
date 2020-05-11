@@ -8,7 +8,7 @@ namespace NodeNotes {
     
     public abstract class NodesVisualLayerAbstract : LogicMGMT {
 
-        public static NodesVisualLayerAbstract InstAsNodesVisualLayer => inst as NodesVisualLayerAbstract;
+        public static NodesVisualLayerAbstract InstAsNodesVisualLayer => instLogicMgmt as NodesVisualLayerAbstract;
 
         public abstract bool InspectBackgroundTag(Node node);
 
@@ -105,6 +105,11 @@ namespace NodeNotes {
 
            // Shortcuts.CurrentNode = null;
         }
+
+        public abstract CfgEncoder EncodePerBookData();
+
+        public abstract void Decode(string data);
+
 
     }
 

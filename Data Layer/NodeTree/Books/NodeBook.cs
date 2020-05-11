@@ -174,7 +174,7 @@ namespace NodeNotes
                     bg.Decode(data);
                 }
 
-                NodesVisualLayerAbstract.inst.Decode(_visualLayerConfig);
+                NodesVisualLayerAbstract.InstAsNodesVisualLayer.Decode(_visualLayerConfig);
 
                 loadedPresentation = true;
             }
@@ -188,7 +188,7 @@ namespace NodeNotes
                         presentationModesConfigs[bg.ClassTag] = data;
                     }
 
-                _visualLayerConfig = NodesVisualLayerAbstract.inst.Encode().ToString();
+                _visualLayerConfig = NodesVisualLayerAbstract.InstAsNodesVisualLayer.EncodePerBookData().ToString();
             }
         }
 

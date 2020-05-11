@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace QcTriggerLogic
 {
-    public abstract class LogicMGMT : ComponentCfg   {
+    public abstract class LogicMGMT : MonoBehaviour, IPEGI   {
 
-        public static LogicMGMT inst;
+        public static LogicMGMT instLogicMgmt;
 
         private bool _waiting;
         private float _timeToWait = -1;
@@ -17,8 +17,8 @@ namespace QcTriggerLogic
         
         public static void AddLogicVersion() {
             _currentLogicVersion++;
-            if (inst)
-                inst.OnLogicVersionChange();
+            if (instLogicMgmt)
+                instLogicMgmt.OnLogicVersionChange();
         }
 
         private static int _realTimeOnStartUp;
@@ -31,13 +31,7 @@ namespace QcTriggerLogic
             return _realTimeOnStartUp + (int)QcUnity.TimeSinceStartup();
         }
 
-        #region Encode & Decode
-        public override CfgEncoder Encode() =>this.EncodeUnrecognized();
-
-        public override bool Decode(string tg, string data) => false;
-        #endregion
-
-        public virtual void OnEnable()  =>  inst = this;
+        public virtual void OnEnable()  =>  instLogicMgmt = this;
         
         public void AddTimeListener(float seconds) {
             seconds += 0.5f;
@@ -68,9 +62,8 @@ namespace QcTriggerLogic
 
         #region Inspector
 
-        protected override void ResetInspector() {
+        protected virtual void ResetInspector() {
             inspectedTriggerGroup = -1;
-            base.ResetInspector();
         }
 
         protected virtual void InspectionTabs() {
@@ -81,17 +74,16 @@ namespace QcTriggerLogic
         }
 
 
+        protected int inspectedItems = -1;
         [SerializeField] protected int inspectedTriggerGroup = -1;
         [SerializeField] protected int tmpIndex = -1;
         [NonSerialized] private TriggerGroup _replaceReceived;
         [NonSerialized] private bool _inspectReplacementOption;
-        public override bool Inspect()
+        public virtual bool Inspect()
         {
             var changed = false;
 
             InspectionTabs();
-
-            base.Inspect().nl(ref changed);
 
             if (inspectedItems == 1) {
 

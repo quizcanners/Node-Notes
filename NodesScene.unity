@@ -1958,16 +1958,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e801a3cea27a8ca4598ef3a7884fe7ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectedItems: 2
+  inspectedItems: -1
   nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: 3
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   mainCam: {fileID: 0}
-  forManagedOnEnable:
-  - {fileID: 1290433479}
-  - {fileID: 991294067}
+  presentationSystems:
   - {fileID: 350147523}
+  - {fileID: 991294067}
+  - {fileID: 1290433479}
   canvas: {fileID: 806629722}
   painterCamera: {fileID: 0}
   gameNodeControllers:

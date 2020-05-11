@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
+using QcTriggerLogic;
 using QuizCannersUtilities;
 using RayMarching;
 using UnityEngine;
@@ -17,23 +18,14 @@ namespace NodeNotes_Visual
     [ExecuteInEditMode]
     public class NodesVisualLayer : NodesVisualLayerAbstract {
 
-        public static NodesVisualLayer Instance => inst as NodesVisualLayer;
+        public static NodesVisualLayer Instance => instLogicMgmt as NodesVisualLayer;
 
         [SerializeField] protected Camera mainCam;
 
-        #region Graphic Systems
-
-        [SerializeField] protected List<NodeNodesNeedEnableAbstract> forManagedOnEnable;
-        public Dictionary<string, string> presentationSystemsConfigs = new Dictionary<string, string>();
-
-
-        #endregion
-
         [SerializeField] protected Canvas canvas;
 
-        [SerializeField] protected PainterCamera painterCamera;
-        
-        public static Camera MainCam {
+        public static Camera MainCam
+        {
             get
             {
                 if (!Instance.mainCam)
@@ -44,59 +36,18 @@ namespace NodeNotes_Visual
 
         public TextureDownloadManager textureDownloader = new TextureDownloadManager();
 
-        #region Game Nodes
-
-        public List<GameControllerBase> gameNodeControllers = new List<GameControllerBase>();
-
-        #endregion
-
-        #region Node MGMT
-
-        public override void Show(Base_Node node) => SelectedVisualLayer.MakeVisible(node);
-        
-        public override void Hide(Base_Node node) => SelectedVisualLayer.MakeHidden(node);
-
-        private readonly LoopLock _setNodeLoopLock = new LoopLock();
-
-        public override Node CurrentNode => Shortcuts.CurrentNode; 
-        
-        public override void OnBeforeNodeSet(Node node) {
-
-            SetBackground(node);
-
-            if (Application.isPlaying)
-                node?.SetInspected();
-
-            if (!SelectedVisualLayer)
-            {
-                if (CurrentNode != null)
-                    Debug.LogError("Selected Visual Layer is null");
-            }
-            else 
-                SelectedVisualLayer.OnBeforeNodeSet(node);
-        }
-
-        public override void OnLogicVersionChange() {
-
-            if (gameNode == null) {
-                var cn = Shortcuts.CurrentNode;
-                SetBackground(cn);
-                SelectedVisualLayer.OnLogicUpdate();
-            }
-        }
-
-        #endregion
-
         #region Presentation Modes
 
         public List<PresentationMode> presentationControllers = new List<PresentationMode>();
 
         public static PresentationMode _selectedController;
 
-        public static PresentationMode SelectedVisualLayer {
-            get {
+        public static PresentationMode SelectedPresentationMode
+        {
+            get
+            {
                 if (!_selectedController)
-                    SetBackground(null);
+                    SetPresentationMode(null);
 
                 return _selectedController;
             }
@@ -104,12 +55,13 @@ namespace NodeNotes_Visual
             set { _selectedController = value; }
         }
 
-        public static void SetBackground(Node source)
+        public static void SetPresentationMode(Node source)
         {
 
             var bgc = Instance.presentationControllers;
-            
-            if (source == null) {
+
+            if (source == null)
+            {
 
                 foreach (var bc in bgc)
                     if (bc) bc.FadeAway();
@@ -119,21 +71,21 @@ namespace NodeNotes_Visual
 
             var tag = source?.visualStyleTag;
 
-       
             if (tag.IsNullOrEmpty() && bgc.Count > 0)
                 tag = bgc[0].ClassTag;
 
             string data = "";
 
-            if (source!= null)
+            if (source != null)
                 source.visualStyleConfigs.TryGetValue(tag, out data);
 
             foreach (var bc in bgc)
                 if (bc && bc.ClassTag != tag)
-                        bc.FadeAway();
-                
+                    bc.FadeAway();
+
             foreach (var bc in bgc)
-                if (bc && bc.ClassTag == tag) {
+                if (bc && bc.ClassTag == tag)
+                {
                     _selectedController = bc;
                     bc.TryFadeIn();
                     data.TryDecodeInto(bc);
@@ -141,9 +93,79 @@ namespace NodeNotes_Visual
                 }
         }
 
-        public override void HideAllBackgrounds() {
+        public override void HideAllBackgrounds()
+        {
             foreach (var bc in Instance.presentationControllers)
                 bc.FadeAway();
+        }
+
+        #endregion
+        
+        #region Presentation Systems
+
+        [SerializeField] protected List<PresentationSystemsAbstract> presentationSystems;
+        //public Dictionary<string, string> presentationSystemsConfigs = new Dictionary<string, string>();
+
+        public Dictionary<string, PresentationSystemConfigurations> presentationSystemPerNodeConfigs = new Dictionary<string, PresentationSystemConfigurations>();
+
+
+        #endregion
+
+        #region Game Nodes
+
+        public List<GameControllerBase> gameNodeControllers = new List<GameControllerBase>();
+
+        #endregion
+        
+        #region Node MGMT
+
+        public override void Show(Base_Node node) => SelectedPresentationMode.MakeVisible(node);
+        
+        public override void Hide(Base_Node node) => SelectedPresentationMode.MakeHidden(node);
+
+        private readonly LoopLock _setNodeLoopLock = new LoopLock();
+
+        public override Node CurrentNode => Shortcuts.CurrentNode; 
+        
+        public override void OnBeforeNodeSet(Node node) {
+
+            SetPresentationMode(node);
+            
+            if (Application.isPlaying)
+                node?.SetInspected();
+
+            if (!SelectedPresentationMode)
+            {
+                if (CurrentNode != null)
+                    Debug.LogError("Selected Visual Layer is null");
+            }
+            else 
+                SelectedPresentationMode.OnBeforeNodeSet(node);
+
+            foreach (var system in presentationSystems)
+            {
+                if (system)
+                {
+                    PresentationSystemConfigurations cfg;
+                    if (presentationSystemPerNodeConfigs.TryGetValue(system.ClassTag, out cfg))
+                        system.Decode(cfg.GetConfigFor(node));
+                    else
+                        system.Decode("");
+                }
+            }
+
+            // BOTCHING:
+            var rtx = RayRenderingManager.instance;
+            rtx.playLerpAnimation = false;
+        }
+
+        public override void OnLogicVersionChange() {
+
+            if (gameNode == null) {
+                var cn = Shortcuts.CurrentNode;
+                SetPresentationMode(cn);
+                SelectedPresentationMode.OnLogicUpdate();
+            }
         }
 
         #endregion
@@ -176,7 +198,7 @@ namespace NodeNotes_Visual
 
             base.InspectionTabs();
         }
-        
+
         private int _inspectedBackground = -1;
         private int _inspectedDebugItem = -1;
         private int _inspectedSingleton = -1;
@@ -203,56 +225,33 @@ namespace NodeNotes_Visual
 
             if (inspectedItems == (int) InspectedItem.CurrentNode)
             {
-                if ("Visual Mode".conditional_enter(SelectedVisualLayer, ref _inspectedNodeStuff, 0).nl())
-                    SelectedVisualLayer.Nested_Inspect().changes(ref changed);
+                if ("Visual Mode".conditional_enter(SelectedPresentationMode, ref _inspectedNodeStuff, 0).nl())
+                    SelectedPresentationMode.Nested_Inspect().changes(ref changed);
 
                 var source = CurrentNode;
-                
-                if ("Gradient BG".enter(ref _inspectedNodeStuff, 1).nl())
-                    NodeNotesGradientController.instance.InspectNode(source);
-                
-                if ("RTX BG".enter(ref _inspectedNodeStuff, 2).nl())
+
+                int index = 1;
+
+                foreach (var system in presentationSystems)
                 {
-                    var rtxMGMT = RayRenderingManager.instance;
-
-                    if (!rtxMGMT)
-                        "No Ray-Rendering Engine".writeWarning();
-                    else
+                    if (system.GetNameForInspector_Uobj().enter(ref _inspectedNodeStuff, index).nl())
                     {
-                        var grds = rtxMGMT.perNodeConfigs; //BoxButtons.inst.perNodeRtxConfigs;
-
-                        var rayTracingConfig = grds[source.IndexForPEGI];
-
-                        if (rayTracingConfig.IsNullOrEmpty())
+                        PresentationSystemConfigurations cfg;
+                        if (!presentationSystemPerNodeConfigs.TryGetValue(system.ClassTag, out cfg))
                         {
-                            if ((source == Shortcuts.CurrentNode ? "Create New config" : "Copy current config").Click().nl())
-                                grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
+                            if ("Add {0} configs".F(system.GetNameForInspector()).Click().nl(ref changed))
+                            {
+                                cfg = new PresentationSystemConfigurations();
+                                presentationSystemPerNodeConfigs.Add(system.ClassTag, cfg);
+                            }
                         }
                         else
-                        {
-                            if (source == Shortcuts.CurrentNode)
-                            {
-                                "SAVE AFTER CHANGING".write();
-                                if (icon.Save.Click().nl())
-                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
-
-                                rtxMGMT.Nested_Inspect().nl();
-                            }
-                            else
-                            {
-                                if ("Override config with current".ClickConfirm("ovrRTX").nl())
-                                    grds[source.IndexForPEGI] = rtxMGMT.Encode().ToString();
-
-                                if ("Load Now".Click().nl())
-                                    rtxMGMT.Decode(rayTracingConfig);
-                            }
-                        }
+                            cfg.InspectFor(CurrentNode.AsNode, system).nl(ref changed);
+                        
                     }
-                }
 
-                if ("Music".enter(ref _inspectedNodeStuff, 3).nl())
-                    AmbientSoundsMixerMgmt.instance.Nested_Inspect().nl();
-                
+                    index++;
+                }                
             }
 
             pegi.nl();
@@ -273,7 +272,7 @@ namespace NodeNotes_Visual
 
                 "Game Controllers".enter_List_UObj(ref gameNodeControllers, ref _inspectedDebugItem, 1).nl(ref changed);
 
-                "Singletons [For managed OnEnable]".enter_List_UObj(ref forManagedOnEnable, ref _inspectedSingleton, ref _inspectedDebugItem, 2).nl(ref changed);
+                "Presentation Systems".enter_List_UObj(ref presentationSystems, ref _inspectedSingleton, ref _inspectedDebugItem, 2).nl(ref changed);
 
                 "Textures".enter_Inspect(textureDownloader, ref _inspectedDebugItem, 3).nl_ifNotEntered(ref changed);
 
@@ -348,8 +347,8 @@ namespace NodeNotes_Visual
                 }
             }
 
-            if (changed && SelectedVisualLayer)
-                SelectedVisualLayer.OnLogicUpdate();
+            if (changed && SelectedPresentationMode)
+                SelectedPresentationMode.OnLogicUpdate();
 
             return changed;
         }
@@ -371,40 +370,51 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Encode & Decode
-
-        private void DECODEPresentationSystem(NodeNodesNeedEnableAbstract system)
+        /*
+        private void DECODEPresentationSystem(PresentationSystemsAbstract system)
         {
             string data;
             if (system && presentationSystemsConfigs.TryGetValue(system.ClassTag, out data))
                 data.DecodeInto(out system.perNodeConfigs);
-        }
+        }*/
 
-        private void EncodePresentationSystem(NodeNodesNeedEnableAbstract system)
+       /* private void EncodePresentationSystem(PresentationSystemsAbstract system)
         {
             if (system)
                 presentationSystemsConfigs[system.ClassTag] = system.perNodeConfigs.Encode().ToString();
-        }
+        }*/
 
-        public override CfgEncoder Encode()
+        public override CfgEncoder EncodePerBookData()
         {
-            EncodePresentationSystem(NodeNotesGradientController.instance);
+            /*EncodePresentationSystem(NodeNotesGradientController.instance);
             EncodePresentationSystem(AmbientSoundsMixerMgmt.instance);
-            EncodePresentationSystem(RayRenderingManager.instance);
+            EncodePresentationSystem(RayRenderingManager.instance);*/
 
-            var cody = this.EncodeUnrecognized()
-                .Add("b", base.Encode())
-                .Add_IfNotEmpty("gSys", presentationSystemsConfigs);
+            var cody = new CfgEncoder()
+                .Add("gSys2", presentationSystemPerNodeConfigs);
+                //.Add_IfNotEmpty("gSys", presentationSystemsConfigs);
 
             return cody;
 
         }
 
-        public override bool Decode(string tg, string data)
+        public bool Decode(string tg, string data)
         {
             switch (tg)
             {
-                case "b": base.Decode(data); break;
-                case "gSys": data.Decode_Dictionary(out presentationSystemsConfigs); break;
+
+                case "gSys2": data.Decode_Dictionary(out presentationSystemPerNodeConfigs); break;
+                // DEPRECATED (TMP)
+                case "gSys":
+                    var dicTmp = new Dictionary<string, string>();
+                    data.Decode_Dictionary(out dicTmp);
+                    foreach (var pair in dicTmp)
+                    {
+                        var cfg = new PresentationSystemConfigurations();
+                        pair.Value.DecodeInto(out cfg.perNodeConfigs);
+                        presentationSystemPerNodeConfigs[pair.Key] = cfg;
+                    }
+                    break;
                 default: return false;
             }
 
@@ -413,12 +423,12 @@ namespace NodeNotes_Visual
 
         public override void Decode(string data)
         {
-            presentationSystemsConfigs.Clear();
-            base.Decode(data);
-
-            DECODEPresentationSystem(NodeNotesGradientController.instance);
+            presentationSystemPerNodeConfigs.Clear();
+            //presentationSystemsConfigs.Clear();
+            new CfgDecoder(data).DecodeTagsFor(Decode);
+           /* DECODEPresentationSystem(NodeNotesGradientController.instance);
             DECODEPresentationSystem(AmbientSoundsMixerMgmt.instance);
-            DECODEPresentationSystem(RayRenderingManager.instance);
+            DECODEPresentationSystem(RayRenderingManager.instance);*/
 
         }
         
@@ -448,13 +458,10 @@ namespace NodeNotes_Visual
 
         public override void OnEnable() {
 
-            if (Application.isPlaying && painterCamera)
-                painterCamera.OnEnable();
-
             foreach (var gc in gameNodeControllers)
                 if (gc) gc.Initialize();
 
-            foreach (var script in forManagedOnEnable)
+            foreach (var script in presentationSystems)
                 script.ManagedOnEnable();
 
 
@@ -476,7 +483,7 @@ namespace NodeNotes_Visual
             "Style (Inside)".write(110);
 
             if (PresentationMode.all.selectTypeTag(ref node.visualStyleTag).nl(ref changed))
-                SetBackground(node);
+                SetPresentationMode(node);
 
             return changed;
         }
@@ -567,38 +574,5 @@ namespace NodeNotes_Visual
         public int Count => active.Count;
     }
 
-    // Change this to interface and create wrapper classes to plug others in
-    public abstract class NodeNodesNeedEnableAbstract : MonoBehaviour, ICfg, IGotClassTag
-    {
-
-        public Countless<string> perNodeConfigs = new Countless<string>();
-
-        public abstract string ClassTag { get; }
-
-        public abstract void ManagedOnEnable();
-
-        public void LoadConfigFor(Node node)
-        {
-            Node iteration = node;
-            while (iteration != null)
-            {
-                var val = perNodeConfigs[iteration.IndexForPEGI];
-                if (!val.IsNullOrEmpty())
-                {
-                    Decode(val);
-                    break;
-                }
-                iteration = iteration.parentNode;
-            }
-        }
-
-        public abstract CfgEncoder Encode();
-
-        public virtual void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
-        
-        public abstract bool Decode(string tg, string data);
-        
-        
-    }
 
 }

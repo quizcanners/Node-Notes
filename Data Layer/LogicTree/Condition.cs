@@ -185,24 +185,24 @@ namespace QcTriggerLogic
                 case ConditionType.VirtualTimePassedAbove:
                                                             timeGap = (int)Time.time - GetInt(st);
                                                             if (timeGap > compareValue) return true;
-                                                            LogicMGMT.inst.AddTimeListener(compareValue - timeGap);         break;
+                                                            LogicMGMT.instLogicMgmt.AddTimeListener(compareValue - timeGap);         break;
 
                 case ConditionType.VirtualTimePassedBelow:
                                                             timeGap = (int)Time.time - GetInt(st);
                                                             if (timeGap < compareValue) {
-                                                                LogicMGMT.inst.AddTimeListener(compareValue - timeGap);
+                                                                LogicMGMT.instLogicMgmt.AddTimeListener(compareValue - timeGap);
                                                                 return true;
                                                             }
                                                                                                                             break;
                 case ConditionType.RealTimePassedAbove:
                                                             timeGap = (LogicMGMT.RealTimeNow() - GetInt(st));
                                                             if (timeGap > compareValue) return true;
-                                                                LogicMGMT.inst.AddTimeListener(compareValue - timeGap);     break;
+                                                                LogicMGMT.instLogicMgmt.AddTimeListener(compareValue - timeGap);     break;
 
                 case ConditionType.RealTimePassedBelow:
                                                             timeGap = (LogicMGMT.RealTimeNow() - GetInt(st));
                                                             if (timeGap < compareValue) {
-                                                                LogicMGMT.inst.AddTimeListener(compareValue - timeGap);
+                                                                LogicMGMT.instLogicMgmt.AddTimeListener(compareValue - timeGap);
                                                                 return true;
                                                             }                                                               break;
 

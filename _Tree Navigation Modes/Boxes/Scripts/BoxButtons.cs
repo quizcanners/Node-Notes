@@ -142,15 +142,7 @@ namespace NodeNotes_Visual {
                     UpdateCurrentNodeGroupVisibilityAround(node, previous);
 
                     _firstFree = 0;
-
-                    NodeNotesGradientController.instance.LoadConfigFor(node);
-                    AmbientSoundsMixerMgmt.instance.LoadConfigFor(node);
-                    RayRenderingManager.instance.LoadConfigFor(node);
-
-                    var rtx = RayRenderingManager.instance;
-
-                    rtx.playLerpAnimation = false;
-
+                    
                     /*if (rtx)
                     {
                         Node iteration = node;
@@ -514,14 +506,12 @@ namespace NodeNotes_Visual {
         
         public override bool Decode(string tg, string data)
         {
-            switch (tg)
+            /*switch (tg)
             {
-                // DEPRECATED
-                case "rtx": data.DecodeInto(out RayRenderingManager.instance.perNodeConfigs); break;
-                case "bg": data.DecodeInto(out NodeNotesGradientController.instance.perNodeConfigs); break;
                 default: return true;
             }
-            return false;
+            return false;*/
+            return true;
         }
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized();
