@@ -332,7 +332,6 @@ namespace NodeNotes {
 
         public void SaveAll()
         {
-
             users.SaveUser();
 
             if (CurrentNode != null)

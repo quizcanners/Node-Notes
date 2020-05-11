@@ -246,13 +246,11 @@ namespace NodeNotes
         public void SaveToFile() {
 
             if (AuthoringAStory) {
-                //Debug.Log("Saving {0} to resources".F(BookName));
                 this.SaveToResources(Shortcuts.ProjectName, this.BookFolder(), BookName);
                 QcUnity.RefreshAssetDatabase();
             }
             else
             {
-                //Debug.Log("Saving {0} to perisstent ".F(NameForPEGI));
                 this.SaveToPersistentPath(this.BookFolder(), NameForPEGI);
             }
         }

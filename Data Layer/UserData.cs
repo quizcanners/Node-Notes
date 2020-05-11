@@ -184,8 +184,9 @@ namespace NodeNotes {
                     using (loopLock.Lock()) {
                         Shortcuts.CurrentNode = value;
                     }
-                } else 
-                    Debug.LogError("Shouldn't have Loops here anymore");
+                } else
+                    _currentNode = value;
+                //Debug.LogError("Shouldn't have Loops here anymore");
             }
         }
 
@@ -278,13 +279,6 @@ namespace NodeNotes {
             if (nextBook == null)
                 Debug.LogError("Next book is null");
             
-           /* if (bookMarks.Count == 0) {
-                if (_currentNode != null)
-                    startingPoint = _currentNode.parentBook.NameForPEGI;
-                else 
-                    startingPoint = nextBook.NameForPEGI;
-            }*/
-
             if (_currentNode != null && _currentNode.parentBook == nextBook)
                 return;
             
@@ -298,9 +292,8 @@ namespace NodeNotes {
                 int ind = bookMarks.IndexOf(bMarkForNextBook);
 
                 if (TrySetCurrentNode(nextBook, bMarkForNextBook.nodeIndex))
-                {
                     bookMarks = bookMarks.GetRange(0, ind);
-                } else
+                else
                     Debug.LogError( "Need to implement default (HUB) node" );
             }
         }

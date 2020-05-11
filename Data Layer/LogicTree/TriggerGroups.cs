@@ -17,6 +17,8 @@ namespace QcTriggerLogic {
 
         public readonly UnNullableCfg<UnNullableCfgLists<Values>> taggedInts = new UnNullableCfg<UnNullableCfgLists<Values>>();
 
+        public string authorName;
+
         private string _name = "Unnamed_Triggers";
         private int _index;
 
@@ -85,7 +87,8 @@ namespace QcTriggerLogic {
             .Add_IfNotDefault("t", _triggers)
             .Add("br", _browsedGroup)
             .Add_IfTrue("show", _showInInspectorBrowser)
-            .Add("last", _lastUsedTrigger);
+            .Add("last", _lastUsedTrigger)
+            .Add_String("auth", authorName);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
@@ -101,6 +104,7 @@ namespace QcTriggerLogic {
                 case "br": _browsedGroup = data.ToInt(); break;
                 case "show": _showInInspectorBrowser = data.ToBool(); break;
                 case "last": _lastUsedTrigger = data.ToInt(); break;
+                case "auth": authorName = data; break;
                 default: return false;
             }
             return true;
@@ -187,11 +191,9 @@ namespace QcTriggerLogic {
             var changed = false;
 
             if (_inspectedItems == -1) {
-
-
+                
                 changed |= "{0} : ".F(_index).edit(50, ref _name).nl();
-
-
+                
                 "Share:".write("Paste message full with numbers and lost of ' | ' symbols into the first line or drop file into second" ,50);
                 
                 string data;
@@ -284,6 +286,8 @@ namespace QcTriggerLogic {
         public TriggerGroup() {
             _index = UnNullableCfg<TriggerGroup>.indexOfCurrentlyCreatedUnnulable;
         }
+
+
     }
 
 
