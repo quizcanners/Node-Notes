@@ -21,6 +21,8 @@ namespace NodeNotes
 
         private Base_Node this[int ind] => allBaseNodes[ind];
 
+        public override NodeBook AsLoadedBook => this;
+        
         public void Register(Base_Node node) {
             if (node != null) {
 
@@ -108,13 +110,13 @@ namespace NodeNotes
 
                 if (!subNode.InspectingSubNode) {
 
-                    "Change".select(ref replacingAuthor, Shortcuts.users.users);
+                    "Change".select(ref replacingAuthor, Shortcuts.users.all);
 
-                    if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.users.Count &&
-                        !Shortcuts.users.users[replacingAuthor].Equals(authorName)
+                    if (replacingAuthor != -1 && replacingAuthor < Shortcuts.users.all.Count &&
+                        !Shortcuts.users.all[replacingAuthor].Equals(authorName)
                         && icon.Replace.ClickConfirm("repAu",
                             "Changing an author may break links to this book from other books."))
-                        authorName = Shortcuts.users.users[replacingAuthor];
+                        authorName = Shortcuts.users.all[replacingAuthor];
                 }
 
                 pegi.nl();
@@ -150,8 +152,11 @@ namespace NodeNotes
                 edited = ind;
 
             if (icon.Save.Click("Save book (Also offloads RAM)"))
-                Shortcuts.books.all.Offload(this);
+                this.Offload();
 
+            if (this.EditedByCurrentUser() && icon.Undo.ClickConfirm("ldBk", "This will reaload your Book from resources"))
+                this.Reload();
+            
             if (icon.Email.Click("Send this Book to somebody via email."))
                 this.EmailData("Book {0} ".F(subNode), "Take a look at my Node Book");
             
@@ -254,12 +259,9 @@ namespace NodeNotes
 
         public bool TryLoad(IBookReference reff) {
 
-            if (reff.EditedByCurrentUser() && Application.isEditor) {
-                //Debug.Log("Loading {0} from resources".F(reff.BookName));
+            if (reff.EditedByCurrentUser() && Application.isEditor) 
                 return this.TryLoadFromResources(reff.BookFolder(), reff.BookName);
-            }
-
-            //Debug.Log("Loading {0} from persistant because:{1} != {2}".F(reff.BookName, reff.AuthorName, Shortcuts.usersData.current.Name));
+            
             return this.LoadFromPersistentPath(reff.BookFolder(), reff.BookName);
 
         }

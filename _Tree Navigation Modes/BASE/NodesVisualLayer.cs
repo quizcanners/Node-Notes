@@ -38,6 +38,8 @@ namespace NodeNotes_Visual
 
         #region Presentation Modes
 
+        private List<ILinkedLerping> modesAsLinkedLeprs = new List<ILinkedLerping>();
+
         public List<PresentationMode> presentationControllers = new List<PresentationMode>();
 
         public static PresentationMode _selectedController;
@@ -100,14 +102,15 @@ namespace NodeNotes_Visual
         }
 
         #endregion
-        
+
         #region Presentation Systems
+
+        private List<ILinkedLerping> systemAsLinkedLeprs = new List<ILinkedLerping>();
 
         [SerializeField] protected List<PresentationSystemsAbstract> presentationSystems;
         //public Dictionary<string, string> presentationSystemsConfigs = new Dictionary<string, string>();
 
         public Dictionary<string, PresentationSystemConfigurations> presentationSystemPerNodeConfigs = new Dictionary<string, PresentationSystemConfigurations>();
-
 
         #endregion
 
@@ -149,7 +152,7 @@ namespace NodeNotes_Visual
                     PresentationSystemConfigurations cfg;
                     if (presentationSystemPerNodeConfigs.TryGetValue(system.ClassTag, out cfg))
                         system.Decode(cfg.GetConfigFor(node));
-                    else
+                    else 
                         system.Decode("");
                 }
             }
@@ -203,7 +206,8 @@ namespace NodeNotes_Visual
         private int _inspectedDebugItem = -1;
         private int _inspectedSingleton = -1;
         private int _inspectedNodeStuff = -1;
-       
+        private int _inspectedPresSysCfg = -1;
+
         public override bool Inspect() {
 
             if (gameNode != null) {
@@ -331,9 +335,19 @@ namespace NodeNotes_Visual
                             pegi.editBig(ref _testDownloadedCode);
                     }
                 }
+
+                if ("Presentation System Cfgs".enter(ref _inspectedDebugItem, 6).nl())
+                {
+                    "Cfgs".edit_Dictionary_Values(presentationSystemPerNodeConfigs, ref _inspectedPresSysCfg).nl();
+                }
+
                 
+
                 if (_inspectedDebugItem == -1)
                 {
+
+                    "Lerp by {0}, portion: {1}".F(_ld.dominantParameter, _ld.MinPortion).nl();    
+
                     "Playtime UI".toggleIcon(ref Shortcuts.showPlaytimeUI).nl();
 
                     if ("Encode / Decode Test".Click(ref changed))
@@ -370,19 +384,6 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Encode & Decode
-        /*
-        private void DECODEPresentationSystem(PresentationSystemsAbstract system)
-        {
-            string data;
-            if (system && presentationSystemsConfigs.TryGetValue(system.ClassTag, out data))
-                data.DecodeInto(out system.perNodeConfigs);
-        }*/
-
-       /* private void EncodePresentationSystem(PresentationSystemsAbstract system)
-        {
-            if (system)
-                presentationSystemsConfigs[system.ClassTag] = system.perNodeConfigs.Encode().ToString();
-        }*/
 
         public override CfgEncoder EncodePerBookData()
         {
@@ -431,8 +432,10 @@ namespace NodeNotes_Visual
             DECODEPresentationSystem(RayRenderingManager.instance);*/
 
         }
-        
+
         #endregion
+
+        private LerpData _ld = new LerpData();
 
         protected override void DerivedUpdate() {
 
@@ -443,6 +446,14 @@ namespace NodeNotes_Visual
                 Application.Quit();
                 Debug.Log("Quit click");
             }
+
+            _ld.Reset();
+
+            modesAsLinkedLeprs.Portion(_ld);
+            systemAsLinkedLeprs.Portion(_ld);
+
+            modesAsLinkedLeprs.Lerp(_ld);
+            systemAsLinkedLeprs.Lerp(_ld);
         }
 
         protected override void OnDisable() {
@@ -462,7 +473,13 @@ namespace NodeNotes_Visual
                 if (gc) gc.Initialize();
 
             foreach (var script in presentationSystems)
+            {
                 script.ManagedOnEnable();
+
+                var asLerp = script as ILinkedLerping;
+                if (asLerp!= null)
+                    systemAsLinkedLeprs.Add(asLerp);
+            }
 
 
             Shortcuts.visualLayer = this;
@@ -470,9 +487,15 @@ namespace NodeNotes_Visual
             base.OnEnable();
             
             shortcuts.Initialize();
-            
+
             foreach (var bg in presentationControllers)
+            {
                 bg.ManagedOnInitialize();
+
+                var asLerp = bg as ILinkedLerping;
+                if (asLerp != null)
+                    modesAsLinkedLeprs.Add(asLerp);
+            }
 
         }
 
@@ -487,92 +510,12 @@ namespace NodeNotes_Visual
 
             return changed;
         }
+
+
+  
     }
 
 
-    [Serializable]
-    public class PoolSimple<T>: IPEGI where T : Component {
-
-        private ListMetaData activeList;
-        public List<T> active = new List<T>();
-        public List<T> disabled = new List<T>();
-        public T prefab;
-
-        public IEnumerator<T> GetEnumerator() {
-            foreach (var i in active)
-                yield return i;
-        }
-
-        public void DeleteAll() {
-
-            foreach (var el in active)
-                el.gameObject.DestroyWhatever();
-
-            foreach (var el in disabled)
-                el.gameObject.DestroyWhatever();
-                
-            active.Clear();
-            disabled.Clear();
-
-        }
-
-        public void Disable(T obj) {
-            active.Remove(obj);
-            obj.gameObject.SetActive(false);
-            disabled.Add(obj);
-        }
-
-        public void Disable(bool disableFirst = true)
-        {
-            if (active.Count > 0)
-            {
-                if (disableFirst)
-                    Disable(active[0]); 
-                else
-                    Disable(active[active.Count - 1]); 
-            }
-        }
-
-        public T GetOne(Transform parent, bool insertFirst = false) {
-
-            T toReturn;
-
-            if (disabled.Count > 0) {
-                 toReturn = disabled[0];
-                 disabled.RemoveAt(0);
-            }
-            else
-                toReturn = Object.Instantiate(prefab, parent);
-            
-            if (insertFirst)
-                active.Insert(0, toReturn);
-            else 
-                active.Add(toReturn);
-
-            toReturn.gameObject.SetActive(true);
-
-            return toReturn;
-        }
-
-        public bool Inspect() {
-            var changed = false;
-
-            "Prefab".edit(ref prefab).nl(ref changed);
-            
-            "Inactive: {0};".F(disabled.Count).writeHint();
-            
-            activeList.edit_List_UObj(ref active).nl(ref changed);
-                        
-            return changed;
-        }
-
-        public PoolSimple (string name) {
-            activeList = new ListMetaData(name, true, true, showAddButton: false);
-
-        }
-
-        public int Count => active.Count;
-    }
 
 
 }

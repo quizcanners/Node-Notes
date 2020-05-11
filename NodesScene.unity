@@ -15,7 +15,7 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 0
-  m_FogColor: {r: 0.458, g: 0.843, b: 1, a: 1}
+  m_FogColor: {r: 1, g: 1, b: 1, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.01
   m_LinearFogStart: 0
@@ -559,7 +559,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 451316989}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.488629, y: 1.228054, z: -8.485108}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1868816457}
@@ -1958,23 +1958,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e801a3cea27a8ca4598ef3a7884fe7ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inspectedItems: -1
-  nestedReferences: []
   inspectedTriggerGroup: -1
   tmpIndex: 3
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   mainCam: {fileID: 0}
+  canvas: {fileID: 806629722}
+  presentationControllers:
+  - {fileID: 1274019441}
+  - {fileID: 1699581656}
   presentationSystems:
   - {fileID: 350147523}
   - {fileID: 991294067}
   - {fileID: 1290433479}
-  canvas: {fileID: 806629722}
-  painterCamera: {fileID: 0}
   gameNodeControllers:
   - {fileID: 695423275}
-  presentationControllers:
-  - {fileID: 1274019441}
-  - {fileID: 1699581656}
 --- !u!4 &1828850218
 Transform:
   m_ObjectHideFlags: 0
@@ -2005,7 +2002,7 @@ GameObject:
   - component: {fileID: 1868816458}
   - component: {fileID: 1868816459}
   m_Layer: 0
-  m_Name: Camera
+  m_Name: FPS Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2019,7 +2016,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868816456}
   m_LocalRotation: {x: 0.015116997, y: -0.028098993, z: 0.00042499995, w: 0.99949074}
-  m_LocalPosition: {x: 0.056156516, y: 0.030242443, z: -0.9979639}
+  m_LocalPosition: {x: 0.05615652, y: 0.030242482, z: -0.99796385}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 671179444}
@@ -2235,6 +2232,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Square Nodes
+      objectReference: {fileID: 0}
+    - target: {fileID: 2640360523645601909, guid: 04aaaf59650b75448962b443837f6739,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2640360523645601911, guid: 04aaaf59650b75448962b443837f6739,
         type: 3}

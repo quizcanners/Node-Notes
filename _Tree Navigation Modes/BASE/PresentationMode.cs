@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual {
 
-    public abstract class PresentationMode : ComponentCfg, IManageFading, IPEGI, IGotClassTag
+    public abstract class PresentationMode : ComponentCfg, IManageFading, IPEGI, IGotClassTag, ILinkedLerping
     {
         #region Tagged Types MGMT
         public abstract string ClassTag { get;  }
@@ -31,7 +31,8 @@ namespace NodeNotes_Visual {
         public abstract void OnBeforeNodeSet(Node node);
         
         public virtual CfgEncoder EncodePerBookData() => new CfgEncoder();
-
+        public abstract void Portion(LerpData ld);
+        public abstract void Lerp(LerpData ld, bool canSkipLerp);
     }
 
 }

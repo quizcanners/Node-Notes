@@ -7,6 +7,8 @@ namespace NodeNotes {
     [DerivedList(typeof(NodeBook), typeof(NodeBook_OffLoaded))]
     public class NodeBook_Base : AbstractKeepUnrecognizedCfg, IGotDisplayName, IGotName, IBookReference {
 
+        public virtual NodeBook AsLoadedBook => null;
+
         public const string BooksRootFolder = "Books";
 
         public string authorName = "Author Name";

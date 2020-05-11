@@ -12,7 +12,7 @@ namespace NodeNotes {
     public class UsersData : IPEGI
     {
         
-        public List<string> users = new List<string>();
+        public List<string> all = new List<string>();
 
         public CurrentUser current = new CurrentUser();
 
@@ -28,8 +28,8 @@ namespace NodeNotes {
 
         public void SaveUser()
         {
-            if (!users.Contains(current.Name))
-                users.Add(current.Name);
+            if (!all.Contains(current.Name))
+                all.Add(current.Name);
             current.SaveToPersistentPath(_usersFolder, current.Name);
         }
 
@@ -38,20 +38,20 @@ namespace NodeNotes {
             Shortcuts.CurrentNode = null;
 
             DeleteUser_File(current.Name);
-            if (users.Count > 0)
-                LoadUser(users[0]);
+            if (all.Count > 0)
+                LoadUser(all[0]);
         }
 
         void DeleteUser_File(string uname)
         {
             QcFile.Delete.FromPersistentFolder(_usersFolder, uname);
-            if (users.Contains(uname))
-                users.Remove(uname);
+            if (all.Contains(uname))
+                all.Remove(uname);
         }
 
         void CreateUser(string uname)
         {
-            if (!users.Contains(uname))
+            if (!all.Contains(uname))
             {
                 SaveUser();
 
@@ -60,7 +60,7 @@ namespace NodeNotes {
                     Name = uname
                 };
 
-                users.Add(uname);
+                all.Add(uname);
             }
             else Debug.LogError("User {0} already exists".F(uname));
         }
@@ -93,11 +93,11 @@ namespace NodeNotes {
         {
             var changed = false;
             
-                if (users.Count > 1 && icon.Delete.ClickConfirm("delUsr", "Are you sure you want to delete this User?"))
+                if (all.Count > 1 && icon.Delete.ClickConfirm("delUsr", "Are you sure you want to delete this User?"))
                     DeleteUser();
 
                 string usr = current.Name;
-                if (pegi.select(ref usr, users))
+                if (pegi.select(ref usr, all))
                 {
                     SaveUser();
                     LoadUser(usr);
@@ -115,7 +115,7 @@ namespace NodeNotes {
 
                 if (_tmpUserName.Length <= 3)
                     "Too short".writeHint();
-                else if (users.Contains(_tmpUserName))
+                else if (all.Contains(_tmpUserName))
                     "Enter a new name to Add/Rename user".writeHint();
                 else
                 {
@@ -155,7 +155,26 @@ namespace NodeNotes {
         static Node _currentNode;
 
         LoopLock loopLock = new LoopLock();
-        LoopLock loopLockLocal = new LoopLock();
+
+        public void FinalizeNodeChange(Node value)
+        {
+            bool bookChanged = _currentNode != null && (value == null || (_currentNode.parentBook != value.parentBook));
+
+            if (isADeveloper && Application.isPlaying && bookChanged)
+                CurrentNode.parentBook.UpdatePerBookConfigs();
+
+            if (value == null)
+            {
+                SaveBookMark();
+                _currentNode = null;
+                return;
+            }
+
+            if (_currentNode == null || bookChanged)
+                SetNextBook(value.parentBook);
+
+            _currentNode = value;
+        }
 
         public Node CurrentNode {
             get => _currentNode;
@@ -165,31 +184,8 @@ namespace NodeNotes {
                     using (loopLock.Lock()) {
                         Shortcuts.CurrentNode = value;
                     }
-
-                }  else  {
-
-                    if (loopLockLocal.Unlocked) {
-                        using (loopLockLocal.Lock())
-                        {
-
-                            bool bookChanged = _currentNode != null && (value == null || (_currentNode.parentBook != value.parentBook));
-
-                            if (isADeveloper && Application.isPlaying && bookChanged)
-                                CurrentNode.parentBook.UpdatePerBookConfigs();
-
-                            if (value == null) {
-                                SaveBookMark();
-                                _currentNode = null;
-                                return;
-                            }
-
-                            if (_currentNode == null || bookChanged)
-                                SetNextBook(value.parentBook);
-                        }
-                    }
-
-                    _currentNode = value;
-                }
+                } else 
+                    Debug.LogError("Shouldn't have Loops here anymore");
             }
         }
 

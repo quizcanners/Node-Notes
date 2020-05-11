@@ -61,7 +61,10 @@ namespace NodeNotes {
     
     public static class BookOffloadConversionExtensions {
         
-        public static NodeBook_OffLoaded Offload (this List<NodeBook_Base> list, NodeBook book){
+        public static NodeBook_OffLoaded Offload (this NodeBook book){
+
+            var list = Shortcuts.books.all;
+
             if (book != null && list.Contains(book)) {
                 int ind = list.IndexOf(book);
                 book.SaveToFile();
@@ -75,10 +78,39 @@ namespace NodeNotes {
             return null;
         }
 
+        public static NodeBook Reload(this NodeBook book)
+        {
+            var list = Shortcuts.books.all; //List<NodeBook_Base> list,
+
+            if (book != null && list.Contains(book))
+            {
+                var ind = list.IndexOf(book);
+                var newBook = new NodeBook();
+
+                if (newBook.TryLoad(book))
+                {
+                    list[ind] = newBook;
+
+                    if (Shortcuts.CurrentNode!= null && Shortcuts.CurrentNode.parentBook == book)
+                    {
+                        var index = Shortcuts.CurrentNode.IndexForPEGI;
+                        Shortcuts.users.current.ExitCurrentBook();
+                        if (newBook.allBaseNodes[index].AsNode != null)
+                        {
+                            Shortcuts.users.current.CurrentNode = newBook.allBaseNodes[index].AsNode;
+                        }
+                    }
+
+                    return newBook;
+                }
+
+            }
+            else Debug.LogError("List does not contain the book you are loading");
+            return null;
+        }
+
         public static NodeBook LoadBook (this NodeBook_OffLoaded offloaded) {
-
-           
-
+            
             var list = Shortcuts.books.all; //List<NodeBook_Base> list,
 
             if (offloaded != null && list.Contains(offloaded)) {

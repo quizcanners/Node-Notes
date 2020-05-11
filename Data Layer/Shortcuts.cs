@@ -195,14 +195,14 @@ namespace NodeNotes {
 
                         if (expectingLoopCall) {
                             expectingLoopCall = false;
-                            users.current.CurrentNode = value;
+                            users.current.FinalizeNodeChange(value);
                         }
                     }
                 }
                 else
                 {
                     expectingLoopCall = false;
-                    users.current.CurrentNode = value;
+                    users.current.FinalizeNodeChange(value);
                 }
             }
         }
@@ -341,21 +341,30 @@ namespace NodeNotes {
             QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
         }
 
+        public override CfgEncoder Encode()
+        {
+            for (int i=0; i<books.all.Count; i++)
+            {
+                var book = books.all[i].AsLoadedBook;
+                if (book != null && book.EditedByCurrentUser())
+                    book.Offload();
+            }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
-            .Add("trigs", TriggerGroup.all)
-            .Add("bkSrv", books)
-            .Add_IfTrue("ptUI", showPlaytimeUI)
-            .Add("us", users.users)
-            .Add_String("curUser", users.current.Name);
-        
+            return this.EncodeUnrecognized()
+                .Add("trigs", TriggerGroup.all)
+                .Add("bkSrv", books)
+                .Add_IfTrue("ptUI", showPlaytimeUI)
+                .Add("us", users.all)
+                .Add_String("curUser", users.current.Name);
+        }
+
         public override bool Decode(string tg, string data)
         {
             switch (tg)  {
                 case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "bkSrv": books.Decode(data); break;
                 case "ptUI": showPlaytimeUI = data.ToBool(); break;
-                case "us": data.Decode_List(out users.users); break;
+                case "us": data.Decode_List(out users.all); break;
                 case "curUser": users.LoadUser(data); break;
                // case "books": data.Decode_List(out books.all, this); break;
                 default: return false;

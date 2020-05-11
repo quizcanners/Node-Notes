@@ -33,73 +33,39 @@ namespace NodeNotes_Visual {
         LinkedLerp.ColorValue textColor = new LinkedLerp.ColorValue("TextColor");
         LinkedLerp.FloatValue textFade = new LinkedLerp.FloatValue( 0, 2, "Text Lerp");
         
-        private LerpData ld = new LerpData();
-
         bool dirty;
+        bool needUpdate;
+     
 
         public void Update()
         {
 
-            bool needUpdate = false;
-            
-            if (isFadingAway) {
-                if (pTextMeshPro.enabled) {
+            if (isFadingAway && pTextMeshPro.enabled) {
 
-                    float tfd = textFade.CurrentValue;
+                float tfd = textFade.CurrentValue;
 
-                    tfd = LerpUtils.LerpBySpeed(tfd, tfd > 0.5f ? 1f : 0f, 2f);
+                tfd = LerpUtils.LerpBySpeed(tfd, tfd > 0.5f ? 1f : 0f, 2f);
 
-                    needUpdate = true;
-                    
-                    if (tfd == 0 || tfd == 1) {
-                        pTextMeshPro.text = "";
-                        pTextMeshPro.enabled = false;
-                    }
-
-                    textFade.CurrentValue = tfd;
-
+                needUpdate = true;
+                
+                if (tfd == 0 || tfd == 1) {
+                    pTextMeshPro.text = "";
+                    pTextMeshPro.enabled = false;
                 }
+
+                textFade.CurrentValue = tfd;
+
+                
             }
-            else
+
+            if (needUpdate)
             {
-
-                bool gotAnotherText = targetText != null;
-
-                if (gotAnotherText || dirty) {
-
-                    ld.Reset();
-                    
-                    textFade.Portion(ld, gotAnotherText ? 1 : 0.5f);
-                    textColor.Portion(ld, activeTexts.textColor);
-                    
-                    textColor.Lerp(ld);
-                    textFade.Lerp(ld);
-                    
-                    needUpdate = true;
-
-                    dirty = ld.Portion() < 1;
-
-                    if (gotAnotherText && textFade.CurrentValue == 1) {
-                        pTextMeshPro.text = targetText;
-                        targetText = null;
-                        textFade.CurrentValue = 0;
-                    }
-
-                } else if  (textFade.CurrentValue < 0.5f) {
-
-                    textFade.CurrentValue = LerpUtils.LerpBySpeed(textFade.CurrentValue, 0.5f, 1f);
-                    needUpdate = true;
-
-                }
-            }
-
-            if (needUpdate) 
                 pTextMeshPro.color = textColor.CurrentValue.Alpha(textFade.CurrentValue);
-            
+                needUpdate = false;
+            }
 
         }
-
-
+        
         public void UpdateText()
         {
 
@@ -226,6 +192,51 @@ namespace NodeNotes_Visual {
             currentNode = node.AsNode;
         }
 
+        #region Linked Lerp
+
+        private bool gotAnotherText;
+
+        public override void Portion(LerpData ld)
+        {
+            if (!isFadingAway)
+            {
+                gotAnotherText = targetText != null;
+
+                if (gotAnotherText || dirty)
+                {
+                    textFade.Portion(ld, gotAnotherText ? 1 : 0.5f);
+                    textColor.Portion(ld, activeTexts.textColor);
+                }
+            }
+
+        }
+
+        public override void Lerp(LerpData ld, bool canSkipLerp)
+        {
+            if (!isFadingAway)
+            {
+                if (gotAnotherText || dirty)
+                {
+                    textColor.Lerp(ld);
+                    textFade.Lerp(ld);
+
+                    dirty = ld.Portion() < 1;
+
+                    if (gotAnotherText && textFade.CurrentValue == 1)
+                    {
+                        pTextMeshPro.text = targetText;
+                        targetText = null;
+                        textFade.CurrentValue = 0;
+                    }
+                }
+                else if (textFade.CurrentValue < 0.5f)
+                    textFade.CurrentValue = LerpUtils.LerpBySpeed(textFade.CurrentValue, 0.5f, 1f);
+                   
+                needUpdate = true;
+            }
+        }
+
+        #endregion
 
         #region Inspector
 
@@ -254,8 +265,7 @@ namespace NodeNotes_Visual {
 
             return changed;
         }
-
-     
+        
         #endregion
     }
     

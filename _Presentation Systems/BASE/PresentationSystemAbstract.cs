@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace NodeNotes_Visual
 {
-    public class PresentationSystemConfigurations : ICfg
+    public class PresentationSystemConfigurations : ICfg, IPEGI
     {
 
         public Countless<string> perNodeConfigs = new Countless<string>();
@@ -59,9 +59,22 @@ namespace NodeNotes_Visual
 
         #region Inspector
 
-        public bool InspectFor(Node node, PresentationSystemsAbstract presentationSystem, bool saveOnSchange = false)
+        public bool Inspect()
+        {
+            var changed = false;
+
+            "Configs: {0}".F(perNodeConfigs.CountForInspector()).nl();
+
+            perNodeConfigs.Inspect().nl();
+
+            return changed;
+        }
+
+        public bool InspectFor(Node node, PresentationSystemsAbstract presentationSystem)
         {
             pegi.nl();
+
+            bool saveOnSchange = presentationSystem.SaveOnEdit;
 
             if (node == null)
                 "Node is null".writeWarning();
@@ -75,29 +88,26 @@ namespace NodeNotes_Visual
 
                 string cfg;
 
+                "Configs: {0}".F(perNodeConfigs.CountForInspector()).nl();
+
                 if (perNodeConfigs.TryGet(index, out cfg))
                 {
-                    if ("Clear Music Config".ClickConfirm("clM").nl())
+                    if ("Clear Config".ClickConfirm("clM").nl())
                         perNodeConfigs[index] = null;
                     else
                     {
                         if (!saveOnSchange && "Save {0} config for {1}".F(presentationSystem.ClassTag, node.GetNameForInspector()).Click().nl())
-                            perNodeConfigs[index] = Encode().ToString();
+                            perNodeConfigs[index] = presentationSystem.Encode().ToString();
                         
                         presentationSystem.Inspect().nl(ref changed);
                         
                         if (changed && saveOnSchange)
-                            perNodeConfigs[index] = Encode().ToString();
+                            perNodeConfigs[index] = presentationSystem.Encode().ToString();
                     }
                 }
-                else
-                {
-                    if ("+ Cfg override for {0} ".F(node.NameForPEGI).Click().nl())
-                    {
+                else if ("+ Cfg override for {0} ".F(node.NameForPEGI).Click().nl())
                         perNodeConfigs[index] = "";
-                    }
-                }
-
+                
                 return changed;
             }
 
@@ -125,6 +135,8 @@ namespace NodeNotes_Visual
             }
             return true;
         }
+
+
         #endregion
     }
 
@@ -136,6 +148,8 @@ namespace NodeNotes_Visual
         public abstract bool Inspect();
 
         public abstract string NameForDisplayPEGI();
+
+        public virtual bool SaveOnEdit => true;
 
         #region Encode & Decode
 

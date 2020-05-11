@@ -279,7 +279,9 @@ namespace NodeNotes_Visual {
                                        ((node.parentNode != null && node.Conditions_isVisible()) ||
                                         !Application.isPlaying));
 
-            bool currentNodeContains = (Shortcuts.CurrentNode != null && (node == Shortcuts.CurrentNode || Shortcuts.CurrentNode.Contains(node)));
+            var current = Shortcuts.CurrentNode;
+
+            bool currentNodeContains = (current != null && (node == current || current.Contains(node)));
 
             var shouldBeVisible = editingOrGotParent && currentNodeContains;
 
@@ -389,14 +391,12 @@ namespace NodeNotes_Visual {
         public override void FadeAway() {
 
             HideAll();
-
             editButton.gameObject.SetActive(false);
-
             isFading = true;
         }
 
         public override bool TryFadeIn() {
-
+           
             isFading = false;
             gameObject.SetActive(true);
             editButton.gameObject.SetActive(true);
@@ -405,40 +405,37 @@ namespace NodeNotes_Visual {
         
         private readonly LoopLock _loopLock = new LoopLock();
         
-        private float bgTransparency = 1;
-
         #region Lerping
-
-        private readonly LerpData _ld = new LerpData();
+        
         private LinkedLerp.FloatValue addButtonCourner = new LinkedLerp.FloatValue(0, 8);
 
-        void Update() {
+        public override void Portion(LerpData ld)
+        {
+            if (gameObject.activeSelf)
+            {
+                addButtonCourner.Portion(ld);
+                NodesPool.Portion(ld);
+                slidingButtons.Portion(ld);
+            }
+        }
 
-            var rtx = RayRenderingManager.instance;
-            _ld.Reset();
+        public override void Lerp(LerpData ld, bool canSkipLerp)
+        {
+            if (gameObject.activeSelf)
+            {
+                addButtonCourner.Lerp(ld);
+                NodesPool.Lerp(ld);
+                slidingButtons.Lerp(ld);
 
-            addButtonCourner.Portion(_ld);
-            NodesPool.Portion(_ld);
-            slidingButtons.Portion(_ld);
-            rtx.Portion(_ld);
+                addButton.SetCorner(1, addButtonCourner.CurrentValue);
 
-
-            addButtonCourner.Lerp(_ld);
-            NodesPool.Lerp(_ld);
-            slidingButtons.Lerp(_ld);
-            rtx.Lerp(_ld, false);
-
-            addButton.SetCorner(1, addButtonCourner.CurrentValue);
-
-            bgTransparency = LerpUtils.LerpBySpeed(bgTransparency, 0.05f + _ld.MinPortion * 0.95f, 1f);
-
-            NodeNotesGradientController.instance.bgTransparency.GlobalValue = bgTransparency;
-
-            if (!isFading) {
-                var col = MainCamera.backgroundColor;
-
-            } else if (_ld.Portion() == 1)
-                gameObject.SetActive(false);
+                if (!isFading)
+                {
+                    var col = MainCamera.backgroundColor;
+                }
+                else if (ld.Portion() == 1)
+                    gameObject.SetActive(false);
+            }
         }
 
         #endregion
@@ -487,9 +484,6 @@ namespace NodeNotes_Visual {
                     }
 
                     "Nodes Pool: {0}; First Free: {1}".F(NodesPool.Count, _firstFree).nl();
-
-                    "Lerp Data dom:{0}".F(_ld.dominantParameter).nl();
-
                 }
             }
 
@@ -515,7 +509,7 @@ namespace NodeNotes_Visual {
         }
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized();
-
+        
         #endregion
 
     }
