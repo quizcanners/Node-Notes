@@ -10,8 +10,6 @@ namespace NodeNotes {
 
         public static NodesVisualLayerAbstract InstAsNodesVisualLayer => instLogicMgmt as NodesVisualLayerAbstract;
 
-        public abstract bool InspectBackgroundTag(Node node);
-
         public Shortcuts shortcuts;
 
         public abstract Node CurrentNode { get; }
@@ -115,7 +113,7 @@ namespace NodeNotes {
 
     public interface INodeVisualPresentation : ICfg
     {
-        void OnSourceNodeChange(Base_Node node);
+        void OnSourceNodeUpdate(Base_Node node);
     }
 
 }

@@ -86,23 +86,27 @@ namespace NodeNotes
             pegi.nl();
 
             var changed = false;
-            
-            if (subNode._inspectedItems == -1 && !subNode.InspectingSubNode) {
 
-                if (_inspectedItems == -1 && icon.Share.foldout("Share options",ref _showShareOptions)) {
+            if (subNode._inspectedItems == -1 && !subNode.InspectingSubNode)
+            {
+
+                if (_inspectedItems == -1 && icon.Share.foldout("Share options", ref _showShareOptions))
+                {
 
                     string data = null;
-                    if (this.SendReceivePegi(subNode.name, "Books", out data)) {
+                    if (this.SendReceivePegi(subNode.name, "Books", out data))
+                    {
 
                         var tmp = new NodeBook();
                         tmp.Decode(data);
                         if (tmp.NameForPEGI == NameForPEGI) Shortcuts.books.AddOrReplace(tmp);
                     }
                 }
-                
+
                 "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref _inspectedItems, 1).nl(ref changed);
 
             }
+            else _inspectedItems = -1;
 
             if (_inspectedItems == -1) {
 

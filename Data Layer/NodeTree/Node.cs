@@ -240,8 +240,6 @@ namespace NodeNotes {
 
                 pegi.nl();
 
-                if (_inspectedItems == -1)
-                    NodesVisualLayerAbstract.InstAsNodesVisualLayer.InspectBackgroundTag(this).nl(ref changed);
             }
 
             return changed;

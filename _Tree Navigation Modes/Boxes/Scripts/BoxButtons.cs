@@ -456,12 +456,10 @@ namespace NodeNotes_Visual {
 
             if (Application.isPlaying && selectedNode)
             {
-
                 inspectedNode = selectedNode.source;
 
                 if (selectedNode.LevelArea && IsRendering && "Disable Renderers For Nodes".Click().nl())
                     IsRendering = false;
-
             }
             else
             {
@@ -513,46 +511,4 @@ namespace NodeNotes_Visual {
         #endregion
 
     }
-
-    public class BackgroundGradient: AbstractKeepUnrecognizedCfg, IPEGI {
-
-        public Color backgroundColorUp = Color.black;
-        public Color backgroundColorCenter = Color.black;
-        public Color backgroundColorDown = Color.black;
-
-        #region Encode & Decode
-        
-        public override bool Decode(string tg, string data)
-        {
-            switch (tg)
-            {
-                case "bgUp": backgroundColorUp = data.ToColor(); break;
-                case "bgc": backgroundColorCenter = data.ToColor(); break;
-                case "bgDwn": backgroundColorDown = data.ToColor(); break;
-                default: return false;
-            }
-
-            return true;
-        }
-
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
-            .Add("bgUp", backgroundColorUp)
-            .Add("bgc", backgroundColorCenter)
-            .Add("bgDwn", backgroundColorDown);
-        #endregion
-
-        #region Inspector
-        public override bool Inspect() {
-
-            var changed = false;
-
-            "Background Up".edit(ref backgroundColorUp).nl(ref changed);
-            "Background Center".edit(ref backgroundColorCenter).nl(ref changed);
-            "Background Down".edit(ref backgroundColorDown).nl(ref changed);
-
-            return changed;
-        }
-        #endregion
-    }
-
 }

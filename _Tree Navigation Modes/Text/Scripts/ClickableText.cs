@@ -36,7 +36,6 @@ namespace NodeNotes_Visual {
         bool dirty;
         bool needUpdate;
      
-
         public void Update()
         {
 
@@ -179,15 +178,13 @@ namespace NodeNotes_Visual {
             if (node != null) 
                 activeTexts.Decode(node.LinkTo(activeTexts));
 
-            NodeNotesGradientController.instance.SetTarget(activeTexts.gradient);
-            
             UpdateText();
 
         }
 
         public override void OnLogicUpdate() => UpdateText();
 
-        public void OnSourceNodeChange(Base_Node node)
+        public void OnSourceNodeUpdate(Base_Node node)
         {
             currentNode = node.AsNode;
         }
@@ -275,8 +272,6 @@ namespace NodeNotes_Visual {
 
         public Color linksColor = Color.blue;
         
-        public BackgroundGradient gradient = new BackgroundGradient();
-
         public Color textColor = Color.black;
 
         public List<TextChunkBase> textChunks = new List<TextChunkBase>();
@@ -296,7 +291,6 @@ namespace NodeNotes_Visual {
             {
                 case "tch": data.Decode_List(out textChunks, TextChunkBase.all); break;
                 case "lnkCol": linksColor = data.ToColor(); break;
-                case "g": gradient.Decode(data); break;
                 case "tx": textColor = data.ToColor(); break;
                 default: return false;
             }
@@ -307,7 +301,6 @@ namespace NodeNotes_Visual {
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add("tch", textChunks, TextChunkBase.all)
             .Add("lnkCol", linksColor)
-            .Add("g", gradient)
             .Add("tx", textColor);
         #endregion
         
@@ -374,9 +367,6 @@ namespace NodeNotes_Visual {
             {
                 "Text Color".edit(ref textColor).nl(ref changed);
                 "Link color".edit(ref linksColor).nl(ref changed);
-
-                gradient.Nested_Inspect().nl(ref changed);
-
             }
             else {
 
@@ -414,7 +404,7 @@ namespace NodeNotes_Visual {
             return changed;
         }
 
-        public void OnSourceNodeChange(Base_Node node) { }
+        public void OnSourceNodeUpdate(Base_Node node) { }
 
 
         #region Text Chunks

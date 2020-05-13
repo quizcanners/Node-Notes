@@ -183,23 +183,29 @@ namespace NodeNotes_Visual
             base.ResetInspector();
         }
 
-        private enum InspectedItem { CurrentNode = 2, Books = 4, Users = 5}
+        private enum InspectedItem { Triggers = 1, CurrentNode = 2, Books = 4, Users = 5}
 
-        protected override void InspectionTabs()
+
+        private int _inspectedItems = -1;
+        protected bool InspectionTabs()
         {
             var cn = Shortcuts.CurrentNode;
 
             if (cn != null) {
                 icon.State.toggle("[{0}] Current: {1} - {2}".
-                    F(Shortcuts.users.current.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector()), ref inspectedItems, (int)InspectedItem.CurrentNode);
+                    F(Shortcuts.users.current.bookMarks.Count, cn.parentBook.GetNameForInspector(), cn.GetNameForInspector()), ref _inspectedItems, (int)InspectedItem.CurrentNode);
             }
             else icon.InActive.write("No Active Node");
 
-            icon.Book.toggle("Node Books", ref inspectedItems, (int)InspectedItem.Books);
+            icon.Book.toggle("Node Books", ref _inspectedItems, (int)InspectedItem.Books);
 
-            icon.User.toggle("Users", ref inspectedItems, (int)InspectedItem.Users);
+            icon.User.toggle("Users", ref _inspectedItems, (int)InspectedItem.Users);
 
-            base.InspectionTabs();
+            icon.Condition.toggle("Trigger groups", ref _inspectedItems, (int)InspectedItem.Triggers);
+
+            icon.Debug.toggle("Close All", ref _inspectedItems, -1);
+
+            return false;
         }
 
         private int _inspectedBackground = -1;
@@ -208,7 +214,10 @@ namespace NodeNotes_Visual
         private int _inspectedNodeStuff = -1;
         private int _inspectedPresSysCfg = -1;
 
+
         public override bool Inspect() {
+
+            bool changed = false;
 
             if (gameNode != null) {
 
@@ -225,16 +234,63 @@ namespace NodeNotes_Visual
                     return gameNode.Nested_Inspect();
             }
 
-            bool changed = base.Inspect();
+            InspectionTabs().nl();
 
-            if (inspectedItems == (int) InspectedItem.CurrentNode)
+
+            if (_inspectedItems == (int) InspectedItem.Triggers)
+                base.Inspect().nl(ref changed);
+            
+
+            if (_inspectedItems == (int) InspectedItem.CurrentNode)
             {
-                if ("Visual Mode".conditional_enter(SelectedPresentationMode, ref _inspectedNodeStuff, 0).nl())
-                    SelectedPresentationMode.Nested_Inspect().changes(ref changed);
 
                 var source = CurrentNode;
+                
+                if (pegi.conditional_enter(source != null, ref _inspectedNodeStuff, 0))
+                {
+                    if (source.visualRepresentation == null)
+                    {
+                        "Node is not currently visualized".write();
 
-                int index = 1;
+                        if ("Force Show".Click("Hidden. Click to show visual representation."))
+                        {
+                            Shortcuts.visualLayer.Show(source);
+                        }
+                    }
+                    else if ("Force Hide".Click("Visible. Click To Hide Visual Representation."))
+                        Shortcuts.visualLayer.Hide(source);
+
+                    pegi.nl();
+
+                    pegi.Try_Nested_Inspect(source.visualRepresentation).nl();
+                } else 
+
+                if (CurrentNode != null)
+                {
+                    CurrentNode.NameForPEGI.write(PEGI_Styles.ListLabel);
+
+                    if (_inspectedNodeStuff != -1)
+                        pegi.nl();
+                }
+
+                pegi.nl();
+                
+                if (pegi.conditional_enter(SelectedPresentationMode, ref _inspectedNodeStuff, 1))
+                    SelectedPresentationMode.Nested_Inspect().changes(ref changed);
+
+                if (CurrentNode != null)
+                {
+                    if (_inspectedNodeStuff == -1)
+                    {
+                        "Tree Mode".write(100);
+                        if (PresentationMode.all.selectTypeTag(ref CurrentNode.visualStyleTag).changes(ref changed))
+                            SetPresentationMode(CurrentNode);
+                    }
+                }
+
+                pegi.nl();
+
+                int index = 2;
 
                 foreach (var system in presentationSystems)
                 {
@@ -262,13 +318,13 @@ namespace NodeNotes_Visual
 
             if (!shortcuts)
                 "Shortcuts".edit(ref shortcuts).nl(ref changed);
-            else if (inspectedItems == (int)InspectedItem.Books)
+            else if (_inspectedItems == (int)InspectedItem.Books)
                 shortcuts.Nested_Inspect().nl(ref changed);
 
-            if (inspectedItems == (int)InspectedItem.Users)
+            if (_inspectedItems == (int)InspectedItem.Users)
                 Shortcuts.users.Nested_Inspect(ref changed);
 
-            if (inspectedItems == -1)
+            if (_inspectedItems == -1)
             {
                 "Presentation Modes [For Node Tree]"
                     .enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDebugItem, 0)
@@ -499,20 +555,7 @@ namespace NodeNotes_Visual
 
         }
 
-        public override bool InspectBackgroundTag(Node node) {
 
-            var changed = false;
-
-            "Style (Inside)".write(110);
-
-            if (PresentationMode.all.selectTypeTag(ref node.visualStyleTag).nl(ref changed))
-                SetPresentationMode(node);
-
-            return changed;
-        }
-
-
-  
     }
 
 

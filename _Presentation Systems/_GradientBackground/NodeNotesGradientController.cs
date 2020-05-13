@@ -12,17 +12,17 @@ namespace NodeNotes_Visual {
 
         public static NodeNotesGradientController instance;
 
-        public BackgroundGradient targetGradient = new BackgroundGradient();
-
         private LinkedLerp.ShaderColorValueGlobal bgColUp = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_1");
         private LinkedLerp.ShaderColorValueGlobal bgColCnter = new LinkedLerp.ShaderColorValueGlobal("_BG_CENTER_COL");
         private LinkedLerp.ShaderColorValueGlobal bgColDown = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_2");
 
         public ShaderProperty.FloatValue bgTransparency = new ShaderProperty.FloatValue("_NodeNotes_Gradient_Transparency");
 
-        public void SetTarget(BackgroundGradient gradient)
+
+       
+
+        public void SetTarget()
         {
-            targetGradient = gradient;
             _lerpDone = false;
         }
 
@@ -39,9 +39,9 @@ namespace NodeNotes_Visual {
         }
 
         public void Portion(LerpData ld) {
-            bgColUp.Portion(ld, targetGradient.backgroundColorUp);
-            bgColCnter.Portion(ld, targetGradient.backgroundColorCenter);
-            bgColDown.Portion(ld, targetGradient.backgroundColorDown);
+            bgColUp.Portion(ld);
+            bgColCnter.Portion(ld);
+            bgColDown.Portion(ld);
         }
         #endregion
 
@@ -74,10 +74,14 @@ namespace NodeNotes_Visual {
         {
             var changed = false;
             
-            var crntGrad = targetGradient;
 
-            if (crntGrad.Nested_Inspect(ref changed))
-                SetTarget(crntGrad);
+            "Background Up".edit(ref bgColUp.targetValue).nl(ref changed);
+            "Background Center".edit(ref bgColCnter.targetValue).nl(ref changed);
+            "Background Down".edit(ref bgColDown.targetValue).nl(ref changed);
+
+
+            if (changed)
+                SetTarget();
                 
             if (changed)
                 _lerpDone = false;
@@ -90,21 +94,32 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Encode & Decode
-        public override CfgEncoder Encode()
-        {
-           return new CfgEncoder(); // For Gradient you can edit gradient config while not being inside a node. Maybe should change it at some point.
-        }
+       
 
         public override void Decode(string data)
         {
-            targetGradient.Decode(data);
+            base.Decode(data);
             _lerpDone = false;
         }
 
         public override bool Decode(string tg, string data)
         {
-            return false;
+            switch (tg)
+            {
+                case "bgUp": bgColUp.TargetValue = data.ToColor(); break;
+                case "bgc": bgColCnter.TargetValue = data.ToColor(); break;
+                case "bgDwn": bgColDown.TargetValue = data.ToColor(); break;
+                default: return false;
+            }
+
+            return true;
         }
+
+        public override CfgEncoder Encode() => new CfgEncoder()
+            .Add("bgUp", bgColUp.TargetValue)
+            .Add("bgc", bgColCnter.TargetValue)
+            .Add("bgDwn", bgColDown.TargetValue);
+
 
         #endregion
 

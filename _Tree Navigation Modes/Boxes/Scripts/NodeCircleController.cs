@@ -138,13 +138,13 @@ namespace NodeNotes_Visual {
             }
         }
 
-        readonly LoopLock _loopLock = new LoopLock();
+        //readonly LoopLock _loopLock = new LoopLock();
         
         public override bool Inspect() {
 
             var changed = false;
      
-            if (_loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
+            /*if (_loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
                 using (_loopLock.Lock()) {
                     if (pegi.Try_Nested_Inspect(source).changes(ref changed)) {
 
@@ -154,7 +154,7 @@ namespace NodeNotes_Visual {
                         Shortcuts.visualLayer.OnLogicVersionChange();
                     }
                 }
-            } else {
+            } else {*/
                 
                 var onPlayScreen = pegi.PaintingGameViewUI;
 
@@ -317,7 +317,7 @@ namespace NodeNotes_Visual {
                     if (!audioSource || seeDependencies)
                         "Aduio Source".edit(ref audioSource).nl(ref changed);
                 }
-            }
+           // }
             
             if (changed)
             {
@@ -896,9 +896,11 @@ namespace NodeNotes_Visual {
 
         }
 
-        public void OnSourceNodeChange(Base_Node node)
+        public void OnSourceNodeUpdate(Base_Node node)
         {
             source = node;
+            bgColor = ActiveConfig.targetColor;
+            OnShaderParametersChanged();
             SetDirty();
         }
 

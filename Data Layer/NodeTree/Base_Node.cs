@@ -47,7 +47,7 @@ namespace NodeNotes {
             if (!QcUnity.IsNullOrDestroyed_Obj(visualRepresentation))
             {
                 pegi.GameView.ShowNotification("Changing Node Type");
-                visualRepresentation.OnSourceNodeChange(this);
+                visualRepresentation.OnSourceNodeUpdate(this);
             }
             else
             {
@@ -65,7 +65,7 @@ namespace NodeNotes {
 
         protected static NodesVisualLayerAbstract VisualLayer => Shortcuts.visualLayer;
 
-        public INodeVisualPresentation visualRepresentation;
+        public INodeVisualPresentation visualRepresentation;            // Probably should move this out of here
         public INodeVisualPresentation previousVisualRepresentation;
         public string configForVisualRepresentation;
 
@@ -282,27 +282,9 @@ namespace NodeNotes {
                 pegi.nl();
                     
                 Inspect_AfterNamePart().nl(ref changed);
-
-                if (_inspectedItems == -1)
-                {
-                    if (visualRepresentation == null)
-                    {
-                        "Node is not currently visualized".write();
-
-                        if ("Show".Click("Hidden. Click to show visual representation."))
-                        {
-                            Shortcuts.visualLayer.Show(this);
-                        }
-                    } else if ("Hide".Click("Visible. Click To Hide Visual Representation."))
-                        Shortcuts.visualLayer.Hide(this);
-                }
-            
-
-                "Visual".TryEnter_Inspect(visualRepresentation, ref _inspectedItems, 21).nl_ifFolded(ref changed);
-                    
+              
                 if ("Conditions & Results".enter(ref _inspectedItems, (int)InspectItems.Logic).nl())
                 {
-
                     _visCondition.enter_Inspect(ref inspectedLogic, 0).nl_ifFolded(ref changed);
 
                     _eblCondition.enter_Inspect(ref inspectedLogic, 1).nl_ifFolded(ref changed);
@@ -331,7 +313,6 @@ namespace NodeNotes {
             visualRepresentation = visualLayer;
             previousVisualRepresentation = visualLayer;
             return configForVisualRepresentation;
-
         }
 
         public virtual void Unlink(CfgEncoder data) {
