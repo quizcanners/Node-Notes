@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using PlayerAndEditorGUI;
-using QcTriggerLogic;
 using QuizCannersUtilities;
 using UnityEngine;
 
@@ -26,7 +25,7 @@ namespace NodeNotes {
             _tmpUserName = uname;
         }
 
-        public void SaveUser()
+        public void SaveCurrentToPersistentPath()
         {
             if (!all.Contains(current.Name))
                 all.Add(current.Name);
@@ -53,7 +52,7 @@ namespace NodeNotes {
         {
             if (!all.Contains(uname))
             {
-                SaveUser();
+                SaveCurrentToPersistentPath();
 
                 current = new CurrentUser
                 {
@@ -72,7 +71,7 @@ namespace NodeNotes {
 
             current.Name = uname;
 
-            SaveUser();
+            SaveCurrentToPersistentPath();
         }
 
         #region Inspector
@@ -99,7 +98,7 @@ namespace NodeNotes {
                 string usr = current.Name;
                 if (pegi.select(ref usr, all))
                 {
-                    SaveUser();
+                    SaveCurrentToPersistentPath();
                     LoadUser(usr);
                 }
             

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using PlayerAndEditorGUI;
-using QcTriggerLogic;
 using QuizCannersUtilities;
 
 namespace NodeNotes {

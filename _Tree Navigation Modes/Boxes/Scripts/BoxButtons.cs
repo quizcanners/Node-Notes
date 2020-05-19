@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
-using QcTriggerLogic;
 using QuizCannersUtilities;
-using RayMarching;
 using UnityEngine;
 
 namespace NodeNotes_Visual {

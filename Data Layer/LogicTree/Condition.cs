@@ -4,7 +4,7 @@ using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
 
-namespace QcTriggerLogic
+namespace NodeNotes
 {
 
 

@@ -1,0 +1,1 @@
+n|8|Dungeons|ind|1|0|t|277|inds|42|e|1|0|e|1|1|e|1|2|e|1|3|e|1|4|e|1|5|e|1|6||vals|191|e|20|n|14|Something Else||e|22|n|16|Something Else 2||e|37|n|10|Said Hello|c|15|e|0||e|0||e|0||||e|22|n|16|Something Else 3||e|5|n|0|||e|22|n|16|Something Else 4||e|22|n|16|Something Else 4|||last|1|0|add|1|n|del|1|n||br|1|0|show|1|y|last|1|6|auth|11|quizcanners|

@@ -2,8 +2,8 @@
 using QuizCannersUtilities;
 using UnityEngine;
 
-namespace QcTriggerLogic {
-
+namespace NodeNotes
+{
 
     public class Values : AbstractKeepUnrecognizedCfg, IPEGI, IGotCount
     {

@@ -132,8 +132,6 @@ namespace NodeNotes
 
             }
 
-
-
             inspected = null;
             return changed;
         }
@@ -248,7 +246,6 @@ namespace NodeNotes
         private bool AuthoringAStory => this.EditedByCurrentUser() && Application.isEditor;
 
         public void SaveToFile() {
-
             if (AuthoringAStory) {
                 this.SaveToResources(Shortcuts.ProjectName, this.BookFolder(), BookName);
                 QcUnity.RefreshAssetDatabase();
@@ -265,10 +262,9 @@ namespace NodeNotes
                 return this.TryLoadFromResources(reff.BookFolder(), reff.BookName);
             
             return this.LoadFromPersistentPath(reff.BookFolder(), reff.BookName);
-
         }
 
-        public void DeleteFile(string bookName) {
+        private void DeleteFile(string bookName) {
 
             if (AuthoringAStory) {
                 QcFile.Delete.FromResources(Shortcuts.ProjectName, Path.Combine(this.BookFolder(), bookName));

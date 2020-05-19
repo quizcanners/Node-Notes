@@ -2,7 +2,7 @@
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace QcTriggerLogic
+namespace NodeNotes
 {
 
     public class LogicBranch<T> : AbstractKeepUnrecognizedCfg  , IGotName , IPEGI, IAmConditional, ICanBeDefaultCfg, IPEGI_Searchable  where T: ICfg, new() {

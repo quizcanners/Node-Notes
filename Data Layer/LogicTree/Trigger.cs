@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace QcTriggerLogic
+namespace NodeNotes
 {
     
     public class Trigger : ValueIndex , IGotDisplayName , IPEGI_ListInspect, IGotName, ICategorized {

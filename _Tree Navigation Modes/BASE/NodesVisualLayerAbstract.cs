@@ -1,6 +1,5 @@
 ﻿using System;
 using PlayerAndEditorGUI;
-using QcTriggerLogic;
 using QuizCannersUtilities;
 using UnityEngine;
 
@@ -96,12 +95,17 @@ namespace NodeNotes {
                 }
         }
 
+        public override void OnEnable()
+        {
+            base.OnEnable();
+
+            shortcuts.LoadAll();
+        }
+
         protected virtual void OnDisable()
         {
             if (shortcuts)
                 shortcuts.SaveAll();
-
-           // Shortcuts.CurrentNode = null;
         }
 
         public abstract CfgEncoder EncodePerBookData();

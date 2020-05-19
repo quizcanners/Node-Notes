@@ -3,7 +3,7 @@ using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
 
-namespace QcTriggerLogic
+namespace NodeNotes
 {
 
     public abstract class ValueIndex : ICfg, IGotDisplayName {

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NodeNotes_Visual;
 using PlayerAndEditorGUI;
-using PlaytimePainter;
-using QcTriggerLogic;
 using QuizCannersUtilities;
-using UnityEditor;
 using UnityEngine;
 using static NodeNotes.NodeNotesAssetGroups;
 
@@ -328,29 +325,41 @@ namespace NodeNotes {
 
         static readonly string _generalItemsFile = "config";
 
-        public bool Initialize() => this.LoadFromPersistentPath(_generalItemsFolder, _generalItemsFile);
+        public bool LoadAll()
+        {
+            var ok = this.LoadFromPersistentPath(_generalItemsFolder, _generalItemsFile);
+
+            return ok;
+        }
 
         public void SaveAll()
         {
-            users.SaveUser();
+            users.SaveCurrentToPersistentPath();
 
             if (CurrentNode != null)
                 CurrentNode.parentBook.UpdatePerBookConfigs();
 
-            QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
-        }
-
-        public override CfgEncoder Encode()
-        {
-            for (int i=0; i<books.all.Count; i++)
+            for (int i = 0; i < books.all.Count; i++)
             {
                 var book = books.all[i].AsLoadedBook;
                 if (book != null && book.EditedByCurrentUser())
                     book.Offload();
             }
 
+            List<TriggerGroup> trigs = TriggerGroup.all.GetAllObjsNoOrder();
+
+            foreach (var gr in trigs)
+            {
+                gr.SaveToFile();
+            }
+
+            QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+        }
+
+        public override CfgEncoder Encode()
+        {
             return this.EncodeUnrecognized()
-                .Add("trigs", TriggerGroup.all)
+                //.Add("trigs", TriggerGroup.all)
                 .Add("bkSrv", books)
                 .Add_IfTrue("ptUI", showPlaytimeUI)
                 .Add("us", users.all)
@@ -360,12 +369,11 @@ namespace NodeNotes {
         public override bool Decode(string tg, string data)
         {
             switch (tg)  {
-                case "trigs": data.DecodeInto(out TriggerGroup.all); break;
+                //case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "bkSrv": books.Decode(data); break;
                 case "ptUI": showPlaytimeUI = data.ToBool(); break;
                 case "us": data.Decode_List(out users.all); break;
                 case "curUser": users.LoadUser(data); break;
-               // case "books": data.Decode_List(out books.all, this); break;
                 default: return false;
             }
             return true;

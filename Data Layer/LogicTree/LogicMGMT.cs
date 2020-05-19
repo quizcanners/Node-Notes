@@ -3,7 +3,7 @@ using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
 
-namespace QcTriggerLogic
+namespace NodeNotes
 {
     public abstract class LogicMGMT : MonoBehaviour, IPEGI   {
 
@@ -78,58 +78,70 @@ namespace QcTriggerLogic
 
                 #region Paste Options
 
-                if (_replaceReceived != null) {
-
-                    var current = TriggerGroup.all.GetIfExists(_replaceReceived.IndexForPEGI);
-                    var hint = (current != null) ? "{0} [ Old: {1} => New: {2} triggers ] ".F(_replaceReceived.NameForPEGI, current.Count, _replaceReceived.Count) : _replaceReceived.NameForPEGI;
-                    
-                    if (hint.enter(ref _inspectReplacementOption))
-                        _replaceReceived.Nested_Inspect();
-                    else
-                    {
-                        if (icon.Done.ClickUnFocus())
-                        {
-                            TriggerGroup.all[_replaceReceived.IndexForPEGI] = _replaceReceived;
-                            _replaceReceived = null;
-                        }
-                        if (icon.Close.ClickUnFocus())
-                            _replaceReceived = null;
-                    }
-                }
-                else
+                if ("Paste Options".foldout().nl())
                 {
 
-                    var tmp = "";
-                    if ("Paste Messaged STD data".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp)) {
+                    if (_replaceReceived != null)
+                    {
 
-                        var group = new TriggerGroup();
-                        group.DecodeFromExternal(tmp);
+                        var current = TriggerGroup.all.GetIfExists(_replaceReceived.IndexForPEGI);
+                        var hint = (current != null)
+                            ? "{0} [ Old: {1} => New: {2} triggers ] ".F(_replaceReceived.NameForPEGI, current.Count,
+                                _replaceReceived.Count)
+                            : _replaceReceived.NameForPEGI;
 
-                        var current = TriggerGroup.all.GetIfExists(group.IndexForPEGI);
-                       
-                        if (current == null)
-                            TriggerGroup.all[group.IndexForPEGI] = group;
-                        else {
-                            _replaceReceived = group;
-                            if (!_replaceReceived.NameForPEGI.SameAs(current.NameForPEGI))
-                                _replaceReceived.NameForPEGI += " replaces {0}".F(current.NameForPEGI);
+                        if (hint.enter(ref _inspectReplacementOption))
+                            _replaceReceived.Nested_Inspect();
+                        else
+                        {
+                            if (icon.Done.ClickUnFocus())
+                            {
+                                TriggerGroup.all[_replaceReceived.IndexForPEGI] = _replaceReceived;
+                                _replaceReceived = null;
+                            }
+
+                            if (icon.Close.ClickUnFocus())
+                                _replaceReceived = null;
                         }
                     }
+                    else
+                    {
+
+                        var tmp = "";
+                        if ("Paste Messaged STD data".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp))
+                        {
+
+                            var group = new TriggerGroup();
+                            group.DecodeFromExternal(tmp);
+
+                            var current = TriggerGroup.all.GetIfExists(group.IndexForPEGI);
+
+                            if (current == null)
+                                TriggerGroup.all[group.IndexForPEGI] = group;
+                            else
+                            {
+                                _replaceReceived = group;
+                                if (!_replaceReceived.NameForPEGI.SameAs(current.NameForPEGI))
+                                    _replaceReceived.NameForPEGI += " replaces {0}".F(current.NameForPEGI);
+                            }
+                        }
 
 
 
+                    }
+
+                    pegi.nl();
                 }
-                pegi.nl();
 
                 #endregion
 
+                "Trigger Groups".nl(PEGI_Styles.ListLabel);
             }
-
-            "Trigger Groups".nl(PEGI_Styles.ListLabel); 
 
             ExtensionsForGenericCountless.Inspect<UnNullableCfg<TriggerGroup>, TriggerGroup>(TriggerGroup.all, ref inspectedTriggerGroup).changes(ref changed);
 
-            if (inspectedTriggerGroup == -1) {
+            if (inspectedTriggerGroup == -1)
+            {
                 "At Index: ".edit(60, ref tmpIndex);
                 if (tmpIndex >= 0 && TriggerGroup.all.TryGet(tmpIndex) == null && icon.Add.ClickUnFocus("Create New Group"))
                 {
@@ -137,9 +149,14 @@ namespace QcTriggerLogic
                     tmpIndex++;
                 }
                 pegi.nl();
+
+                "Adding a group will also try to load it".writeHint();
+                pegi.nl();
             }
             
             pegi.nl();
+
+
 
             return changed;
         }

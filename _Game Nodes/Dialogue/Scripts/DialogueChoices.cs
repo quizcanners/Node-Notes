@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
-using QcTriggerLogic;
 using QuizCannersUtilities;
 
 namespace NodeNotes_Visual {

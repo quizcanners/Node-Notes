@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
 
-namespace QcTriggerLogic {
+namespace NodeNotes
+{
 
 #pragma warning disable IDE0018 // Simplify 'default' expression
 
@@ -80,6 +82,44 @@ namespace QcTriggerLogic {
         #endregion
 
         #region Encode_Decode
+        
+        private const string TriggersRootFolder = "Triggers";
+
+        public bool EditedByCurrentUser => Shortcuts.users.current.isADeveloper && Shortcuts.users.current.Name.Equals(authorName);
+        
+        public bool AuthoringAStory => EditedByCurrentUser && Application.isEditor;
+
+        private bool _triedToLoad;
+
+        public void TryLoad()
+        {
+            if (_triedToLoad)
+            {
+                return;
+            }
+
+            _triedToLoad = true;
+
+            if (Application.isEditor && this.TryLoadFromResources(TriggersRootFolder, _index.ToString()))
+            {
+                return;
+            }
+
+            this.LoadFromPersistentPath(TriggersRootFolder, _index.ToString());
+        }
+
+        public void SaveToFile()
+        {
+            if (AuthoringAStory)
+            {
+                this.SaveToResources(Shortcuts.ProjectName, TriggersRootFolder, _index.ToString());
+                QcUnity.RefreshAssetDatabase();
+            }
+            else
+            {
+                this.SaveToPersistentPath(TriggersRootFolder, _index.ToString());
+            }
+        }
 
         public override CfgEncoder Encode() => this.EncodeUnrecognized()
             .Add_String("n", _name)
@@ -185,37 +225,53 @@ namespace QcTriggerLogic {
 
             return changed;
         }
-        
+
+        private bool _shareOptions;
+        private int _replacingAuthor = -1;
+
         public override bool Inspect()  {
 
             var changed = false;
 
             if (_inspectedItems == -1) {
                 
-                changed |= "{0} : ".F(_index).edit(50, ref _name).nl();
-                
-                "Share:".write("Paste message full with numbers and lost of ' | ' symbols into the first line or drop file into second" ,50);
-                
-                string data;
-                if (this.SendReceivePegi("Trigger Group {0} [{1}]".F(_name, _index), "Trigger Groups", out data)) {
-                    var tmp = new TriggerGroup();
-                    tmp.Decode(data);
-                    if (tmp._index == _index) {
+                "[{0}] Name:".F(_index).edit(70, ref _name).nl(ref changed);
 
-                        Decode(data);
-                        Debug.Log("Decoded Trigger Group {0}".F(_name));
+                if ("Share".foldout(ref _shareOptions).nl())
+                {
+                    "Share:".write(
+                        "Paste message full with numbers and lost of ' | ' symbols into the first line or drop file into second",
+                        50);
+
+                    string data;
+                    if (this.SendReceivePegi("Trigger Group {0} [{1}]".F(_name, _index), "Trigger Groups", out data))
+                    {
+                        var tmp = new TriggerGroup();
+                        tmp.Decode(data);
+                        if (tmp._index == _index)
+                        {
+
+                            Decode(data);
+                            Debug.Log("Decoded Trigger Group {0}".F(_name));
+                        }
+                        else
+                            Debug.LogError("Pasted trigger group had different index, replacing");
                     }
-                    else
-                        Debug.LogError("Pasted trigger group had different index, replacing");
+                    pegi.line();
                 }
+                
+                "Change".select(ref _replacingAuthor, Shortcuts.users.all);
 
-           
-                pegi.line();
+                if (_replacingAuthor != -1 && _replacingAuthor < Shortcuts.users.all.Count && !Shortcuts.users.all[_replacingAuthor].Equals(authorName)
+                    && icon.Replace.ClickConfirm("repTgAu", "Change an author?"))
+                    authorName = Shortcuts.users.all[_replacingAuthor];
+
+                pegi.nl();
 
                 "New Variable".edit(80, ref Trigger.searchField);
                 AddTriggerToGroup_PEGI();
                 
-                changed |= _triggers.Nested_Inspect(); 
+                _triggers.Nested_Inspect(ref changed); 
             }
 
             return changed;
@@ -280,16 +336,14 @@ namespace QcTriggerLogic {
             return changed;
         }
 
-
         #endregion
         
         public TriggerGroup() {
+
             _index = UnNullableCfg<TriggerGroup>.indexOfCurrentlyCreatedUnnulable;
+            
+            TryLoad();
         }
-
-
     }
-
-
 }
 

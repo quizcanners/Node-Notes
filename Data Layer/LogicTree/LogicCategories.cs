@@ -2,7 +2,8 @@
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
-namespace QcTriggerLogic {
+namespace NodeNotes
+{
 
     public interface ICategorized  {
         List<PickedCategory> MyCategories { get; set; }

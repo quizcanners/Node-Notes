@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
-using QcTriggerLogic;
 using QuizCannersUtilities;
 using RayMarching;
 using UnityEngine;
 using UnityEngine.Networking;
-using Object = UnityEngine.Object;
 
 namespace NodeNotes_Visual
 {
@@ -536,14 +533,11 @@ namespace NodeNotes_Visual
                 if (asLerp!= null)
                     systemAsLinkedLeprs.Add(asLerp);
             }
-
-
+            
             Shortcuts.visualLayer = this;
 
             base.OnEnable();
             
-            shortcuts.Initialize();
-
             foreach (var bg in presentationControllers)
             {
                 bg.ManagedOnInitialize();
