@@ -105,7 +105,6 @@ namespace NodeNotes_Visual
         private List<ILinkedLerping> systemAsLinkedLeprs = new List<ILinkedLerping>();
 
         [SerializeField] protected List<PresentationSystemsAbstract> presentationSystems;
-        //public Dictionary<string, string> presentationSystemsConfigs = new Dictionary<string, string>();
 
         public Dictionary<string, PresentationSystemConfigurations> presentationSystemPerNodeConfigs = new Dictionary<string, PresentationSystemConfigurations>();
 
@@ -116,8 +115,14 @@ namespace NodeNotes_Visual
         public List<GameControllerBase> gameNodeControllers = new List<GameControllerBase>();
 
         #endregion
-        
+
         #region Node MGMT
+
+        public override void OnNodeDelete(int index)
+        {
+            foreach (var config in presentationSystemPerNodeConfigs)
+                config.Value.OnNodeDelete(index);
+        }
 
         public override void Show(Base_Node node) => SelectedPresentationMode.MakeVisible(node);
         
@@ -323,6 +328,8 @@ namespace NodeNotes_Visual
 
             if (_inspectedItems == -1)
             {
+              
+
                 "Presentation Modes [For Node Tree]"
                     .enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDebugItem, 0)
                     .nl(ref changed);
@@ -393,11 +400,10 @@ namespace NodeNotes_Visual
                 {
                     "Cfgs".edit_Dictionary_Values(presentationSystemPerNodeConfigs, ref _inspectedPresSysCfg).nl();
                 }
-
                 
-
                 if (_inspectedDebugItem == -1)
                 {
+                    pegi.toggleDefaultInspector(this).nl();
 
                     "Lerp by {0}, portion: {1}".F(_ld.dominantParameter, _ld.MinPortion).nl();    
 

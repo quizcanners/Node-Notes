@@ -75,7 +75,6 @@ namespace NodeNotes
         public Trigger() {
             if (enm == null)
                 enm = new Dictionary<int, string>();
-               // isStatic = true;
         }
 
         #region Inspector

@@ -23,6 +23,11 @@ namespace NodeNotes {
 
         public static Node preGameNode;
 
+        public virtual void OnNodeDelete(int index)
+        {
+
+        }
+
         public abstract void Show(Base_Node node);
 
         public abstract void Hide(Base_Node node);

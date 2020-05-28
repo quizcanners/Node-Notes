@@ -42,7 +42,7 @@ namespace NodeNotes {
 
         public override void Reset() => sentOne = false;
 
-        public override bool GotNextText => !sentOne;
+        public override bool GotNextText => !sentOne && !text.IsNullOrEmpty();
 
         public override string ClassTag => classTag;
 

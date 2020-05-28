@@ -9,6 +9,7 @@ namespace NodeNotes_Visual
     {
 
         public Countless<string> perNodeConfigs = new Countless<string>();
+
         public CountlessCfg<ConditionalConfig> perNodeConfigConditional = new CountlessCfg<ConditionalConfig>();
 
         public class ConditionalConfig : ICfg
@@ -54,6 +55,12 @@ namespace NodeNotes_Visual
             }
 
             return null;
+        }
+
+        public virtual void OnNodeDelete(int index)
+        {
+            perNodeConfigs[index] = null;
+            perNodeConfigConditional[index] = null;
         }
 
         #region Inspector

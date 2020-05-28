@@ -77,13 +77,23 @@ namespace NodeNotes
             
             var changed = false;
 
+            
+
             if (_browsedBranch == -1)
             {
-                if (_type.ToString().Click((_type == ConditionBranchType.And ? "All conditions and sub branches should be true" : "At least one condition OR sub branch should be true")))
-                    _type = (_type == ConditionBranchType.And ? ConditionBranchType.Or : ConditionBranchType.And);
+                var cnt = CountForInspector();
 
-                (CheckConditions(ConditionLogic.inspectedTarget) ? icon.Active : icon.InActive).nl();
+                if (cnt > 1)
+                {
+                    if (_type.ToString().Click((_type == ConditionBranchType.And
+                        ? "All conditions and sub branches should be true"
+                        : "At least one condition OR sub branch should be true")))
+                        _type = (_type == ConditionBranchType.And ? ConditionBranchType.Or : ConditionBranchType.And);
+                }
 
+                if (cnt>0)
+                    (CheckConditions(ConditionLogic.inspectedTarget) ? icon.Active : icon.InActive).nl();
+                
                 var newC = "Conditions".edit_List(ref _conditions, ref _browsedCondition, ref changed);
                 if (newC != null)
                     newC.TriggerIndexes = TriggerGroup.TryGetLastUsedTrigger();
@@ -91,9 +101,12 @@ namespace NodeNotes
 
             pegi.line(Color.black);
 
-            changed |= "Sub Branches".edit_List(ref _branches, ref _browsedBranch);
-
-
+            if (_branches.Count == 0 && "Create Sub Branch".Click().nl())
+                _branches.Add(new ConditionBranch());
+            
+            if (_branches.Count>0)
+                "Sub Branches".edit_List(ref _branches, ref _browsedBranch).changes(ref changed);
+            
             ConditionLogic.inspectedTarget = before;
 
             return changed;
@@ -104,6 +117,7 @@ namespace NodeNotes
           
             var changed = false;
             
+
             if ((IsTrue ? icon.Active : icon.InActive).Click(ref changed) && !TryForceTo(Values.global, !IsTrue))
                 Debug.Log("No Conditions to force to {0}".F(!IsTrue));
 

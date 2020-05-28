@@ -128,9 +128,8 @@ namespace NodeNotes
         #region Inspect
 
         public override string NameForDisplayPEGI() {
-                var name = "If {0} {1} {2}".F(base.NameForDisplayPEGI(), type.GetName(), compareValue);
+                var name = "If {0} {1} {2}".F(base.NameForDisplayPEGI(), type.GetName(), Trigger.Usage.GetConditionValueName(this));
                 return name;
-            
         }
 
         #endregion

@@ -19,8 +19,6 @@ namespace NodeNotes {
 
         public static bool editingNodes = false;
 
-        public static bool SaveAnyChanges => users.current.isADeveloper;
-
         public static UsersData users = new UsersData();
 
         public static NodeStoryBooks books = new NodeStoryBooks();
@@ -214,7 +212,6 @@ namespace NodeNotes {
         
         #region Inspector
         
- 
         public static bool showPlaytimeUI;
         
         public override void ResetInspector() {
@@ -248,7 +245,7 @@ namespace NodeNotes {
 
             var changed = false;
             
-            if (!SaveAnyChanges)
+            if (!users.current.isADeveloper)
                 "Changes will not be saved as user is not a developer".writeWarning();
 
             if (books._inspectedBook == -1) {

@@ -93,7 +93,9 @@ namespace NodeNotes
         #region Inspector
         public override string NameForDisplayPEGI() =>
             "{0} : {1} {2} ".F(base.NameForDisplayPEGI(), type.GetText(), 
-            (IsBoolean ? (updateValue != 0).ToString() : updateValue.ToString()));
+            //IsBoolean ? (updateValue != 0).ToString() : updateValue.ToString()
+            Trigger.Usage.GetResultName(this)
+            );
 
         public override bool PEGI_inList_Sub(IList list, int ind, ref int inspecte) {
 

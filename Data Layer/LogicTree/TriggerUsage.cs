@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
+using Unity.Collections;
 
 namespace NodeNotes
 {
@@ -24,6 +25,10 @@ namespace NodeNotes
         public virtual void Inspect(ConditionLogic c) { }
 
         public abstract bool Inspect(Result r);
+
+        public virtual string GetResultName(Result r) => "???";
+
+        public virtual string GetConditionValueName(ConditionLogic c) => "???";
 
         protected virtual bool Select(ref ResultType r, Dictionary<int, string> resultUsages) {
             var changed = false;
@@ -103,20 +108,40 @@ namespace NodeNotes
 
     public class UsageBoolean : TriggerUsage {
 
-        public override string NameForDisplayPEGI()=> "YesNo";
 
         #region Inspector
+        
+        public override string NameForDisplayPEGI() => "YesNo";
+
+        public override string GetConditionValueName(ConditionLogic c)
+        {
+            if (!c.IsBoolean)
+                return base.GetConditionValueName(c);
+            else
+            {
+                return ((ConditionLogicBool)c).compareValue.ToString();
+            }
+        }
+
 
         public override void Inspect(ConditionLogic c) {
             if (!c.IsBoolean) {
                 icon.Warning.write("Wrong Type: " + c.IsBoolean);
-
-                
             }
             else
                 pegi.toggleIcon(ref ((ConditionLogicBool)c).compareValue, "Condition Value");
         }
-        
+
+        public override string GetResultName(Result r)
+        {
+            if (!r.IsBoolean)
+                return base.GetResultName(r);
+            else
+            {
+                return r.updateValue == 0 ? "False" : "True";
+            }
+        }
+
         public override bool Inspect(Result r) {
             if (r.IsBoolean) return pegi.toggleIcon(ref r.updateValue);
             
@@ -179,6 +204,27 @@ namespace NodeNotes
             }
         }
 
+        public override string GetConditionValueName(ConditionLogic c)
+        {
+            if (c.IsBoolean)
+                return base.GetConditionValueName(c);
+            else
+            {
+                var num = c as ConditionLogicInt;
+                return num.compareValue.ToString();
+            }
+        }
+
+        public override string GetResultName(Result r)
+        {
+            if (r.IsBoolean)
+                return base.GetResultName(r);
+            else
+            {
+                return r.updateValue.ToString();
+            }
+        }
+
         public override bool Inspect(Result r) => 
             Select(ref r.type, ResultUsages) ||
             pegi.edit(ref r.updateValue, 40);
@@ -217,6 +263,23 @@ namespace NodeNotes
                 icon.Warning.write("Incorrect type");
         }
 
+        public override string GetConditionValueName(ConditionLogic c)
+        {
+            if (c.IsBoolean)
+                return base.GetConditionValueName(c);
+
+            string value = null;
+
+            var num = c as ConditionLogicInt;
+            
+            c.Trigger.enm.TryGetValue(num.compareValue, out value); 
+            
+            if (value.IsNullOrEmpty())
+                value = num.compareValue.ToString();
+
+            return value;
+        }
+
         public override bool Inspect(Result r) {
             bool changed = false;
 
@@ -224,6 +287,24 @@ namespace NodeNotes
             
             pegi.select(ref r.updateValue, r.Trigger.enm);
             return changed;
+        }
+        
+        public override string GetResultName(Result r)
+        {
+            if (r.IsBoolean)
+                return base.GetResultName(r);
+          
+            string value = null;
+
+            switch (r.type)
+            {
+                case ResultType.Set: r.Trigger.enm.TryGetValue(r.updateValue, out value); break;
+            }
+
+            if (value.IsNullOrEmpty())
+                value = r.updateValue.ToString();
+
+            return value;
         }
 
         public override bool Inspect(Trigger t) {
@@ -233,8 +314,7 @@ namespace NodeNotes
            changed |= Values.global.ints.Select(t).nl(); 
 
             if (Trigger.inspected != t) return changed;
-
-
+            
             "__ Enums__".edit_Dictionary(ref t.enm).changes(ref changed);
 
             return changed;

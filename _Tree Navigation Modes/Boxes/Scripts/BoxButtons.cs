@@ -78,7 +78,6 @@ namespace NodeNotes_Visual {
 
         public void DeleteSelected()
         {
-
             if (!selectedNode) return;
 
             var node = selectedNode.source;
@@ -88,8 +87,6 @@ namespace NodeNotes_Visual {
             selectedNode.Unlink();
             node.Delete();
             SetSelected(null);
-
-
         }
         #endregion
 

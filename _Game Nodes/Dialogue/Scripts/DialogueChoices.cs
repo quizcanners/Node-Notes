@@ -113,19 +113,24 @@ namespace NodeNotes_Visual {
             if (_inspectedItems == -1)
             {
 
-                var n = referenceName;
+                var n = ReferenceName;
 
-                if (renameLinkedReferences)
+                if (n.IsNullOrEmpty() && "Add Reference name".Click())
+                    ReferenceName = "Rename Me";
+
+                if (!n.IsNullOrEmpty())
                 {
-                    if ("Ref".editDelayed(50, ref n))
+                    if (renameLinkedReferences)
+                    {
+                        if ("Ref".editDelayed(50, ref n))
+                            ReferenceName = n;
+                    }
+                    else if ("Ref".edit(50, ref n))
                         ReferenceName = n;
-                } else
-                if ("Ref".edit(50, ref n))
-                    ReferenceName = n;
 
-                //this.inspect_Name("Rename Reference", "Other choices can set this interaction as a next one").changes(ref changed);
-
-                pegi.toggle(ref renameLinkedReferences, icon.Link, icon.UnLinked, "Will all the references to this Interaction be renamed as well.").changes(ref changed);
+                    pegi.toggle(ref renameLinkedReferences, icon.Link, icon.UnLinked,
+                        "Will all the references to this Interaction be renamed as well.").changes(ref changed);
+                }
 
                 if (pegi.PopUpService.DocumentationClick("About option referance"))
                     pegi.PopUpService.FullWindwDocumentationOpen(() =>
@@ -267,10 +272,11 @@ namespace NodeNotes_Visual {
 
             if (icon.Hint.enter(text.GetNameForInspector() ,ref _inspectedItems, 2))
                 text.Nested_Inspect();
-            else if (_inspectedItems == -1) MultilanguageSentence.LanguageSelector_PEGI().nl();
-
+            else if (_inspectedItems == -1)
+                MultilanguageSentence.LanguageSelector_PEGI().nl();
+            
             "Results".enter_List(ref results, ref inspectedResult, ref _inspectedItems, 3, ref changed).SetLastUsedTrigger();
-                
+            
             pegi.nl_ifNotEntered();
 
             if (_inspectedItems == 4)
@@ -282,10 +288,16 @@ namespace NodeNotes_Visual {
             {
                 if (!nextOne.IsNullOrEmpty() && icon.Delete.Click("Remove any followups"))
                     nextOne = "";
-                
-                "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
-            }
 
+                if (nextOne.IsNullOrEmpty())
+                {
+                    if ("Go To".Click())
+                        nextOne = "UNSET";
+                }
+                else
+                    "Go To".select_iGotDisplayName(60, ref nextOne, Interaction.inspectedList).nl();
+                
+            }
             return changed;
         }
         

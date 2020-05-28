@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using UnityEngine;
@@ -283,10 +285,23 @@ namespace NodeNotes
       
             if ((Trigger.searchMatchesFound != 0) || (Trigger.searchField.Length <= 3)) return false;
             
-     
             var selectedTrig = arg?.Trigger;
 
-            if (selectedTrig != null && Trigger.searchField.IsIncludedIn(selectedTrig.name)) return false;
+            if (selectedTrig != null)
+            {
+                try
+                {
+                    if (Regex.IsMatch(selectedTrig.name, Trigger.searchField, RegexOptions.IgnoreCase))
+                    {
+                        return false;
+                    }
+                }
+                catch {
+                    //Debug.LogError(ex);
+                    return false;
+                }
+                
+            }
             
             var changed = false;
 

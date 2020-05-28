@@ -113,7 +113,7 @@ namespace NodeNotes
 
             NameForElements.enter_List(ref elements, ref _inspectedElement, ref _inspectedItems, 2).nl(ref changed);
 
-            ("Subs: " + NameForPEGI).enter_List(ref subBranches, ref _inspectedBranch, ref _inspectedItems, 3).nl(ref changed);
+            (NameForPEGI +"=>Branches").enter_List(ref subBranches, ref _inspectedBranch, ref _inspectedItems, 3).nl(ref changed);
 
             parent = null;
             return changed;

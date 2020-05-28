@@ -353,13 +353,20 @@ namespace NodeNotes {
         }
 
         public virtual void Delete() {
+
             var gn = this as GameNodeBase;
+
             if (gn != null) 
                 parentNode.gameNodes.Remove(gn);
             else
                 parentNode.coreNodes.Remove(this);
 
             parentBook.allBaseNodes[IndexForPEGI] = null;
+
+            if (Shortcuts.CurrentNode.parentBook == parentBook)
+            {
+                Shortcuts.visualLayer.OnNodeDelete(IndexForPEGI);
+            }
         }
         
         #endregion

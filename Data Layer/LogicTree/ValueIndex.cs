@@ -15,8 +15,7 @@ namespace NodeNotes
                groupIndex = value.groupIndex;
                triggerIndex = value.triggerIndex;
         }}}
-
-    
+        
         #region Encode & Decode
         public void Decode(string data) => this.DecodeTagsFrom(data);
 
