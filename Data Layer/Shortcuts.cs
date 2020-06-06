@@ -12,7 +12,7 @@ namespace NodeNotes {
 
 #pragma warning disable IDE0018 // Inline variable declaration
 
-    [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Story Nodes/Shortcuts", order = 0)]
+    [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Node Nodes/Shortcuts", order = 0)]
     public class Shortcuts : CfgReferencesHolder {
 
         public const string ProjectName = "NodeNotes";

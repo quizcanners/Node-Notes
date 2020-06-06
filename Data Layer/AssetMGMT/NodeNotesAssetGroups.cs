@@ -12,7 +12,7 @@ using UnityEditor;
 
 namespace NodeNotes
 {
-    [CreateAssetMenu(fileName = "Unity Asset Group", menuName = "Story Nodes/Unity Asset Group", order = 0)]
+    [CreateAssetMenu(fileName = "Unity Asset Group", menuName = "Node Nodes/Unity Asset Group", order = 0)]
     public class NodeNotesAssetGroups : ScriptableObject, IPEGI
     {
 
