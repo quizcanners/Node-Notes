@@ -119,8 +119,11 @@ namespace NodeNotes {
 
                 if (book.TryLoad(offloaded)) {
                     list[ind] = book;
-                   // Debug.Log("Loading {0}".F(book.NameForPEGI));
                     return book;
+                }
+                else
+                {
+                    Debug.LogError("Couldn't Load book " + offloaded.GetNameForInspector());
                 }
 
             }

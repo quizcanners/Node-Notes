@@ -14,7 +14,7 @@ namespace NodeNotes_Visual.ECS {
     public static class NodeNotesECSManager
     {
 
-        public static EntityManager Manager => World.DefaultGameObjectInjectionWorld?.EntityManager;
+        public static EntityManager Manager => World.DefaultGameObjectInjectionWorld.EntityManager;
 
         #region Entity MGMT
         public static Entity Instantiate(GameObject prefab)
@@ -94,15 +94,9 @@ namespace NodeNotes_Visual.ECS {
 
         }
 
-        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) {
-
-            if (Manager!= null)
-                return Manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
-            Debug.LogError("Manager is null");
-
-            return new EntityArchetype();
-        }
-
+        public static EntityArchetype ToArchetype(this List<ComponentCfgAbstract> cmps) =>
+                 Manager.CreateArchetype(cmps.GetComponentTypes().ToArray());
+        
         public static Entity Instantiate(this List<ComponentCfgAbstract> cmps)
         {
            
@@ -177,7 +171,26 @@ namespace NodeNotes_Visual.ECS {
 
             var changed = false;
 
-            if (Manager != null) {
+            if (Manager == default(EntityManager))
+            {
+
+                if (World.DefaultGameObjectInjectionWorld == null)
+                {
+                    "Active World is null".writeWarning();
+
+                    foreach (var world in World.All)
+                    {
+                        if (world.Name.Click().nl())
+                            World.DefaultGameObjectInjectionWorld = world;
+                    }
+
+                    if ("Create".Click())
+                        World.DefaultGameObjectInjectionWorld = new World("Node Notes");
+                }
+
+            }
+            else
+            {
 
                 NativeArray<Entity> all = Manager.GetAllEntities();
 
@@ -186,29 +199,15 @@ namespace NodeNotes_Visual.ECS {
                 if ("instantiate".edit(ref go).nl())
                     Instantiate(go);
 
-                for (int i = 0; i < all.Length; i++) {
+                for (int i = 0; i < all.Length; i++)
+                {
 
                     var e = all[i];
 
                     if (e.GetNameForInspector().foldout(ref exploredEntity, i).nl())
                         e.Inspect().nl(ref changed);
-                    
+
                 }
-
-            }
-            else{
-
-                if (World.DefaultGameObjectInjectionWorld == null) {
-                    "Active World is null".writeWarning();
-
-                    foreach (var world in World.All) {
-                        if (world.Name.Click().nl())
-                            World.DefaultGameObjectInjectionWorld = world;
-                    }
-                    
-                    if ("Create".Click())
-                        World.DefaultGameObjectInjectionWorld = new World("Node Notes");
-                } 
 
             }
 

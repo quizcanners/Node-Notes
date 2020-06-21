@@ -85,10 +85,8 @@ namespace NodeNotes_Visual {
 
             pegi.nl();
 
-            if (NodeNotesECSManager.Manager == null)
-                NodeNotesECSManager.Inspect().nl(ref changed);
-            else {
-
+            if (NodeNotesECSManager.Manager == default(EntityManager))
+            {
                 "Mono Prefabs"
                     .enter_List_UObj(ref monoBehaviourPrefabs, ref inspectedPrefab, ref inspectedGameNodeItems, 0)
                     .nl(ref changed);
@@ -99,7 +97,9 @@ namespace NodeNotes_Visual {
                 if ("Entity Manager".enter(ref inspectedGameNodeItems, 2).nl())
                     NodeNotesECSManager.Inspect();
             }
-
+            else
+                NodeNotesECSManager.Inspect().nl(ref changed);
+     
             return changed;
         }
         
@@ -171,21 +171,17 @@ namespace NodeNotes_Visual {
         void DestroyInstance() {
             if (instanciated) {
                 instanciated = false;
-                Manager?.DestroyEntity(instance);
+                Manager.DestroyEntity(instance);
             }
         }
 
         protected override void Instantiate() {
 
-            if (Manager != null) {
+            if (!archetype.Valid)
+                archetype = entityComponents.ToArchetype();
 
-                if (!archetype.Valid)
-                    archetype = entityComponents.ToArchetype();
-
-                instance = entityComponents.Instantiate();
-                instanciated = true;
-            } else 
-                Debug.LogError("Manager is null");
+            instance = entityComponents.Instantiate();
+            instanciated = true;
         }
 
 #region Encode & Decode
