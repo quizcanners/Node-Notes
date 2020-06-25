@@ -266,13 +266,6 @@ namespace NodeNotes
 
         public static bool IsTrue(this IAmConditional cond) => cond.CheckConditions(Values.global);
 
-        public static bool TryTestCondition(this object obj)
-        {
-            IAmConditional cnd = obj as IAmConditional;
-            if (cnd == null) return true;
-            return cnd.IsTrue();
-        }
-
         public static string GetName(this ConditionType type)
         {
             switch (type) {

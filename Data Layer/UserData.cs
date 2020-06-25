@@ -43,7 +43,7 @@ namespace NodeNotes {
 
         void DeleteUser_File(string uname)
         {
-            QcFile.Delete.FromPersistentFolder(_usersFolder, uname);
+            QcFile.Delete.FromPersistentFolder(_usersFolder, uname, asBytes: true);
             if (all.Contains(uname))
                 all.Remove(uname);
         }
