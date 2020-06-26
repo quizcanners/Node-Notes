@@ -263,11 +263,13 @@ namespace NodeNotes {
 
                         pegi.nl();
 
-                        var authorFolders = QcFile.Explorer.GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
+                        var authorFolders = QcFile.Explorer
+                            .GetFolderNamesFromPersistentFolder(NodeBook_Base.BooksRootFolder);
 
                         foreach (var authorFolder in authorFolders) {
 
-                            var fls = QcFile.Explorer.GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
+                            var fls = QcFile.Explorer
+                                .GetFileNamesFromPersistentFolder(Path.Combine(NodeBook_Base.BooksRootFolder, authorFolder));
 
                             foreach (var bookFile in fls) {
 
@@ -281,7 +283,6 @@ namespace NodeNotes {
 
                                     pegi.nl();
                                 }
-
                             }
                         }
                     }
@@ -350,7 +351,7 @@ namespace NodeNotes {
                 gr.SaveToFile();
             }
 
-            QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString());
+            QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString(), asBytes: true);
         }
 
         public override CfgEncoder Encode()

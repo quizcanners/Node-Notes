@@ -44,19 +44,19 @@ namespace NodeNotes
 
             bool changed = false;
 
-            this.inspect_Name().nl(ref changed);
+            this.inspect_Name().changes(ref changed);
+
+            if (Shortcuts.CurrentNode == null && "Start Here".ClickConfirm("stSt", "Are ou sure? This will let this Book as origin of this character."))
+                Shortcuts.CurrentNode = NodeBook.inspected.allBaseNodes[nodeIndex].AsNode;
+            
+            pegi.nl();
 
             "{0} is a reference Key to this Entry Point. Target node can be changed at any point".F(entryPointName).writeHint();
 
-            "On Node".select_iGotIndex_SameClass<Base_Node, Node>(60, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
+            "Destination Node".select_iGotIndex_SameClass<Base_Node, Node>(100, ref nodeIndex, NodeBook.inspected.allBaseNodes.GetAllObjsNoOrder()).nl();
             
             "Can Be A Game Start".toggle(ref startPoint).nl();
             
-            if (Shortcuts.CurrentNode == null && "Start Here".ClickConfirm("stSt", "Are ou sure? This will let this Book as origin of this character."))
-            {
-                Shortcuts.CurrentNode = NodeBook.inspected.allBaseNodes[nodeIndex].AsNode;
-            }
-
             return changed;
         }
 

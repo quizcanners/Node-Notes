@@ -131,7 +131,6 @@ GameObject:
   m_Component:
   - component: {fileID: 39652740}
   - component: {fileID: 39652739}
-  - component: {fileID: 39652738}
   m_Layer: 0
   m_Name: '[UI] TOP-DOWN Camera'
   m_TagString: MainCamera
@@ -139,18 +138,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &39652738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 39652737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!20 &39652739
 Camera:
   m_ObjectHideFlags: 0
@@ -1981,7 +1968,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1868816457}
   - component: {fileID: 1868816458}
-  - component: {fileID: 1868816459}
   m_Layer: 0
   m_Name: FPS Camera
   m_TagString: Untagged
@@ -2047,18 +2033,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &1868816459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1868816456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2380204071244779354
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -186,8 +186,7 @@ namespace NodeNotes_Visual
         }
 
         private enum InspectedItem { Triggers = 1, CurrentNode = 2, Books = 4, Users = 5}
-
-
+        
         private int _inspectedItems = -1;
         protected bool InspectionTabs()
         {
@@ -264,7 +263,7 @@ namespace NodeNotes_Visual
 
                     pegi.nl();
 
-                    pegi.Try_Nested_Inspect(source.visualRepresentation).nl();
+                    pegi.Try_Nested_Inspect(source.visualRepresentation).nl(ref changed);
                 } else 
 
                 if (CurrentNode != null)
@@ -494,6 +493,7 @@ namespace NodeNotes_Visual
 
         #endregion
 
+        #region Linked Lerp
         private LerpData _ld = new LerpData();
 
         protected override void DerivedUpdate() {
@@ -514,6 +514,7 @@ namespace NodeNotes_Visual
             modesAsLinkedLeprs.Lerp(_ld);
             systemAsLinkedLeprs.Lerp(_ld);
         }
+        #endregion
 
         protected override void OnDisable() {
 
@@ -531,6 +532,7 @@ namespace NodeNotes_Visual
             foreach (var gc in gameNodeControllers)
                 if (gc) gc.Initialize();
 
+            systemAsLinkedLeprs.Clear();
             foreach (var script in presentationSystems)
             {
                 script.ManagedOnEnable();
@@ -543,7 +545,8 @@ namespace NodeNotes_Visual
             Shortcuts.visualLayer = this;
 
             base.OnEnable();
-            
+
+            modesAsLinkedLeprs.Clear();
             foreach (var bg in presentationControllers)
             {
                 bg.ManagedOnInitialize();

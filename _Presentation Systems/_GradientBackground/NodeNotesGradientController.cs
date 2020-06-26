@@ -15,12 +15,7 @@ namespace NodeNotes_Visual {
         private LinkedLerp.ShaderColorValueGlobal bgColUp = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_1");
         private LinkedLerp.ShaderColorValueGlobal bgColCnter = new LinkedLerp.ShaderColorValueGlobal("_BG_CENTER_COL");
         private LinkedLerp.ShaderColorValueGlobal bgColDown = new LinkedLerp.ShaderColorValueGlobal("_BG_GRAD_COL_2");
-
-        public ShaderProperty.FloatValue bgTransparency = new ShaderProperty.FloatValue("_NodeNotes_Gradient_Transparency");
-
-
-       
-
+        
         public void SetTarget()
         {
             _lerpDone = false;
@@ -74,12 +69,10 @@ namespace NodeNotes_Visual {
         {
             var changed = false;
             
-
             "Background Up".edit(ref bgColUp.targetValue).nl(ref changed);
             "Background Center".edit(ref bgColCnter.targetValue).nl(ref changed);
             "Background Down".edit(ref bgColDown.targetValue).nl(ref changed);
-
-
+            
             if (changed)
                 SetTarget();
                 
@@ -95,7 +88,6 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
        
-
         public override void Decode(string data)
         {
             base.Decode(data);

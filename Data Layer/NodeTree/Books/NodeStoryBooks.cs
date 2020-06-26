@@ -22,7 +22,8 @@ namespace NodeNotes
             return null;
         }
 
-        public bool TryGetLoadedBook(IBookReference reff, out NodeBook nodeBook) => TryGetLoadedBook(reff.BookName, reff.AuthorName, out nodeBook);
+        public bool TryGetLoadedBook(IBookReference reff, out NodeBook nodeBook) 
+            => TryGetLoadedBook(reff.BookName, reff.AuthorName, out nodeBook);
 
         public bool TryGetLoadedBook(string bookName, string authorName, out NodeBook nodeBook)
         {
@@ -94,9 +95,7 @@ namespace NodeNotes
         private NodeBook _replaceReceived;
         private bool _inspectReplacementOption;
         public int _inspectedBook = -1;
-
-     
-
+        
         public bool Inspect()
         {
             var changed = false;
@@ -105,23 +104,19 @@ namespace NodeNotes
 
             if (newBook != null)
                 newBook.authorName = Shortcuts.users.current.Name;
-
-    
+            
             if (_inspectedBook == -1)
             {
-
                 #region Paste Options
 
                 if (_replaceReceived != null)
                 {
-
                     if (_replaceReceived.NameForPEGI.enter(ref _inspectReplacementOption))
                         _replaceReceived.Nested_Inspect();
                     else
                     {
                         if (icon.Done.ClickUnFocus())
                         {
-
                             var el = all.GetByIGotName(_replaceReceived);
                             if (el != null)
                                 all[all.IndexOf(el)] = _replaceReceived;
@@ -129,6 +124,7 @@ namespace NodeNotes
 
                             _replaceReceived = null;
                         }
+
                         if (icon.Close.ClickUnFocus())
                             _replaceReceived = null;
                     }
@@ -150,10 +146,7 @@ namespace NodeNotes
                 pegi.nl();
 
                 #endregion
-
             }
-
-
             return changed;
         }
 

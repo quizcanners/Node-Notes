@@ -134,7 +134,13 @@ namespace NodeNotes {
             }
         }
 
-        public bool InspectingSubNode { get { return _coreNodesMeta.Inspecting; } set { if (value == false) _coreNodesMeta.Inspecting  = false; } }
+        public bool InspectingSubNode
+        {
+            get { return _coreNodesMeta.Inspecting; }
+            set { if (value == false)
+                    _coreNodesMeta.Inspecting  = false;
+            }
+        }
         
         protected override string ResultsRole => "On Enter Results";
 

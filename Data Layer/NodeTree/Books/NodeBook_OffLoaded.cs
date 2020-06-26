@@ -61,21 +61,22 @@ namespace NodeNotes {
     
     public static class BookOffloadConversionExtensions {
         
-        public static NodeBook_OffLoaded Offload (this NodeBook book){
+        public static void Offload (this NodeBook book){
 
             var list = Shortcuts.books.all;
 
             if (book != null && list.Contains(book)) {
                 int ind = list.IndexOf(book);
                 book.SaveToFile();
-                var off = new NodeBook_OffLoaded(book);
-               
-                list[ind] = off;
-                return off;
-            }
+
+                if (Shortcuts.CurrentNode == null || Shortcuts.CurrentNode.parentBook != book)
+                {
+                    var off = new NodeBook_OffLoaded(book);
+                    list[ind] = off;
+                }
+            } else
 
             Debug.LogError("List does not contain the book you are unloading");
-            return null;
         }
 
         public static NodeBook Reload(this NodeBook book)

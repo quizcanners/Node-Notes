@@ -70,6 +70,9 @@ namespace NodeNotes_Visual {
 
             var value = currentNode != null ? activeTexts.GetAllTextFor(currentNode) : "No Node";
 
+            needUpdate = true;
+            dirty = true;
+
             if (targetText != null)
             {
                 if (value.Equals(targetText)) 
@@ -398,15 +401,12 @@ namespace NodeNotes_Visual {
 
             if (changed)
                 ClickableText.skipLerpForEditor = true;
-
-
-
+            
             return changed;
         }
 
         public void OnSourceNodeUpdate(Base_Node node) { }
-
-
+        
         #region Text Chunks
 
         public abstract class TextChunkBase : AbstractKeepUnrecognizedCfg, IGotClassTag, IGotDisplayName  {

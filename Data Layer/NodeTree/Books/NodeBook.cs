@@ -87,9 +87,8 @@ namespace NodeNotes
 
             var changed = false;
 
-            if (subNode._inspectedItems == -1 && !subNode.InspectingSubNode)
+            if ((subNode._inspectedItems == -1 && !subNode.InspectingSubNode) || Shortcuts.CurrentNode == null)
             {
-
                 if (_inspectedItems == -1 && icon.Share.foldout("Share options", ref _showShareOptions))
                 {
 
@@ -104,7 +103,6 @@ namespace NodeNotes
                 }
 
                 "Entry Points".enter_List(ref entryPoints, ref _inspectedEntry, ref _inspectedItems, 1).nl(ref changed);
-
             }
             else _inspectedItems = -1;
 
@@ -156,7 +154,7 @@ namespace NodeNotes
             if (icon.Save.Click("Save book (Also offloads RAM)"))
                 this.Offload();
 
-            if (this.EditedByCurrentUser() && icon.Undo.ClickConfirm("ldBk", "This will reaload your Book from resources"))
+            if (this.EditedByCurrentUser() && icon.Undo.ClickConfirm("ldBk"+ NameForDisplayPEGI(), "This will reload your Book from resources"))
                 this.Reload();
             
             if (icon.Email.Click("Send this Book to somebody via email."))

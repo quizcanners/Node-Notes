@@ -21,7 +21,8 @@ namespace NodeNotes {
         {
             Shortcuts.CurrentNode = null;
             current = new CurrentUser();
-            current.Decode(QcFile.Load.FromPersistentPath(_usersFolder, uname));
+            current.LoadFromPersistentPath(_usersFolder, uname);
+            current.Name = uname;
             _tmpUserName = uname;
         }
 
@@ -53,6 +54,7 @@ namespace NodeNotes {
             if (!all.Contains(uname))
             {
                 SaveCurrentToPersistentPath();
+                Shortcuts.CurrentNode = null;
 
                 current = new CurrentUser
                 {
@@ -83,33 +85,29 @@ namespace NodeNotes {
         }
 
         private string _tmpUserName = "";
-
-
-
+        
         private int _inspectedItems = -1;
 
         public bool Inspect()
         {
             var changed = false;
             
-                if (all.Count > 1 && icon.Delete.ClickConfirm("delUsr", "Are you sure you want to delete this User?"))
-                    DeleteUser();
+            if (all.Count > 1 && icon.Delete.ClickConfirm("delUsr", "Are you sure you want to delete this User?"))
+                DeleteUser();
 
-                string usr = current.Name;
-                if (pegi.select(ref usr, all))
-                {
-                    SaveCurrentToPersistentPath();
-                    LoadUser(usr);
-                }
+            string usr = current.Name;
+            if (pegi.select(ref usr, all))
+            {
+                SaveCurrentToPersistentPath();
+                Shortcuts.CurrentNode = null;
+                LoadUser(usr);
+            }
             
-
-            if (icon.Enter.enter(ref _inspectedItems, 0, "Inspect user").nl_ifEntered())
+            if (icon.Enter.enter(ref _inspectedItems, 0, "Inspect user").nl())
                 current.Nested_Inspect().changes(ref changed);
 
-            if (icon.Edit.enter(ref _inspectedItems, 1, "Edit or Add user"))
+            if ("Edit or Add user".enter(ref _inspectedItems, 1).nl())
             {
-                pegi.nl();
-
                 "Name:".edit(60, ref _tmpUserName).nl();
 
                 if (_tmpUserName.Length <= 3)
@@ -127,8 +125,6 @@ namespace NodeNotes {
                         RenameUser(_tmpUserName);
                 }
             }
-
-
 
             return changed;
         }
@@ -366,7 +362,10 @@ namespace NodeNotes {
             if (Shortcuts.books.TryGetLoadedBook(_tmpBookName, _tmpAuthorName, out book))
                 Shortcuts.CurrentNode = book.allBaseNodes[_tmpNode] as Node;
             else
+            {
+                Debug.LogError("Book {0} by {1} not found".F(_tmpBookName, _tmpAuthorName));
                 ReturnToBookMark();
+            }
         }
         
         public override bool Decode(string tg, string data) {
@@ -392,7 +391,6 @@ namespace NodeNotes {
             .Add("vals", Values.global)
             .Add_Bool("dev", isADeveloper)
             .Add_String("n", Name)
-            //.Add_String("start", startingPoint)
             .Add_IfNotEmpty("pgnd", gameNodesData_PerUser);
 
             var cur = Shortcuts.CurrentNode;

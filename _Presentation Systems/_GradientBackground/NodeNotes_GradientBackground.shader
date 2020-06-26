@@ -47,7 +47,6 @@
 					return o;
 				}
 
-				uniform float _NodeNotes_Gradient_Transparency;
 				uniform float4 _BG_GRAD_COL_1;
 				uniform float4 _BG_GRAD_COL_2;
 				uniform float4 _BG_CENTER_COL;
@@ -113,7 +112,8 @@
 					float4 rayTrace = tex2Dlod(_RayTracing_TargetBuffer, float4(screenUV, 0, 0));
 #endif
 
-					float rt = (1 - _RayTraceTransparency*0.9) * center;
+					float rt = 0.9//(1 - _RayTraceTransparency*0.9) 
+						* center;
 					col = rayTrace * rt +col * (1 - rt);
 
 					center *= center*_BG_CENTER_COL.a;
