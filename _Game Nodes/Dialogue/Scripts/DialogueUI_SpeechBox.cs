@@ -62,11 +62,11 @@ public class DialogueUI_SpeechBox : MonoBehaviour, ILinkedLerping, IManageFading
         upperEdge.Lerp(ld);
         loverEdge.Lerp(ld);
 
-        graphic.SetCorner(1, upperEdge.CurrentValue);
-        graphic.SetCorner(2, upperEdge.CurrentValue);
+        graphic.SetCorner(RoundedGraphic.Corner.Up_Left, upperEdge.CurrentValue);
+        graphic.SetCorner(RoundedGraphic.Corner.Up_Right, upperEdge.CurrentValue);
 
-        graphic.SetCorner(0, loverEdge.CurrentValue);
-        graphic.SetCorner(3, loverEdge.CurrentValue);
+        graphic.SetCorner(RoundedGraphic.Corner.Down_Left, loverEdge.CurrentValue);
+        graphic.SetCorner(RoundedGraphic.Corner.Down_Right, loverEdge.CurrentValue);
 
         graphic.TrySetAlpha(transparency.CurrentValue);
         text.TrySetAlpha(transparency.CurrentValue);
