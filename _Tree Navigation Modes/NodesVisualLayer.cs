@@ -5,11 +5,12 @@ using PlaytimePainter;
 using QuizCannersUtilities;
 using RayMarching;
 using UnityEngine;
-using UnityEngine.Networking;
+
 
 namespace NodeNotes_Visual
 {
-    
+
+#pragma warning disable IDE0019 // Use pattern matching
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteInEditMode]
@@ -342,7 +343,7 @@ namespace NodeNotes_Visual
                 if ("Assets".enter(ref _inspectedDebugItem, 4).nl())
                     Shortcuts.Instance.InspectAssets().nl();
 
-                if ("Test Web Requests".enter(ref _inspectedDebugItem, 5).nl())
+               /* if ("Test Web Requests".enter(ref _inspectedDebugItem, 5).nl())
                 {
                     if (testRequest == null)
                     {
@@ -393,7 +394,7 @@ namespace NodeNotes_Visual
                         else
                             pegi.editBig(ref _testDownloadedCode);
                     }
-                }
+                }*/
 
                 if ("Presentation System Cfgs".enter(ref _inspectedDebugItem, 6).nl())
                 {
@@ -425,11 +426,11 @@ namespace NodeNotes_Visual
             return changed;
         }
 
-        private string _testDownloadedCode;
+       // private string _testDownloadedCode;
 
-        private UnityWebRequest testRequest;
+        //private UnityWebRequest testRequest;
 
-        private string _testUrl;
+        //private string _testUrl;
 
         public void OnGUI() {
 

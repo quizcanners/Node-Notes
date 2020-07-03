@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
@@ -7,6 +6,10 @@ using Object = UnityEngine.Object;
 
 namespace PlayerAndEditorGUI.NodeGraph
 {
+
+#if UNITY_EDITOR
+    using UnityEditor;
+
     public class PegiGraphWindow : EditorWindow
     {
         [NonSerialized] private PegiGraphView graphView;
@@ -44,4 +47,5 @@ namespace PlayerAndEditorGUI.NodeGraph
             
         }
     }
+#endif
 }

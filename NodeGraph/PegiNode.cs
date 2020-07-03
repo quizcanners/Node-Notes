@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
-using UnityEngine.UIElements;
-using UnityGraph = UnityEditor.Experimental.GraphView;
+
 
 namespace PlayerAndEditorGUI.NodeGraph
 {
+#if UNITY_EDITOR
+    using UnityEditor.Experimental.GraphView;
+    using UnityEngine;
+    using UnityEngine.UIElements;
+
     public class PegiNode : Node, IPEGI, IPEGI_GraphManager
     {
         private IPEGI_Node _source;
@@ -80,5 +82,5 @@ namespace PlayerAndEditorGUI.NodeGraph
 
     }
 
-
+#endif
 }

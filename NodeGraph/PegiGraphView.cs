@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine.UIElements;
-using UnityGraph = UnityEditor.Experimental.GraphView;
+
 
 namespace PlayerAndEditorGUI.NodeGraph
 {
+#if UNITY_EDITOR
+
+    using UnityEditor.Experimental.GraphView;
+    using UnityEngine.UIElements;
+    using UnityGraph = UnityEditor.Experimental.GraphView;
+
     public class PegiGraphView : UnityGraph.GraphView
     {
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -35,4 +39,5 @@ namespace PlayerAndEditorGUI.NodeGraph
             return node;
         }
     }
+#endif
 }

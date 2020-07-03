@@ -1,14 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Audio;
 
 namespace NodeNotes_Visual
 {
+
+#pragma warning disable IDE0018 // Inline variable declaration
 
     public class AmbientSoundsMixerMgmt : PresentationSystemsAbstract, IPEGI
     {

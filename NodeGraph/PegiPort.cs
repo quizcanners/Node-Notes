@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QuizCannersUtilities;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine.UIElements;
-using UnityGraph = UnityEditor.Experimental.GraphView;
 
 namespace PlayerAndEditorGUI.NodeGraph
 {
+
+#if UNITY_EDITOR
+    using UnityEditor.Experimental.GraphView;
+
     public abstract class PegiPort
     {    
         protected Port.Capacity _capacity;
@@ -127,4 +130,5 @@ namespace PlayerAndEditorGUI.NodeGraph
         #endregion
     }
 
+#endif
 }

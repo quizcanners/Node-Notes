@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using System;
+
 #if UNITY_EDITOR
+
 using UnityEditor;
-#endif
+using UnityEditor.Experimental.GraphView;
+
 namespace PlayerAndEditorGUI.NodeGraph
 {
     public class PegiNodeGraphExamples : MonoBehaviour, IPEGI, IPEGI_Node
@@ -64,7 +66,7 @@ namespace PlayerAndEditorGUI.NodeGraph
 
         public class TestNode : IPEGI_Node, IPEGI, IGotDisplayName
         {
-            private string _name;
+            private readonly string _name;
 
             private PegiPort<float> portA = new PegiPort<float>(Direction.Input, "Port A");
             private PegiPort<float> portB = new PegiPort<float>(Direction.Output, "Port B");
@@ -118,3 +120,5 @@ namespace PlayerAndEditorGUI.NodeGraph
     public class PixelPerfectShaderDrawer : PEGI_Inspector_Mono<PegiNodeGraphExamples> { }
 #endif
 }
+
+#endif
