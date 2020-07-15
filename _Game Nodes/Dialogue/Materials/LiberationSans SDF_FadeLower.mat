@@ -147,7 +147,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _EnvMatrixRotation: {r: 0, g: 0, b: 0, a: 0}
     - _FaceColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
-    - _FadeRange: {r: -0.2, g: 0, b: 1.2, a: 0.3}
+    - _FadeRange: {r: -0.2, g: 0, b: 1.2, a: 0.6}
     - _GlowColor: {r: 0.050980568, g: 0, b: 1, a: 0.76862746}
     - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
     - _MaskEdgeColor: {r: 1, g: 1, b: 1, a: 1}

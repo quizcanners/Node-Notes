@@ -84,9 +84,7 @@
 
 					float4 col = _BG_GRAD_COL_1 * up + _BG_GRAD_COL_2 * (1 - up);
 
-					float center = saturate(1 - (off.x + off.y) - clickEffect);
-
-					
+					float center = smoothstep(2.5 , 0 ,(off.x + off.y) + clickEffect);
 
 #if RT_MOTION_TRACING
 					float2 pixOff = _RayTracing_TargetBuffer_ScreenFillAspect.zw * 1.5;
@@ -95,9 +93,8 @@
 					float4 blur;
 					float same;
 
-					#define R(kernel) blur = tex2Dlod( _RayTracing_TargetBuffer, float4(screenUV + kernel* pixOff  ,0,0)); same = 1 - min(1, abs(blur.a - col.a)*0.01); rayTrace.rgb = max(rayTrace.rgb, blur.rgb * same * 0.55)
+					#define R(kernel) blur = tex2Dlod( _RayTracing_TargetBuffer, float4(screenUV + kernel* pixOff  ,0,0)); rayTrace.rgb = max(rayTrace.rgb, blur.rgb * 0.55); //same = 1 - min(1, abs(blur.a - col.a)*0.01); rayTrace.rgb = max(rayTrace.rgb, blur.rgb * same * 0.55)
 
-					//float4 blur =	
 					R(float2(-1, 0));
 					R(float2(1, 0));
 					R(float2(0, -1));
@@ -105,20 +102,17 @@
 					R(float2(1, 1));
 					R(float2(-1, -1));
 					R(float2(1, -1));
-					R(float2(-1, 1)); //col;
-
-					//col.rgb = blur /= 9;
+					R(float2(-1, 1)); 
 #else
 					float4 rayTrace = tex2Dlod(_RayTracing_TargetBuffer, float4(screenUV, 0, 0));
 #endif
 
-					float rt = 0.9//(1 - _RayTraceTransparency*0.9) 
-						* center;
+					float rt = 1 * center;
 					col = rayTrace * rt +col * (1 - rt);
 
-					center *= center*_BG_CENTER_COL.a;
+					//center *= center*_BG_CENTER_COL.a;
 	
-					col.rgb = col.rgb * (1 - center) + _BG_CENTER_COL.rgb*center;
+					//col.rgb = col.rgb * (1 - center) + _BG_CENTER_COL.rgb*center;
 
 					
 					#ifdef UNITY_COLORSPACE_GAMMA
