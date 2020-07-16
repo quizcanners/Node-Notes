@@ -58,7 +58,10 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
                 downClickFullyShown = true;
 
             if (down)
-                _mouseDownPosition = Input.mousePosition.XY() / new Vector2(Screen.width, Screen.height);
+            {
+                var newPosition = Input.mousePosition.XY() / new Vector2(Screen.width, Screen.height);
+                _mouseDownPosition = LerpUtils.LerpBySpeed(_mouseDownPosition, newPosition, 4) ;
+            }
 
             UpdatemousePosition();
         }
