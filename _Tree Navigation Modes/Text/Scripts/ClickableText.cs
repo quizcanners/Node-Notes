@@ -137,15 +137,15 @@ namespace NodeNotes_Visual {
             {
                
                 audioSource.PlayOneShot(activeTexts.ProcessClick(linkIndex) ? 
-                    Shortcuts.Instance.onMouseClickSound
-                    : Shortcuts.Instance.onMouseClickFailedSound);
+                    Shortcuts.Assets.onMouseClickSound
+                    : Shortcuts.Assets.onMouseClickFailedSound);
             }
         }
 
         public void OnPointerDown(PointerEventData eventData) {
             int linkIndex;
             if (TryGetLinkIndex(eventData, out linkIndex))
-                audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
+                audioSource.PlayOneShot(Shortcuts.Assets.onMouseDownButtonSound);
 
         }
 

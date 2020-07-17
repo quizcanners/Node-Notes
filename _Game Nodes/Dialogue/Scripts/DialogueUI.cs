@@ -378,7 +378,7 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
 
         DialogueNode.SelectOption(index);
 
-        audioSource.PlayOneShot(Shortcuts.Instance.onMouseClickSound);
+        audioSource.PlayOneShot(Shortcuts.Assets.onMouseClickSound);
 
     }
 
@@ -386,13 +386,13 @@ public class DialogueUI : GameControllerBase, IPEGI, IManageFading {
     {
         DialogueNode.SelectOption(0);
 
-        audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
+        audioSource.PlayOneShot(Shortcuts.Assets.onMouseDownButtonSound);
     }
     
     public void Exit()
     {
 
-        audioSource.PlayOneShot(Shortcuts.Instance.onMouseClickSound);
+        audioSource.PlayOneShot(Shortcuts.Assets.onMouseClickSound);
         DialogueNode.enteredInstance?.Exit();
     }
 

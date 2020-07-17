@@ -80,7 +80,7 @@ namespace NodeNotes_Visual
                     Swap();
 
                     AudioClip song;
-                    if (Shortcuts.Instance.Get(targetMusic, out song))
+                    if (Shortcuts.Assets.Get(targetMusic, out song))
                     {
                         ActiveMusicSource.clip = song;
                         ActiveMusicSource.loop = true;
@@ -149,7 +149,7 @@ namespace NodeNotes_Visual
         {
             var changed = false;
 
-            "Ambient".select(60, ref targetMusic, Shortcuts.Instance.GetAudioClipObjectsKeys()).nl(ref changed);
+            "Ambient".select(60, ref targetMusic, Shortcuts.Assets.GetAudioClipObjectsKeys()).nl(ref changed);
 
             "Transition type".editEnum(100, ref transitionType).nl(ref changed);
 

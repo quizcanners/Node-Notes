@@ -10,8 +10,9 @@ using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
 
+#pragma warning disable IDE0018 // Inline variable declaration
     #region Unity Native Components
-    
+
     [TaggedType(classTag, "Local To World")]
     public class LocalToWorldCfg : ComponentCfgGeneric<LocalToWorld>, IPEGI_ListInspect
     {
@@ -47,9 +48,9 @@ namespace NodeNotes_Visual.ECS {
         public override void SetData(Entity e)
         {
             Material mtrl;
-            Shortcuts.Instance.Get(mat, out mtrl);
+            Shortcuts.Assets.Get(mat, out mtrl);
 
-            e.Set_Mesh(Shortcuts.Instance.GetMesh(mesh), mtrl);
+            e.Set_Mesh(Shortcuts.Assets.GetMesh(mesh), mtrl);
         }
 
         #region Inspector

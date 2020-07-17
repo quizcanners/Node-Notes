@@ -582,7 +582,7 @@ namespace NodeNotes_Visual {
                 lerpsFinished = false;
                 audioSource.Stop();
                 Debug.Log("Stopping on leave");
-                audioSource.PlayOneShot(Shortcuts.Instance.onMouseLeaveSound);
+                audioSource.PlayOneShot(Shortcuts.Assets.onMouseLeaveSound);
             }
 
         }
@@ -764,8 +764,8 @@ namespace NodeNotes_Visual {
                 if (Input.GetMouseButtonDown(0)) {
                    
                     _mouseDown = true;
-                    audioSource.PlayOneShot(Shortcuts.Instance.onMouseDownButtonSound);
-                    audioSource.clip = Shortcuts.Instance.onMouseHoldSound;
+                    audioSource.PlayOneShot(Shortcuts.Assets.onMouseDownButtonSound);
+                    audioSource.clip = Shortcuts.Assets.onMouseHoldSound;
                     audioSource.loop = true;
                     audioSource.Play();
                    // Debug.Log("Starting");
@@ -779,8 +779,8 @@ namespace NodeNotes_Visual {
                     if (_mouseDown) {
                         audioSource.PlayOneShot(
                             (source != null && source.OnMouseOver(true)) ?
-                            Shortcuts.Instance.onMouseClickSound : 
-                            Shortcuts.Instance.onMouseClickFailedSound
+                            Shortcuts.Assets.onMouseClickSound : 
+                            Shortcuts.Assets.onMouseClickFailedSound
                         );
                         click = true;
                     }

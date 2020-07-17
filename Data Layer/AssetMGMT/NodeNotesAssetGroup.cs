@@ -6,6 +6,7 @@ using PlayerAndEditorGUI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using System.Collections;
+using NodeNotes.RayTracing;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,7 +14,7 @@ using UnityEditor;
 namespace NodeNotes
 {
     [CreateAssetMenu(fileName = "Unity Asset Group", menuName = "Node Nodes/Unity Asset Group", order = 0)]
-    public class NodeNotesAssetGroups : ScriptableObject, IPEGI
+    public class NodeNotesAssetGroup : ScriptableObject, IPEGI
     {
 
         [Serializable] public class TaggedAudioClips : TaggedAssetsList<AudioClip> { }
@@ -25,9 +26,10 @@ namespace NodeNotes
         [Serializable] public class TaggedSdfObject : TaggedAssetsList<SDFobject> { }
         public TaggedSdfObject sdfObjects;
 
+        [Serializable] public class TaggedRayTracingPrefabs : TaggedAssetsList<RayTracingPrefabObject> { }
+        public TaggedRayTracingPrefabs rayTraceObjects;
 
-
-        protected static bool TryGetAsset<T, G>(string tag, out T asset, List<G> list, Dictionary<string, T> lookup) where G: TaggedAssetGeneric where T : Object
+        protected static bool TryGetAsset_Internal<T, G>(string tag, out T asset, List<G> list, Dictionary<string, T> lookup) where G: TaggedAssetGeneric where T : Object
         {
             if (lookup.TryGetValue(tag, out asset))
                 return true;
@@ -50,17 +52,19 @@ namespace NodeNotes
             return false;
         }
 
+        private int _inspectedAssetList = -1;
         public bool Inspect()
         {
             pegi.toggleDefaultInspector(this).nl();
-            
-            audioClips.Nested_Inspect();
 
-            materials.Nested_Inspect();
-            
-            sdfObjects.Nested_Inspect();
+            audioClips.enter_Inspect(ref _inspectedAssetList, 0).nl();
 
-            
+            materials.enter_Inspect(ref _inspectedAssetList, 1).nl();
+
+            sdfObjects.enter_Inspect(ref _inspectedAssetList, 2).nl();
+
+            rayTraceObjects.enter_Inspect(ref _inspectedAssetList, 3).nl();
+
             return false;
         }
 
@@ -69,12 +73,13 @@ namespace NodeNotes
         {
             [SerializeField] public List<TaggedAssetGeneric> taggedList;
             private Dictionary<string, T> _listCached = new Dictionary<string, T>();
-            public bool TreGet(string tag, out T mat) => TryGetAsset(tag, out mat, taggedList, _listCached);
+            public bool TreGet(string tag, out T mat) => TryGetAsset_Internal(tag, out mat, taggedList, _listCached);
 
 
             private int _inspectedElement = -1;
             public bool Inspect()
             {
+                pegi.nl();
 
                 TaggedAssetGeneric.inspectedType = typeof(T);
 
@@ -94,7 +99,6 @@ namespace NodeNotes
 
             public bool InspectInList(IList list, int ind, ref int edited)
             {
-
                 pegi.edit(ref tag);
                 
                 pegi.edit(ref asset, inspectedType);
@@ -105,7 +109,7 @@ namespace NodeNotes
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(NodeNotesAssetGroups))]
-    public class NodeNotesAssetGroupsDrawer : PEGI_Inspector_SO<NodeNotesAssetGroups> { }
+    [CustomEditor(typeof(NodeNotesAssetGroup))]
+    public class NodeNotesAssetGroupsDrawer : PEGI_Inspector_SO<NodeNotesAssetGroup> { }
 #endif
 }

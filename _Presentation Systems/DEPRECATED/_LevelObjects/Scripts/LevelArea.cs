@@ -11,6 +11,8 @@ using UnityEditor;
 
 namespace NodeNotes_Visual
 {
+
+#pragma warning disable IDE0018 // Inline variable declaration
     public class LevelArea : ComponentCfg, IManageFading, ILinkedLerping
     {
 
@@ -23,7 +25,7 @@ namespace NodeNotes_Visual
 
             SDFobject pfab;
 
-            Shortcuts.Instance.Get(tag, out pfab);
+            Shortcuts.Assets.Get(tag, out pfab);
 
             if (pfab)
             {
@@ -72,7 +74,7 @@ namespace NodeNotes_Visual
             {
                 var changed = false;
 
-                var keys = Shortcuts.Instance.GetSdfObjectsKeys();
+                var keys = Shortcuts.Assets.GetSdfObjectsKeys();
 
                 if (pegi.select(ref tag, keys))
                 {

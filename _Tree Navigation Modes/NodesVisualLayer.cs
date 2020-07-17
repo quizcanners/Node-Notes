@@ -328,8 +328,6 @@ namespace NodeNotes_Visual
 
             if (_inspectedItems == -1)
             {
-              
-
                 "Presentation Modes [For Node Tree]"
                     .enter_List_UObj(ref presentationControllers, ref _inspectedBackground, ref _inspectedDebugItem, 0)
                     .nl(ref changed);
@@ -341,60 +339,63 @@ namespace NodeNotes_Visual
                 "Textures".enter_Inspect(textureDownloader, ref _inspectedDebugItem, 3).nl_ifNotEntered(ref changed);
 
                 if ("Assets".enter(ref _inspectedDebugItem, 4).nl())
-                    Shortcuts.Instance.InspectAssets().nl();
-
-               /* if ("Test Web Requests".enter(ref _inspectedDebugItem, 5).nl())
                 {
-                    if (testRequest == null)
-                    {
-                        "Test URL".edit(90, ref _testUrl).nl();
-                        if ("Get".Click())
-                        {
-                            testRequest = UnityWebRequest.Get(_testUrl);
-                            testRequest.SendWebRequest();
-                        }
-                    }
-                    else
-                    {
+                  if (Shortcuts.Assets.Nested_Inspect().nl())
+                      Shortcuts.Instance.SetToDirty();
+                }
 
-                        if ("Dispose Request".Click().nl())
-                        {
-                            testRequest.Abort();
-                            testRequest.Dispose();
-                            testRequest = null;
-                        }
-                        else
-                        {
-
-                            if (testRequest.isNetworkError)
-                            {
-                                "Error".nl(PEGI_Styles.ListLabel);
-                                pegi.writeBig(testRequest.error);
-                            }
-                            else
-                            {
-                                if (!testRequest.isDone)
-                                    "Progress: {0}".F(testRequest.downloadProgress).nl();
-                                else
-                                {
-                                    "Done".write();
-
-                                    if ("Read Content".Click().nl())
-                                        _testDownloadedCode = testRequest.downloadHandler.text;
-
-                                }
-                            }
-                        }
-                    }
-
-                    if (!_testDownloadedCode.IsNullOrEmpty())
-                    {
-                        if ("Clear".Click().nl())
-                            _testDownloadedCode = null;
-                        else
-                            pegi.editBig(ref _testDownloadedCode);
-                    }
-                }*/
+                /* if ("Test Web Requests".enter(ref _inspectedDebugItem, 5).nl())
+                 {
+                     if (testRequest == null)
+                     {
+                         "Test URL".edit(90, ref _testUrl).nl();
+                         if ("Get".Click())
+                         {
+                             testRequest = UnityWebRequest.Get(_testUrl);
+                             testRequest.SendWebRequest();
+                         }
+                     }
+                     else
+                     {
+ 
+                         if ("Dispose Request".Click().nl())
+                         {
+                             testRequest.Abort();
+                             testRequest.Dispose();
+                             testRequest = null;
+                         }
+                         else
+                         {
+ 
+                             if (testRequest.isNetworkError)
+                             {
+                                 "Error".nl(PEGI_Styles.ListLabel);
+                                 pegi.writeBig(testRequest.error);
+                             }
+                             else
+                             {
+                                 if (!testRequest.isDone)
+                                     "Progress: {0}".F(testRequest.downloadProgress).nl();
+                                 else
+                                 {
+                                     "Done".write();
+ 
+                                     if ("Read Content".Click().nl())
+                                         _testDownloadedCode = testRequest.downloadHandler.text;
+ 
+                                 }
+                             }
+                         }
+                     }
+ 
+                     if (!_testDownloadedCode.IsNullOrEmpty())
+                     {
+                         if ("Clear".Click().nl())
+                             _testDownloadedCode = null;
+                         else
+                             pegi.editBig(ref _testDownloadedCode);
+                     }
+                 }*/
 
                 if ("Presentation System Cfgs".enter(ref _inspectedDebugItem, 6).nl())
                 {

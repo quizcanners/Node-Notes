@@ -17,8 +17,6 @@ namespace NodeNotes_Visual {
 
         public override string ClassTag => classTag;
         
-       // public Countless<string> perNodeRtxConfigs = new Countless<string>();
-        
         public bool isFading;
 
         private bool _isRendering = true;
@@ -444,6 +442,14 @@ namespace NodeNotes_Visual {
 
             pegi.nl();
             
+            if ("Hide All".Click())
+                HideAll();
+
+            if ("Show All".Click())
+                UpdateCurrentNodeGroupVisibilityAround();
+
+            pegi.nl();
+
             if (!IsRendering && "Reenable Nodes Rending".Click())
                 IsRendering = true;
 

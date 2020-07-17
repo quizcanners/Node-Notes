@@ -36,3 +36,9 @@ MonoBehaviour:
     - tag: sphere
       asset: {fileID: 6941661268866573706, guid: 64ae4672e2a3e9c4282a7bd478b4d2b6,
         type: 3}
+    - tag: tag
+      asset: {fileID: 0}
+  rayTraceObjects:
+    taggedList:
+    - tag: building
+      asset: {fileID: 11400000, guid: be96e57a37b05cc4fa2bb8b4a9060943, type: 2}
