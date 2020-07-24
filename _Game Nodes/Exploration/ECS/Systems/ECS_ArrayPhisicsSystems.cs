@@ -112,7 +112,7 @@ namespace NodeNotes_Visual.ECS {
                 if (!initialized)
                     Initialize();
 
-                Entities.ForEach((Translation pos, PhisicsArrayDynamic_Component dta) =>
+                Entities.ForEach((ref PhisicsArrayDynamic_Component dta, in Translation pos) =>
                 {
                     dta.testValue += 0.1f;
                 }).Run();
