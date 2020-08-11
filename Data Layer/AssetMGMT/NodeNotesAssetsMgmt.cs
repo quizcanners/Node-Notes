@@ -1,4 +1,5 @@
-﻿using NodeNotes_Visual;
+﻿using NodeNotes.RayTracing;
+using NodeNotes_Visual;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using System;
@@ -20,13 +21,15 @@ namespace NodeNotes
         [SerializeField] private FilteredMaterials Materials = new FilteredMaterials((NodeNotesAssetGroup grp) => grp.materials);
         [SerializeField] private FilteredSdfObjects SdfObjects = new FilteredSdfObjects((NodeNotesAssetGroup grp) => grp.sdfObjects);
         [SerializeField] private FilteredAudioClips AudioClips = new FilteredAudioClips((NodeNotesAssetGroup grp) => grp.audioClips);
+        [SerializeField] private FilteredRayTracedObjects RtObjects = new FilteredRayTracedObjects((NodeNotesAssetGroup grp) => grp.rayTraceObjects);
+
 
         private void RefreshAssetGroups()
         {
             Materials.Refresh();
             AudioClips.Refresh();
             SdfObjects.Refresh();
-            
+            RtObjects.Refresh();
         }
 
 
@@ -94,6 +97,24 @@ namespace NodeNotes
         public List<string> GetAudioClipObjectsKeys() => AudioClips.GetAllKeysKeys(assetGroups);
         #endregion
 
+        #region Filtered RayTracing Objects
+        [Serializable]
+        public class FilteredRayTracedObjects : FilteredAssetGroup<RayTracingPrefabObject>
+        {
+            public FilteredRayTracedObjects(Func<NodeNotesAssetGroup, TaggedAssetsList<RayTracingPrefabObject>> getOne) : base(getOne)
+            {
+            }
+        }
+
+        public bool Get(string key, out RayTracingPrefabObject sdf)
+        {
+            sdf = RtObjects.Get(key, assetGroups);
+            return sdf;
+        }
+
+        public List<string> GetRayTracedObjectsKeys() => RtObjects.GetAllKeysKeys(assetGroups);
+        #endregion
+
         [SerializeField] public AudioClip onMouseDownButtonSound;
         [SerializeField] public AudioClip onMouseClickSound;
         [SerializeField] public AudioClip onMouseClickFailedSound;
@@ -118,10 +139,7 @@ namespace NodeNotes
             return changed;
         
         }
-
-
-
-
+        
         #region Filtered Group Base
 
         [Serializable]
@@ -177,8 +195,7 @@ namespace NodeNotes
             }
 
         }
+        
         #endregion
-
-
     }
 }

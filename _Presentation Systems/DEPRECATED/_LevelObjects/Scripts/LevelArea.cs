@@ -85,11 +85,6 @@ namespace NodeNotes_Visual
             }
         }
 
-      //  [NonSerialized] private PlaytimePainter.PlaytimePainter _painter;
-       // [NonSerialized] private MeshFilter _meshFilter;
-      //  [NonSerialized] private MeshRenderer _meshRenderer;
-     //   [NonSerialized] private string _materialTag;
-
         private Base_Node source;
 
         private Vector3 relativePosition = new Vector3(-1, 0, 2);
