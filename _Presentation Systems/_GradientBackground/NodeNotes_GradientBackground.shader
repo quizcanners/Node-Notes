@@ -56,6 +56,9 @@
 				uniform float4 _RayTracing_TargetBuffer_ScreenFillAspect;
 				uniform float _RayTraceTransparency;
 
+
+	
+
 				float4 frag(v2f i) : COLOR{
 
 					float2 screenUV = i.screenPos.xy / i.screenPos.w;

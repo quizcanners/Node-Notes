@@ -13,10 +13,18 @@ sampler2D _Global_Water_Particles_Mask_D;
 sampler2D _NodeNotes_SpiralMask;
 
 float4 _NodeNotes_MousePosition; // w is Screen.Width/Screen.Height
+float4 _NodeNotes_MousePositionPrev;
 float4 _NodeNotes_MouseDerrived; // x - One Directional Speed
 
+inline float DistToLine(float2 pos, float2 a, float2 b) {
+	float2 pa = pos - a;
+	float2 ba = b - a;
+	float t = saturate(dot(pa, ba) / dot(ba, ba));
+	return length(pa - ba * t);
+}
+
 inline float PowerFromClick(float2 screenUV) {
-	float2 fromMouse = (screenUV - _NodeNotes_MousePosition.xy);
+	float2 fromMouse = DistToLine(screenUV, _NodeNotes_MousePosition.xy, _NodeNotes_MousePositionPrev.xy);//(screenUV - _NodeNotes_MousePosition.xy);
 	fromMouse.x *= _NodeNotes_MousePosition.w;
 
 	float radius = max(0 , 1 - length(fromMouse) * 4);

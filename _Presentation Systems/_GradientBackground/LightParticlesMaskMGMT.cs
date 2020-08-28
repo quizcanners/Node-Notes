@@ -11,6 +11,7 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
     private readonly ShaderProperty.TextureValue _waterParticlesTextureGlobalLight = new ShaderProperty.TextureValue("_Global_Water_Particles_Mask_L");
     private readonly ShaderProperty.TextureValue _waterParticlesTextureGlobalDark = new ShaderProperty.TextureValue("_Global_Water_Particles_Mask_D");
     private readonly ShaderProperty.VectorValue _mousePosition = new ShaderProperty.VectorValue("_NodeNotes_MousePosition");
+    private readonly ShaderProperty.VectorValue _mousePositionPrev = new ShaderProperty.VectorValue("_NodeNotes_MousePositionPrev");
     private readonly ShaderProperty.VectorValue _mousePressDerrived = new ShaderProperty.VectorValue("_NodeNotes_MouseDerrived");
     private readonly ShaderProperty.TextureValue _spiralMask = new ShaderProperty.TextureValue("_NodeNotes_SpiralMask");
 
@@ -21,6 +22,7 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
 
     void UpdatemousePosition()
     {
+        _mousePositionPrev.GlobalValue = _mousePosition.GlobalValue;
         _mousePosition.GlobalValue = _mouseDownPosition.ToVector4(_mouseDownStrength, ((float)Screen.width) / Screen.height);
         _mousePressDerrived.GlobalValue = new Vector4(_mouseDownStrengthOneDirectional, 0 ,0 ,0 );
     }
@@ -60,7 +62,7 @@ public class LightParticlesMaskMGMT : MonoBehaviour {
             if (down)
             {
                 var newPosition = Input.mousePosition.XY() / new Vector2(Screen.width, Screen.height);
-                _mouseDownPosition = LerpUtils.LerpBySpeed(_mouseDownPosition, newPosition, 4) ;
+                _mouseDownPosition = newPosition;//LerpUtils.LerpBySpeed(_mouseDownPosition, newPosition, 4) ;
             }
 
             UpdatemousePosition();
