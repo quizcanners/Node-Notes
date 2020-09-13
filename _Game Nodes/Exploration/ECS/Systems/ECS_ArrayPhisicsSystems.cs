@@ -1,16 +1,16 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
-using Unity.Entities;
+//using Unity.Entities;
 using Unity.Jobs;
-using Unity.Transforms;
+//using Unity.Transforms;
 using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
     
-    [ExecuteInEditMode]
+  /*  [ExecuteInEditMode]
     public class ECS_WeightlessObjects : JobComponentSystem {
 
-        /*
+        
         [BurstCompile]
         struct MovementJob : IJobForEach<Translation, PhisicsArrayDynamic_Component>
         {
@@ -20,7 +20,7 @@ namespace NodeNotes_Visual.ECS {
             public void Execute(ref Translation pos, ref PhisicsArrayDynamic_Component dta) {
                 dta.testValue += previousArray[0] * deltaTime;
             }
-        }*/
+        }
 
         //public static JobHandle jh;
 
@@ -41,7 +41,7 @@ namespace NodeNotes_Visual.ECS {
                 /*MovementJob moveJob = new MovementJob {
                     deltaTime = Time.DeltaTime,
                     previousArray = ECS_ObjectsToArray.previousPositions
-                };*/
+                };
 
                // jh = moveJob.Schedule(this, inputDeps);
             }
@@ -87,7 +87,7 @@ namespace NodeNotes_Visual.ECS {
         public static NativeArray<int> staticPositions;
         #endregion
 
-       /* [BurstCompile]
+        [BurstCompile]
         struct MovementJob : IJobForEach<Translation, PhisicsArrayDynamic_Component> {
             public float deltaTime;
             [ReadOnly]
@@ -101,7 +101,7 @@ namespace NodeNotes_Visual.ECS {
 
                 currentArray[0] = previousArray[0] + 1;
             }
-        }*/
+        }
 
        // public static JobHandle jh;
 
@@ -117,11 +117,11 @@ namespace NodeNotes_Visual.ECS {
                     dta.testValue += 0.1f;
                 }).Run();
 
-              /*  MovementJob moveJob = new MovementJob {
+                MovementJob moveJob = new MovementJob {
                     deltaTime = Time.DeltaTime,
                     previousArray = previousPositions,
                     currentArray = currentPositions
-                };*/
+                };
 
                 //  jh = moveJob.Schedule(this, inputDeps);
             }
@@ -156,5 +156,5 @@ namespace NodeNotes_Visual.ECS {
             }
         }
     }
-    
+    */
 }

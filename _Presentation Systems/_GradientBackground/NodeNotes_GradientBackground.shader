@@ -18,7 +18,7 @@
 			Pass{
 
 				CGPROGRAM
-				#include "Assets/NodeNotes/_Presentation Systems/NodeNotesShaders.cginc"
+				#include "Assets/Node-Notes/_Presentation Systems/NodeNotesShaders.cginc"
 				#pragma vertex vert
 				#pragma fragment frag
 				#pragma multi_compile_fwdbase

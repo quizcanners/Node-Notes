@@ -1,7 +1,7 @@
 ﻿using System;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using Unity.Entities;
+//using Unity.Entities;
 using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
@@ -13,8 +13,7 @@ namespace NodeNotes_Visual.ECS {
  /*   public class ComponentSTDAttributeAttribute : AbstractWithTaggedTypes {
         public override TaggedTypesCfg TaggedTypes => ComponentCfgAbstract.all;
     }
-
-    [ComponentSTDAttribute]*/
+    
     public abstract class ComponentCfgAbstract : AbstractKeepUnrecognizedCfg, IGotClassTag
     {
         #region Tagged Types
@@ -45,6 +44,7 @@ namespace NodeNotes_Visual.ECS {
 
     }
 
+    /*
     public abstract class ComponentCfgGeneric<T> : ComponentCfgAbstract, IPEGI where T : struct, IComponentData {
 
         public static EntityManager Manager => NodeNotesECSManager.Manager;
@@ -163,7 +163,7 @@ namespace NodeNotes_Visual.ECS {
         }
         #endregion
     }
-
+    */
     #endregion
 
 }

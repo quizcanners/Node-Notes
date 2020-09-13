@@ -4,7 +4,7 @@ using NodeNotes;
 using NodeNotes_Visual.ECS;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using Unity.Entities;
+//using Unity.Entities;
 using UnityEngine;
 
 namespace NodeNotes_Visual {
@@ -13,7 +13,7 @@ namespace NodeNotes_Visual {
 #pragma warning disable IDE0019 // Use pattern matching
 #pragma warning disable IDE0018 // Inline variable declaration
 
-
+    /*
     [TaggedType(tag, "Exploration Node")]
     public class Exploration_Node : GameNodeBase {
 
@@ -106,7 +106,8 @@ namespace NodeNotes_Visual {
         #endregion
 
     }
-
+    */
+    /*
     [DerivedList(typeof(Exploration_MonoInstance), typeof(Exploration_ECSinstance))]
     public abstract class Exploration_Element : AbstractKeepUnrecognizedCfg  {
 
@@ -382,5 +383,5 @@ namespace NodeNotes_Visual {
 
         protected override void Instantiate() => TryFadeIn();
     }
-
+    */
 }

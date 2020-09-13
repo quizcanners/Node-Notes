@@ -2,13 +2,15 @@
 using NodeNotes;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using Unity.Entities;
+//using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
-using Unity.Transforms;
+//using Unity.Transforms;
 using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
+
+    /*
 
 #pragma warning disable IDE0018 // Inline variable declaration
     #region Unity Native Components
@@ -199,5 +201,5 @@ namespace NodeNotes_Visual.ECS {
     }
 
     #endregion
-
+    */
 }

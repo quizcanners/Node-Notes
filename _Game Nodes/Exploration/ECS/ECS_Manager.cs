@@ -2,9 +2,9 @@
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 using Unity.Collections;
-using Unity.Entities;
+//using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
+//using Unity.Transforms;
 using UnityEngine;
 
 namespace NodeNotes_Visual.ECS {
@@ -13,7 +13,7 @@ namespace NodeNotes_Visual.ECS {
 
     public static class NodeNotesECSManager
     {
-
+        /*
         public static EntityManager Manager => World.DefaultGameObjectInjectionWorld.EntityManager;
 
         #region Entity MGMT
@@ -313,5 +313,6 @@ namespace NodeNotes_Visual.ECS {
         }
 
         #endregion
+        */
     }
 }

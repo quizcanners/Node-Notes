@@ -2,12 +2,14 @@
 using System.Collections;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using Unity.Entities;
-using Unity.Mathematics;
+
+//using Unity.Entities;
+//using Unity.Mathematics;
 
 namespace NodeNotes_Visual.ECS {
-
-    public struct TruePosition_Component : IComponentData {
+    /*
+    public struct TruePosition_Component : IComponentData
+    {
         public float3 value;
     }
 
@@ -107,6 +109,6 @@ namespace NodeNotes_Visual.ECS {
     }
 
     #endregion
-
+    */
 
 }

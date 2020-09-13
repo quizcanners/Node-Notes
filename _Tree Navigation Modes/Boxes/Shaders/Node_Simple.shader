@@ -33,7 +33,7 @@
 				CGPROGRAM
 
 				#include "UnityCG.cginc"
-					#include "Assets/NodeNotes/_Presentation Systems/NodeNotesShaders.cginc"
+					#include "Assets/Node-Notes/_Presentation Systems/NodeNotesShaders.cginc"
 
 				#pragma vertex vert
 				#pragma fragment frag
