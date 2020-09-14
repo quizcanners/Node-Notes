@@ -4,7 +4,7 @@ using QuizCannersUtilities;
 
 namespace NodeNotes
 {
-    public class BookMark : AbstractKeepUnrecognizedCfg, IPEGI_ListInspect, IGotName, IGotDisplayName, IBookReference
+    public class BookMark : ICfg, IPEGI_ListInspect, IGotName, IGotDisplayName, IBookReference
     {
 
         //public string bookName;
@@ -36,14 +36,14 @@ namespace NodeNotes
         #endregion
 
         #region Encode_Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("vals", values)
             .Add("ind", nodeIndex)
             .Add_String("n", BookName)
             .Add_String("auth", AuthorName)
             .Add_String("gnd", gameNodesData);
         
-        public override bool Decode(string tg, string data) {
+        public bool Decode(string tg, string data) {
             switch (tg) {
                 case "vals": values = data; break;
                 case "ind": nodeIndex = data.ToInt(); break;
@@ -54,6 +54,8 @@ namespace NodeNotes
             }
             return true;
         }
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
         #endregion
 
     }

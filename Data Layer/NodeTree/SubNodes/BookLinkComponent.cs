@@ -191,7 +191,7 @@ namespace NodeNotes {
 
         public override CfgEncoder Encode() {
 
-            var cody = this.EncodeUnrecognized()
+            var cody = new CfgEncoder()//this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add("t", (int)type);
 
@@ -207,7 +207,7 @@ namespace NodeNotes {
         {
             switch (tg)
             {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break; //data.Decode_Base(base.Decode, this); break;
                 case "t": type = (BookLinkType)data.ToInt(); break;
                 case "lnk": linkedBookName = data; break;
                 case "au": linkedBookAuthor = data; break;

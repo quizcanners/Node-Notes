@@ -81,7 +81,7 @@ namespace NodeNotes {
         public void ResetInspector()
         {
             _tmpUserName = "";
-            current.ResetInspector();
+           // current.ResetInspector();
         }
 
         private string _tmpUserName = "";
@@ -133,7 +133,7 @@ namespace NodeNotes {
     }
 
 
-    public class CurrentUser: AbstractKeepUnrecognizedCfg, IGotName, IPEGI, IGotDisplayName {
+    public class CurrentUser: ICfg, IGotName, IPEGI, IGotDisplayName {
 
         //public string startingPoint = "";
         public string Name = "Unknown";
@@ -315,10 +315,12 @@ namespace NodeNotes {
 
         #region Inspector
 
+        private int _inspectedItems = -1;
+
         public string NameForDisplayPEGI()=>
             "{0} FROM {1}".F(Name, bookMarks.Count>0 ? "{0} by {1}".F(bookMarks[0].BookName, bookMarks[0].AuthorName) : "NO STORY");
         
-        public override bool Inspect() {
+        public bool Inspect() {
 
             bool changed = false; 
 
@@ -347,15 +349,15 @@ namespace NodeNotes {
 
         #endregion
 
-        #region Encoding_Decoding
+        #region Encoding & Decoding
 
         private int _tmpNode;
         private string _tmpBookName;
         private string _tmpAuthorName;
 
-        public override void Decode(string data) {
-  
-            base.Decode(data);
+        public void Decode(string data) {
+
+            this.DecodeTagsFrom(data);
 
             NodeBook book;
 
@@ -368,7 +370,7 @@ namespace NodeNotes {
             }
         }
         
-        public override bool Decode(string tg, string data) {
+        public bool Decode(string tg, string data) {
             switch (tg) {
                 case "bm": data.Decode_List(out bookMarks); break;
                 case "vals": data.DecodeInto(out Values.global); break;
@@ -384,9 +386,9 @@ namespace NodeNotes {
             return true;
         }
 
-        public override CfgEncoder Encode() {
+        public CfgEncoder Encode() {
 
-            var cody = this.EncodeUnrecognized()
+            var cody = new CfgEncoder()//this.EncodeUnrecognized()
             .Add_IfNotEmpty("bm", bookMarks)
             .Add("vals", Values.global)
             .Add_Bool("dev", isADeveloper)

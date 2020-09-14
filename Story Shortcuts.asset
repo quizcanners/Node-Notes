@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d40f5094fecce70499a817ce4c7f0c65, type: 3}
   m_Name: Story Shortcuts
   m_EditorClassIdentifier: 
-  nestedReferences: []
   _assets:
     assetGroups:
     - {fileID: 11400000, guid: 5e404342dfb325548bf5043f66800aee, type: 2}
@@ -22,12 +21,12 @@ MonoBehaviour:
       _defaultMaterial: {fileID: 0}
     AudioClips:
       _defaultMaterial: {fileID: 0}
+    RtObjects:
+      _defaultMaterial: {fileID: 0}
     _defaultMesh: {fileID: 0}
-    onMouseDownButtonSound: {fileID: 8300000, guid: bfb3f5db6bc24e946b9426c6bad62e00,
-      type: 3}
+    onMouseDownButtonSound: {fileID: 8300000, guid: bfb3f5db6bc24e946b9426c6bad62e00, type: 3}
     onMouseClickSound: {fileID: 8300000, guid: 23429278d79f285429ac0ccaf7703531, type: 3}
-    onMouseClickFailedSound: {fileID: 8300000, guid: 009459e794e036e40a25d4a4b8946d13,
-      type: 3}
+    onMouseClickFailedSound: {fileID: 8300000, guid: 009459e794e036e40a25d4a4b8946d13, type: 3}
     onMouseLeaveSound: {fileID: 8300000, guid: 08c655d28a86d9d44a91686e865b2279, type: 3}
     onMouseHoldSound: {fileID: 8300000, guid: 1896f4c3d4d531c49a99cf85bfefad3c, type: 3}
     onSwipeSound: {fileID: 8300000, guid: 1d4688f07df549a45a89b98b5cbdcdc4, type: 3}

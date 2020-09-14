@@ -117,12 +117,7 @@ namespace NodeNotes_Visual
 
         #region Encode & Decode
         public override string ClassTag => "Ambnt";
-
-        public override void Decode(string data)
-        {
-            base.Decode(data);
-        }
-
+        
         public override bool Decode(string tg, string data)
         {
             switch (tg)

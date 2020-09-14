@@ -157,7 +157,7 @@ namespace NodeNotes {
 
         #region Encode & Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => new CfgEncoder()
             .Add("b", base.Encode)
             .Add_String("unrecGN", "test")
             .Add_IfNotEmpty("exit", _onExitResults)
@@ -165,7 +165,7 @@ namespace NodeNotes {
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break; 
                 case "exit": data.Decode_List(out _onExitResults); break;
                 case "ign": inspectedGameNodeItems = data.ToInt(); break;
                 default: return false;

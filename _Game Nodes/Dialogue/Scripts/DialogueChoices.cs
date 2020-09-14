@@ -6,7 +6,7 @@ using QuizCannersUtilities;
 
 namespace NodeNotes_Visual {
  
-    public class Interaction : AbstractKeepUnrecognizedCfg, IPEGI, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
+    public class Interaction : ICfg, IPEGI, IGotDisplayName, IAmConditional, INeedAttention, IPEGI_ListInspect {
 
         private string referenceName = "";
         public ConditionBranch conditions = new ConditionBranch();
@@ -31,7 +31,7 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_IfNotEmpty("ref", referenceName)
             .Add_IfNotDefault("Conds", conditions)
             .Add("txts", texts)
@@ -40,8 +40,10 @@ namespace NodeNotes_Visual {
             .Add_IfNotNegative("is", _inspectedItems)
             .Add_IfNotNegative("bc", _inspectedChoice)
             .Add_IfNotNegative("ir", _inspectedResult);
-        
-        public override bool Decode(string tg, string data) {
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public bool Decode(string tg, string data) {
             switch (tg)  {
                 case "ref": referenceName = data; break;
                 case "Conds": data.DecodeInto(out conditions); break;
@@ -70,10 +72,10 @@ namespace NodeNotes_Visual {
         private int _inspectedResult = -1;
         public static bool renameLinkedReferences = true; 
 
-        public override void ResetInspector() {
+        public void ResetInspector() {
             _inspectedChoice = -1;
             _inspectedResult = -1;
-            base.ResetInspector();
+           // base.ResetInspector();
         }
 
 
@@ -106,8 +108,10 @@ namespace NodeNotes_Visual {
 
             return na;
         }
-        
-        public override bool Inspect() {
+
+        private int _inspectedItems = -1;
+
+        public bool Inspect() {
             var changed = false;
 
             if (_inspectedItems == -1)
@@ -206,7 +210,7 @@ namespace NodeNotes_Visual {
         }
     }
     
-    public class DialogueChoice : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, INeedAttention
+    public class DialogueChoice : ICfg, IPEGI, IGotName, INeedAttention
     {
         public ConditionBranch conditions = new ConditionBranch();
         public MultilanguageSentence text = new MultilanguageSentence();
@@ -219,8 +223,11 @@ namespace NodeNotes_Visual {
             text2.Reset();
         }
 
-#region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        #region Encode & Decode
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
          .Add_IfNotEmpty("goto", nextOne)
          .Add("cnd", conditions)
          .Add("t", text)
@@ -228,7 +235,7 @@ namespace NodeNotes_Visual {
          .Add_IfNotEmpty("res", results)
          .Add_IfNotNegative("ins", _inspectedItems);
 
-        public override bool Decode(string tg, string data)
+        public bool Decode(string tg, string data)
         {
 
             switch (tg)
@@ -251,6 +258,7 @@ namespace NodeNotes_Visual {
         public void RenameReference(string oldName, string newName) => nextOne = nextOne.SameAs(oldName) ? newName : nextOne;
         
         int inspectedResult = -1;
+        private int _inspectedItems = -1;
 
         public string NeedAttention() {
 
@@ -264,7 +272,7 @@ namespace NodeNotes_Visual {
             get { return text.NameForPEGI; }
             set { text.NameForPEGI = value; } }
 
-        public override bool Inspect() {
+        public bool Inspect() {
 
             bool changed = false;
 

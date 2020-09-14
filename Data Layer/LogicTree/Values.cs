@@ -5,7 +5,7 @@ using UnityEngine;
 namespace NodeNotes
 {
 
-    public class Values : AbstractKeepUnrecognizedCfg, IPEGI, IGotCount
+    public class Values : ICfg, IPEGI, IGotCount
     {
 
         public static Values global = new Values();
@@ -17,13 +17,13 @@ namespace NodeNotes
 
         #region Encode & Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_IfNotDefault("ints", ints)
             .Add_IfNotDefault("bools", booleans);
           //  .Add_IfNotDefault("tags", boolTags)
           //  .Add_IfNotDefault("enumTags", enumTags);
            
-        public override bool Decode(string tg, string data) {
+        public virtual bool Decode(string tg, string data) {
             switch (tg) {
                 case "ints": data.DecodeInto(out ints); break;
                 case "bools": data.DecodeInto(out booleans); break;
@@ -34,14 +34,14 @@ namespace NodeNotes
             return true;
         }
 
-        public override void Decode(string data) {
+        public virtual void Decode(string data) {
 
             booleans = new UnNullableCfg<CountlessBool>();
             ints = new UnNullableCfg<CountlessInt>();
-           // enumTags = new UnnullableSTD<CountlessInt>();
-          //  boolTags = new UnnullableSTD<CountlessBool>();
-
-            base.Decode(data);
+            // enumTags = new UnnullableSTD<CountlessInt>();
+            //  boolTags = new UnnullableSTD<CountlessBool>();
+            this.DecodeTagsFrom(data);
+ 
         }
 
         #endregion
@@ -128,11 +128,10 @@ namespace NodeNotes
 
         public int CountForInspector() => booleans.CountForInspector() + ints.CountForInspector();// + enumTags.CountForInspector + boolTags.CountForInspector; 
         
-        public override bool Inspect() {
+        public virtual bool Inspect() {
             
             var changed = false;
-
-
+            
             if (Application.isPlaying && icon.Refresh.Click("Add 1 to logic version (will cause conditions to be reevaluated)"))
                     LogicMGMT.AddLogicVersion();
 

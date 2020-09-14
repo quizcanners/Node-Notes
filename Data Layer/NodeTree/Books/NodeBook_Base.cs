@@ -5,7 +5,7 @@ using QuizCannersUtilities;
 namespace NodeNotes {
 
     [DerivedList(typeof(NodeBook), typeof(NodeBook_OffLoaded))]
-    public class NodeBook_Base : AbstractKeepUnrecognizedCfg, IGotDisplayName, IGotName, IBookReference {
+    public class NodeBook_Base : ICfg, IGotDisplayName, IGotName, IBookReference {
 
         public virtual NodeBook AsLoadedBook => null;
 
@@ -17,10 +17,10 @@ namespace NodeNotes {
 
         #region Encode & Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("auth", authorName);
 
-        public override bool Decode(string tg, string data)
+        public virtual bool Decode(string tg, string data)
         {
             switch (tg)
             {
@@ -30,7 +30,15 @@ namespace NodeNotes {
             return true;
         }
 
+        public virtual void Decode(string data) => this.DecodeTagsFrom(data);
+
         #endregion
+
+        public virtual void ResetInspector()
+        {
+        }
+
+        protected int _inspectedItems = -1;
 
         public virtual string NameForPEGI { get => "ERROR, is a base class"; set { } }
 

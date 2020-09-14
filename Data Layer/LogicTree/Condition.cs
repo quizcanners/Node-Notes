@@ -72,7 +72,7 @@ namespace NodeNotes
             switch (tg)
             {
                 case "b": compareValue = data.ToBool(); break;
-                case "ind": data.Decode_Delegate(DecodeIndex); break;
+                case "ind": data.DecodeInto(DecodeIndex); break;
                 default: return false;
             }
             return true;
@@ -118,7 +118,7 @@ namespace NodeNotes
             {
                 case "v": compareValue = data.ToInt(); break;
                 case "ty": type = (ConditionType)data.ToInt(); break;
-                case "ind": data.Decode_Delegate(DecodeIndex); break;
+                case "ind": data.DecodeInto(DecodeIndex); break;
                 default: return false;
             }
             return true;

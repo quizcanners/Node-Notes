@@ -5,7 +5,7 @@ using QuizCannersUtilities;
 namespace NodeNotes
 {
 
-    public class BookEntryPoint : AbstractKeepUnrecognizedCfg, IPEGI, IGotName, IGotIndex, IPEGI_ListInspect {
+    public class BookEntryPoint : ICfg, IPEGI, IGotName, IGotIndex, IPEGI_ListInspect {
 
         public string entryPointName = "Rename Me";
 
@@ -19,7 +19,9 @@ namespace NodeNotes
 
         #region Encode/Decode
 
-        public override bool Decode(string tg, string data)
+   
+
+        public bool Decode(string tg, string data)
         {
             switch (tg)
             {
@@ -31,7 +33,9 @@ namespace NodeNotes
             return true;
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_Bool("s", startPoint)
             .Add("ind", nodeIndex)
             .Add_String("Name", entryPointName);
@@ -39,8 +43,12 @@ namespace NodeNotes
         #endregion
 
         #region Inspector
-        
-        public override bool Inspect() {
+
+        public virtual void ResetInspector()
+        {
+        }
+
+        public bool Inspect() {
 
             bool changed = false;
 

@@ -13,7 +13,7 @@ namespace NodeNotes
 #pragma warning disable IDE0018 // Simplify 'default' expression
 
 
-    public sealed class TriggerGroup : AbstractKeepUnrecognizedCfg, IGotName, IGotIndex, IPEGI, IPEGI_ListInspect {
+    public sealed class TriggerGroup : ICfg, IGotName, IGotIndex, IPEGI, IPEGI_ListInspect {
 
         public static UnNullableCfg<TriggerGroup> all = new UnNullableCfg<TriggerGroup>();
        
@@ -123,7 +123,8 @@ namespace NodeNotes
             }
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+
+        public CfgEncoder Encode() =>  new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("n", _name)
             .Add("ind", _index)
             .Add_IfNotDefault("t", _triggers)
@@ -132,7 +133,7 @@ namespace NodeNotes
             .Add("last", _lastUsedTrigger)
             .Add_String("auth", authorName);
 
-        public override bool Decode(string tg, string data) {
+        public bool Decode(string tg, string data) {
             switch (tg) {
                 case "n": _name = data; break;
                 case "ind": _index = data.ToInt(); break;
@@ -152,11 +153,11 @@ namespace NodeNotes
             return true;
         }
 
-        public override void Decode(string data)
+        public void Decode(string data)
         {
             _listDirty = true;
 
-            base.Decode(data);
+            this.DecodeTagsFrom(data);
         }
 
         #endregion
@@ -231,12 +232,11 @@ namespace NodeNotes
         private bool _shareOptions;
         private int _replacingAuthor = -1;
 
-        public override bool Inspect()  {
+        public bool Inspect()  {
 
             var changed = false;
 
-            if (_inspectedItems == -1) {
-                
+
                 "[{0}] Name:".F(_index).edit(70, ref _name).nl(ref changed);
 
                 if ("Share".foldout(ref _shareOptions).nl())
@@ -274,8 +274,8 @@ namespace NodeNotes
                 AddTriggerToGroup_PEGI();
                 
                 _triggers.Nested_Inspect(ref changed); 
-            }
-
+            
+    
             return changed;
 
         }

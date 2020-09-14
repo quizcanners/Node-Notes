@@ -269,7 +269,7 @@ namespace NodeNotes_Visual {
         #endregion
     }
     
-    public class TextConfiguration : AbstractKeepUnrecognizedCfg, IPEGI, INodeVisualPresentation
+    public class TextConfiguration : ICfg, IPEGI, INodeVisualPresentation
     {
         private Node Node => ClickableText.instance.currentNode;
 
@@ -281,14 +281,14 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public override void Decode(string data)
+        public void Decode(string data)
         {
             textChunks.Clear();
 
-            base.Decode(data);
+            this.DecodeTagsFrom(data);
         }
 
-        public override bool Decode(string tg, string data)
+        public bool Decode(string tg, string data)
         {
             switch (tg)
             {
@@ -301,7 +301,7 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add("tch", textChunks, TextChunkBase.all)
             .Add("lnkCol", linksColor)
             .Add("tx", textColor);
@@ -358,7 +358,7 @@ namespace NodeNotes_Visual {
         }
 
         private int enteredText = -1;
-        public override bool Inspect() {
+        public bool Inspect() {
 
             inspected = this;
 
@@ -409,7 +409,7 @@ namespace NodeNotes_Visual {
         
         #region Text Chunks
 
-        public abstract class TextChunkBase : AbstractKeepUnrecognizedCfg, IGotClassTag, IGotDisplayName  {
+        public abstract class TextChunkBase : ICfg, IGotClassTag, IGotDisplayName  {
             #region Tagged Types MGMT
             public abstract string ClassTag { get; }
             public static TaggedTypesCfg all = new TaggedTypesCfg(typeof(TextChunkBase));
@@ -431,11 +431,13 @@ namespace NodeNotes_Visual {
 
             public bool postNewLine;
 
-            public override CfgEncoder Encode() => new CfgEncoder()
+            public void Decode(string data) => this.DecodeTagsFrom(data);
+
+            public virtual CfgEncoder Encode() => new CfgEncoder()
                 .Add_IfTrue("pre", preNewLine)
                 .Add_IfTrue("post", postNewLine);
 
-            public override bool Decode(string tag, string data) {
+            public virtual bool Decode(string tag, string data) {
 
                 switch (tag) {
                     case "pre": preNewLine = data.ToBool(); break;
@@ -451,6 +453,8 @@ namespace NodeNotes_Visual {
             public abstract string GetTextFor(Node node);
 
             public abstract string NameForDisplayPEGI();
+
+          
         }
 
         [TaggedType(tag, "Just Text")]
@@ -469,7 +473,7 @@ namespace NodeNotes_Visual {
             {
                 switch (tg)
                 {
-                    case "b": data.Decode_Base(base.Decode, this); break;
+                    case "b": data.DecodeInto(base.Decode); break; // data.Decode_Base(base.Decode, this); break;
                     case "t": text = data; break;
                     default: return false;
                 }
@@ -495,7 +499,7 @@ namespace NodeNotes_Visual {
                 return changed;
             }
 
-            public override bool Inspect() => pegi.editBig(ref text);
+            public bool Inspect() => pegi.editBig(ref text);
 
             public override string GetTextFor(Node node)
             {
@@ -537,7 +541,7 @@ namespace NodeNotes_Visual {
 
             public override bool Decode(string tg, string data) {
                 switch (tg){
-                    case "b": data.Decode_Base(base.Decode, this); break;
+                    case "b": data.DecodeInto(base.Decode); break; //data.Decode_Base(base.Decode, this); break;
                     case "t": text = data; break;
                     default: return false;
                 }
@@ -561,7 +565,7 @@ namespace NodeNotes_Visual {
                 return changed;
             }
 
-            public override bool Inspect() => pegi.editBig(ref text);
+            public bool Inspect() => pegi.editBig(ref text);
             
             public override string NameForDisplayPEGI() => "Exit: " + text.ToElipsisString(30);
 
@@ -606,7 +610,7 @@ namespace NodeNotes_Visual {
             {
                 switch (tg)
                 {
-                    case "b": data.Decode_Base(base.Decode, this); break;
+                    case "b": data.DecodeInto(base.Decode); break; // data.Decode_Base(base.Decode, this); break;
                     case "t": text = data; break;
                     case "i": childNodeIndex = data.ToInt(); break;
                     default: return false;
@@ -632,7 +636,7 @@ namespace NodeNotes_Visual {
                 return changed;
             }
 
-            public override bool Inspect() => pegi.editBig(ref text);
+            public virtual bool Inspect() => pegi.editBig(ref text);
 
             public override string NameForDisplayPEGI() => "Node: " + text.ToElipsisString(30);
 

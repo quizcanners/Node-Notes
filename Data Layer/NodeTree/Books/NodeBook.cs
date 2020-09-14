@@ -79,7 +79,7 @@ namespace NodeNotes
 
         private bool _showShareOptions;
 
-        public override bool Inspect()  {
+        public bool Inspect()  {
 
             inspected = this;
 
@@ -197,8 +197,9 @@ namespace NodeNotes
             }
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add("b", base.Encode)
+            .Add_String("n", NameForPEGI) // for Offloaded book
             .Add("f", firstFree)
             .Add("sn", subNode)
             .Add_IfNotNegative("in", _inspectedNode)
@@ -211,7 +212,7 @@ namespace NodeNotes
           
         public override bool Decode(string tg, string data) {
             switch (tg) {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break;//data.Decode_Base(base.Decode, this); break;
                 case "f": firstFree = data.ToInt(); break;
                 case "sn": data.DecodeInto(out subNode); break;
                 case "in": _inspectedNode = data.ToInt(); break;

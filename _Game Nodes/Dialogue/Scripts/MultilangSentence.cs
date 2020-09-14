@@ -12,7 +12,7 @@ namespace NodeNotes {
 
     public enum Languages { note = 0, en = 1, uk = 2, tr = 3, ru = 4 }
     
-    public abstract class Sentence: AbstractKeepUnrecognizedCfg, IGotClassTag, IGotName, IPEGI {
+    public abstract class Sentence: ICfg, IGotClassTag, IGotName, IPEGI {
 
         #region Tagged Types MGMT
         public abstract string ClassTag { get; }
@@ -29,6 +29,10 @@ namespace NodeNotes {
 
         public virtual void Reset() { }
 
+        public virtual bool Inspect() => false;
+        public virtual CfgEncoder Encode() => new CfgEncoder();
+        public virtual void Decode(string data) => this.DecodeTagsFrom(data);
+        public virtual bool Decode(string tg, string data) => false;
     }
 
     [TaggedType(classTag, "String")]
@@ -59,7 +63,7 @@ namespace NodeNotes {
         }
 
         #region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => base.Encode()//this.EncodeUnrecognized()
             .Add_String("t", text);
 
         public override bool Decode(string tg, string data)
@@ -175,7 +179,7 @@ namespace NodeNotes {
         public static bool singleView = true;
 
         #region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add("txts", texts)
             .Add_IfTrue("na", needsReview);
 
@@ -327,7 +331,8 @@ namespace NodeNotes {
         }
 
         #region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+
+        public override CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add("txs", options, all)
             .Add("ins", inspectedSentence);
 
@@ -425,7 +430,7 @@ namespace NodeNotes {
             switch (tg)
             {
                 case "b":
-                    data.Decode_Base(base.Decode, this);
+                    data.DecodeInto(base.Decode);
                     break;
                 case "cnd":
                     _condition.Decode(data);

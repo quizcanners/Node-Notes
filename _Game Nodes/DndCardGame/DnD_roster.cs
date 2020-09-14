@@ -17,12 +17,13 @@ namespace NodeNotes_Visual {
         #region Encode & Decode
 
         public override CfgEncoder Encode() => 
-            this.EncodeUnrecognized()
+        new CfgEncoder()    
+        //this.EncodeUnrecognized()
             .Add("b", base.Encode);
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break;
                 case "el": data.Decode_List(out _perBookGroups); break;
                 case "i": _inspectedGroup = data.ToInt(); break;
                 default: return false;
@@ -30,7 +31,7 @@ namespace NodeNotes_Visual {
             return true;           
         }
 
-        public override CfgEncoder Encode_PerBookStaticData() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode_PerBookStaticData() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_IfNotEmpty("el", _perBookGroups)
             .Add_IfNotNegative("i", _inspectedGroup);
         #endregion
@@ -44,7 +45,8 @@ namespace NodeNotes_Visual {
 
     }
 
-    public class DnDRosterGroup : AbstractKeepUnrecognizedCfg, IPEGI, IGotName {
+    public class DnDRosterGroup : ICfg
+    { 
 
         public string name;
         public string NameForPEGI { get { return name; } set { name = value; } }
@@ -53,7 +55,10 @@ namespace NodeNotes_Visual {
         private int _inspectedElement = -1;
 
         #region Encode & Decode
-        public override bool Decode(string tg, string data)
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public bool Decode(string tg, string data)
         {
             switch (tg)
             {
@@ -65,26 +70,28 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("el", _elements)
             .Add_IfNotNegative("i", _inspectedElement);
         #endregion
 
         #region Inspector
-        public override bool Inspect()
+        public virtual bool Inspect()
         {
-            bool changed = base.Inspect();
-            
+            var changed = false;
+
             "Roster".edit_List(ref _elements, ref _inspectedElement).changes(ref changed);
 
             return changed;
         }
+
+
         #endregion
 
     }
 
-    public class DndRosterElement : AbstractKeepUnrecognizedCfg, IPEGI, IGotName {
+    public class DndRosterElement : ICfg, IPEGI, IGotName {
 
         public string name;
         public string description;
@@ -94,12 +101,15 @@ namespace NodeNotes_Visual {
         public string NameForPEGI { get { return name; } set { name = value; } }
 
         #region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("d", description)
             .Add("vc", visibilityConditions);
 
-        public override bool Decode(string tg, string data) {
+        public virtual bool Decode(string tg, string data) {
             switch (tg) {
                 case "n": name = data; break;
                 case  "d": description = data; break;
@@ -111,7 +121,9 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspector
-        public override bool Inspect() {
+        private int _inspectedItems = -1;
+
+        public bool Inspect() {
             bool changed = false;
             
             if (_inspectedItems == -1)

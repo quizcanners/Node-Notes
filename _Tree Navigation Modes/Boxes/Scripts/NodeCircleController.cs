@@ -140,7 +140,7 @@ namespace NodeNotes_Visual {
         
         public override bool Inspect() {
 
-            var changed = false;
+            var changed = pegi.toggleDefaultInspector(this);
      
             /*if (_loopLock.Unlocked && source != null && source.inspectionLock.Unlocked) {
                 using (_loopLock.Lock()) {
@@ -845,7 +845,7 @@ namespace NodeNotes_Visual {
 
         public override CfgEncoder Encode() {
 
-            var cody = this.EncodeUnrecognized()
+            var cody = new CfgEncoder()//this.EncodeUnrecognized()
                 .Add("subVis", _nodeActiveDefaultVisuals)
                 .Add_IfNotDefault("disVis", _nodeInactiveVisuals)
                 .Add_IfNotEmpty("URL", imageUrl);
@@ -941,22 +941,22 @@ namespace NodeNotes_Visual {
         #endregion
     }
 
-    public class NodeVisualConfig : AbstractKeepUnrecognizedCfg, IPEGI, IPEGI_ListInspect, ICanBeDefaultCfg {
+    public class NodeVisualConfig : ICfg, IPEGI, IPEGI_ListInspect, ICanBeDefaultCfg {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
         public Color targetTextColor = Color.black;
         public bool enabled;
 
-        #region Encode & Decode
-        public override bool IsDefault => !enabled;
+        public bool IsDefault => !enabled;
 
-        public override void Decode(string data) {
+        #region Encode & Decode
+        public void Decode(string data) {
             enabled = true;
-            base.Decode(data);
+            this.DecodeTagsFrom(data);
         }
 
-        public override bool Decode(string tg, string data)
+        public bool Decode(string tg, string data)
         {
             switch (tg)  {
                 case "sc": targetSize = data.ToVector3(); break;
@@ -969,10 +969,10 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override CfgEncoder Encode()  {
+        public CfgEncoder Encode()  {
             targetSize.z = Mathf.Max(targetSize.z, 1);
 
-            var cody = this.EncodeUnrecognized()
+            var cody = new CfgEncoder()//this.EncodeUnrecognized()
                 .Add("sc", targetSize)
                 .Add("pos", targetLocalPosition)
                 .Add("tCol", targetTextColor);
@@ -984,7 +984,7 @@ namespace NodeNotes_Visual {
         #endregion
 
         #region Inspect
-        public override bool Inspect() {
+        public bool Inspect() {
 
             var changed = false;
 

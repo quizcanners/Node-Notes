@@ -68,7 +68,7 @@ namespace NodeNotes
             switch (tg) {
                 case "ty": type = (ResultType)data.ToInt(); break;
                 case "val": updateValue = data.ToInt(); break;
-                case "ind": data.Decode_Delegate(DecodeIndex); break;
+                case "ind": data.DecodeInto(DecodeIndex); break;
                 default: return false;
             }
             return true;

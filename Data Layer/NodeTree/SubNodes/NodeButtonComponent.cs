@@ -15,14 +15,14 @@ namespace NodeNotes {
             return false;
         }
         
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => new CfgEncoder()
             .Add("b", base.Encode);
 
         public override bool Decode(string tg, string data)
         {
             switch (tg)
             {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break;
                 default: return false;
             }
             return true;

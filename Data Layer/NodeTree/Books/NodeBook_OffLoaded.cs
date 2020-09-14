@@ -18,7 +18,7 @@ namespace NodeNotes {
         public override bool Decode(string tg, string data) {
 
             switch (tg) {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break;
                 case "n": name = data; break;
                 default: return false;
             }
@@ -26,14 +26,23 @@ namespace NodeNotes {
             return true;
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => new CfgEncoder()// this.EncodeUnrecognized()
             .Add("b", base.Encode)
             .Add_String("n", name);
 
         #endregion
         
         public bool InspectInList(IList list, int ind, ref int edited) {
-            this.GetNameForInspector().write();
+            
+
+            if (authorName.IsNullOrEmpty())
+            {
+                pegi.edit(ref name);
+                "by".editDelayed(30, ref authorName);
+                
+                this.LoadCfgOnDrop();
+            } else
+                this.GetNameForInspector().write();
 
             if (icon.Load.Click())
                 this.LoadBook();

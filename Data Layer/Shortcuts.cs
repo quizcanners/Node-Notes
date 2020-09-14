@@ -13,7 +13,7 @@ namespace NodeNotes {
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [CreateAssetMenu(fileName = "Story Shortcuts", menuName ="Node Nodes/Shortcuts", order = 0)]
-    public class Shortcuts : CfgReferencesHolder
+    public class Shortcuts : ScriptableObject, IPEGI, ICfg
     {
         
         public static UsersData users = new UsersData();
@@ -29,7 +29,7 @@ namespace NodeNotes {
 
         #region Progress
 
-        public const string ProjectName = "NodeNotes";
+        public const string ProjectName = "Node-Notes";
 
         public static bool editingNodes = false;
         
@@ -94,15 +94,16 @@ namespace NodeNotes {
 
         public static bool showPlaytimeUI;
         
-        public override void ResetInspector() {
-            base.ResetInspector();
+        public virtual void ResetInspector() {
             users.ResetInspector();
             books.ResetInspector();         
         }
         
         private enum InspectedItems { InspectUser = 4, editUser = 6  }
 
-        public override bool Inspect() {
+        private int inspectedItems = -1;
+
+        public bool Inspect() {
 
             var changed = false;
             
@@ -215,20 +216,18 @@ namespace NodeNotes {
             QcFile.Save.ToPersistentPath(_generalItemsFolder, _generalItemsFile, Encode().ToString(), asBytes: true);
         }
 
-        public override CfgEncoder Encode()
+        public CfgEncoder Encode()
         {
-            return this.EncodeUnrecognized()
-                //.Add("trigs", TriggerGroup.all)
+            return new CfgEncoder() 
                 .Add("bkSrv", books)
                 .Add_IfTrue("ptUI", showPlaytimeUI)
                 .Add("us", users.all)
                 .Add_String("curUser", users.current.Name);
         }
 
-        public override bool Decode(string tg, string data)
+        public bool Decode(string tg, string data)
         {
             switch (tg)  {
-                //case "trigs": data.DecodeInto(out TriggerGroup.all); break;
                 case "bkSrv": books.Decode(data); break;
                 case "ptUI": showPlaytimeUI = data.ToBool(); break;
                 case "us": data.Decode_List(out users.all); break;
@@ -237,6 +236,8 @@ namespace NodeNotes {
             }
             return true;
         }
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
 
         #endregion
     }

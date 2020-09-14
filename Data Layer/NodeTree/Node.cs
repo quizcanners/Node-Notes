@@ -323,7 +323,7 @@ namespace NodeNotes {
             if (_loopLock.Unlocked)  {
                 using (_loopLock.Lock()){
 
-                    var cody = this.EncodeUnrecognized()
+                    var cody = new CfgEncoder() //this.EncodeUnrecognized()
                         .Add_IfNotEmpty("sub", coreNodes, _coreNodesMeta)
                         .Add_IfNotEmpty("bg", visualStyleTag)
                         .Add("b", base.Encode);
@@ -343,7 +343,7 @@ namespace NodeNotes {
         public override bool Decode(string tg, string data) {
 
             switch (tg)  {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break;//data.Decode_Base(base.Decode, this); break;
                 case "bg": visualStyleTag = data; break;
                 case "sub": data.Decode_List(out coreNodes, ref _coreNodesMeta); break;
                 case "gn":  data.Decode_List(out gameNodes, ref _gamesNodesMeta, GameNodeBase.all); break;

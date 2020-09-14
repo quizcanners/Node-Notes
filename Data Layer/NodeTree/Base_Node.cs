@@ -9,7 +9,7 @@ namespace NodeNotes {
 #pragma warning disable IDE0019 // Use pattern matching
 
     [DerivedList(typeof(Node), typeof(NodeLinkComponent), typeof(NodeButtonComponent), typeof(BookLinkComponent))]
-    public class Base_Node : AbstractKeepUnrecognizedCfg, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect {
+    public class Base_Node : ICfg, INeedAttention, IGotName, IGotIndex, IPEGI, ICanChangeClass, IPEGI_Searchable, IPEGI_ListInspect {
 
         #region Values
         public Node parentNode;
@@ -140,10 +140,12 @@ namespace NodeNotes {
         }
 
         #endregion
-        
+
         #region Encode_Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
         .Add_String(        "n",    name)
         .Add(               "i",    index)
         .Add_IfNotNegative( "is",   _inspectedItems)
@@ -154,7 +156,7 @@ namespace NodeNotes {
         .Add_IfNotEmpty(    "bg_cfgs", visualStyleConfigs)
         .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
 
-        public override bool Decode(string tg, string data) {
+        public virtual bool Decode(string tg, string data) {
             switch (tg) {
                 case "n":       name = data; break;
                 case "i":       index = data.ToInt(); break;
@@ -173,11 +175,16 @@ namespace NodeNotes {
 
         #region Inspector
 
+        public virtual void ResetInspector()
+        {
+        }
+
         protected virtual icon ExecuteIcon => icon.Play;
         protected virtual string ExecuteHint => "Execute Node";
 
         protected virtual string InspectionHint => "Inspect Node";
-        
+
+        public int _inspectedItems = -1;
         private int _inspectedResult = -1;
         private int inspectedLogic = -1;
         public bool InspectingTriggerItems => _inspectedResult != -1;
@@ -258,7 +265,7 @@ namespace NodeNotes {
             Node = 10,
         } 
 
-        public override bool Inspect() {
+        public virtual bool Inspect() {
       
 
             var changed = false;

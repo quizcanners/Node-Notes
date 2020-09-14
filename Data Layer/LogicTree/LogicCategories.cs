@@ -9,7 +9,7 @@ namespace NodeNotes
         List<PickedCategory> MyCategories { get; set; }
     } 
 
-    public class CategoryRoot<T> : AbstractKeepUnrecognizedCfg, IPEGI where T : ICategorized {
+    public class CategoryRoot<T> : ICfg, IPEGI where T : ICategorized {
 
         public Countless<Category<T>> allSubs = new Countless<Category<T>>();
 
@@ -53,7 +53,7 @@ namespace NodeNotes
             return changed;
         }
         
-        public override bool Inspect()
+        public virtual bool Inspect()
         {
             current = this;
 
@@ -70,11 +70,13 @@ namespace NodeNotes
         #region Encode & Decode
         public static CategoryRoot<T> current = new CategoryRoot<T>();
 
-        public override CfgEncoder Encode()
+       // public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public virtual CfgEncoder Encode()
         {
             current = this;
 
-            var cody = this.EncodeUnrecognized()
+            var cody = new CfgEncoder()//this.EncodeUnrecognized()
                 .Add("s", subCategories)
                 .Add_IfNotNegative("i", inspected)
                 .Add("fi", unusedIndex);
@@ -84,14 +86,14 @@ namespace NodeNotes
             return cody;
         }
 
-        public override void Decode(string data)
+        public virtual void Decode(string data)
         {
             current = this;
-            base.Decode(data);
+            this.DecodeTagsFrom(data);
             current = null;
         }
 
-        public override bool Decode(string tg, string data) {
+        public virtual bool Decode(string tg, string data) {
 
             switch (tg) {
                 case "s": data.Decode_List(out subCategories); break;
@@ -105,7 +107,7 @@ namespace NodeNotes
         #endregion
     }
 
-    public class Category<T> : AbstractKeepUnrecognizedCfg, IGotName, IGotIndex, IPEGI where T: ICategorized
+    public class Category<T> : ICfg, IGotName, IGotIndex, IPEGI where T: ICategorized
     {
 
         public string NameForPEGI { get; set; }
@@ -127,7 +129,7 @@ namespace NodeNotes
         
         public bool Select(ref T val) => pegi.select(ref val, elements);
         
-        public override bool Inspect() {
+        public virtual bool Inspect() {
             var changed = false;
 
             if (_inspected == -1) {
@@ -185,19 +187,19 @@ namespace NodeNotes
 
 #region Encode & Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("n", NameForPEGI)
             .Add("i", IndexForPEGI)
             .Add_IfNotEmpty("s", subCategories)
             .Add_IfNotNegative("in",_inspected);
 
-        public override void Decode(string data)
+        public virtual void Decode(string data)
         {
-            base.Decode(data);
+            this.DecodeTagsFrom(data);
             CategoryRoot<T>.current.allSubs[IndexForPEGI] = this;
         }
 
-        public override bool Decode(string tg, string data)
+        public virtual bool Decode(string tg, string data)
         {
             switch (tg)
             {

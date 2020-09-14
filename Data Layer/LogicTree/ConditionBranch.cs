@@ -7,7 +7,9 @@ using UnityEngine;
 namespace NodeNotes
 {
 
-    public class ConditionBranch : AbstractKeepUnrecognizedCfg, IPEGI, 
+#pragma warning disable IDE0018 // Inline variable declaration
+
+    public class ConditionBranch : ICfg, IPEGI, 
         IAmConditional, ICanBeDefaultCfg, IPEGI_ListInspect, IGotCount, IPEGI_Searchable, IGotName, INeedAttention {
         private enum ConditionBranchType { Or, And }
 
@@ -66,7 +68,7 @@ namespace NodeNotes
             return false;
         }
         
-        public override bool Inspect()
+        public virtual bool Inspect()
         {
             if (!_name.IsNullOrEmpty())
                 _name.nl(PEGI_Styles.ListLabel);
@@ -152,16 +154,18 @@ namespace NodeNotes
         #endregion
         
         #region Encode & Decode
-        public override bool IsDefault => (_conditions.Count == 0 && _branches.Count == 0);
+        public virtual bool IsDefault => (_conditions.Count == 0 && _branches.Count == 0);
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_IfNotEmpty("wb",         _branches)
             .Add_IfNotEmpty("v",          _conditions)
             .Add("t",                     (int)_type)
             .Add_IfNotNegative("insB",    _browsedBranch)
             .Add_IfNotNegative("ic",      _browsedCondition);
 
-        public override bool Decode(string tg, string data)
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public virtual bool Decode(string tg, string data)
         {
             switch (tg)
             {

@@ -9,32 +9,15 @@ namespace NodeNotes_Visual {
         public const string Tag = "DnD_Stats";
         public override string ClassTag => Tag;
 
-
-        private static DndCharacterStats MainCharacterStats = new DndCharacterStats();
-
-
-        public override CfgEncoder Encode_PerUserData() => this.EncodeUnrecognized()
-            .Add("hero", MainCharacterStats);
+        public override CfgEncoder Encode_PerUserData() => base.Encode_PerUserData();
 
         public override bool Decode(string tg, string data) {
             switch (tg) {
-                case "b": data.Decode_Base(base.Decode, this); break;
-                case "hero": data.DecodeInto(out MainCharacterStats); break;
+                case "b": data.DecodeInto(base.Decode); break; //.Decode_Base(base.Decode); break;
                 default: return false;
             }
 
             return true;
         }
-    }
-
-    public class DndCharacterStats : AbstractKeepUnrecognizedCfg {
-
-
-
-
-    }
-
-    public class DndCharacterRace {
-
     }
 }

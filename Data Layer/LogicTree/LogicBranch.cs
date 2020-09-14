@@ -5,7 +5,7 @@ using QuizCannersUtilities;
 namespace NodeNotes
 {
 
-    public class LogicBranch<T> : AbstractKeepUnrecognizedCfg  , IGotName , IPEGI, IAmConditional, ICanBeDefaultCfg, IPEGI_Searchable  where T: ICfg, new() {
+    public class LogicBranch<T> : ICfg  , IGotName , IPEGI, IAmConditional, ICanBeDefaultCfg, IPEGI_Searchable  where T: ICfg, new() {
 
         public string name = "no name";
 
@@ -15,7 +15,7 @@ namespace NodeNotes
 
         public List<T> elements = new List<T>();
 
-        public override bool IsDefault => subBranches.Count ==0 && conditions.IsDefault && elements.Count == 0;
+        public virtual bool IsDefault => subBranches.Count ==0 && conditions.IsDefault && elements.Count == 0;
 
         public List<T> CollectAll(ref List<T> lst) {
 
@@ -30,7 +30,10 @@ namespace NodeNotes
         public bool CheckConditions(Values values) => conditions.CheckConditions(Values.global);
 
         #region Encode & Decode
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+
+        public void Decode(string data) => this.DecodeTagsFrom(data);
+
+        public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("name", name)
             .Add("cond", conditions)
             .Add_IfNotEmpty("sub", subBranches)
@@ -39,7 +42,7 @@ namespace NodeNotes
             .Add_IfNotNegative("is", _inspectedItems)
             .Add_IfNotNegative("br", _inspectedBranch);
         
-        public override bool Decode(string tg, string data)
+        public virtual bool Decode(string tg, string data)
         {
             switch (tg)
             {
@@ -66,15 +69,16 @@ namespace NodeNotes
             set { name = value; }
         }
 
-        public override void ResetInspector() {
+        public void ResetInspector() {
             _inspectedElement = -1;
             _inspectedBranch = -1;
-            base.ResetInspector();
+           //base.ResetInspector();
         }
 
         private int _inspectedElement = -1;
         private int _inspectedBranch = -1;
-   
+        private int _inspectedItems = -1;
+
         LoopLock searchLoopLock = new LoopLock();
 
         public bool String_SearchMatch(string searchString)
@@ -101,7 +105,7 @@ namespace NodeNotes
 
         static LogicBranch<T> parent;
 
-        public override bool Inspect() {
+        public virtual bool Inspect() {
             var changed = false;
          
             pegi.nl();

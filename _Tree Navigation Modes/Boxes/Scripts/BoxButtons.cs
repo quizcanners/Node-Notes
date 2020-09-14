@@ -507,7 +507,7 @@ namespace NodeNotes_Visual {
             return true;
         }
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized();
+        public override CfgEncoder Encode() => new CfgEncoder();//this.EncodeUnrecognized();
         
         #endregion
 

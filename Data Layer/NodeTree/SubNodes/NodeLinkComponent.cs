@@ -67,7 +67,7 @@ namespace NodeNotes {
         
         #region Encode_Decode
 
-        public override CfgEncoder Encode() => this.EncodeUnrecognized()
+        public override CfgEncoder Encode() => base.Encode()
             .Add("b", base.Encode)
             .Add("lnk", linkedNodeIndex);
 
@@ -75,7 +75,7 @@ namespace NodeNotes {
         {
             switch (tg)
             {
-                case "b": data.Decode_Base(base.Decode, this); break;
+                case "b": data.DecodeInto(base.Decode); break;
                 case "lnk": linkedNodeIndex = data.ToInt(); break;
                 default: return false;
             }
