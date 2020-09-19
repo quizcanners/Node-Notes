@@ -269,7 +269,7 @@ namespace NodeNotes_Visual {
         #endregion
     }
     
-    public class TextConfiguration : ICfg, IPEGI, INodeVisualPresentation
+    public class TextConfiguration : ICfgCustom, IPEGI, INodeVisualPresentation
     {
         private Node Node => ClickableText.instance.currentNode;
 
@@ -281,24 +281,21 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public void Decode(string data)
+        public void Decode(CfgData data)
         {
             textChunks.Clear();
 
             this.DecodeTagsFrom(data);
         }
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "tch": data.Decode_List(out textChunks, TextChunkBase.all); break;
+                case "tch": data.ToList(out textChunks, TextChunkBase.all); break;
                 case "lnkCol": linksColor = data.ToColor(); break;
                 case "tx": textColor = data.ToColor(); break;
-                default: return false;
             }
-
-            return true;
         }
 
         public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
@@ -430,22 +427,19 @@ namespace NodeNotes_Visual {
             public bool preNewLine;
 
             public bool postNewLine;
+            
 
-            public void Decode(string data) => this.DecodeTagsFrom(data);
 
             public virtual CfgEncoder Encode() => new CfgEncoder()
                 .Add_IfTrue("pre", preNewLine)
                 .Add_IfTrue("post", postNewLine);
 
-            public virtual bool Decode(string tag, string data) {
+            public virtual void Decode(string tag, CfgData data) {
 
                 switch (tag) {
                     case "pre": preNewLine = data.ToBool(); break;
                     case "post": postNewLine = data.ToBool(); break;
-                    default: return false;
                 }
-
-                return true;
             }
 
             public virtual bool ProcessClick(int index) => false;
@@ -469,16 +463,13 @@ namespace NodeNotes_Visual {
                 .Add("b", base.Encode)
                 .Add_String("t", text);
 
-            public override bool Decode(string tg, string data)
+            public override void Decode(string tg, CfgData data)
             {
                 switch (tg)
                 {
-                    case "b": data.DecodeInto(base.Decode); break; // data.Decode_Base(base.Decode, this); break;
-                    case "t": text = data; break;
-                    default: return false;
+                    case "b": data.Decode(base.Decode); break; // data.Decode_Base(base.Decode, this); break;
+                    case "t": text = data.ToString(); break;
                 }
-
-                return true;
             }
             #endregion
 
@@ -539,14 +530,11 @@ namespace NodeNotes_Visual {
                 .Add("b", base.Encode)
                 .Add_String("t", text);
 
-            public override bool Decode(string tg, string data) {
+            public override void Decode(string tg, CfgData data) {
                 switch (tg){
-                    case "b": data.DecodeInto(base.Decode); break; //data.Decode_Base(base.Decode, this); break;
-                    case "t": text = data; break;
-                    default: return false;
+                    case "b": data.Decode(base.Decode); break; //data.Decode_Base(base.Decode, this); break;
+                    case "t": text = data.ToString(); break;
                 }
-
-                return true;
             }
             #endregion
 
@@ -606,17 +594,14 @@ namespace NodeNotes_Visual {
                 .Add_String("t", text)
                 .Add("i", childNodeIndex);
 
-            public override bool Decode(string tg, string data)
+            public override void Decode(string tg, CfgData data)
             {
                 switch (tg)
                 {
-                    case "b": data.DecodeInto(base.Decode); break; // data.Decode_Base(base.Decode, this); break;
-                    case "t": text = data; break;
+                    case "b": data.Decode(base.Decode); break; // data.Decode_Base(base.Decode, this); break;
+                    case "t": text = data.ToString(); break;
                     case "i": childNodeIndex = data.ToInt(); break;
-                    default: return false;
                 }
-
-                return true;
             }
             #endregion
 

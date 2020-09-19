@@ -71,15 +71,13 @@ namespace NodeNotes {
             .Add("b", base.Encode)
             .Add("lnk", linkedNodeIndex);
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "b": data.DecodeInto(base.Decode); break;
+                case "b": data.Decode(base.Decode); break;
                 case "lnk": linkedNodeIndex = data.ToInt(); break;
-                default: return false;
             }
-            return true;
         }
 
         #endregion

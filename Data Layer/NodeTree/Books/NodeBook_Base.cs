@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using PlayerAndEditorGUI;
 using QuizCannersUtilities;
 
@@ -20,17 +21,15 @@ namespace NodeNotes {
         public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("auth", authorName);
 
-        public virtual bool Decode(string tg, string data)
+        public virtual void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "auth": authorName = data; break;
-                default: return false;
+                case "auth": authorName = data.ToString(); break;
             }
-            return true;
         }
+        
 
-        public virtual void Decode(string data) => this.DecodeTagsFrom(data);
 
         #endregion
 
@@ -61,8 +60,16 @@ namespace NodeNotes {
 
     public static class BookClassExtensions {
 
-        public static bool EditedByCurrentUser<T>(this T reff) where T: IBookReference 
-            => Shortcuts.users.current.isADeveloper && Shortcuts.users.current.Name.Equals(reff.AuthorName);
+        public static bool EditedByCurrentUser<T>(this T reff) where T : IBookReference
+        {
+            if (reff == null)
+                UnityEngine.Debug.LogError("No Refference");
+            else if (Shortcuts.users.current == null)
+                UnityEngine.Debug.LogError("Current user is null");
+            else
+                return Shortcuts.users.current.isADeveloper && Shortcuts.users.current.Name.Equals(reff.AuthorName);
+            return false;
+        }
 
         public static string BookFolder<T>(this T reff) where T: IBookReference => Path.Combine(NodeBook_Base.BooksRootFolder, reff.AuthorName);
 

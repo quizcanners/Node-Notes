@@ -22,7 +22,7 @@ namespace NodeNotes
         #region Encode & Decode
         public override CfgEncoder Encode() => new CfgEncoder().Add("ind", EncodeIndex());
 
-        public override bool Decode(string tg, string data) => true;
+        public override void Decode(string tg, CfgData data) { }
         #endregion
 
         public virtual bool TryForceConditionValue(Values values, bool toTrue) => false;
@@ -67,15 +67,13 @@ namespace NodeNotes
             .Add_IfTrue("b", compareValue)
             .Add("ind", EncodeIndex());
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
                 case "b": compareValue = data.ToBool(); break;
-                case "ind": data.DecodeInto(DecodeIndex); break;
-                default: return false;
+                case "ind": data.Decode(DecodeIndex); break;
             }
-            return true;
         }
         #endregion
 
@@ -112,16 +110,14 @@ namespace NodeNotes
             .Add_IfNotZero("ty", (int)type)
             .Add("ind", EncodeIndex);
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
                 case "v": compareValue = data.ToInt(); break;
                 case "ty": type = (ConditionType)data.ToInt(); break;
-                case "ind": data.DecodeInto(DecodeIndex); break;
-                default: return false;
+                case "ind": data.Decode(DecodeIndex); break;
             }
-            return true;
         }
         #endregion
 

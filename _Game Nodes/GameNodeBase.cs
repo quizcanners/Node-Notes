@@ -48,12 +48,12 @@ namespace NodeNotes {
                 using (loopLock.Lock()) {
 
                     var data = Shortcuts.users.current.gameNodesData_PerUser.TryGet(ClassTag);
-                    if (data != null)
-                        Decode(data);
+                    if (data.IsEmpty == false)
+                        this.DecodeFull(data);
                     
                     data = parentNode.parentBook.gameNodesConfigs.TryGet(ClassTag);
-                    if (data != null)  
-                        Decode(data);
+                    if (data.IsEmpty == false)  
+                        this.DecodeFull(data);
                     else
                         Debug.Log("No per book data for. {0}".F(ClassTag));
 
@@ -81,8 +81,8 @@ namespace NodeNotes {
 
                     OnExit();
 
-                    Shortcuts.users.current.gameNodesData_PerUser[ClassTag] = Encode_PerUserData().ToString();
-                    parentNode.parentBook.gameNodesConfigs[ClassTag] = Encode_PerBookStaticData().ToString();
+                    Shortcuts.users.current.gameNodesData_PerUser[ClassTag] = Encode_PerUserData().CfgData;
+                    parentNode.parentBook.gameNodesConfigs[ClassTag] = Encode_PerBookStaticData().CfgData;
 
                     VisualLayer.FromGameToNode();
 
@@ -163,14 +163,12 @@ namespace NodeNotes {
             .Add_IfNotEmpty("exit", _onExitResults)
             .Add_IfNotNegative("ign", inspectedGameNodeItems);
 
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "b": data.DecodeInto(base.Decode); break; 
-                case "exit": data.Decode_List(out _onExitResults); break;
-                case "ign": inspectedGameNodeItems = data.ToInt(); break;
-                default: return false;
+                case "b": data.Decode(base.Decode); break; 
+                case "exit": data.ToList(out _onExitResults); break;
+                case "ign": inspectedGameNodeItems = data.ToInt(0); break;
             }
-            return true;
         }
 
         // Per User data will be Encoded/Decoded each time the node is Entered during play

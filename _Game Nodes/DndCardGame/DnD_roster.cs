@@ -21,14 +21,12 @@ namespace NodeNotes_Visual {
         //this.EncodeUnrecognized()
             .Add("b", base.Encode);
 
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "b": data.DecodeInto(base.Decode); break;
-                case "el": data.Decode_List(out _perBookGroups); break;
+                case "b": data.Decode(base.Decode); break;
+                case "el": data.ToList(out _perBookGroups); break;
                 case "i": _inspectedGroup = data.ToInt(); break;
-                default: return false;
-            }
-            return true;           
+            }   
         }
 
         public override CfgEncoder Encode_PerBookStaticData() => new CfgEncoder()//this.EncodeUnrecognized()
@@ -56,18 +54,16 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
 
-        public bool Decode(string tg, string data)
+
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "n": name = data; break;
-                case "el": data.Decode_List(out _elements); break;
+                case "n": name = data.ToString(); break;
+                case "el": data.ToList(out _elements); break;
                 case "i": _inspectedElement = data.ToInt(); break;
-                default: return false;
             }
-            return true;
         }
 
         public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
@@ -102,21 +98,19 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
+
 
         public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("n", name)
             .Add_IfNotEmpty("d", description)
             .Add("vc", visibilityConditions);
 
-        public virtual bool Decode(string tg, string data) {
+        public virtual void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "n": name = data; break;
-                case  "d": description = data; break;
-                case "vc": data.DecodeInto(out visibilityConditions); break;
-                default: return false;
+                case "n": name = data.ToString(); break;
+                case  "d": description = data.ToString(); break;
+                case "vc": data.Decode(out visibilityConditions); break;
             }
-            return true;
         }
         #endregion
 

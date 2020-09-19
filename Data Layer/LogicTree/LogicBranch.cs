@@ -5,7 +5,7 @@ using QuizCannersUtilities;
 namespace NodeNotes
 {
 
-    public class LogicBranch<T> : ICfg  , IGotName , IPEGI, IAmConditional, ICanBeDefaultCfg, IPEGI_Searchable  where T: ICfg, new() {
+    public class LogicBranch<T> : ICfg , IGotName , IPEGI, IAmConditional, ICanBeDefaultCfg, IPEGI_Searchable  where T: class, ICfg, new() {
 
         public string name = "no name";
 
@@ -31,7 +31,7 @@ namespace NodeNotes
 
         #region Encode & Decode
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
+
 
         public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_String("name", name)
@@ -42,20 +42,18 @@ namespace NodeNotes
             .Add_IfNotNegative("is", _inspectedItems)
             .Add_IfNotNegative("br", _inspectedBranch);
         
-        public virtual bool Decode(string tg, string data)
+        public virtual void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "name": name = data; break;
-                case "cond": conditions.Decode(data); break;
-                case "sub": data.Decode_List(out subBranches); break;
-                case "el": data.Decode_List(out elements); break;
+                case "name": name = data.ToString(); break;
+                case "cond": conditions.DecodeFull(data); break;
+                case "sub": data.ToList(out subBranches); break;
+                case "el": data.ToList(out elements); break;
                 case "ie": _inspectedElement = data.ToInt(); break;
                 case "is": _inspectedItems = data.ToInt(); break;
                 case "br": _inspectedBranch = data.ToInt(); break;
-                default: return false;
             }
-            return true;
         }
         #endregion
 

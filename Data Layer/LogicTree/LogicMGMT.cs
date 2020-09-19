@@ -108,7 +108,7 @@ namespace NodeNotes
                     {
 
                         var tmp = "";
-                        if ("Paste Messaged STD data".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp))
+                        if ("Paste Messaged STD data".edit(140, ref tmp) || CfgExtensions.DropStringObject(out tmp))
                         {
 
                             var group = new TriggerGroup();

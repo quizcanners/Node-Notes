@@ -21,19 +21,17 @@ namespace NodeNotes
 
    
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
                 case "s": startPoint = data.ToBool(); break;
                 case "ind": nodeIndex = data.ToInt(); break;
-                case "Name": entryPointName = data; break;
-                default: return false;
+                case "Name": entryPointName = data.ToString(); break;
             }
-            return true;
         }
+        
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
 
         public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
             .Add_Bool("s", startPoint)

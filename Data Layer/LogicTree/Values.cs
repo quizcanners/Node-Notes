@@ -5,7 +5,7 @@ using UnityEngine;
 namespace NodeNotes
 {
 
-    public class Values : ICfg, IPEGI, IGotCount
+    public class Values : ICfgCustom, IPEGI, IGotCount
     {
 
         public static Values global = new Values();
@@ -23,25 +23,17 @@ namespace NodeNotes
           //  .Add_IfNotDefault("tags", boolTags)
           //  .Add_IfNotDefault("enumTags", enumTags);
            
-        public virtual bool Decode(string tg, string data) {
+        public virtual void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "ints": data.DecodeInto(out ints); break;
-                case "bools": data.DecodeInto(out booleans); break;
-            //    case "tags": data.DecodeInto(out boolTags); break;
-             //   case "enumTags": data.DecodeInto(out enumTags); break;
-                default: return false;
+                case "ints": data.Decode(out ints); break;
+                case "bools": data.Decode(out booleans); break;
             }
-            return true;
         }
 
-        public virtual void Decode(string data) {
-
+        public virtual void Decode(CfgData data)
+        {
             booleans = new UnNullableCfg<CountlessBool>();
             ints = new UnNullableCfg<CountlessInt>();
-            // enumTags = new UnnullableSTD<CountlessInt>();
-            //  boolTags = new UnnullableSTD<CountlessBool>();
-            this.DecodeTagsFrom(data);
- 
         }
 
         #endregion

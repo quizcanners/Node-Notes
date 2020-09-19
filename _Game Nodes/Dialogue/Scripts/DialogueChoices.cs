@@ -41,21 +41,17 @@ namespace NodeNotes_Visual {
             .Add_IfNotNegative("bc", _inspectedChoice)
             .Add_IfNotNegative("ir", _inspectedResult);
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
-
-        public bool Decode(string tg, string data) {
+        public void Decode(string tg, CfgData data) {
             switch (tg)  {
-                case "ref": referenceName = data; break;
-                case "Conds": data.DecodeInto(out conditions); break;
-                case "txts": texts.Decode(data); break;
-                case "opt": data.Decode_List(out choices); break;
-                case "fin": data.Decode_List(out finalResults); break;
+                case "ref": referenceName = data.ToString(); break;
+                case "Conds": data.Decode(out conditions); break;
+                case "txts": texts.DecodeFull(data); break;
+                case "opt": data.ToList(out choices); break;
+                case "fin": data.ToList(out finalResults); break;
                 case "is": _inspectedItems = data.ToInt(); break;
                 case "bc": _inspectedChoice = data.ToInt(); break;
                 case "ir": _inspectedResult = data.ToInt(); break;
-                default: return false;
             }
-            return true;
         }
         #endregion
 
@@ -225,7 +221,6 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
 
         public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
          .Add_IfNotEmpty("goto", nextOne)
@@ -235,21 +230,17 @@ namespace NodeNotes_Visual {
          .Add_IfNotEmpty("res", results)
          .Add_IfNotNegative("ins", _inspectedItems);
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
-
             switch (tg)
             {
-                case "goto": nextOne = data; break;
-                case "cnd": data.DecodeInto(out conditions); break;
-                case "t": text.Decode(data); break;
-                case "ts2b": text2.Decode(data); break;
-                case "res": data.Decode_List(out results); break;
+                case "goto": nextOne = data.ToString(); break;
+                case "cnd": data.Decode(out conditions); break;
+                case "t": text.DecodeFull(data); break;
+                case "ts2b": text2.DecodeFull(data); break;
+                case "res": data.ToList(out results); break;
                 case "ins": _inspectedItems = data.ToInt(); break;
-                default: return false;
             }
-            return true;
-
         }
         #endregion
 

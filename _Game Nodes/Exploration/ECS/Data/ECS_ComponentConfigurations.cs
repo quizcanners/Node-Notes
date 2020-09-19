@@ -84,7 +84,7 @@ namespace NodeNotes_Visual.ECS {
             return true;
         }
 
-        public void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(ref this);
+        public void Decode(CfgData data) => new CfgDecoder(data).DecodeTagsFor(ref this);
 
         #endregion
 

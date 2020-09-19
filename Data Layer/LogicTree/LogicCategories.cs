@@ -9,7 +9,7 @@ namespace NodeNotes
         List<PickedCategory> MyCategories { get; set; }
     } 
 
-    public class CategoryRoot<T> : ICfg, IPEGI where T : ICategorized {
+    public class CategoryRoot<T> : ICfgCustom, IPEGI where T : ICategorized {
 
         public Countless<Category<T>> allSubs = new Countless<Category<T>>();
 
@@ -70,7 +70,7 @@ namespace NodeNotes
         #region Encode & Decode
         public static CategoryRoot<T> current = new CategoryRoot<T>();
 
-       // public void Decode(string data) => this.DecodeTagsFrom(data);
+       // public void Decode(CfgData data) => this.DecodeTagsFrom(data);
 
         public virtual CfgEncoder Encode()
         {
@@ -86,28 +86,25 @@ namespace NodeNotes
             return cody;
         }
 
-        public virtual void Decode(string data)
+        public virtual void Decode(CfgData data)
         {
             current = this;
             this.DecodeTagsFrom(data);
             current = null;
         }
 
-        public virtual bool Decode(string tg, string data) {
+        public virtual void Decode(string tg, CfgData data) {
 
             switch (tg) {
-                case "s": data.Decode_List(out subCategories); break;
+                case "s": data.ToList(out subCategories); break;
                 case "i": inspected = data.ToInt(); break;
                 case "fi": unusedIndex = data.ToInt(); break;
-                default: return false;
             }
-
-            return true;
         }
         #endregion
     }
 
-    public class Category<T> : ICfg, IGotName, IGotIndex, IPEGI where T: ICategorized
+    public class Category<T> : ICfgCustom, IGotName, IGotIndex, IPEGI where T: ICategorized
     {
 
         public string NameForPEGI { get; set; }
@@ -193,52 +190,47 @@ namespace NodeNotes
             .Add_IfNotEmpty("s", subCategories)
             .Add_IfNotNegative("in",_inspected);
 
-        public virtual void Decode(string data)
+        public virtual void Decode(CfgData data)
         {
             this.DecodeTagsFrom(data);
             CategoryRoot<T>.current.allSubs[IndexForPEGI] = this;
         }
 
-        public virtual bool Decode(string tg, string data)
+        public virtual void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "n": NameForPEGI = data; break;
-                case "s": data.Decode_List(out subCategories); break;
+                case "n": NameForPEGI = data.ToString(); break;
+                case "s": data.ToList(out subCategories); break;
                 case "i":  IndexForPEGI = data.ToInt(); break;
                 case "in": _inspected = data.ToInt(); break;
-                default: return false;
             }
-
-            return true;
         }
 
 #endregion
     }
 
-    public class PickedCategory: AbstractCfg {
+    public class PickedCategory: ICfg {
 
         public List<int> path = new List<int>();
         
         public bool Inspect<T>() where T: ICategorized => CategoryRoot<T>.current.SelectCategory(this);
 
 #region Encode & Decode
-        public override CfgEncoder Encode() => new CfgEncoder()
+        public CfgEncoder Encode() => new CfgEncoder()
             .Add_IfNotEmpty("p", path);
 
-        public override bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "p": data.Decode_List(out path); break;
-                default: return false;
+                case "p": data.ToList(out path); break;
             }
-
-            return true;
         }
-#endregion
+        
+        #endregion
 
-     
+
     }
 
 }

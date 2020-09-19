@@ -74,7 +74,7 @@ namespace NodeNotes_Visual
             if (tag.IsNullOrEmpty() && bgc.Count > 0)
                 tag = bgc[0].ClassTag;
 
-            string data = "";
+            CfgData data = new CfgData();
 
             if (source != null)
                 source.visualStyleConfigs.TryGetValue(tag, out data);
@@ -88,7 +88,8 @@ namespace NodeNotes_Visual
                 {
                     _selectedController = bc;
                     bc.TryFadeIn();
-                    data.TryDecodeInto(bc);
+                    if (bc)
+                        bc.DecodeFull(data);
                     break;
                 }
         }
@@ -154,7 +155,7 @@ namespace NodeNotes_Visual
                 {
                     PresentationSystemConfigurations cfg;
                     if (presentationSystemPerNodeConfigs.TryGetValue(system.ClassTag, out cfg))
-                        system.Decode(cfg.GetConfigFor(node));
+                        system.DecodeFull(cfg.GetConfigFor(node));
                     else 
                         system.Decode("");
                 }
@@ -459,7 +460,7 @@ namespace NodeNotes_Visual
 
         }
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
@@ -467,7 +468,7 @@ namespace NodeNotes_Visual
                 case "gSys2": data.Decode_Dictionary(out presentationSystemPerNodeConfigs); break;
                 // DEPRECATED (TMP)
                 case "gSys":
-                    var dicTmp = new Dictionary<string, string>();
+                    var dicTmp = new Dictionary<string, CfgData>();
                     data.Decode_Dictionary(out dicTmp);
                     foreach (var pair in dicTmp)
                     {
@@ -476,13 +477,10 @@ namespace NodeNotes_Visual
                         presentationSystemPerNodeConfigs[pair.Key] = cfg;
                     }
                     break;
-                default: return false;
             }
-
-            return true;
         }
 
-        public override void Decode(string data)
+        public override void Decode(CfgData data)
         {
             presentationSystemPerNodeConfigs.Clear();
             //presentationSystemsConfigs.Clear();

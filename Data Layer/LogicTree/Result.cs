@@ -64,14 +64,12 @@ namespace NodeNotes
         public int updateValue;
 
         #region Encode & Decode
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
             switch (tg) {
                 case "ty": type = (ResultType)data.ToInt(); break;
                 case "val": updateValue = data.ToInt(); break;
-                case "ind": data.DecodeInto(DecodeIndex); break;
-                default: return false;
+                case "ind": data.Decode(DecodeIndex); break;
             }
-            return true;
         }
         
         public override CfgEncoder Encode()=> new CfgEncoder()

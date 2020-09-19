@@ -12,7 +12,7 @@ namespace NodeNotes_Visual
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteInEditMode]
-    public class GodMode : MonoBehaviour, IPEGI, ICfg, ILinkedLerping
+    public class GodMode : MonoBehaviour, IPEGI, ICfgCustom, ILinkedLerping
     {
 
         public enum Mode { FPS = 0, STATIC = 1, LERP = 2 }
@@ -43,7 +43,7 @@ namespace NodeNotes_Visual
             return cody;
         }
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
@@ -51,13 +51,10 @@ namespace NodeNotes_Visual
                 case "rot": _rotationLerp.TargetValue = data.ToQuaternion(); break;
                 case "h": _heightLerp.TargetValue = data.ToFloat(); break;
                 case "sp": speed = data.ToFloat(); break;
-                default: return false;
             }
-
-            return true;
         }
 
-        public void Decode(string data)
+        public void Decode(CfgData data)
         {
             IsLerpInitialized();
             new CfgDecoder(data).DecodeTagsFor(this);

@@ -58,16 +58,14 @@ namespace NodeNotes
                 .Add_IfNotEmpty("e", enm)
                 .Add_IfNotEmpty("c", _myCategories);
           
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
 
             switch (tg) {
-                case "n": name = data; break;
+                case "n": name = data.ToString(); break;
                 case "u": _usage = data.ToInt(); break;
                 case "e": data.Decode_Dictionary(out enm); break;
-                case "c":  data.Decode_List(out _myCategories); break;
-                default: return false;
+                case "c":  data.ToList(out _myCategories); break;
             }
-            return true;
         }
 
         #endregion

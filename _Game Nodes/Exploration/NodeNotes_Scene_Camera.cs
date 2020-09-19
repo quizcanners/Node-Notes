@@ -16,30 +16,19 @@ namespace NodeNotes_Visual {
 
         [SerializeField] private GodMode _camera;
 
-        public void Decode(string data)
-        {
-            new CfgDecoder(data).DecodeTagsFor(this);
-        }
-
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
                 case "gm": _camera.Decode(data); break;
-
-                default: return false;
             }
-
-            return true;
         }
 
         public CfgEncoder Encode()
         {
             var cody = new CfgEncoder()
                 .Add("gm", _camera);
-
-
-
+            
             return cody;
 
         }

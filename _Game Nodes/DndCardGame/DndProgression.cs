@@ -11,13 +11,10 @@ namespace NodeNotes_Visual {
 
         public override CfgEncoder Encode_PerUserData() => base.Encode_PerUserData();
 
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "b": data.DecodeInto(base.Decode); break; //.Decode_Base(base.Decode); break;
-                default: return false;
+                case "b": data.Decode(base.Decode); break; //.Decode_Base(base.Decode); break;
             }
-
-            return true;
         }
     }
 }

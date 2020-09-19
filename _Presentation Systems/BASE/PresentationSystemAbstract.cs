@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace NodeNotes_Visual
 {
+
+#pragma warning disable IDE0018 // Inline variable declaration
     public class PresentationSystemConfigurations : ICfg, IPEGI
     {
 
@@ -14,33 +16,24 @@ namespace NodeNotes_Visual
 
         public class ConditionalConfig : ICfg
         {
-            public string config;
+            public CfgData config;
             public ConditionBranch condition = new ConditionBranch();
 
-            public void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
-
-            public bool Decode(string tg, string data)
+            public void Decode(string tg, CfgData data)
             {
                 switch (tg)
                 {
-                    case "cf":
-                        config = data;
-                        break;
-                    case "cnd":
-                        condition.Decode(data);
-                        break;
-                    default: return false;
+                    case "cf": config = data; break;
+                    case "cnd": condition.DecodeFull(data); break;
                 }
-
-                return true;
             }
 
             public CfgEncoder Encode() => new CfgEncoder()
-                .Add_String("cf", config)
+                .Add("cf", config)
                 .Add("cnd", condition);
         }
 
-        public string GetConfigFor(Node node)
+        public CfgData GetConfigFor(Node node)
         {
             Node iteration = node;
             while (iteration != null)
@@ -48,13 +41,13 @@ namespace NodeNotes_Visual
                 var val = perNodeConfigs[iteration.IndexForPEGI];
                 if (!val.IsNullOrEmpty())
                 {
-                    return val;
+                    return new CfgData(val);
                 }
 
                 iteration = iteration.parentNode;
             }
 
-            return null;
+            return new CfgData();
         }
 
         public virtual void OnNodeDelete(int index)
@@ -92,14 +85,14 @@ namespace NodeNotes_Visual
 
                 var index = node.IndexForPEGI;
 
-                string cfg;
-
+              
                 "Configs: {0}".F(perNodeConfigs.CountForInspector()).nl();
 
+                string cfg;
                 if (perNodeConfigs.TryGet(index, out cfg))
                 {
                     if ("Clear Config".ClickConfirm("clM").nl())
-                        perNodeConfigs[index] = null;
+                        perNodeConfigs[index] = default;
                     else
                     {
                         if (!saveOnSchange && "Save {0} config for {1}".F(presentationSystem.ClassTag, node.GetNameForInspector()).Click().nl())
@@ -126,20 +119,16 @@ namespace NodeNotes_Visual
 
         #region Encode & Decode
         public CfgEncoder Encode() => new CfgEncoder()
-            .Add("pn", perNodeConfigs.Encode())
+            .Add("pn", perNodeConfigs.Encode)
             .Add("pnc", perNodeConfigConditional);
 
-        public void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
-
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
                 case "pn": data.DecodeInto(out perNodeConfigs); break;
                 case "pnc": perNodeConfigConditional.Decode(data); break;
-                default: return false;
             }
-            return true;
         }
 
 
@@ -163,9 +152,7 @@ namespace NodeNotes_Visual
 
         public abstract CfgEncoder Encode();
 
-        public virtual void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
-
-        public abstract bool Decode(string tg, string data);
+        public abstract void Decode(string tg, CfgData data);
         #endregion
     }
 }

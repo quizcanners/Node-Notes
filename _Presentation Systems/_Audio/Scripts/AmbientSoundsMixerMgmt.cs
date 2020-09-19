@@ -118,17 +118,14 @@ namespace NodeNotes_Visual
         #region Encode & Decode
         public override string ClassTag => "Ambnt";
         
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "m":   targetMusic = data; break;
+                case "m":   targetMusic = data.ToString(); break;
                 case "tr":  transitionType = (TransitionType)data.ToInt(); break;
                 case "len": _transitionLength = data.ToFloat(); break;
-                default: return true;
             }
-
-            return false;
         }
 
         public override CfgEncoder Encode() => new CfgEncoder()

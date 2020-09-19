@@ -31,8 +31,11 @@ namespace NodeNotes {
 
         public virtual bool Inspect() => false;
         public virtual CfgEncoder Encode() => new CfgEncoder();
-        public virtual void Decode(string data) => this.DecodeTagsFrom(data);
-        public virtual bool Decode(string tg, string data) => false;
+
+
+        public virtual void Decode(string tg, CfgData data)
+        {
+        }
     }
 
     [TaggedType(classTag, "String")]
@@ -66,14 +69,12 @@ namespace NodeNotes {
         public override CfgEncoder Encode() => base.Encode()//this.EncodeUnrecognized()
             .Add_String("t", text);
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "t": text = data; break;
-                default: return false;
+                case "t": text = data.ToString(); break;
             }
-            return true;
         }
         #endregion
 
@@ -183,14 +184,12 @@ namespace NodeNotes {
             .Add("txts", texts)
             .Add_IfTrue("na", needsReview);
 
-        public override bool Decode(string tg, string data){
+        public override void Decode(string tg, CfgData data){
             switch (tg) {
-                case "t": NameForPEGI = data; break;
+                case "t": NameForPEGI = data.ToString(); break;
                 case "txts": data.Decode_Dictionary(out texts); break;
                 case "na": needsReview = data.ToBool(); break;
-                default: return false;
             }
-            return true;
         }
         #endregion
 
@@ -336,16 +335,14 @@ namespace NodeNotes {
             .Add("txs", options, all)
             .Add("ins", inspectedSentence);
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "txs": data.Decode_List(out options, all); break;
-                case "t": options.Add(new StringSentence(data)); break;
+                case "txs": data.ToList(out options, all); break;
+                case "t": options.Add(new StringSentence(data.ToString())); break;
                 case "ins": inspectedSentence = data.ToInt(); break;
-                default: return false;
             }
-            return true;
         }
         #endregion
 
@@ -425,20 +422,13 @@ namespace NodeNotes {
             .Add("b", base.Encode)
             .Add_IfNotDefault("cnd", _condition);
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "b":
-                    data.DecodeInto(base.Decode);
-                    break;
-                case "cnd":
-                    _condition.Decode(data);
-                    break;
-                default: return false;
+                case "b":data.Decode(base.Decode);break;
+                case "cnd":_condition.DecodeFull(data);break;
             }
-
-            return true;
         }
 
         #endregion

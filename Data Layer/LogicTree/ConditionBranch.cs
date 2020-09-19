@@ -162,21 +162,20 @@ namespace NodeNotes
             .Add("t",                     (int)_type)
             .Add_IfNotNegative("insB",    _browsedBranch)
             .Add_IfNotNegative("ic",      _browsedCondition);
+        
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
 
-        public virtual bool Decode(string tg, string data)
+        public virtual void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "t":     _type = (ConditionBranchType)data.ToInt(); break;
-                case "wb":    data.Decode_List(out _branches); break;
-                case "v":     data.Decode_List(out _conditions); break;
-                case "insB":  _browsedBranch = data.ToInt(); break;
-                case "ic":    _browsedCondition = data.ToInt(); break;
-                default:      return false;
+                case "t":     _type = (ConditionBranchType)data.ToInt(0); break;
+                case "wb":    data.ToList(out _branches); break;
+                case "v":     data.ToList(out _conditions); break;
+                case "insB":  _browsedBranch = data.ToInt(0); break;
+                case "ic":    _browsedCondition = data.ToInt(0); break;
+               
             }
-            return true;
         }
         #endregion
 

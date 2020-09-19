@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NodeNotes;
 using PlayerAndEditorGUI;
 using PlaytimePainter;
+using PlaytimePainter.UI;
 using QuizCannersUtilities;
 using UnityEngine;
 
@@ -497,14 +498,9 @@ namespace NodeNotes_Visual {
                //.Add("bg", NodeNotesGradientController.instance.perNodeGradientConfigs.Encode())
                //.Add("rtx", perNodeRtxConfigs.Encode());
         
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
-            /*switch (tg)
-            {
-                default: return true;
-            }
-            return false;*/
-            return true;
+
         }
 
         public override CfgEncoder Encode() => new CfgEncoder();//this.EncodeUnrecognized();

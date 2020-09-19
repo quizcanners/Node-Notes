@@ -11,7 +11,7 @@ namespace NodeNotes_Visual {
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteAlways]
-    public class NodeCircleController : ComponentCfg, IGotIndex, ILinkedLerping, INodeVisualPresentation
+    public class NodeCircleController : ComponentCfg, ICfgCustom, IGotName, IGotIndex, ILinkedLerping, INodeVisualPresentation
     {
         
         public LineRenderer linkRenderer;
@@ -125,7 +125,7 @@ namespace NodeNotes_Visual {
             return changed;
         }
 
-        public override string NameForPEGI {
+        public string NameForPEGI {
             get { return source.name; }
 
             set
@@ -201,7 +201,7 @@ namespace NodeNotes_Visual {
                             {
                                 if (pegi.Try_Nested_Inspect(bg).nl(ref changed))
                                     source.visualStyleConfigs[NodesVisualLayer.SelectedPresentationMode.ClassTag] =
-                                        bg.Encode().ToString();
+                                        bg.Encode().CfgData;
                             }
                         }
                         
@@ -799,7 +799,7 @@ namespace NodeNotes_Visual {
         #endregion
         
         #region Encode & Decode
-        public override void Decode(string data) {
+        public void Decode(CfgData data) {
 
             if (this == _dragging)
                 _dragging = null;
@@ -818,29 +818,25 @@ namespace NodeNotes_Visual {
             };
             _nodeInactiveVisuals = new NodeVisualConfig();
 
-            base.Decode(data);
+           // base.Decode(data);
 
             LoadCoverImage();
             
         }
 
-        public override bool Decode(string tg, string data)   {
+        public override void Decode(string tg, CfgData data)   {
             switch (tg)   {
-                case "expVis": data.DecodeInto(out _nodeEnteredVisuals); break;
-                case "subVis": data.DecodeInto(out _nodeActiveDefaultVisuals); break;
-                case "disVis": data.DecodeInto(out _nodeInactiveVisuals); break;
+                case "expVis": data.Decode(out _nodeEnteredVisuals); break;
+                case "subVis": data.Decode(out _nodeActiveDefaultVisuals); break;
+                case "disVis": data.Decode(out _nodeInactiveVisuals); break;
                 case "bg_cfg": source.visualStyleConfigs[BoxButtons.classTag] = data; break;
                 case "bg_cfgs": data.Decode_Dictionary(out source.visualStyleConfigs); break;
-                case "URL": imageUrl = data; break;
+                case "URL": imageUrl = data.ToString(); break;
                 case "imgScl": _imageScaling = data.ToFloat(); break;
                 case "imgMd": _mode = (ImageMode)data.ToInt(); break;
                 case "hidTxt": _hideLabel = data.ToBool(); break;
-                case "m": MeshObjectGetOrCreate().Decode(data); break;
-                
-                default: return false;
+                case "m": MeshObjectGetOrCreate().DecodeFull(data); break;
             }
-
-            return true;
         }
 
         public override CfgEncoder Encode() {
@@ -941,7 +937,7 @@ namespace NodeNotes_Visual {
         #endregion
     }
 
-    public class NodeVisualConfig : ICfg, IPEGI, IPEGI_ListInspect, ICanBeDefaultCfg {
+    public class NodeVisualConfig : ICfgCustom, IPEGI, IPEGI_ListInspect, ICanBeDefaultCfg {
         public Vector3 targetSize = new Vector3(5,3,1);
         public Vector3 targetLocalPosition = Vector3.zero;
         public Color targetColor = Color.gray;
@@ -951,22 +947,19 @@ namespace NodeNotes_Visual {
         public bool IsDefault => !enabled;
 
         #region Encode & Decode
-        public void Decode(string data) {
+        public void Decode(CfgData data) {
             enabled = true;
             this.DecodeTagsFrom(data);
         }
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)  {
                 case "sc": targetSize = data.ToVector3(); break;
                 case "pos": targetLocalPosition = data.ToVector3(); break;
                 case "col": targetColor = data.ToColor(); break;
                 case "tCol": targetTextColor = data.ToColor(); break;
-                default: return false;
             }
-
-            return true;
         }
 
         public CfgEncoder Encode()  {

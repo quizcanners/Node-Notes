@@ -13,7 +13,7 @@ namespace NodeNotes
 #pragma warning disable IDE0018 // Simplify 'default' expression
 
 
-    public sealed class TriggerGroup : ICfg, IGotName, IGotIndex, IPEGI, IPEGI_ListInspect {
+    public sealed class TriggerGroup : ICfgCustom, IGotName, IGotIndex, IPEGI, IPEGI_ListInspect {
 
         public static UnNullableCfg<TriggerGroup> all = new UnNullableCfg<TriggerGroup>();
        
@@ -133,12 +133,12 @@ namespace NodeNotes
             .Add("last", _lastUsedTrigger)
             .Add_String("auth", authorName);
 
-        public bool Decode(string tg, string data) {
+        public void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "n": _name = data; break;
+                case "n": _name = data.ToString(); break;
                 case "ind": _index = data.ToInt(); break;
                 case "t":
-                    data.DecodeInto(out _triggers);
+                    data.Decode(out _triggers);
                     foreach (var t in _triggers){
                         t.groupIndex = _index;
                         t.triggerIndex = _triggers.currentEnumerationIndex;
@@ -147,13 +147,11 @@ namespace NodeNotes
                 case "br": _browsedGroup = data.ToInt(); break;
                 case "show": _showInInspectorBrowser = data.ToBool(); break;
                 case "last": _lastUsedTrigger = data.ToInt(); break;
-                case "auth": authorName = data; break;
-                default: return false;
+                case "auth": authorName = data.ToString(); break;
             }
-            return true;
         }
 
-        public void Decode(string data)
+        public void Decode(CfgData data)
         {
             _listDirty = true;
 
@@ -245,7 +243,7 @@ namespace NodeNotes
                         "Paste message full with numbers and lost of ' | ' symbols into the first line or drop file into second",
                         50);
 
-                    string data;
+                    CfgData data;
                     if (this.SendReceivePegi("Trigger Group {0} [{1}]".F(_name, _index), "Trigger Groups", out data))
                     {
                         var tmp = new TriggerGroup();

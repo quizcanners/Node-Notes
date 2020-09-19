@@ -324,12 +324,12 @@ namespace NodeNotes {
                 using (_loopLock.Lock()){
 
                     var cody = new CfgEncoder() //this.EncodeUnrecognized()
-                        .Add_IfNotEmpty("sub", coreNodes, _coreNodesMeta)
+                        .Add_IfNotEmpty("sub", coreNodes)
                         .Add_IfNotEmpty("bg", visualStyleTag)
                         .Add("b", base.Encode);
 
                     if (gameNodes.Count > 0)
-                        cody.Add_IfNotEmpty("gn", gameNodes, _gamesNodesMeta, GameNodeBase.all);
+                        cody.Add_IfNotEmpty("gn", gameNodes, GameNodeBase.all);
                    
                     return cody;
                 }
@@ -340,16 +340,14 @@ namespace NodeNotes {
             return new CfgEncoder();
         }
 
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
 
             switch (tg)  {
-                case "b": data.DecodeInto(base.Decode); break;//data.Decode_Base(base.Decode, this); break;
-                case "bg": visualStyleTag = data; break;
-                case "sub": data.Decode_List(out coreNodes, ref _coreNodesMeta); break;
-                case "gn":  data.Decode_List(out gameNodes, ref _gamesNodesMeta, GameNodeBase.all); break;
-                default:  return false;
+                case "b": data.Decode(base.Decode); break;//data.Decode_Base(base.Decode, this); break;
+                case "bg": visualStyleTag = data.ToString(); break;
+                case "sub": data.ToList(out coreNodes); break;
+                case "gn":  data.ToList(out gameNodes, GameNodeBase.all); break;
             }
-            return true;
         }
 
         #endregion

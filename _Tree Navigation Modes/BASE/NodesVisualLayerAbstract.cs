@@ -115,7 +115,7 @@ namespace NodeNotes {
 
         public abstract CfgEncoder EncodePerBookData();
 
-        public abstract void Decode(string data);
+        public abstract void Decode(CfgData data);
 
 
     }

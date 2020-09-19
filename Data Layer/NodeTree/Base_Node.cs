@@ -32,7 +32,7 @@ namespace NodeNotes {
             return false;
         }
 
-        public Dictionary<string, string> visualStyleConfigs = new Dictionary<string, string>();
+        public Dictionary<string, CfgData> visualStyleConfigs = new Dictionary<string, CfgData>();
 
         public void OnClassTypeChange(object previousInstance) {
             
@@ -66,7 +66,7 @@ namespace NodeNotes {
 
         public INodeVisualPresentation visualRepresentation;            // Probably should move this out of here
         public INodeVisualPresentation previousVisualRepresentation;
-        public string configForVisualRepresentation;
+        public CfgData configForVisualRepresentation;
 
         public virtual GameNodeBase AsGameNode => null;
         public virtual Node AsNode => null;
@@ -142,8 +142,8 @@ namespace NodeNotes {
         #endregion
 
         #region Encode_Decode
+        
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
 
         public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
         .Add_String(        "n",    name)
@@ -154,21 +154,20 @@ namespace NodeNotes {
         .Add_IfNotDefault(  "vcnds",_visCondition)
         .Add_IfNotEmpty(    "res",  results)
         .Add_IfNotEmpty(    "bg_cfgs", visualStyleConfigs)
-        .Add_IfNotEmpty(    "vis",  visualRepresentation!= null ? visualRepresentation.Encode().ToString() : configForVisualRepresentation);
+        .Add("vis",  visualRepresentation!= null ? visualRepresentation.Encode().CfgData : configForVisualRepresentation);
 
-        public virtual bool Decode(string tg, string data) {
+        public virtual void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "n":       name = data; break;
-                case "i":       index = data.ToInt(); break;
-                case "is":      _inspectedItems = data.ToInt(); break;
-                case "icr":     _inspectedResult = data.ToInt(); break;
-                case "cnds":    _eblCondition.Decode(data); break;
-                case "vcnds":   _visCondition.Decode(data); break;
-                case "res":     data.Decode_List(out results); break;
+                case "n":       name = data.ToString(); break;
+                case "i":       index = data.ToInt(0); break;
+                case "is":      _inspectedItems = data.ToInt(0); break;
+                case "icr":     _inspectedResult = data.ToInt(0); break;
+                case "cnds":    _eblCondition.DecodeFull(data); break;
+                case "vcnds":   _visCondition.DecodeFull(data); break;
+                case "res":     data.ToList(out results); break;
                 case "vis":     configForVisualRepresentation = data; break;
                 case "bg_cfgs": data.Decode_Dictionary(out visualStyleConfigs); break;
             }
-            return true;
         }
 
         #endregion
@@ -311,7 +310,7 @@ namespace NodeNotes {
 
         #region MGMT
 
-        public virtual string LinkTo(INodeVisualPresentation visualLayer)
+        public virtual CfgData LinkTo(INodeVisualPresentation visualLayer)
         {
             if (visualRepresentation != null)
                 Debug.LogError("Visual representation is not null", visualLayer as Object);
@@ -322,7 +321,7 @@ namespace NodeNotes {
         }
 
         public virtual void Unlink(CfgEncoder data) {
-                configForVisualRepresentation = data.ToString();
+                configForVisualRepresentation = data.CfgData;
                 visualRepresentation = null;
         }
 

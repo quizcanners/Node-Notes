@@ -203,18 +203,16 @@ namespace NodeNotes {
             return cody;
         }
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "b": data.DecodeInto(base.Decode); break; //data.Decode_Base(base.Decode, this); break;
+                case "b": data.Decode(base.Decode); break; //data.Decode_Base(base.Decode, this); break;
                 case "t": type = (BookLinkType)data.ToInt(); break;
-                case "lnk": linkedBookName = data; break;
-                case "au": linkedBookAuthor = data; break;
-                case "ep": bookEntryPoint = data; break;
-                default: return false;
+                case "lnk": linkedBookName = data.ToString(); break;
+                case "au": linkedBookAuthor = data.ToString(); break;
+                case "ep": bookEntryPoint = data.ToString(); break;
             }
-            return true;
         }
 
         #endregion

@@ -18,14 +18,12 @@ namespace NodeNotes {
         public override CfgEncoder Encode() => new CfgEncoder()
             .Add("b", base.Encode);
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "b": data.DecodeInto(base.Decode); break;
-                default: return false;
+                case "b": data.Decode(base.Decode); break;
             }
-            return true;
         }
 
         protected override string InspectionHint => "Inspect Button";

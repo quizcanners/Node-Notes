@@ -15,8 +15,8 @@ namespace NodeNotes
 
 
         public int nodeIndex;
-        public string values;
-        public string gameNodesData;
+        public CfgData values;
+        public CfgData gameNodesData;
 
         public string NameForPEGI { get => BookName; set => BookName = value; }
 
@@ -37,25 +37,23 @@ namespace NodeNotes
 
         #region Encode_Decode
         public CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
-            .Add_String("vals", values)
+            .Add("vals", values)
             .Add("ind", nodeIndex)
             .Add_String("n", BookName)
             .Add_String("auth", AuthorName)
-            .Add_String("gnd", gameNodesData);
+            .Add("gnd", gameNodesData);
         
-        public bool Decode(string tg, string data) {
+        public void Decode(string tg, CfgData data) {
             switch (tg) {
                 case "vals": values = data; break;
                 case "ind": nodeIndex = data.ToInt(); break;
-                case "n": BookName = data; break;
-                case "auth": AuthorName = data; break;
+                case "n": BookName = data.ToString(); break;
+                case "auth": AuthorName = data.ToString(); break;
                 case "gnd": gameNodesData = data; break;
-                default: return false;
             }
-            return true;
         }
+        
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
         #endregion
 
     }

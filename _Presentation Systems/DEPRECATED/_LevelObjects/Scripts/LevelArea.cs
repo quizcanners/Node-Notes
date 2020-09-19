@@ -53,17 +53,12 @@ namespace NodeNotes_Visual
 
             }
 
-            public void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
-            
-            public bool Decode(string tg, string data)
+            public void Decode(string tg, CfgData data)
             {
                 switch (tg)
                 {
-                    case "tg": tag = data; break;
-                    default: return false;
+                    case "tg": tag = data.ToString(); break;
                 }
-
-                return true;
             }
 
             public CfgEncoder Encode() =>
@@ -101,7 +96,7 @@ namespace NodeNotes_Visual
                // .Add("m", _painter.EncodeMeshStuff)
                // .Add_IfNotEmpty("mat", _materialTag);
          
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
@@ -109,10 +104,7 @@ namespace NodeNotes_Visual
                 case "s": relativeZoom = data.ToFloat(); break;
                 //case "m": _painter.Decode(data); break;
                 //case "mat": _materialTag = data; break;
-                default: return false;
             }
-
-            return true;
         }
 
         #endregion

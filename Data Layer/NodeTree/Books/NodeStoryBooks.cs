@@ -58,16 +58,12 @@ namespace NodeNotes
         }
 
         #region Encode & Decode
-        public void Decode(string data) => new CfgDecoder(data).DecodeTagsFor(this);
-        
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
-                case "books": data.Decode_List(out all); break;
-                default: return false;
+                case "books": data.ToList(out all); break;
             }
-            return true;
         }
 
         public CfgEncoder Encode()
@@ -133,7 +129,7 @@ namespace NodeNotes
                 {
 
                     string tmp = "";
-                    if ("Paste Messaged Book".edit(140, ref tmp) || StdExtensions.DropStringObject(out tmp))
+                    if ("Paste Messaged Book".edit(140, ref tmp) || CfgExtensions.DropStringObject(out tmp))
                     {
                         var book = new NodeBook();
                         book.DecodeFromExternal(tmp);

@@ -15,15 +15,13 @@ namespace NodeNotes {
 
         #region Encode/Decode
 
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
 
             switch (tg) {
-                case "b": data.DecodeInto(base.Decode); break;
-                case "n": name = data; break;
-                default: return false;
+                case "b": data.Decode(base.Decode); break;
+                case "n": name = data.ToString(); break;
             }
-
-            return true;
+            
         }
 
         public override CfgEncoder Encode() => new CfgEncoder()// this.EncodeUnrecognized()

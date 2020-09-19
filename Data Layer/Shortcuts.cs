@@ -225,19 +225,18 @@ namespace NodeNotes {
                 .Add_String("curUser", users.current.Name);
         }
 
-        public bool Decode(string tg, string data)
+        public void Decode(string tg, CfgData data)
         {
             switch (tg)  {
-                case "bkSrv": books.Decode(data); break;
+                case "bkSrv": books.DecodeFull(data); break;
                 case "ptUI": showPlaytimeUI = data.ToBool(); break;
-                case "us": data.Decode_List(out users.all); break;
-                case "curUser": users.LoadUser(data); break;
-                default: return false;
+                case "us": data.ToList(out users.all); break;
+                case "curUser": users.LoadUser(data.ToString()); break;
+                
             }
-            return true;
         }
+        
 
-        public void Decode(string data) => this.DecodeTagsFrom(data);
 
         #endregion
     }

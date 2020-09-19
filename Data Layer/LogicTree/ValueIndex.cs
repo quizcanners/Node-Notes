@@ -17,24 +17,22 @@ namespace NodeNotes
         }}}
         
         #region Encode & Decode
-        public void Decode(string data) => this.DecodeTagsFrom(data);
+
 
         public abstract CfgEncoder Encode();
-        public abstract bool Decode(string tg, string data);
+        public abstract void Decode(string tg, CfgData data);
 
         protected CfgEncoder EncodeIndex() => new CfgEncoder()
             .Add("gi", groupIndex)
             .Add("ti", triggerIndex);
 
-        protected bool DecodeIndex(string tag, string data)
+        protected void DecodeIndex(string tag, CfgData data)
         {
             switch (tag)
             {
                 case "gi": groupIndex = data.ToInt(); break;
                 case "ti": triggerIndex = data.ToInt(); break;
-                default: return false;
             }
-            return true;
         }
 
         #endregion

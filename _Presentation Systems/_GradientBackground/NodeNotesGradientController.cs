@@ -6,7 +6,7 @@ using UnityEngine;
 namespace NodeNotes_Visual {
 
     [ExecuteAlways]
-    public class NodeNotesGradientController : PresentationSystemsAbstract, ILinkedLerping
+    public class NodeNotesGradientController : PresentationSystemsAbstract, ILinkedLerping, ICfgCustom
     {
         public override string ClassTag => "GradCntrl";
 
@@ -88,23 +88,20 @@ namespace NodeNotes_Visual {
 
         #region Encode & Decode
        
-        public override void Decode(string data)
+        public void Decode(CfgData data)
         {
-            base.Decode(data);
+            this.DecodeTagsFrom(data);
             _lerpDone = false;
         }
 
-        public override bool Decode(string tg, string data)
+        public override void Decode(string tg, CfgData data)
         {
             switch (tg)
             {
                 case "bgUp": bgColUp.TargetValue = data.ToColor(); break;
                 case "bgc": bgColCnter.TargetValue = data.ToColor(); break;
                 case "bgDwn": bgColDown.TargetValue = data.ToColor(); break;
-                default: return false;
             }
-
-            return true;
         }
 
         public override CfgEncoder Encode() => new CfgEncoder()

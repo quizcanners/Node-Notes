@@ -11,7 +11,7 @@ namespace NodeNotes
     
     #pragma warning disable IDE0018 // Inline variable declaration
 
-    public class NodeBook : NodeBook_Base, IPEGI_ListInspect, IPEGI, IPEGI_Searchable
+    public class NodeBook : NodeBook_Base, ICfgCustom, IPEGI_ListInspect, IPEGI, IPEGI_Searchable
     {
 
         #region Values
@@ -43,10 +43,10 @@ namespace NodeNotes
         }
 
         public List<BookEntryPoint> entryPoints = new List<BookEntryPoint>();
-        public Dictionary<string, string> gameNodesConfigs = new Dictionary<string, string>();
-        public Dictionary<string, string> presentationModesConfigs = new Dictionary<string, string>();
+        public Dictionary<string, CfgData> gameNodesConfigs = new Dictionary<string, CfgData>();
+        public Dictionary<string, CfgData> presentationModesConfigs = new Dictionary<string, CfgData>();
 
-        private string _visualLayerConfig;
+        private CfgData _visualLayerConfig;
 
         public Node subNode = new Node();
         #endregion
@@ -92,7 +92,7 @@ namespace NodeNotes
                 if (_inspectedItems == -1 && icon.Share.foldout("Share options", ref _showShareOptions))
                 {
 
-                    string data = null;
+                    CfgData data;
                     if (this.SendReceivePegi(subNode.name, "Books", out data))
                     {
 
@@ -174,9 +174,9 @@ namespace NodeNotes
             if (Application.isPlaying && NodesVisualLayer.Instance) {
                 
                 foreach (var bg in NodesVisualLayer.Instance.presentationControllers) {
-                    string data = "";
+                    CfgData data;
                     presentationModesConfigs.TryGetValue(bg.ClassTag, out data);
-                    bg.Decode(data);
+                    bg.DecodeFull(data);
                 }
 
                 NodesVisualLayerAbstract.InstAsNodesVisualLayer.Decode(_visualLayerConfig);
@@ -189,11 +189,11 @@ namespace NodeNotes
             if (Application.isPlaying && NodesVisualLayer.Instance) {
                 if (loadedPresentation)
                     foreach (var bg in NodesVisualLayer.Instance.presentationControllers) {
-                        var data = bg.EncodePerBookData().ToString();
+                        var data = bg.EncodePerBookData().CfgData;
                         presentationModesConfigs[bg.ClassTag] = data;
                     }
 
-                _visualLayerConfig = NodesVisualLayerAbstract.InstAsNodesVisualLayer.EncodePerBookData().ToString();
+                _visualLayerConfig = NodesVisualLayerAbstract.InstAsNodesVisualLayer.EncodePerBookData().CfgData;
             }
         }
 
@@ -208,26 +208,25 @@ namespace NodeNotes
             .Add_IfNotNegative("i",_inspectedItems)
             .Add_IfNotEmpty("gn", gameNodesConfigs)
             .Add_IfNotEmpty("bg", presentationModesConfigs)
-            .Add_IfNotEmpty("visLr", _visualLayerConfig);
+            .Add("visLr", _visualLayerConfig);
           
-        public override bool Decode(string tg, string data) {
+        public override void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "b": data.DecodeInto(base.Decode); break;//data.Decode_Base(base.Decode, this); break;
+                case "b": data.Decode(base.Decode); break;//data.Decode_Base(base.Decode, this); break;
                 case "f": firstFree = data.ToInt(); break;
-                case "sn": data.DecodeInto(out subNode); break;
-                case "in": _inspectedNode = data.ToInt(); break;
-                case "inE": _inspectedEntry = data.ToInt(); break;
-                case "ep": data.Decode_List(out entryPoints); break;
-                case "i": _inspectedItems = data.ToInt(); break;
+                case "sn": data.Decode(out subNode); break;
+                case "in": _inspectedNode = data.ToInt(0); break;
+                case "inE": _inspectedEntry = data.ToInt(0); break;
+                case "ep": data.ToList(out entryPoints); break;
+                case "i": _inspectedItems = data.ToInt(0); break;
                 case "gn": data.Decode_Dictionary(out gameNodesConfigs); break;
                 case "bg": data.Decode_Dictionary(out presentationModesConfigs); break;
                 case "visLr": _visualLayerConfig = data; break;
-                default: return false;
+         
             }
-            return true;
         }
     
-        public override void Decode(string data) {
+        public void Decode(CfgData data) {
 
             this.DecodeTagsFrom(data);
 

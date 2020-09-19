@@ -133,7 +133,7 @@ namespace NodeNotes {
     }
 
 
-    public class CurrentUser: ICfg, IGotName, IPEGI, IGotDisplayName {
+    public class CurrentUser: ICfgCustom, IGotName, IPEGI, IGotDisplayName {
 
         //public string startingPoint = "";
         public string Name = "Unknown";
@@ -142,7 +142,7 @@ namespace NodeNotes {
         public bool isADeveloper;
         
         #region GameNodes
-        public Dictionary<string, string> gameNodesData_PerUser = new Dictionary<string, string>();
+        public Dictionary<string, CfgData> gameNodesData_PerUser = new Dictionary<string, CfgData>();
         #endregion
 
         #region CurrentState
@@ -218,8 +218,8 @@ namespace NodeNotes {
                         BookName = currentBook.NameForPEGI,
                         AuthorName = currentBook.authorName,
                         nodeIndex = _currentNode.IndexForPEGI,
-                        values = Values.global.Encode().ToString(),
-                        gameNodesData = gameNodesData_PerUser.Encode().ToString()
+                        values = Values.global.Encode().CfgData,
+                        gameNodesData = gameNodesData_PerUser.Encode().CfgData
 
                     });
                 }
@@ -255,7 +255,7 @@ namespace NodeNotes {
                 else {
                     if (TrySetCurrentNode(book, bm.nodeIndex)) {
                         bm.gameNodesData.Decode_Dictionary(out gameNodesData_PerUser);
-                        bm.values.DecodeInto(out Values.global);
+                        bm.values.Decode(out Values.global);
                         if (bookMarks.Count>ind)
                             bookMarks = bookMarks.GetRange(0, ind);
                         //else
@@ -355,7 +355,7 @@ namespace NodeNotes {
         private string _tmpBookName;
         private string _tmpAuthorName;
 
-        public void Decode(string data) {
+        public void Decode(CfgData data) {
 
             this.DecodeTagsFrom(data);
 
@@ -370,20 +370,19 @@ namespace NodeNotes {
             }
         }
         
-        public bool Decode(string tg, string data) {
+        public void Decode(string tg, CfgData data) {
             switch (tg) {
-                case "bm": data.Decode_List(out bookMarks); break;
-                case "vals": data.DecodeInto(out Values.global); break;
-                case "cur": _tmpNode = data.ToInt(); break;
-                case "curB": _tmpBookName = data; break;
-                case "curA": _tmpAuthorName = data; break;;
+                case "bm": data.ToList(out bookMarks); break;
+                case "vals": data.Decode(out Values.global); break;
+                case "cur": _tmpNode = data.ToInt(0); break;
+                case "curB": _tmpBookName = data.ToString(); break;
+                case "curA": _tmpAuthorName = data.ToString(); break;;
                 case "dev": isADeveloper = data.ToBool(); break;
-                case "n": Name = data; break;
+                case "n": Name = data.ToString(); break;
                 //case "start": startingPoint = data; break;
                 case "pgnd": data.Decode_Dictionary(out gameNodesData_PerUser); break;
-                default: return false;
+             
             }
-            return true;
         }
 
         public CfgEncoder Encode() {
