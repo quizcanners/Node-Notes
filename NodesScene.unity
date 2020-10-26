@@ -2738,6 +2738,8 @@ MonoBehaviour:
   shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
   mainCam: {fileID: 39652739}
   canvas: {fileID: 806629722}
+  boxButtons: {fileID: 0}
+  clickableText: {fileID: 0}
   presentationControllers:
   - {fileID: 1274019441}
   - {fileID: 1699581656}

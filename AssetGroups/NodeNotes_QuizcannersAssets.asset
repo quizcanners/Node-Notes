@@ -31,11 +31,9 @@ MonoBehaviour:
   sdfObjects:
     taggedList:
     - tag: cube
-      asset: {fileID: 5892080856996665378, guid: 80ce4b327f0f7ab4da97343f3397e057,
-        type: 3}
+      asset: {fileID: 5892080856996665378, guid: 80ce4b327f0f7ab4da97343f3397e057, type: 3}
     - tag: sphere
-      asset: {fileID: 6941661268866573706, guid: 64ae4672e2a3e9c4282a7bd478b4d2b6,
-        type: 3}
+      asset: {fileID: 6941661268866573706, guid: 64ae4672e2a3e9c4282a7bd478b4d2b6, type: 3}
     - tag: tag
       asset: {fileID: 0}
   rayTraceObjects:

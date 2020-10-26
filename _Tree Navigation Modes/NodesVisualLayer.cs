@@ -38,6 +38,11 @@ namespace NodeNotes_Visual
 
         private List<ILinkedLerping> modesAsLinkedLeprs = new List<ILinkedLerping>();
 
+
+        [Header("Presentation Controllers TODO: Instead of complicated generic solution")]
+        public BoxButtons boxButtons;
+        public ClickableText clickableText;
+
         public List<PresentationMode> presentationControllers = new List<PresentationMode>();
 
         public static PresentationMode _selectedController;
@@ -400,7 +405,7 @@ namespace NodeNotes_Visual
 
                 if ("Presentation System Cfgs".enter(ref _inspectedDebugItem, 6).nl())
                 {
-                    "Cfgs".edit_Dictionary_Values(presentationSystemPerNodeConfigs, ref _inspectedPresSysCfg).nl();
+                    "Cfgs".edit_Dictionary_Values(ref presentationSystemPerNodeConfigs, ref _inspectedPresSysCfg).nl();
                 }
                 
                 if (_inspectedDebugItem == -1)
