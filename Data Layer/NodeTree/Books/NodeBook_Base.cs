@@ -63,7 +63,7 @@ namespace NodeNotes {
         public static bool EditedByCurrentUser<T>(this T reff) where T : IBookReference
         {
             if (reff == null)
-                UnityEngine.Debug.LogError("No Refference");
+                QcUnity.ChillLogger.LogErrorOnce("No Refference", key: "nn_NoReff");
             else if (Shortcuts.users.current == null)
                 UnityEngine.Debug.LogError("Current user is null");
             else

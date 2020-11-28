@@ -143,8 +143,6 @@ namespace NodeNotes {
 
         #region Encode_Decode
         
-
-
         public virtual CfgEncoder Encode() => new CfgEncoder()//this.EncodeUnrecognized()
         .Add_String(        "n",    name)
         .Add(               "i",    index)
