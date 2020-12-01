@@ -359,7 +359,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f57b9e080805b24c9cb89b37c6484ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 8091d7232c61c5544807c26f42b8c516, type: 2}
+  inspectedTriggerGroup: -1
+  tmpIndex: -1
+  shortcuts: {fileID: 0}
 --- !u!4 &1733169656
 Transform:
   m_ObjectHideFlags: 0

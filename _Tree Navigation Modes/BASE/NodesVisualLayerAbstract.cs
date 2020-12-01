@@ -11,8 +11,7 @@ namespace NodeNotes {
 
         public Shortcuts shortcuts;
 
-        public abstract Node CurrentNode { get; }
-
+        public Node CurrentNode => Shortcuts.CurrentNode;
         public abstract void OnBeforeNodeSet(Node node);
         
         [NonSerialized] protected GameNodeBase gameNode;
@@ -28,9 +27,9 @@ namespace NodeNotes {
 
         }
 
-        public abstract void Show(Base_Node node);
+       // public abstract void Show(Base_Node node);
 
-        public abstract void Hide(Base_Node node);
+      //  public abstract void Hide(Base_Node node);
 
         public abstract void HideAllBackgrounds();
 
@@ -103,7 +102,6 @@ namespace NodeNotes {
         public override void OnEnable()
         {
             base.OnEnable();
-
             shortcuts.LoadAll();
         }
 

@@ -36,8 +36,7 @@ namespace NodeNotes_Visual
 
         #region Presentation Modes
 
-        private List<ILinkedLerping> modesAsLinkedLeprs = new List<ILinkedLerping>();
-
+        private readonly List<ILinkedLerping> modesAsLinkedLeprs = new List<ILinkedLerping>();
 
         [Header("Presentation Controllers TODO: Instead of complicated generic solution")]
         public BoxButtons boxButtons;
@@ -109,7 +108,7 @@ namespace NodeNotes_Visual
 
         #region Presentation Systems
 
-        private List<ILinkedLerping> systemAsLinkedLeprs = new List<ILinkedLerping>();
+        private readonly List<ILinkedLerping> systemAsLinkedLeprs = new List<ILinkedLerping>();
 
         [SerializeField] protected List<PresentationSystemsAbstract> presentationSystems;
 
@@ -131,14 +130,10 @@ namespace NodeNotes_Visual
                 config.Value.OnNodeDelete(index);
         }
 
-        public override void Show(Base_Node node) => SelectedPresentationMode.MakeVisible(node);
+       // public override void Show(Base_Node node) => SelectedPresentationMode.MakeVisible(node);
         
-        public override void Hide(Base_Node node) => SelectedPresentationMode.MakeHidden(node);
+       // public override void Hide(Base_Node node) => SelectedPresentationMode.MakeHidden(node);
 
-        private readonly LoopLock _setNodeLoopLock = new LoopLock();
-
-        public override Node CurrentNode => Shortcuts.CurrentNode; 
-        
         public override void OnBeforeNodeSet(Node node) {
 
             SetPresentationMode(node);
@@ -184,11 +179,14 @@ namespace NodeNotes_Visual
 
         #region Inspector
 
-        pegi.GameView.Window _playtimeInspectorWindowOnGui = new pegi.GameView.Window();
+        readonly pegi.GameView.Window _playtimeInspectorWindowOnGui = new pegi.GameView.Window();
 
         protected override void ResetInspector()
         {
-            shortcuts?.ResetInspector();
+            if (shortcuts)
+            {
+                shortcuts.ResetInspector();
+            }
             base.ResetInspector();
         }
 
@@ -260,13 +258,13 @@ namespace NodeNotes_Visual
                     {
                         "Node is not currently visualized".write();
 
-                        if ("Force Show".Click("Hidden. Click to show visual representation."))
+                       /* if ("Force Show".Click("Hidden. Click to show visual representation."))
                         {
                             Shortcuts.visualLayer.Show(source);
-                        }
+                        }*/
                     }
-                    else if ("Force Hide".Click("Visible. Click To Hide Visual Representation."))
-                        Shortcuts.visualLayer.Hide(source);
+                    //else if ("Force Hide".Click("Visible. Click To Hide Visual Representation."))
+                      //  Shortcuts.visualLayer.Hide(source);
 
                     pegi.nl();
 
@@ -473,7 +471,7 @@ namespace NodeNotes_Visual
                 case "gSys2": data.Decode_Dictionary(out presentationSystemPerNodeConfigs); break;
                 // DEPRECATED (TMP)
                 case "gSys":
-                    var dicTmp = new Dictionary<string, CfgData>();
+                    Dictionary<string, CfgData> dicTmp;
                     data.Decode_Dictionary(out dicTmp);
                     foreach (var pair in dicTmp)
                     {
@@ -499,7 +497,7 @@ namespace NodeNotes_Visual
         #endregion
 
         #region Linked Lerp
-        private LerpData _ld = new LerpData();
+        private readonly LerpData _ld = new LerpData();
 
         protected override void DerivedUpdate() {
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using QuizCannersUtilities;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,20 +10,46 @@ using UnityEditor;
 
 namespace NodeNotes.Minimalistic
 {
-    public class NodeNotesMinimalInspector : MonoBehaviour, IPEGI
+    public class NodeNotesMinimalInspector : NodesVisualLayerAbstract, IPEGI
     {
-        public NodeNotesMinimalData data;
 
-        public bool Inspect()
+        public override void Decode(CfgData data)
         {
-            var changed = pegi.toggleDefaultInspector(this);
+        }
 
-            pegi.nl();
+        public override CfgEncoder EncodePerBookData() => new CfgEncoder();
 
-            data.Nested_Inspect();
+        /*public override void Hide(Base_Node node)
+        {
+        }*/
+
+        public override void HideAllBackgrounds()
+        {
+        }
+
+        public override bool Inspect()
+        {
+            var changed = base.Inspect();  
+
+
 
             return changed;
         }
+
+        public override void OnBeforeNodeSet(Node node)
+        {
+
+        }
+
+        public override void OnLogicVersionChange()
+        {
+
+        }
+
+     /*   public override void Show(Base_Node node)
+        {
+
+        }*/
     }
 
 #if UNITY_EDITOR
