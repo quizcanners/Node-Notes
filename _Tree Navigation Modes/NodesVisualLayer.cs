@@ -130,10 +130,6 @@ namespace NodeNotes_Visual
                 config.Value.OnNodeDelete(index);
         }
 
-       // public override void Show(Base_Node node) => SelectedPresentationMode.MakeVisible(node);
-        
-       // public override void Hide(Base_Node node) => SelectedPresentationMode.MakeHidden(node);
-
         public override void OnBeforeNodeSet(Node node) {
 
             SetPresentationMode(node);

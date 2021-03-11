@@ -27,10 +27,6 @@ namespace NodeNotes {
 
         }
 
-       // public abstract void Show(Base_Node node);
-
-      //  public abstract void Hide(Base_Node node);
-
         public abstract void HideAllBackgrounds();
 
         public virtual void FromNodeToGame(GameNodeBase gn)
@@ -114,13 +110,10 @@ namespace NodeNotes {
         public abstract CfgEncoder EncodePerBookData();
 
         public abstract void Decode(CfgData data);
-
-
     }
 
     public interface INodeVisualPresentation : ICfg
     {
         void OnSourceNodeUpdate(Base_Node node);
     }
-
 }

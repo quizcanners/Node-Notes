@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 
-public class GameControllerBase : MonoBehaviour {
-
-
-    public virtual void Initialize()
+namespace NodeNotes_Visual
+{
+    public class GameControllerBase : MonoBehaviour
     {
-        gameObject.SetActive(false);
+        public virtual void Initialize()
+        {
+            gameObject.SetActive(false);
+
+        }
 
     }
-   
 }

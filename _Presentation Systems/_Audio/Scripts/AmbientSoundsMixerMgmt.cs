@@ -7,9 +7,7 @@ using UnityEngine.Audio;
 
 namespace NodeNotes_Visual
 {
-
-#pragma warning disable IDE0018 // Inline variable declaration
-
+    #pragma warning disable IDE0018 // Inline variable declaration
     public class AmbientSoundsMixerMgmt : PresentationSystemsAbstract, IPEGI
     {
         public static AmbientSoundsMixerMgmt instance;
@@ -47,7 +45,6 @@ namespace NodeNotes_Visual
         private string currentMusic;
         private TransitionType transitionType = TransitionType.BehindTheWall;
         enum TransitionType { BehindTheWall = 0, IntoDistance = 1 }
-
 
         private float _transitionLength = 3f;
         private float _timer = 0;
