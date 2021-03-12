@@ -72,7 +72,7 @@ namespace NodeNotes
         [NonSerialized] private bool _inspectReplacementOption;
         public virtual bool Inspect()
         {
-            var changed = pegi.toggleDefaultInspector(this).nl();
+            var changed = false;
             
             if (inspectedTriggerGroup == -1) {
 

@@ -132,8 +132,8 @@ namespace NodeNotes_Visual {
                         "Will all the references to this Interaction be renamed as well.").changes(ref changed);
                 }
 
-                if (pegi.FullWindow.DocumentationClick("About option referance"))
-                    pegi.FullWindow.DocumentationOpen(() =>
+                if (pegi.FullWindowService.DocumentationClick("About option referance"))
+                    pegi.FullWindowService.DocumentationOpen(() =>
                         "You can use reference to link end of one interaction with the start of another. But the first text of it will be skipped. First sentence is the option user picks to start an interaction. Like 'Lets talk about ...' " +
                          "which is not needed if the subject is currently being discussed from interaction that came to an end."
                         );
@@ -154,7 +154,7 @@ namespace NodeNotes_Visual {
             "Final Results".enter_List(ref finalResults, ref _inspectedResult, ref _inspectedItems, 3, ref changed).SetLastUsedTrigger();
 
             if (_inspectedItems == -1)
-               pegi.FullWindow.DocumentationClickOpen("Results that will be set the moment any choice is picked, before the text that goes after it", "About Final Results");
+               pegi.FullWindowService.DocumentationClickOpen("Results that will be set the moment any choice is picked, before the text that goes after it", "About Final Results");
 
             pegi.nl_ifNotEntered();
 
