@@ -227,7 +227,7 @@ namespace NodeNotes {
 
                 pegi.nl();
 
-                "Translations".edit_Dictionary_Values(ref texts, LanguageCodes);
+                "Translations".edit_Dictionary(ref texts, LanguageCodes);
 
                 LanguageSelector_PEGI();
                 if (!Contains() && icon.Add.Click("Add {0}".F(currentLanguage.GetNameForInspector())))

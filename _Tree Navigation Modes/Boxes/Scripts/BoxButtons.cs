@@ -357,8 +357,8 @@ namespace NodeNotes_Visual {
             if (editButton)
                 editButton.Text = "Edit";
 
-            if (Application.isPlaying)
-                editButton.graphic.OnClick.AddListener(RightTopButton);
+            //if (Application.isPlaying)
+               // editButton.graphic.OnClick.AddListener(RightTopButton);
 
             if (addButton)
                 addButton.gameObject.SetActive(false);

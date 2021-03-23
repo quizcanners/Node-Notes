@@ -1,14 +1,14 @@
-﻿using System;
-using PlayerAndEditorGUI;
+﻿using PlayerAndEditorGUI;
 using QuizCannersUtilities;
-using Unity.Collections;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace NodeNotes_Visual
 {
 
-#pragma warning disable IDE0034 // Simplify 'default' expression
-#pragma warning disable IDE0019 // Use pattern matching
 #pragma warning disable IDE0018 // Inline variable declaration
 
     [ExecuteInEditMode]
@@ -62,25 +62,6 @@ namespace NodeNotes_Visual
         }
         #endregion
         
-      /*  #region Camera Smoothing
-        
-        [NonSerialized] private Vector3 cameraSmoothedVelocity;
-        [NonSerialized] private Vector3 mainCameraVelocity;
-        [NonSerialized] private Vector3 cameraSmoothingOffset;
-
-        private void UpdateCameraSmoothing()
-        {
-            var offset = cameraSmoothedVelocity - mainCameraVelocity - cameraSmoothingOffset * 16;
-
-            var magn = offset.magnitude;
-
-            cameraSmoothedVelocity = cameraSmoothedVelocity.LerpBySpeed_DirectionFirst(mainCameraVelocity, magn * 0.8f);
-
-            cameraSmoothingOffset = cameraSmoothingOffset.LerpBySpeed_DirectionFirst(offset, magn);
-        }
-
-        #endregion*/
-
         #region Advanced Camera
 
         private float CameraWindowNearClip()
@@ -140,10 +121,6 @@ namespace NodeNotes_Visual
         
         void OnEnable()
         {
-            /*cameraSmoothedVelocity = Vector3.zero;
-            mainCameraVelocity = Vector3.zero;
-            cameraSmoothingOffset = Vector3.zero;*/
-
             if (mode == Mode.LERP)
                 mode = Mode.FPS;
         }
@@ -477,7 +454,12 @@ namespace NodeNotes_Visual
 
             return false;
         }
-        
+
         #endregion
     }
+
+#if UNITY_EDITOR
+[CustomEditor(typeof(GodMode))]
+public class GodModeDrawer : PEGI_Inspector_Mono<GodMode> { }
+#endif
 }

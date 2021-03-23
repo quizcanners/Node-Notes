@@ -362,7 +362,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inspectedTriggerGroup: -1
   tmpIndex: -1
-  shortcuts: {fileID: 0}
+  shortcuts: {fileID: 11400000, guid: 910274289c8d21546b0cae47f8e73a24, type: 2}
 --- !u!4 &1733169656
 Transform:
   m_ObjectHideFlags: 0

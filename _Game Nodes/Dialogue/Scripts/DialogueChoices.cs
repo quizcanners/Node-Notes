@@ -132,10 +132,9 @@ namespace NodeNotes_Visual {
                         "Will all the references to this Interaction be renamed as well.").changes(ref changed);
                 }
 
-                if (pegi.FullWindow.DocumentationClick("About option referance"))
-                    pegi.FullWindow.DocumentationOpen(() =>
+                pegi.FullWindow.DocumentationClickOpen(() =>
                         "You can use reference to link end of one interaction with the start of another. But the first text of it will be skipped. First sentence is the option user picks to start an interaction. Like 'Lets talk about ...' " +
-                         "which is not needed if the subject is currently being discussed from interaction that came to an end."
+                         "which is not needed if the subject is currently being discussed from interaction that came to an end.", "About option referance"
                         );
 
             }

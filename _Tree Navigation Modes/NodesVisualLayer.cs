@@ -403,7 +403,7 @@ namespace NodeNotes_Visual
 
                 if ("Presentation System Cfgs".enter(ref _inspectedDebugItem, 6).nl())
                 {
-                    "Cfgs".edit_Dictionary_Values(ref presentationSystemPerNodeConfigs, ref _inspectedPresSysCfg).nl();
+                    "Cfgs".edit_Dictionary(ref presentationSystemPerNodeConfigs, ref _inspectedPresSysCfg).nl();
                 }
                 
                 if (_inspectedDebugItem == -1)

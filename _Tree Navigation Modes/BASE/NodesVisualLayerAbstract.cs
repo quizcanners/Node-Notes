@@ -27,10 +27,6 @@ namespace NodeNotes {
 
         }
 
-       // public abstract void Show(Base_Node node);
-
-      //  public abstract void Hide(Base_Node node);
-
         public abstract void HideAllBackgrounds();
 
         public virtual void FromNodeToGame(GameNodeBase gn)
@@ -111,10 +107,22 @@ namespace NodeNotes {
                 shortcuts.SaveAll();
         }
 
+        #region Encode & Decode
         public abstract CfgEncoder EncodePerBookData();
 
         public abstract void Decode(CfgData data);
+        #endregion
 
+        private int _inspectedStuffs = -1;
+
+        public override bool Inspect()
+        {
+            var changed =  base.Inspect();
+
+            "Shortcuts".edit_enter_Inspect(ref shortcuts, ref _inspectedStuffs, 0).nl();
+
+            return changed;
+        }
 
     }
 
